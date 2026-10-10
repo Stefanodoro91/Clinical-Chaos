@@ -1,0 +1,15 @@
+{
+  "brand_name": "Clinical Research Chaos",
+  "handle": "@clinicalchaos1991",
+  "colors": {
+    "background": "#0E2233",
+    "accent": "#3DD9C1",
+    "text": "#FFFFFF",
+    "muted_text": "#D3DEE8",
+    "muted": "#7F96AB"
+  },
+  "fixed_hashtags": ["#ClinicalResearch", "#ResearchMethodology"],
+  "max_new_files_per_run": 1,
+  "max_posts_per_file": 12,
+  "low_queue_warning": 5
+}
