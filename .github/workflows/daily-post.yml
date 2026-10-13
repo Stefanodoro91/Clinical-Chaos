@@ -1,0 +1,62 @@
+name: Post giornaliero ricerca clinica
+
+on:
+  # Pianificazione disattivata finché Instagram non è configurato.
+  # Per riattivarla, togli il "#" dalle due righe sotto.
+  # schedule:
+  #   - cron: "0 12 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Solo prova (non pubblica, salva un'anteprima)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write   # per salvare immagini e registro nel repository
+  issues: write     # per gli avvisi via email
+
+concurrency:
+  group: instagram-post
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Installa dipendenze
+        run: pip install -r requirements.txt
+
+      - name: Configura git
+        run: |
+          git config user.name "research-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Pubblica il post del giorno
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GDRIVE_DONE_FOLDER_ID: ${{ secrets.GDRIVE_DONE_FOLDER_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+        run: python bot.py
+
+      - name: Salva anteprima (solo in modalità prova)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview
+          path: preview/
+          if-no-files-found: ignore
