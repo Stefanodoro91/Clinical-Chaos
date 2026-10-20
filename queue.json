@@ -1,39 +1,5 @@
 [
   {
-    "title": "The Major Blind Spot of James' Blinding Index",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "The traditional approach",
-        "body": "James' blinding index adapts kappa to measure disagreement. It scores between 0 (total unblinding) and 1 (complete blinding), with 0.5 representing random guessing, placing the highest weight on 'do not know' responses.",
-        "image_prompt": "a circular dial gauge with a needle pointing to the center between red and green zones, beside two distinct pill bottles"
-      },
-      {
-        "heading": "Dominated by 'Don't Know'",
-        "body": "When 30% to 70% of participants answer 'do not know', James' index almost never rejects the null hypothesis of successful blinding, even when all participants who ventured a guess were completely unblinded.",
-        "image_prompt": "a large pile of blank envelopes completely burying a small pile of marked voting cards on an examination table"
-      },
-      {
-        "heading": "The fatal cancelling effect",
-        "body": "James' index pools all arms into one score. If the drug arm correctly guesses drug, but the placebo arm also guesses drug due to optimism, the opposing patterns cancel out into a false appearance of perfect blinding.",
-        "image_prompt": "two groups of people walking in opposite directions on a platform, while a single central scale stays completely level"
-      },
-      {
-        "heading": "The need for arm-specific analysis",
-        "body": "Because blinding mechanisms and expectations differ between active and control arms, evaluating blinding must be done separately for each arm rather than collapsing everything into a single overall metric.",
-        "image_prompt": "a researcher dividing a large data sheet into two separate clipboards, one for each arm of a trial"
-      }
-    ],
-    "takeaway": "A single overall blinding index can conceal unblinding when high proportions of 'don't know' or opposing arm biases cancel out.",
-    "caption": "Measuring blinding with a single aggregate metric sounds convenient, but it hides critical trial dynamics.\\nJames' blinding index places maximum weight on 'don't know' responses, which can artificially mask unblinding.\\nEven worse, if both arms guess they received active treatment, their opposite directions cancel out.\\nEvaluating each treatment arm independently prevents these misleading conclusions.\\nHave you encountered studies where 'don't know' responses skewed your data analysis?",
-    "hashtags": [
-      "#ClinicalTrials审#ResearchMethodology审#Biostatistics审#Blinding审#ClinicalResearch审#StudyDesign审#Epidemiology审#DataAnalysis审#MedicalResearch"
-    ],
-    "source_hint": "pages 4-5, 8-10",
-    "id": "43d41637",
-    "source": "Blinding.pdf"
-  },
-  {
     "title": "Bang's Blinding Index: A Better Way to Measure",
     "category": "Randomization & blinding",
     "slides": [
