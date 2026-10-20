@@ -599,5 +599,177 @@
     "source_hint": "pages 8-9, Step 8, Step 9",
     "id": "58474520",
     "source": "COSMIN.pdf"
+  },
+  {
+    "title": "Appraisal Tool or Reporting Guideline? Don't Mix Them Up",
+    "category": "Critical appraisal",
+    "slides": [
+      {
+        "heading": "Two distinct toolsets in EBP",
+        "body": "Evidence-based practice relies on two different toolsets: critical appraisal tools and reporting guidelines. Though both are essential, they serve opposite sides of the evidence process.",
+        "image_prompt": "a researcher sitting at a desk with two distinct tools, holding a magnifying glass in one hand and an ink pen in the other hand over open documents"
+      },
+      {
+        "heading": "Critical appraisal: evaluating evidence",
+        "body": "Critical appraisal is an objective, structured approach to evaluate a study's strengths and weaknesses. It helps the evidence consumer assess validity, reliability, and clinical applicability.",
+        "image_prompt": "a researcher holding a large magnifying glass over a stack of medical papers, inspecting individual pages carefully next to a balancing scale"
+      },
+      {
+        "heading": "Reporting guidelines: writing the study",
+        "body": "Reporting guidelines are checklists specifying the minimum items authors must report. They ensure a study or project is disseminated with clarity, completeness, and transparency for future readers.",
+        "image_prompt": "a person writing on a manuscript document while ticking off items on an adjacent printed checklist laid across the desk"
+      },
+      {
+        "heading": "Why the distinction matters",
+        "body": "Opaque reporting hides study methods, while using the wrong appraisal tool leads to flawed evaluation. To translate evidence into practice, you must know whether you are assessing evidence or sharing it.",
+        "image_prompt": "two parallel pathways diverging from a fork in a road, one leading toward an evaluation microscope and the other toward an open printing press"
+      }
+    ],
+    "takeaway": "Appraisal tools evaluate published evidence; reporting guidelines ensure your own research is published transparently.",
+    "caption": "Are you consuming evidence or reporting it?\nMany researchers confuse critical appraisal tools with reporting guidelines.\nCritical appraisal tools guide readers through evaluating a study's validity and methodological rigor.\nReporting guidelines provide authors with minimum checklists to ensure transparent, complete publications.\nUsing the right instrument for the right task is an essential research competency.\nHave you ever seen an author use an appraisal checklist as a reporting template, or vice versa?",
+    "hashtags": [
+      "#EvidenceBasedPractice",
+      "#CriticalAppraisal",
+      "#ReportingGuidelines",
+      "#ResearchMethodology",
+      "#AcademicPublishing",
+      "#ClinicalResearch",
+      "#HealthResearch",
+      "#EvidenceBasedMedicine",
+      "#SystematicReview",
+      "#NursingResearch"
+    ],
+    "source_hint": "pages 1-2, 8",
+    "id": "2d4db1ec",
+    "source": "Critical appraisal"
+  },
+  {
+    "title": "Stop Using One Appraisal Tool for Everything",
+    "category": "Critical appraisal",
+    "slides": [
+      {
+        "heading": "There is no universal 'gold standard'",
+        "body": "No single appraisal tool fits every study design. Researchers often default to a familiar checklist, regardless of whether it matches the methodology of the paper they are evaluating.",
+        "image_prompt": "a person holding a single large square key and trying unsuccessfully to force it into three completely different shaped keyholes on a wooden chest"
+      },
+      {
+        "heading": "Step 1: Prioritize preappraised evidence",
+        "body": "When starting an appraisal roadmap, determine the type of evidence first. Prioritize preappraised syntheses—systematic reviews, meta-analyses, and clinical practice guidelines—over individual primary studies.",
+        "image_prompt": "a set of descending wooden steps where a thick synthesis binder sits on the highest step above several scattered single-page primary study papers"
+      },
+      {
+        "heading": "Step 2: Match the tool to the design",
+        "body": "Different designs require specific tools. For guidelines, use AGREE II. For trials, JBI, CASP, or Johns Hopkins. Using a qualitative checklist on an RCT produces meaningless quality ratings.",
+        "image_prompt": "a hand sorting three distinct scientific documents into three clearly matching color-coded archive boxes spread across a wooden worktable"
+      },
+      {
+        "heading": "Step 3: Check tool complexity",
+        "body": "Tools vary in format. CASP uses 10 to 12 yes-or-no items but may challenge novices working alone. JBI provides in-depth question explanations. Johns Hopkins uses 3 simple questions to establish evidence level.",
+        "image_prompt": "a researcher standing before two open booklets, one containing a simple checklist and the other showing detailed explanatory sections"
+      }
+    ],
+    "takeaway": "There is no gold standard appraisal tool: you must always match your checklist to the study design.",
+    "caption": "Reaching for the same appraisal tool every time is a common trap in evidence synthesis.\nCritical appraisal tools are not one-size-fits-all.\nEvaluating a clinical practice guideline requires AGREE II, while observational studies or qualitative research need dedicated checklists like CASP, JBI, or Johns Hopkins.\nFurthermore, preappraised evidence like systematic reviews and guidelines should always be prioritized over individual primary studies.\nWhich critical appraisal tool do you find yourself using most frequently?",
+    "hashtags": [
+      "#CriticalAppraisal",
+      "#EvidenceBasedPractice",
+      "#ResearchMethodology",
+      "#SystematicReview",
+      "#ClinicalGuidelines",
+      "#CASP",
+      "#JBI",
+      "#GRADE",
+      "#HealthResearch",
+      "#EvidenceBasedMedicine"
+    ],
+    "source_hint": "pages 2-5, Table 1",
+    "id": "6f5c572d",
+    "source": "Critical appraisal"
+  },
+  {
+    "title": "Opaque Reporting Directly Causes Biased Conclusions",
+    "category": "Reporting & publication",
+    "slides": [
+      {
+        "heading": "The danger of opaque reporting",
+        "body": "Without a clear understanding of how a study was done, readers cannot judge reliability. Incomplete reporting directly links to biased conclusions, publishing errors, and wasted scarce resources.",
+        "image_prompt": "a researcher trying to read a blurry, fog-covered document on a desk while a wastebasket next to the table overflows with discarded papers"
+      },
+      {
+        "heading": "Minimum standards for transparency",
+        "body": "Reporting guidelines provide structured checklists of minimum items that must appear in a manuscript. They ensure the research process and findings are fully visible for critical appraisal.",
+        "image_prompt": "a crisp, well-lit document lying flat on a table next to a neat checklist with green checkmarks placed beside each item"
+      },
+      {
+        "heading": "Match the guideline to your study",
+        "body": "Use CONSORT for RCTs, STROBE for observational designs (cohort, case-control, cross-sectional), PRISMA for systematic reviews, COREQ for interviews/focus groups, and SQUIRE 2.0 for quality improvement.",
+        "image_prompt": "four distinct scientific manuscripts arranged on a desk, each paired directly with a matching colored checklist booklet"
+      },
+      {
+        "heading": "The EQUATOR Network resource",
+        "body": "Not sure which guideline applies? The EQUATOR Network maintains a centralized library containing over 200 reporting guidelines and toolkits to help researchers improve healthcare reporting.",
+        "image_prompt": "a large open reference library where neat rows of organized books stand on shelves illuminated by overhead lamps"
+      }
+    ],
+    "takeaway": "Reporting guidelines define the minimum details needed so readers can evaluate whether study findings are reliable.",
+    "caption": "If readers cannot see exactly what you did, they cannot trust what you found.\nReporting guidelines specify the minimum necessary information to report in biomedical and healthcare research.\nOpaque reporting fuels biased conclusions, errors in the literature, and wasted resources.\nFrom CONSORT for randomized trials to STROBE for observational studies and PRISMA for systematic reviews, matching your manuscript to the right guideline is standard practice.\nThe EQUATOR Network hosts more than 200 reporting guidelines to help you find the exact checklist you need.\nDo you routinely consult reporting checklists before submitting a manuscript?",
+    "hashtags": [
+      "#ReportingGuidelines",
+      "#EQUATORNetwork",
+      "#AcademicPublishing",
+      "#CONSORT",
+      "#PRISMA",
+      "#STROBE",
+      "#ResearchTransparency",
+      "#MedicalWriting",
+      "#ClinicalResearch",
+      "#OpenScience"
+    ],
+    "source_hint": "pages 2, 6-8, Table 3",
+    "id": "488c840e",
+    "source": "Critical appraisal"
+  },
+  {
+    "title": "What the Cochrane Risk of Bias Tool Actually Does",
+    "category": "Bias & confounding",
+    "slides": [
+      {
+        "heading": "Bias distorts intervention effects",
+        "body": "Bias occurs when methodological flaws cause authors to overestimate or underestimate intervention effects. This directly undermines the validity of study findings in clinical trials.",
+        "image_prompt": "a tilted mechanical balance scale where an unseen weight pulls one side down unevenly despite equal-sized pill bottles on both pans"
+      },
+      {
+        "heading": "Not a complete appraisal checklist",
+        "body": "Unlike general appraisal tools that assess overall study quality, the Cochrane Risk of Bias tool is designed specifically for Cochrane reviews and supports just one column in an evidence table: risk of bias.",
+        "image_prompt": "a large data table on a desk where only a single highlighted vertical column is being inspected through a magnifying glass"
+      },
+      {
+        "heading": "Five common clinical trial biases",
+        "body": "The tool evaluates five major trial biases: selection bias, performance bias, detection bias, attrition bias, and reporting bias across its seven standard assessment items.",
+        "image_prompt": "five distinct obstacle blocks placed sequentially along a running track, each partially obstructing a walking human figure"
+      },
+      {
+        "heading": "Support for judgment",
+        "body": "Each item includes a 'Support for Judgment' field providing background criteria, and a 'Review Authors' Judgment' field with standard phrasing for transparent synthesis in review tables.",
+        "image_prompt": "a researcher writing concise explanatory notes into a standardized two-column evaluation form under a desk lamp"
+      }
+    ],
+    "takeaway": "The Cochrane Risk of Bias Tool evaluates five key trial biases across seven items—it is a bias tool, not a full appraisal scale.",
+    "caption": "Many researchers think the Cochrane Risk of Bias tool evaluates the entire quality of a study.\nIn reality, it supports just one specific column in an evidence table: the risk of bias column.\nDeveloped to evaluate studies in Cochrane Systematic Reviews, it targets 5 major bias types: selection, performance, detection, attrition, and reporting bias.\nEach of its seven items requires review authors to provide explicit support for their judgment rather than a vague overall score.\nHave you used the Cochrane Risk of Bias tool in your own systematic reviews?",
+    "hashtags": [
+      "#RiskOfBias",
+      "#Cochrane",
+      "#SystematicReview",
+      "#ClinicalTrials",
+      "#BiasInResearch",
+      "#Biostatistics",
+      "#ResearchMethodology",
+      "#EvidenceBasedMedicine",
+      "#CriticalAppraisal",
+      "#TrialMethodology"
+    ],
+    "source_hint": "pages 3-4, 6",
+    "id": "87fb41f0",
+    "source": "Critical appraisal"
   }
 ]
