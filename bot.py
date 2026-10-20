@@ -273,5 +273,24 @@ def main():
                f"Restano {len(queue)} post in coda. Aggiungi nuovo materiale nella cartella Drive.")
 
 
+def status():
+    """Solo lettura: elenca i file in attesa e quelli già elaborati nelle cartelle Drive, e lo stato della coda."""
+    drive = drive_service()
+    seen = {s["drive_id"] for s in load(SOURCES_FILE, [])}
+    inbox = [f for f in list_files(drive, os.environ["GDRIVE_FOLDER_ID"]) if f["id"] not in seen]
+    done = list_files(drive, os.environ["GDRIVE_DONE_FOLDER_ID"])
+    queue = load(QUEUE_FILE, [])
+    print(f"File in attesa nella cartella Materiale: {len(inbox)}")
+    for f in inbox:
+        mark = "" if content.is_supported(f) else "  (formato non supportato)"
+        print(f"  - {f['name']}{mark}")
+    print(f"File già elaborati: {len(done)}")
+    for f in done:
+        print(f"  - {f['name']}")
+    print(f"Post in coda: {len(queue)}")
+    for q in queue:
+        print(f"  - {q['title']}  ({q['source']})")
+
+
 if __name__ == "__main__":
-    main()
+    status() if "--status" in sys.argv else main()
