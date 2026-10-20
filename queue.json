@@ -102,47 +102,6 @@
     "source": "Blinding.pdf"
   },
   {
-    "title": "Why Simple Randomization Fails in Small Trials",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "Complete Randomness Has a Catch",
-        "body": "Simple randomization allocates subjects independently, like tossing a coin. While it eliminates predictability, it rarely produces equal group numbers in trials with small sample sizes.",
-        "image_prompt": "A researcher flipping a large coin between two identical glass jars, with coins accumulating unevenly inside the jars."
-      },
-      {
-        "heading": "Imbalance Destroys Statistical Power",
-        "body": "In a 40-patient trial, equal allocation gives 80% power. A split of 25 to 15 drops power to 77%, and a 30 to 10 split slashes it to 67%, despite enrolling the exact same total sample size.",
-        "image_prompt": "A balanced two-pan scale tipping sharply to one side under unequal piles of blue and red wooden blocks."
-      },
-      {
-        "heading": "Chance of Imbalance Drops with Size",
-        "body": "For a 45% to 55% ratio, a trial of 40 subjects has a 52.7% chance of imbalance. That risk drops to 15.7% at 200 subjects and to only 4.6% at 400 subjects.",
-        "image_prompt": "Three magnifying glasses focusing on three growing crowds of silhouettes, showing the figures naturally evening out as the crowd grows."
-      },
-      {
-        "heading": "When to Use Simple Randomization",
-        "body": "Simple randomization is recommended primarily for large-scale trials where high enrollment naturally protects against imbalance. Smaller studies require restricted or adaptive designs.",
-        "image_prompt": "A large funnel directing a steady stream of identical capsules into two equal receiving bins standing side by side."
-      }
-    ],
-    "takeaway": "In small trials, simple randomization risks severe group size imbalances that degrade statistical power.",
-    "caption": "Flipping a coin feels like the purest form of randomization, but probability does not guarantee equal arms in small cohorts.\nIn small sample sizes, pure chance often leads to lopsided allocations, quietly eroding the statistical power you carefully calculated.\nLarge trials can absorb random fluctuations, but smaller studies require restricted allocation strategies.\nWhat randomization method does your team prefer when designing smaller phase II or pilot trials?",
-    "hashtags": [
-      "#ClinicalTrials",
-      "#Randomization",
-      "#Biostatistics",
-      "#ClinicalResearch",
-      "#TrialDesign",
-      "#SampleSize",
-      "#Epidemiology",
-      "#EvidenceBasedMedicine"
-    ],
-    "source_hint": "pages 2-3, Fig. 1 & Fig. 2",
-    "id": "3ee9d35d",
-    "source": "Randomization.pdf"
-  },
-  {
     "title": "The Hidden Risk in Block Randomization",
     "category": "Randomization & blinding",
     "slides": [
