@@ -1,39 +1,5 @@
 [
   {
-    "title": "Bang's Blinding Index: A Better Way to Measure",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "Arm-specific evaluation",
-        "body": "Bang and colleagues proposed calculating a separate blinding index for each arm using a multinomial model. This answers two distinct questions: Was the treatment arm blinded, and was the placebo arm blinded?",
-        "image_prompt": "two separate balance scales on a lab bench, each holding a different colored pill bottle and isolated weights"
-      },
-      {
-        "heading": "Understanding the -1 to +1 scale",
-        "body": "The index ranges from -1 to 1. Zero represents random balance under perfect blinding. Positive values mean excess correct guesses beyond chance, while negative values indicate participants mostly guessed the other arm.",
-        "image_prompt": "a straight horizontal ruler with zero marked in the center, flanked by two colored arrow tokens pointing in opposite directions"
-      },
-      {
-        "heading": "Direct proportion interpretation",
-        "body": "The index value directly estimates the proportion of unblinded patients beyond chance. An index of 0.20 in the active arm means exactly 20% of participants correctly identified their treatment beyond random chance.",
-        "image_prompt": "a group of ten stylized silhouette figures where two figures hold raised blindfolds while eight remain completely blindfolded"
-      },
-      {
-        "heading": "When to flag a blinding issue",
-        "body": "Authors suggest reporting potential unblinding if the index exceeds 0.20, if statistical testing rejects the null hypothesis of random guessing, or if Bang's and James' indices yield conflicting conclusions.",
-        "image_prompt": "a researcher pointing a red warning flag beside a document displaying two separate measured indicators"
-      }
-    ],
-    "takeaway": "Bang's index evaluates arms separately, giving a clear proportion of participants unblinded beyond chance between -1 and +1.",
-    "caption": "Traditional blinding tests tell you whether the study as a whole looked blinded, but not what happened in each arm.\\nBang's Blinding Index evaluates each arm on a scale from -1 to +1.\\nZero represents perfect random guessing, while positive values show the proportion of unblinded participants beyond chance.\\nIn the CRISP trial, this revealed that 21% of the Lovastatin arm was unmasked, while the placebo arm was at 1%.\\nHow do you currently evaluate whether blinding succeeded in your trials?",
-    "hashtags": [
-      "#ClinicalResearch审#ClinicalTrials审#BlindingIndex审#Biostatistics审#ResearchDesign审#Methodology审#RandomizedControlledTrial审#DataScience审#StatisticalMethods"
-    ],
-    "source_hint": "pages 5-7, 10-12",
-    "id": "90bc6cd4",
-    "source": "Blinding.pdf"
-  },
-  {
     "title": "Is It Unblinding or Just Response Bias?",
     "category": "Bias & confounding",
     "slides": [
