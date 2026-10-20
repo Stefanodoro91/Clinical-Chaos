@@ -13,5 +13,5 @@
   "max_posts_per_file": 12,
   "low_queue_warning": 5,
   "ai_images": true,
-  "image_model": ""
+  "image_model": "flux"
 }

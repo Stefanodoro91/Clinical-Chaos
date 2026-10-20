@@ -49,10 +49,15 @@ POST DESIGN:
 - title: a sharp hook, max 70 characters (e.g. a common misconception, a question, a crisp claim).
 - slides: 3 to 5 slides, each with heading (max 55 characters), body (max 220 characters,
   plain language for professionals, concrete, no fluff) and image_prompt.
-- image_prompt: in English, 15-35 words describing ONE simple illustration that explains the idea of
-  that slide visually (a concrete scene or visual metaphor, e.g. "two identical groups of patients
-  split by a coin toss, arrows leading to two pill bottles"). No text, letters, numbers, charts with
-  labels, logos or recognizable real people in the image.
+- image_prompt: in English, 15-35 words describing ONE simple illustration that a researcher would
+  connect to the slide's idea at a glance. Describe a concrete scene with 2-4 recognizable elements
+  (people, pills, envelopes, blindfolds, scales, magnifying glass, documents, arrows, groups of figures)
+  and what they are doing; the scene must show the CONCEPT, not just the setting (never just a
+  hospital bed, a lab or a generic doctor). Good examples:
+  "a patient and a doctor both wearing blindfolds, seated at a table with two identical pill bottles";
+  "a crowd of simple figures split by a large coin into two equal groups, each walking toward a pill bottle";
+  "a magnifying glass revealing a hidden crack in a perfect-looking bridge".
+  No text, letters, numbers, labeled charts, logos or recognizable real people.
 - takeaway: the single sentence to remember, max 130 characters.
 - caption: 3-6 short lines that add context beyond the slides, end with a question that invites
   professionals to share their experience. Max 900 characters. No hashtags inside the caption.
