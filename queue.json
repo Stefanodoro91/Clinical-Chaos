@@ -1,39 +1,5 @@
 [
   {
-    "title": "Did Blinding Actually Work in Your Trial?",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "An assumption rarely tested",
-        "body": "Thousands of trials claim double-blinding, but few evaluate if it succeeded. A meta-analysis showed only 45% of double-blind trials described regimen similarity, and only 26% reported allocation protection.",
-        "image_prompt": "a researcher holding a magnifying glass toward two identical medicine bottles while two patients sit across a table wearing blindfolds"
-      },
-      {
-        "heading": "How the blind breaks down",
-        "body": "Technical masking of appearance, smell, and taste is not enough. Side effects, perceived therapeutic efficacy, or informal conversations often provide clues that unmask participants and clinicians beyond chance.",
-        "image_prompt": "two patients at a table opening identical pill bottles, one noticing steam and a rash while a physician observes attentively"
-      },
-      {
-        "heading": "Eliciting participant guesses",
-        "body": "The degree of blinding is assessed by asking participants at the end to guess their assignment: active drug, placebo, or do not know. This creates a simple two-by-three contingency table for statistical testing.",
-        "image_prompt": "a patient sitting before three voting ballot boxes labeled with simple icons of a pill, an empty capsule, and a closed box"
-      },
-      {
-        "heading": "Why unblinding threatens validity",
-        "body": "Unblinding can introduce ascertainment bias, alter participant compliance, and even affect ancillary care and attention, potentially compromising trial validity even when measuring objective outcomes.",
-        "image_prompt": "a set of balance scales tilted unevenly, with a patient figure placing a heavy block on one side while holding an unfastened blindfold"
-      }
-    ],
-    "takeaway": "Blinding cannot simply be assumed; side effects and perceived efficacy can easily unmask trials if not measured.",
-    "caption": "Most researchers assume that identical pill bottles guarantee blinding throughout a trial.\\nYet side effects and noticeable efficacy can quietly unmask both patients and clinicians.\\nAssessing treatment guesses at the end of a study can reveal whether masking truly held.\\nWithout assessing blinding, it is hard to prove outcomes arose solely from treatment efficacy.\\nHave you ever formally tested blinding success in your clinical studies?",
-    "hashtags": [
-      "#ClinicalTrials审#Randomization审#ClinicalResearch审#ResearchMethodology审#Blinding审#EvidenceBasedMedicine审#Biostatistics审#TrialDesign审#ClinicalStudy"
-    ],
-    "source_hint": "pages 1-3, 11-13",
-    "id": "11f743d0",
-    "source": "Blinding.pdf"
-  },
-  {
     "title": "The Major Blind Spot of James' Blinding Index",
     "category": "Randomization & blinding",
     "slides": [
