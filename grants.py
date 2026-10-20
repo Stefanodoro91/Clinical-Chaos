@@ -110,6 +110,20 @@ def _fmt_date(d):
     return f"{d.day} {d.strftime('%b %Y')}"
 
 
+FUNDER_EN = {"commissione europea": "European Commission", "ministero della salute": "Italian Ministry of Health",
+             "ministero dell'università e della ricerca": "Italian Ministry of University and Research"}
+
+
+def funder_line(g):
+    """Ente (in inglese) e, se breve, il programma: es. «Horizon Europe · European Commission»."""
+    ente = (g.get("ente") or "").strip()
+    ente = FUNDER_EN.get(ente.lower(), ente)
+    prog = (g.get("programma") or "").split(" – ")[0].strip()
+    if prog and prog.lower() != ente.lower() and len(prog) <= 32:
+        return f"{prog} · {ente}" if ente else prog
+    return ente or prog
+
+
 def build_post(g, cfg):
     """Prepara il post (stesso formato dei post di metodologia, più i dati chiave) per un bando."""
     data = "\n".join(f"{k}: {g.get(k)}" for k in FIELDS if g.get(k))
@@ -122,7 +136,7 @@ def build_post(g, cfg):
         raise RuntimeError(f"Testo del bando incompleto per {g['id']}")
 
     deadline = _date(g["scadenza"])
-    facts = [("Funder", clip(g.get("ente") or g.get("programma") or "", 80)),
+    facts = [("Funder", clip(funder_line(g), 80)),
              ("Deadline", _fmt_date(deadline))]
     per_project = _money(g.get("budget_progetto"), g.get("valuta"))
     total = _money(g.get("budget_totale"), g.get("valuta"))
@@ -148,6 +162,8 @@ def build_post(g, cfg):
         "grant_id": g["id"],
         "title": clip(out["title"], 90),
         "category": "Funding opportunity",
+        "funder": clip(funder_line(g), 60),
+        "deadline": _fmt_date(deadline),
         "slides": slides,
         "facts": [(k, v) for k, v in facts if v],
         "takeaway": clip(out.get("takeaway", ""), 160) or "Worth a look if this is your research area.",

@@ -79,6 +79,30 @@ def cover(post, cfg, total):
     return img
 
 
+def grant_cover(post, cfg, total):
+    """Copertina dei bandi: etichetta «OPEN CALL», ente, titolo e scadenza ben visibile."""
+    c = cfg["colors"]
+    img, d = canvas(cfg, 1, total)
+    badge_f = font("ExtraBold", 36)
+    label = "OPEN CALL"
+    bw = d.textlength(label, font=badge_f) + 64
+    d.rounded_rectangle((MARGIN, 150, MARGIN + bw, 220), radius=35, fill=c["accent"])
+    d.text((MARGIN + 32, 162), label, font=badge_f, fill=c["background"])
+    y = 260
+    if post.get("funder"):
+        ff, fl, fs = fit(d, post["funder"], "SemiBold", 38, 28, W - 2 * MARGIN, 100, 1.25)
+        y = draw_lines(d, fl, ff, fs, MARGIN, y, c["muted_text"], 1.25) + 30
+    box_top = H - 470
+    fnt, lines, size = fit(d, post["title"], "ExtraBold", 88, 50, W - 2 * MARGIN, box_top - y - 60, 1.15)
+    draw_lines(d, lines, fnt, size, MARGIN, y, c["text"], 1.15)
+    if post.get("deadline"):
+        d.rounded_rectangle((MARGIN, box_top, W - MARGIN, box_top + 190), radius=28, outline=c["accent"], width=4)
+        d.text((MARGIN + 50, box_top + 32), "DEADLINE", font=font("Bold", 30), fill=c["accent"])
+        d.text((MARGIN + 50, box_top + 80), post["deadline"], font=font("ExtraBold", 70), fill=c["text"])
+    d.text((MARGIN, H - 220), "Swipe  →", font=font("SemiBold", 40), fill=c["text"])
+    return img
+
+
 def content(slide, number, cfg, index, total):
     c = cfg["colors"]
     img, d = canvas(cfg, index, total)
@@ -165,10 +189,12 @@ def closing(post, cfg, total):
 
 def render_carousel(post, cfg):
     """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
+    if post.get("kind") == "grant":   # i bandi hanno un colore d'accento proprio, per riconoscerli a colpo d'occhio
+        cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("grant_accent", "#FFB547")}}
     has_facts = bool(post.get("facts"))
     total = len(post["slides"]) + 2 + has_facts
     use_images = cfg.get("ai_images", True)
-    pages = [cover(post, cfg, total)]
+    pages = [grant_cover(post, cfg, total) if post.get("kind") == "grant" else cover(post, cfg, total)]
     for i, slide in enumerate(post["slides"], start=1):
         index = i + 1
         picture = None
