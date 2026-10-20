@@ -3,7 +3,9 @@
 import io
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
+
+import images
 
 W, H = 1080, 1350
 MARGIN = 100
@@ -91,6 +93,38 @@ def content(slide, number, cfg, index, total):
     return img
 
 
+def _rounded(picture, w, h, radius):
+    """Ritaglia l'immagine a w×h e ne arrotonda gli angoli."""
+    pic = ImageOps.fit(picture, (w, h), Image.LANCZOS)
+    mask = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, w - 1, h - 1), radius=radius, fill=255)
+    return pic, mask
+
+
+def illustrated(slide, number, cfg, index, total, picture):
+    """Slide con testo e immagine: numero e titolo in alto, illustrazione al centro, spiegazione sotto."""
+    c = cfg["colors"]
+    img, d = canvas(cfg, index, total)
+    text_w = W - 2 * MARGIN
+    top, bottom = 90, H - 150          # spazio utile tra la barra in alto e il piè di pagina
+
+    d.text((MARGIN, top), f"{number:02d}", font=font("ExtraBold", 72), fill=c["accent"])
+    hf, hl, hs = fit(d, slide["heading"], "Bold", 54, 38, text_w, 140, 1.2)
+    y = draw_lines(d, hl, hf, hs, MARGIN, top + 100, c["text"], 1.2) + 30
+
+    # il testo ha la precedenza: l'immagine occupa lo spazio che resta (tra 360 e 560 px di altezza)
+    bf, bl, bs = fit(d, slide["body"], "Regular", 40, 28, text_w, bottom - y - 360 - 70, 1.4)
+    body_h = len(bl) * bs * 1.4
+    pic_h = int(max(360, min(560, bottom - y - 70 - body_h)))
+
+    pic, mask = _rounded(picture, text_w, pic_h, 28)
+    img.paste(pic, (MARGIN, int(y)), mask)
+    d.rounded_rectangle((MARGIN, int(y), W - MARGIN, int(y) + pic_h), radius=28, outline=c["accent"], width=3)
+
+    draw_lines(d, bl, bf, bs, MARGIN, y + pic_h + 40, c["muted_text"], 1.4)
+    return img
+
+
 def closing(post, cfg, total):
     c = cfg["colors"]
     img, d = canvas(cfg, total, total)
@@ -105,13 +139,23 @@ def closing(post, cfg, total):
 
 
 def render_carousel(post, cfg):
+    """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
     total = len(post["slides"]) + 2
-    images = [cover(post, cfg, total)]
+    use_images = cfg.get("ai_images", True)
+    pages = [cover(post, cfg, total)]
     for i, slide in enumerate(post["slides"], start=1):
-        images.append(content(slide, i, cfg, i + 1, total))
-    images.append(closing(post, cfg, total))
+        index = i + 1
+        picture = None
+        if use_images and index % 2 == 0:
+            print(f"Genero l'immagine per la slide {index}: {slide['heading']}")
+            picture = images.generate(slide, cfg)
+        if picture is not None:
+            pages.append(illustrated(slide, i, cfg, index, total, picture))
+        else:
+            pages.append(content(slide, i, cfg, index, total))
+    pages.append(closing(post, cfg, total))
     out = []
-    for img in images:
+    for img in pages:
         buf = io.BytesIO()
         img.save(buf, "JPEG", quality=92, optimize=True)
         out.append(buf.getvalue())

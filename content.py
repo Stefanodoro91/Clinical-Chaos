@@ -47,8 +47,12 @@ POST DESIGN:
 - One clear concept per post; produce as many posts as the material genuinely supports (0-{max_posts}),
   each different from the others.
 - title: a sharp hook, max 70 characters (e.g. a common misconception, a question, a crisp claim).
-- slides: 3 to 5 slides, each with heading (max 55 characters) and body (max 260 characters,
-  plain language for professionals, concrete, no fluff).
+- slides: 3 to 5 slides, each with heading (max 55 characters), body (max 220 characters,
+  plain language for professionals, concrete, no fluff) and image_prompt.
+- image_prompt: in English, 15-35 words describing ONE simple illustration that explains the idea of
+  that slide visually (a concrete scene or visual metaphor, e.g. "two identical groups of patients
+  split by a coin toss, arrows leading to two pill bottles"). No text, letters, numbers, charts with
+  labels, logos or recognizable real people in the image.
 - takeaway: the single sentence to remember, max 130 characters.
 - caption: 3-6 short lines that add context beyond the slides, end with a question that invites
   professionals to share their experience. Max 900 characters. No hashtags inside the caption.
@@ -72,8 +76,9 @@ SCHEMA = {
                         "type": "ARRAY",
                         "items": {
                             "type": "OBJECT",
-                            "properties": {"heading": {"type": "STRING"}, "body": {"type": "STRING"}},
-                            "required": ["heading", "body"],
+                            "properties": {"heading": {"type": "STRING"}, "body": {"type": "STRING"},
+                                           "image_prompt": {"type": "STRING"}},
+                            "required": ["heading", "body", "image_prompt"],
                         },
                     },
                     "takeaway": {"type": "STRING"},
@@ -165,7 +170,8 @@ def _clip(text, n):
 
 def _clean_post(p):
     slides = [
-        {"heading": _clip(s.get("heading", ""), 70), "body": _clip(s.get("body", ""), 320)}
+        {"heading": _clip(s.get("heading", ""), 70), "body": _clip(s.get("body", ""), 320),
+         "image_prompt": _clip(s.get("image_prompt", ""), 300)}
         for s in p.get("slides", []) if s.get("heading") and s.get("body")
     ][:5]
     if len(slides) < 2 or not p.get("title") or not p.get("takeaway"):
