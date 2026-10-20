@@ -280,16 +280,13 @@ def status():
     inbox = [f for f in list_files(drive, os.environ["GDRIVE_FOLDER_ID"]) if f["id"] not in seen]
     done = list_files(drive, os.environ["GDRIVE_DONE_FOLDER_ID"])
     queue = load(QUEUE_FILE, [])
-    print(f"File in attesa nella cartella Materiale: {len(inbox)}")
-    for f in inbox:
-        mark = "" if content.is_supported(f) else "  (formato non supportato)"
-        print(f"  - {f['name']}{mark}")
-    print(f"File già elaborati: {len(done)}")
-    for f in done:
-        print(f"  - {f['name']}")
-    print(f"Post in coda: {len(queue)}")
-    for q in queue:
-        print(f"  - {q['title']}  ({q['source']})")
+    lines = [f"File in attesa nella cartella Materiale: {len(inbox)}"]
+    lines += [f"  - {f['name']}" + ("" if content.is_supported(f) else "  (formato non supportato)") for f in inbox]
+    lines += [f"File già elaborati: {len(done)}"] + [f"  - {f['name']}" for f in done]
+    lines += [f"Post in coda: {len(queue)}"] + [f"  - {q['title']}  ({q['source']})" for q in queue]
+    print("\n".join(lines))
+    # anche come annotazione del run, leggibile dalla pagina del run e dall'API di GitHub
+    print("::notice title=Stato Drive e coda::" + "%0A".join(l.replace("%", "%25") for l in lines))
 
 
 if __name__ == "__main__":
