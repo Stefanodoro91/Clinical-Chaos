@@ -1,10 +1,11 @@
 name: Post giornaliero ricerca clinica
 
 on:
-  # Pianificazione disattivata finché Instagram non è configurato.
-  # Per riattivarla, togli il "#" dalle due righe sotto.
-  # schedule:
-  #   - cron: "0 12 * * *"
+  # Un post al giorno alle 23:30 ora italiana (GitHub può partire con qualche minuto di ritardo).
+  # Il fuso Europe/Rome gestisce da solo il cambio tra ora legale e ora solare.
+  schedule:
+    - cron: "30 23 * * *"
+      timezone: "Europe/Rome"
   workflow_dispatch:
     inputs:
       dry_run:

@@ -213,6 +213,13 @@ def main():
     queue = load(QUEUE_FILE, [])
     posted = load(POSTED_FILE, [])
 
+    # Il run pianificato salta se un post è già uscito nelle ultime 20 ore (es. dopo un lancio manuale).
+    if os.environ.get("GITHUB_EVENT_NAME") == "schedule" and posted and posted[-1].get("time"):
+        hours = (datetime.now(timezone.utc) - datetime.fromisoformat(posted[-1]["time"])).total_seconds() / 3600
+        if hours < 20:
+            print(f"Ultimo post pubblicato {hours:.1f} ore fa: oggi salto.")
+            return
+
     files_waiting = ingest(drive, queue)
 
     if not queue:
@@ -254,7 +261,8 @@ def main():
     print(f"Pubblicato su Instagram! id={media_id}")
 
     queue = [q for q in queue if q["id"] != post["id"]]
-    posted.append({"date": today, "id": post["id"], "title": post["title"],
+    posted.append({"date": today, "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                   "id": post["id"], "title": post["title"],
                    "source": post["source"], "media_id": media_id})
     save(QUEUE_FILE, queue)
     save(POSTED_FILE, posted)
