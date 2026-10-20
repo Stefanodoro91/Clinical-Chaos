@@ -12,6 +12,11 @@ on:
         description: "Solo prova (non pubblica, salva un'anteprima)"
         type: boolean
         default: true
+      post_type:
+        description: "Tipo di post (auto = bando il mercoledì e il sabato, metodologia gli altri giorni)"
+        type: choice
+        options: [auto, research, grant]
+        default: auto
 
 permissions:
   contents: write   # per salvare immagini e registro nel repository
@@ -53,6 +58,7 @@ jobs:
           POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+          POST_TYPE: ${{ inputs.post_type || 'auto' }}
         run: python bot.py
 
       - name: Salva anteprima (solo in modalità prova)

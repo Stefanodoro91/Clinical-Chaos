@@ -125,6 +125,28 @@ def illustrated(slide, number, cfg, index, total, picture):
     return img
 
 
+def facts_slide(post, cfg, index, total):
+    """Slide dei dati chiave (bandi): etichetta in turchese, valore in bianco, una voce sotto l'altra."""
+    c = cfg["colors"]
+    img, d = canvas(cfg, index, total)
+    d.text((MARGIN, 150), "KEY FACTS", font=font("Bold", 34), fill=c["accent"])
+    facts = post["facts"]
+    text_w = W - 2 * MARGIN
+    space = H - 150 - 260          # tra il titolo e il piè di pagina
+    for size in range(42, 25, -2):
+        label_f, value_f = font("SemiBold", max(22, size - 14)), font("SemiBold", size)
+        blocks = [(k, wrap(d, v, value_f, text_w)) for k, v in facts]
+        need = sum(size - 14 + 14 + len(ls) * size * 1.3 + 34 for _, ls in blocks)
+        if need <= space:
+            break
+    y = 240
+    for k, lines in blocks:
+        d.text((MARGIN, y), k.upper(), font=label_f, fill=c["muted"])
+        y += size - 14 + 14
+        y = draw_lines(d, lines, value_f, size, MARGIN, y, c["text"], 1.3) + 34
+    return img
+
+
 def closing(post, cfg, total):
     c = cfg["colors"]
     img, d = canvas(cfg, total, total)
@@ -132,15 +154,19 @@ def closing(post, cfg, total):
     fnt, lines, size = fit(d, post["takeaway"], "Bold", 68, 44, W - 2 * MARGIN, 560, 1.25)
     y = draw_lines(d, lines, fnt, size, MARGIN, 280, c["text"], 1.25)
     box_top = max(y + 80, H - 420)
+    line1, line2 = post.get("closing_cta") or ("Save this for your next protocol", None)
+    line2 = line2 or f"Follow {cfg['handle']} for more"
     d.rounded_rectangle((MARGIN, box_top, W - MARGIN, box_top + 200), radius=28, outline=c["accent"], width=4)
-    d.text((MARGIN + 50, box_top + 45), "Save this for your next protocol", font=font("SemiBold", 38), fill=c["text"])
-    d.text((MARGIN + 50, box_top + 110), f"Follow {cfg['handle']} for more", font=font("Regular", 36), fill=c["muted_text"])
+    f1, l1, s1 = fit(d, line1, "SemiBold", 38, 28, W - 2 * MARGIN - 100, 50, 1.2)
+    d.text((MARGIN + 50, box_top + 45), l1[0], font=f1, fill=c["text"])
+    d.text((MARGIN + 50, box_top + 110), line2, font=font("Regular", 36), fill=c["muted_text"])
     return img
 
 
 def render_carousel(post, cfg):
     """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
-    total = len(post["slides"]) + 2
+    has_facts = bool(post.get("facts"))
+    total = len(post["slides"]) + 2 + has_facts
     use_images = cfg.get("ai_images", True)
     pages = [cover(post, cfg, total)]
     for i, slide in enumerate(post["slides"], start=1):
@@ -153,6 +179,8 @@ def render_carousel(post, cfg):
             pages.append(illustrated(slide, i, cfg, index, total, picture))
         else:
             pages.append(content(slide, i, cfg, index, total))
+    if has_facts:
+        pages.append(facts_slide(post, cfg, len(pages) + 1, total))
     pages.append(closing(post, cfg, total))
     out = []
     for img in pages:

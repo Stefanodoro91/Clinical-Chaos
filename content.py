@@ -194,18 +194,17 @@ def _clean_post(p):
     }
 
 
-def generate_posts(part, filename, brand, max_posts=12):
+def gemini_json(parts, schema, temperature=0.5):
+    """Chiede a Gemini una risposta JSON conforme allo schema e la restituisce già decodificata."""
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         raise RuntimeError("GEMINI_API_KEY mancante")
-    prompt = PROMPT.format(brand=brand, max_posts=max_posts, filename=filename,
-                           categories=", ".join(CATEGORIES))
     body = {
-        "contents": [{"parts": [{"text": prompt}, part]}],
+        "contents": [{"parts": parts}],
         "generationConfig": {
-            "temperature": 0.5,
+            "temperature": temperature,
             "responseMimeType": "application/json",
-            "responseSchema": SCHEMA,
+            "responseSchema": schema,
         },
     }
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
@@ -219,6 +218,12 @@ def generate_posts(part, filename, brand, max_posts=12):
         if not r.ok:
             raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:500]}")
         text = "".join(p.get("text", "") for p in r.json()["candidates"][0]["content"]["parts"])
-        posts = json.loads(text).get("posts", [])
-        return [c for c in (_clean_post(p) for p in posts) if c][:max_posts]
+        return json.loads(text)
     raise RuntimeError(f"Gemini non disponibile: {last_error}")
+
+
+def generate_posts(part, filename, brand, max_posts=12):
+    prompt = PROMPT.format(brand=brand, max_posts=max_posts, filename=filename,
+                           categories=", ".join(CATEGORIES))
+    posts = gemini_json([{"text": prompt}, part], SCHEMA).get("posts", [])
+    return [c for c in (_clean_post(p) for p in posts) if c][:max_posts]

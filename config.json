@@ -8,10 +8,20 @@
     "muted_text": "#D3DEE8",
     "muted": "#7F96AB"
   },
-  "fixed_hashtags": ["#ClinicalResearch", "#ResearchMethodology"],
+  "fixed_hashtags": [
+    "#ClinicalResearch",
+    "#ResearchMethodology"
+  ],
   "max_new_files_per_run": 1,
   "max_posts_per_file": 12,
   "low_queue_warning": 5,
   "ai_images": true,
-  "image_model": "flux"
+  "image_model": "flux",
+  "grant_posts": true,
+  "grant_weekdays": [
+    2,
+    5
+  ],
+  "grant_min_days_left": 14,
+  "grantfinder_url": "https://raw.githubusercontent.com/Stefanodoro91/GrantFinder/main/dati/stato.json"
 }

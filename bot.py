@@ -20,6 +20,7 @@ from googleapiclient.discovery import build
 
 import cards
 import content
+import grants
 
 ROOT = Path(__file__).resolve().parent
 CONFIG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
@@ -222,13 +223,23 @@ def main():
 
     files_waiting = ingest(drive, queue)
 
-    if not queue:
-        notify("Coda vuota: il bot è in pausa",
-               "Non ci sono post da pubblicare. Aggiungi nuovo materiale nella cartella Drive.")
-        print("Coda vuota.")
-        sys.exit(1)
+    # Mercoledì e sabato (configurabili) un bando da GrantFinder; se non ce ne sono, un post di metodologia.
+    post_type = (os.environ.get("POST_TYPE") or "auto").strip().lower()
+    post = None
+    wants_grant = post_type == "grant" or (
+        post_type == "auto" and CONFIG.get("grant_posts", True) and (grants.is_grant_day(CONFIG) or not queue))
+    if wants_grant:
+        post = grants.next_grant_post(posted, CONFIG)
+        if post is None:
+            print("Nessun bando pubblicabile oggi: passo alla metodologia.")
 
-    post = pick_next(queue, posted)
+    if post is None:
+        if not queue:
+            notify("Coda vuota: il bot è in pausa",
+                   "Non ci sono post da pubblicare. Aggiungi nuovo materiale nella cartella Drive.")
+            print("Coda vuota.")
+            sys.exit(1)
+        post = pick_next(queue, posted)
     slides = cards.render_carousel(post, CONFIG)
     caption = build_caption(post)
     print(f"\nPost scelto: {post['title']}  (fonte: {post['source']}, {post.get('source_hint', '')})")
@@ -244,7 +255,8 @@ def main():
         return
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    folder = IMAGES_DIR / f"{today}-{post['id']}"
+    safe_id = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in post["id"])
+    folder = IMAGES_DIR / f"{today}-{safe_id}"
     folder.mkdir(parents=True, exist_ok=True)
     rel_paths = []
     for i, img in enumerate(slides, start=1):
@@ -263,7 +275,8 @@ def main():
     queue = [q for q in queue if q["id"] != post["id"]]
     posted.append({"date": today, "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                    "id": post["id"], "title": post["title"],
-                   "source": post["source"], "media_id": media_id})
+                   "source": post["source"], "media_id": media_id,
+                   **({"kind": "grant", "grant_id": post["grant_id"]} if post.get("kind") == "grant" else {})})
     save(QUEUE_FILE, queue)
     save(POSTED_FILE, posted)
     commit_and_push([QUEUE_FILE.name, POSTED_FILE.name], f"Post del {today}")
