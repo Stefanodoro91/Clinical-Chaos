@@ -305,5 +305,128 @@
     "source_hint": "page 7, Ethics of Randomization",
     "id": "66795092",
     "source": "Randomization.pdf"
+  },
+  {
+    "title": "Does PICO actually improve literature searches?",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "The default question framework",
+        "body": "PICO is taught across health disciplines as the essential tool for clinical inquiry. Yet very few empirical studies have tested whether structuring a search with PICO actually helps find more relevant evidence.",
+        "image_prompt": "A researcher sitting at a desk examining two stacks of printed papers under a magnifying glass, with an open notebook nearby."
+      },
+      {
+        "heading": "What trials of PICO search have found",
+        "body": "A pilot randomized trial found higher precision with PICO, but the finding did not reach statistical significance. Another trial showed PICO did not improve results for quick searches in PubMed.",
+        "image_prompt": "A pair of balance scales holding a small stack of documents on one side and an empty tray on the other, perfectly level."
+      },
+      {
+        "heading": "Systematic review found no clear proof",
+        "body": "A systematic review evaluating PICO's impact on literature search quality found only three eligible studies. The authors concluded that evidence supporting PICO's effect on search quality is lacking.",
+        "image_prompt": "A researcher holding a document up against bright light, finding empty spaces where lines of text should be."
+      },
+      {
+        "heading": "Formatting has outpaced evidence",
+        "body": "Designed to aid search precision between clinicians and databases, PICO has become entrenched in training despite a surprising lack of rigorous proof that it improves actual retrieval success.",
+        "image_prompt": "A person fitting a square block into a round hole on a wooden puzzle board, while other shaped blocks sit unused."
+      }
+    ],
+    "takeaway": "Despite widespread adoption, evidence that PICO improves literature search quality remains remarkably thin.",
+    "caption": "We teach PICO as if its effectiveness were an undisputed scientific fact.\nYet clinical trials and systematic reviews show little empirical proof that it improves search precision.\nIn practice, unguided searching has performed just as well for quick queries.\nStructured questioning has a place, but treating PICO as evidence-based dogma overlooks its unproven utility.\nHave you found PICO templates genuinely helpful in your own literature searches?",
+    "hashtags": [
+      "#PICO",
+      "#EvidenceBasedPractice",
+      "#ResearchMethods",
+      "#LiteratureSearch",
+      "#InformationRetrieval",
+      "#ClinicalResearch",
+      "#SystematicReviews",
+      "#CriticalAppraisal"
+    ],
+    "source_hint": "Section 3, pages 1-2 (Schardt 2007, Hoogendam 2012, Eriksen & Frandsen 2018)",
+    "id": "0c7c61fb",
+    "source": "PICO.pdf"
+  },
+  {
+    "title": "When PICO breaks down",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Built for one specific question type",
+        "body": "PICO was designed for comparative medical interventions: which therapy works better between two options. It is an epidemiological tool tailored specifically to comparative therapy and treatment dilemmas.",
+        "image_prompt": "A person standing at a fork in a stone path, looking at two distinct direction arrows carved into wooden posts."
+      },
+      {
+        "heading": "Where the framework falls short",
+        "body": "Evaluations show PICO lacks usefulness for questions of diagnosis, etiology, and prognosis. It cannot naturally accommodate everyday clinical inquiries that ask what, when, how, or why.",
+        "image_prompt": "A person attempting to push a large star-shaped key into a narrow circular keyhole on a heavy door."
+      },
+      {
+        "heading": "Neglecting qualitative inquiry",
+        "body": "Clinical practice frequently centers on patient experience, process, and meaning. PICO is ill-suited for identifying qualitative research articles, even when the comparator element is removed.",
+        "image_prompt": "A researcher interviewing a patient seated on a wooden bench, holding a notebook while listening attentively."
+      },
+      {
+        "heading": "Other questions need other frameworks",
+        "body": "Frameworks like SPIDER and SPICE were built for qualitative inquiry, while ECLIPSE and CIMO serve management questions. Forcing every clinical question into PICO artificially restricts the scope of inquiry.",
+        "image_prompt": "An open toolbox displaying four distinct hand tools, each resting in a slot matched to its unique outline."
+      }
+    ],
+    "takeaway": "PICO only fits comparative therapy questions; forcing diagnosis, etiology, or qualitative questions into it distorts inquiry.",
+    "caption": "PICO was created to address comparative treatment choices: Intervention A versus Comparator B.\nWhen applied to diagnosis, prognosis, etiology, or patient lived experience, the framework quickly falls apart.\nInstead of broadening inquiry, clinicians and students end up manipulating genuine questions just to fit the PICO template.\nRecognizing PICO's boundaries allows us to choose the right search framework for the right problem.\nHave you ever had to twist a genuine research question just to force it into PICO?",
+    "hashtags": [
+      "#PICO",
+      "#ResearchMethodology",
+      "#EvidenceBasedPractice",
+      "#QualitativeResearch",
+      "#SPIDERframework",
+      "#StudyDesign",
+      "#ClinicalInquiry",
+      "#ResearchMethods"
+    ],
+    "source_hint": "Section 3, pages 2-3 (Huang 2006, Cooke 2012, Ou 2017)",
+    "id": "2a787ac8",
+    "source": "PICO.pdf"
+  },
+  {
+    "title": "PICO is not evidence-based practice",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Confusing step one with the whole process",
+        "body": "Evidence-based practice is an iterative five-step cycle: Ask, Acquire, Appraise, Apply, and Assess. PICO belongs solely to the Ask phase, yet it is often taught as if it represents the entirety of EBP.",
+        "image_prompt": "A staircase of five stone steps where a person stands on the bottom step looking upward at the remaining four."
+      },
+      {
+        "heading": "The danger of rote formatting",
+        "body": "The rote exercise of assembling a structured PICO statement can engulf the true objective of EBP: complex, critical decision-making in care delivery based on evaluating evidence.",
+        "image_prompt": "A person filling out an oversized checklist on a wooden clipboard without looking at the open reference books beside them."
+      },
+      {
+        "heading": "The myth of settled background facts",
+        "body": "PICO relegates non-comparative questions to static textbook background. But clinical science is iterative; evidence thought to be established fact is continually challenged, overturned, and rewritten.",
+        "image_prompt": "An open textbook on a table with a researcher placing fresh loose pages directly over the bound printed leaves."
+      },
+      {
+        "heading": "Refocusing on critical appraisal",
+        "body": "Mastering question formatting does not make someone an evidence-based practitioner. Education must de-emphasize rigid mnemonics and restore focus on critical evaluation across the complete EBP cycle.",
+        "image_prompt": "Two clinicians at a table examining a research report, pointing together at a single paragraph of text."
+      }
+    ],
+    "takeaway": "PICO is merely one prompt for step one of EBP; treating it as the definition of EBP undermines critical thinking.",
+    "caption": "In many health science programs, PICO has become synonymous with evidence-based practice.\nStudents and trainees spend hours massaging questions into templates, confusing formatting with critical inquiry.\nYet EBP requires five full steps: Ask, Acquire, Appraise, Apply, and Assess.\nMastering a questioning mnemonic does not replace the demanding work of critically appraising data and evaluating practice.\nDo your colleagues or trainees view PICO as the entirety of evidence-based practice?",
+    "hashtags": [
+      "#EvidenceBasedPractice",
+      "#EBP",
+      "#PICO",
+      "#ResearchMethods",
+      "#CriticalThinking",
+      "#CriticalAppraisal",
+      "#HealthEducation",
+      "#ClinicalResearch"
+    ],
+    "source_hint": "Sections 2, 4, 5, and 6, pages 1-3",
+    "id": "e21414a7",
+    "source": "PICO.pdf"
   }
 ]
