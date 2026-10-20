@@ -29,6 +29,7 @@ POSTED_FILE = ROOT / "posted_log.json"
 SOURCES_FILE = ROOT / "sources_log.json"
 IMAGES_DIR = ROOT / "published_images"
 PREVIEW_DIR = ROOT / "preview"
+PAGE_FILE = ROOT / "docs" / "index.html"   # pagina «link in bio» (GitHub Pages, cartella /docs)
 
 GRAPH_VERSION = os.environ.get("GRAPH_API_VERSION") or "v23.0"
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
@@ -276,10 +277,15 @@ def main():
     posted.append({"date": today, "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                    "id": post["id"], "title": post["title"],
                    "source": post["source"], "media_id": media_id,
-                   **({"kind": "grant", "grant_id": post["grant_id"]} if post.get("kind") == "grant" else {})})
+                   **({"kind": "grant", "grant_id": post["grant_id"], "url": post["url"],
+                       "deadline": post["deadline_iso"], "funder": post.get("funder", "")}
+                      if post.get("kind") == "grant" else {})})
     save(QUEUE_FILE, queue)
     save(POSTED_FILE, posted)
-    commit_and_push([QUEUE_FILE.name, POSTED_FILE.name], f"Post del {today}")
+    # pagina «link in bio»: rigenerata a ogni post, così i bandi scaduti spariscono da soli
+    PAGE_FILE.parent.mkdir(exist_ok=True)
+    PAGE_FILE.write_text(grants.build_page(posted, CONFIG), encoding="utf-8")
+    commit_and_push([QUEUE_FILE.name, POSTED_FILE.name, PAGE_FILE.relative_to(ROOT).as_posix()], f"Post del {today}")
 
     if len(queue) <= int(CONFIG.get("low_queue_warning", 5)) and files_waiting == 0:
         notify("Post in esaurimento",

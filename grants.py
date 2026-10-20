@@ -153,7 +153,8 @@ def build_post(g, cfg):
 
     caption = (f"{out.get('caption', '').strip()[:700]}\n\n"
                f"Deadline: {_fmt_date(deadline)}\n"
-               f"Official call: {g['url']}\n\n"
+               f"Official call: {g['url']}\n"
+               "Clickable link in bio, with all open calls we have shared.\n\n"
                "Details are compiled automatically: always check eligibility, amounts and dates in the official call.")
     tags = ["#" + t.lstrip("#").replace(" ", "") for t in out.get("hashtags", []) if t.strip("# ")]
     return {
@@ -164,10 +165,12 @@ def build_post(g, cfg):
         "category": "Funding opportunity",
         "funder": clip(funder_line(g), 60),
         "deadline": _fmt_date(deadline),
+        "deadline_iso": deadline.isoformat(),
+        "url": g["url"],
         "slides": slides,
         "facts": [(k, v) for k, v in facts if v],
         "takeaway": clip(out.get("takeaway", ""), 160) or "Worth a look if this is your research area.",
-        "closing_cta": ("Check the official call before applying", "Link in the caption"),
+        "closing_cta": ("Check the official call before applying", "Clickable link in bio"),
         "caption": caption,
         "hashtags": ["#ResearchFunding", "#GrantOpportunity"] + tags[:10],
         "source": "GrantFinder",
@@ -196,3 +199,86 @@ def next_grant_post(posted, cfg):
         except Exception as e:
             print(f"Post del bando {g['id']} non generato: {e}")
     return None
+
+
+# ---------------------------------------------------------------- pagina «link in bio»
+PAGE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open calls · {brand}</title>
+<meta name="description" content="Open research funding calls shared by {handle}, with links to the official calls.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {{ --bg: {bg}; --card: #15304A; --text: #FFFFFF; --muted: {muted}; --soft: {soft}; --accent: {accent}; --teal: {teal}; }}
+  * {{ box-sizing: border-box; }}
+  body {{ margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }}
+  .bar {{ height: 6px; background: var(--accent); }}
+  main {{ max-width: 640px; margin: 0 auto; padding: 28px 16px 48px; }}
+  .badge {{ display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
+           letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; }}
+  h1 {{ font-size: 30px; font-weight: 800; margin: 14px 0 6px; line-height: 1.15; }}
+  .intro {{ color: var(--soft); margin: 0 0 26px; font-size: 15px; }}
+  .call {{ background: var(--card); border-radius: 18px; padding: 20px; margin-bottom: 16px; border-left: 4px solid var(--accent); }}
+  .funder {{ color: var(--soft); font-size: 13px; font-weight: 600; margin-bottom: 6px; }}
+  .call h2 {{ font-size: 19px; margin: 0 0 14px; line-height: 1.3; }}
+  .row {{ display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }}
+  .deadline {{ font-size: 14px; color: var(--soft); }}
+  .deadline b {{ color: var(--text); font-size: 16px; }}
+  .soon {{ color: var(--accent); font-weight: 800; font-size: 12px; margin-left: 6px; }}
+  a.btn {{ background: var(--accent); color: var(--bg); text-decoration: none; font-weight: 800; font-size: 15px;
+           padding: 11px 18px; border-radius: 12px; }}
+  a.btn:focus-visible {{ outline: 3px solid var(--text); outline-offset: 2px; }}
+  .empty {{ color: var(--soft); background: var(--card); border-radius: 18px; padding: 22px; }}
+  footer {{ color: var(--muted); font-size: 13px; margin-top: 30px; }}
+  footer a {{ color: var(--teal); }}
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<main>
+  <span class="badge">OPEN CALLS</span>
+  <h1>Research funding calls</h1>
+  <p class="intro">Calls featured on {handle}, sorted by deadline. Closed calls are removed automatically.</p>
+{items}
+  <footer>
+    Details are compiled automatically: always check eligibility, amounts and dates in the official call.<br>
+    Updated {updated} · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a>
+  </footer>
+</main>
+</body>
+</html>
+"""
+
+
+def build_page(posted, cfg, today=None):
+    """HTML della pagina con i bandi pubblicati e ancora aperti, dalla scadenza più vicina."""
+    from html import escape
+    today = today or date.today()
+    calls, seen = [], set()
+    for p in posted:
+        d = _date(p.get("deadline"))
+        if p.get("kind") == "grant" and p.get("url") and d and d >= today and p["grant_id"] not in seen:
+            seen.add(p["grant_id"])
+            calls.append((d, p))
+    calls.sort(key=lambda x: x[0])
+    items = []
+    for d, p in calls:
+        soon = '<span class="soon">CLOSING SOON</span>' if (d - today).days <= 21 else ""
+        items.append(f"""  <article class="call">
+    <div class="funder">{escape(p.get("funder", ""))}</div>
+    <h2>{escape(p["title"])}</h2>
+    <div class="row">
+      <div class="deadline">Deadline <b>{_fmt_date(d)}</b>{soon}</div>
+      <a class="btn" href="{escape(p["url"], quote=True)}" target="_blank" rel="noopener">Official call &rarr;</a>
+    </div>
+  </article>""")
+    if not items:
+        items = ['  <p class="empty">No open calls right now. New calls are shared every Wednesday and Saturday.</p>']
+    c = cfg["colors"]
+    return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
+                       bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
+                       accent=cfg.get("grant_accent", "#FFB547"), items="\n".join(items),
+                       updated=_fmt_date(today))
