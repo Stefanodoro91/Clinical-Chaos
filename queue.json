@@ -100,5 +100,251 @@
     "source_hint": "pages 6-7, 10-12",
     "id": "d77f2998",
     "source": "Blinding.pdf"
+  },
+  {
+    "title": "Why Simple Randomization Fails in Small Trials",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "Complete Randomness Has a Catch",
+        "body": "Simple randomization allocates subjects independently, like tossing a coin. While it eliminates predictability, it rarely produces equal group numbers in trials with small sample sizes.",
+        "image_prompt": "A researcher flipping a large coin between two identical glass jars, with coins accumulating unevenly inside the jars."
+      },
+      {
+        "heading": "Imbalance Destroys Statistical Power",
+        "body": "In a 40-patient trial, equal allocation gives 80% power. A split of 25 to 15 drops power to 77%, and a 30 to 10 split slashes it to 67%, despite enrolling the exact same total sample size.",
+        "image_prompt": "A balanced two-pan scale tipping sharply to one side under unequal piles of blue and red wooden blocks."
+      },
+      {
+        "heading": "Chance of Imbalance Drops with Size",
+        "body": "For a 45% to 55% ratio, a trial of 40 subjects has a 52.7% chance of imbalance. That risk drops to 15.7% at 200 subjects and to only 4.6% at 400 subjects.",
+        "image_prompt": "Three magnifying glasses focusing on three growing crowds of silhouettes, showing the figures naturally evening out as the crowd grows."
+      },
+      {
+        "heading": "When to Use Simple Randomization",
+        "body": "Simple randomization is recommended primarily for large-scale trials where high enrollment naturally protects against imbalance. Smaller studies require restricted or adaptive designs.",
+        "image_prompt": "A large funnel directing a steady stream of identical capsules into two equal receiving bins standing side by side."
+      }
+    ],
+    "takeaway": "In small trials, simple randomization risks severe group size imbalances that degrade statistical power.",
+    "caption": "Flipping a coin feels like the purest form of randomization, but probability does not guarantee equal arms in small cohorts.\nIn small sample sizes, pure chance often leads to lopsided allocations, quietly eroding the statistical power you carefully calculated.\nLarge trials can absorb random fluctuations, but smaller studies require restricted allocation strategies.\nWhat randomization method does your team prefer when designing smaller phase II or pilot trials?",
+    "hashtags": [
+      "#ClinicalTrials",
+      "#Randomization",
+      "#Biostatistics",
+      "#ClinicalResearch",
+      "#TrialDesign",
+      "#SampleSize",
+      "#Epidemiology",
+      "#EvidenceBasedMedicine"
+    ],
+    "source_hint": "pages 2-3, Fig. 1 & Fig. 2",
+    "id": "3ee9d35d",
+    "source": "Randomization.pdf"
+  },
+  {
+    "title": "The Hidden Risk in Block Randomization",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "Forcing Balance Across Groups",
+        "body": "Block randomization divides recruitment into small blocks to maintain balanced group sizes throughout enrollment. This prevents severe group imbalance and preserves study power.",
+        "image_prompt": "A researcher arranging colored rectangular blocks into neat, matching compartments within a large wooden tray."
+      },
+      {
+        "heading": "The Block Size of Two Trap",
+        "body": "If the block size is two, knowing the first participant's allocation allows the investigator to deduce the second participant's group with certainty, creating high risk for observation bias.",
+        "image_prompt": "A doctor holding two envelopes, opening one while looking knowingly at a patient waiting across the examination table."
+      },
+      {
+        "heading": "The Last-Patient Leak",
+        "body": "Even with larger blocks of four or more, if researchers know the block size, the final assignment in every block becomes predictable, driving selection bias.",
+        "image_prompt": "A person looking through a magnifying glass at a sequence of sealed envelopes, pointing at the final unsealed envelope."
+      },
+      {
+        "heading": "The Solution: Varying Block Sizes",
+        "body": "To minimize predictability, researchers should use block sizes of four or more and randomly vary block sizes across the trial so the pattern cannot be guessed.",
+        "image_prompt": "A pair of hands mixing together several boxes of different sizes containing randomized green and orange cards."
+      }
+    ],
+    "takeaway": "Known or tiny block sizes enable allocation prediction, defeating the primary purpose of randomization.",
+    "caption": "Block randomization is standard practice for keeping arm sizes balanced during ongoing recruitment.\nHowever, predictability is the enemy of allocation concealment.\nIf recruiters deduce or know the block length, the final assignment in each block is no longer a secret.\nHave you ever seen an investigator guess the next assignment due to fixed block sizes?",
+    "hashtags": [
+      "#Randomization",
+      "#ClinicalTrials",
+      "#SelectionBias",
+      "#AllocationConcealment",
+      "#TrialDesign",
+      "#Biostatistics",
+      "#ResearchMethods",
+      "#GoodClinicalPractice"
+    ],
+    "source_hint": "page 3, Block randomization",
+    "id": "9c7e27e5",
+    "source": "Randomization.pdf"
+  },
+  {
+    "title": "The Problem with Stratified Randomization",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "Controlling Key Baseline Covariates",
+        "body": "Randomization does not guarantee balance across baseline prognostic factors. Stratified randomization creates separate strata for factors like sex, age, or trial site, randomizing independently within each.",
+        "image_prompt": "A set of clear sorting bins separating incoming participant profile folders into categories based on color tags."
+      },
+      {
+        "heading": "The Combinatorial Explosion",
+        "body": "Strata multiply rapidly. Accounting for just 2 trial sites, 2 sexes, and 3 age groups creates 12 distinct strata, each requiring its own separate random sequence.",
+        "image_prompt": "A tree branching outward from two trunks into dozens of smaller twigs, each holding a tiny empty birdhouse."
+      },
+      {
+        "heading": "The Trap of Sparse Strata",
+        "body": "When too many strata are formed relative to the target sample size, several strata remain empty or sparse. This paradoxically causes imbalances in group allocation.",
+        "image_prompt": "A grid of twelve clear glass jars where several jars are completely empty while others hold only one marble."
+      },
+      {
+        "heading": "Keep Stratification Focused",
+        "body": "Carefully limit stratified factors to essential prognostic variables and recruitment sites, and account for these factors again during final statistical analysis.",
+        "image_prompt": "A researcher holding a checklist, deliberately crossing off multiple low-priority criteria while circling one main variable."
+      }
+    ],
+    "takeaway": "Stratifying by too many factors creates sparse cells, undermining the very balance stratification aims to achieve.",
+    "caption": "Balancing prognostic factors between arms is essential for valid statistical inference.\nStratified randomization works well, but researchers often over-stratify by adding age, sex, stage, and site all at once.\nEach added factor multiplies the required strata, quickly leading to empty or sparsely filled cells.\nHow many stratification factors do you typically allow in your trial protocols?",
+    "hashtags": [
+      "#Stratification",
+      "#Randomization",
+      "#ClinicalResearch",
+      "#TrialDesign",
+      "#Biostatistics",
+      "#Covariates",
+      "#ClinicalTrials",
+      "#StudyDesign"
+    ],
+    "source_hint": "pages 3-4, Stratified randomization & Fig. 3",
+    "id": "77eafa84",
+    "source": "Randomization.pdf"
+  },
+  {
+    "title": "How Minimization Balances Covariates",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "Beyond Static Stratification",
+        "body": "When several prognostic factors must be balanced, static strata fragment. Minimization (covariate-adaptive randomization) dynamically allocates each subject to minimize overall imbalance.",
+        "image_prompt": "A balancing scale dynamically adjusting its position as colored tokens are carefully placed on opposite sides."
+      },
+      {
+        "heading": "How the Algorithm Decides",
+        "body": "The first subject is allocated by simple randomization. For subsequent subjects, the algorithm virtually tests assignment to each group and assigns the subject to the group with the lowest total imbalance score.",
+        "image_prompt": "A researcher calculating numbers on a notepad while comparing two rows of patient profile cards on a desk."
+      },
+      {
+        "heading": "Breaking Ties with Chance",
+        "body": "If the calculated total imbalance score is identical for both treatment and control groups, the allocation defaults back to simple randomization.",
+        "image_prompt": "A coin spinning midair above two balanced trays holding equal numbers of blue and red tokens."
+      },
+      {
+        "heading": "The Statistical Trade-Off",
+        "body": "Minimization does not satisfy pure randomness, which is a core assumption of statistical inference. It requires specific analyses like ANCOVA or permutation tests, and risks prediction if profiles leak.",
+        "image_prompt": "An open medical dossier lying beside a computer monitor displaying an algorithm decision tree and padlock icon."
+      }
+    ],
+    "takeaway": "Minimization balances multiple prognostic factors without fragmented strata, but sacrifices strict theoretical randomness.",
+    "caption": "When multiple prognostic factors need control, standard stratification can break down into empty cells.\nMinimization provides a dynamic alternative by using previously enrolled patient profiles to allocate the next subject.\nWhile it guarantees tight balance across baseline traits, it departs from pure randomness and demands specific analytical techniques.\nHave you implemented minimization in your studies, or do you stick to stratified blocks?",
+    "hashtags": [
+      "#Minimization",
+      "#AdaptiveRandomization",
+      "#Biostatistics",
+      "#ClinicalTrials",
+      "#TrialDesign",
+      "#Methodology",
+      "#Covariates",
+      "#ResearchMethods"
+    ],
+    "source_hint": "pages 4-6, Minimization & Tables 1-4",
+    "id": "9854c143",
+    "source": "Randomization.pdf"
+  },
+  {
+    "title": "Can Randomization Adapt to Patient Response?",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "Fixed Probability Assumptions",
+        "body": "Standard trials keep allocation probabilities fixed throughout. But should allocation ratios remain static if accumulating trial data shows unequal treatment effects as the study progresses?",
+        "image_prompt": "A divided pathway with equal directional signposts pointing toward two identical clinic buildings under a clear sky."
+      },
+      {
+        "heading": "The Play-the-Winner Concept",
+        "body": "In response-adaptive designs like randomized play-the-winner, if a patient responds successfully, the next patient is assigned to that same arm. Otherwise, they go to another arm.",
+        "image_prompt": "A doctor guiding an incoming patient toward an illuminated green door after another patient successfully exited it."
+      },
+      {
+        "heading": "The Ethical Advantage",
+        "body": "Response adaptation aims to maximize patient benefit during the trial, allowing a greater proportion of participants to receive therapies showing superior interim results.",
+        "image_prompt": "A crowd of stylized figures gently funneling in greater numbers toward a glowing medical treatment station."
+      },
+      {
+        "heading": "The Practical Limitations",
+        "body": "Response-adaptive allocation leads to sample size imbalances between groups. Crucially, it cannot be recommended if evaluating the patient response takes a long time.",
+        "image_prompt": "An hourglass with sand slowly trickling through while a queue of patients waits outside a consultation room door."
+      }
+    ],
+    "takeaway": "Response-adaptive randomization ethically favors effective treatments, but requires rapid, observable outcomes.",
+    "caption": "Traditional RCTs allocate patients with fixed probabilities regardless of interim outcomes.\nResponse-adaptive designs challenge this by altering allocation ratios based on accumulating participant responses.\nWhile ethically appealing, they introduce sample size imbalances and completely fail if primary endpoints require long follow-up periods.\nHave you ever worked with response-adaptive designs in practice, or do endpoint delays make them impractical?",
+    "hashtags": [
+      "#AdaptiveDesign",
+      "#ResponseAdaptive",
+      "#ClinicalTrials",
+      "#Bioethics",
+      "#TrialDesign",
+      "#Biostatistics",
+      "#ResearchEthics",
+      "#ClinicalResearch"
+    ],
+    "source_hint": "page 6, Response-adaptive randomization",
+    "id": "738b4124",
+    "source": "Randomization.pdf"
+  },
+  {
+    "title": "The Ethical Tension Behind Random Allocation",
+    "category": "Research ethics",
+    "slides": [
+      {
+        "heading": "Probability Over Physician Choice",
+        "body": "In an RCT, a patient's treatment is determined by probability rather than clinical judgment. This fundamental design requirement sparks an ongoing ethical dilemma.",
+        "image_prompt": "A physician standing thoughtfully with hands folded while a glowing pair of balance scales decides between two medicines."
+      },
+      {
+        "heading": "The Mandate for Objectivity",
+        "body": "Decisions are governed by probability because trials evaluate efficacy and safety objectively. Excluding physician prejudice and bias is essential to confirm true causality.",
+        "image_prompt": "A blindfolded scientist holding a magnifying glass over two identical unmarked medicine vials resting on a wooden table."
+      },
+      {
+        "heading": "Individual vs Collective Ethics",
+        "body": "Participants accept risks or placebo exposure for ambiguous individual gain. Their participation acts as a social cost paid for the benefit of future patients.",
+        "image_prompt": "A small group of patient silhouettes stepping forward onto a bridge that helps a much larger crowd cross safely."
+      },
+      {
+        "heading": "Why Researcher Bias Breaks the Deal",
+        "body": "If an investigator introduces bias or undermines random allocation, the social sacrifice made by patients is wasted and the trial's scientific credibility collapses.",
+        "image_prompt": "A broken marble pedestal holding a fractured set of balance scales in front of a research facility."
+      }
+    ],
+    "takeaway": "Randomization demands a social cost from participants, ethically justified only by rigorous, unbiased science.",
+    "caption": "Randomizing human subjects to medical interventions creates an inevitable friction between individual care and collective knowledge.\nParticipants take on personal risk and potential placebo exposure to generate reliable evidence for future patients.\nBecause this contribution represents a genuine social cost, maintaining uncompromised allocation and rigorous objectivity is an ethical imperative.\nHow do you explain the concept of random assignment when consenting hesitant trial participants?",
+    "hashtags": [
+      "#ResearchEthics",
+      "#Bioethics",
+      "#ClinicalTrials",
+      "#Randomization",
+      "#InformedConsent",
+      "#ClinicalResearch",
+      "#TrialMethodology",
+      "#EvidenceBasedMedicine"
+    ],
+    "source_hint": "page 7, Ethics of Randomization",
+    "id": "66795092",
+    "source": "Randomization.pdf"
   }
 ]
