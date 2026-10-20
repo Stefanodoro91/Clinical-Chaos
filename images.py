@@ -57,32 +57,52 @@ def _wait_turn():
     _last_call = time.time()
 
 
-def generate(slide, cfg, width=1024, height=640):
-    """Restituisce un'immagine PIL, oppure None se Pollinations non risponde (la slide resta solo testo)."""
-    prompt = build_prompt(slide)
-    params = {"width": width, "height": height, "seed": _seed(prompt), "nologo": "true",
-              "model": cfg.get("image_model") or DEFAULT_MODEL}
-    key = os.environ.get("POLLINATIONS_API_KEY")
-    if key:
-        url, headers = NEW_API + quote(prompt, safe=""), {"Authorization": f"Bearer {key}"}
-    else:
-        url, headers = LEGACY_API + quote(prompt, safe=""), {}
+_key_failed = False   # chiave senza credito o non valida: per il resto del run si usa il piano anonimo
 
+
+def _request(url, params, headers, anonymous):
+    """Fino a 4 tentativi. Restituisce (immagine, None) oppure (None, motivo del fallimento)."""
     for attempt in range(4):
-        _wait_turn()
+        if anonymous:
+            _wait_turn()
         try:
             r = requests.get(url, params=params, headers=headers, timeout=120)
             if r.ok and r.headers.get("content-type", "").startswith("image/"):
-                return Image.open(io.BytesIO(r.content)).convert("RGB")
+                return Image.open(io.BytesIO(r.content)).convert("RGB"), None
             print(f"  Pollinations: risposta {r.status_code} ({r.text[:150]!r})")
             limit = r.status_code == 429 or "FREE_LIMIT" in r.text or "limit" in r.text.lower()
             if r.status_code in (401, 403) or (r.status_code == 402 and not limit):
-                break   # chiave errata o credito finito: inutile riprovare
+                return None, "key"   # chiave errata o credito finito: inutile riprovare
             wait = _retry_after(r, 30 * (attempt + 1))
         except requests.RequestException as e:
             print(f"  Pollinations non raggiungibile: {e}")
             wait = 30 * (attempt + 1)
         print(f"  Riprovo tra {min(wait, 90)} secondi…")
         time.sleep(min(wait, 90))
-    print(f"  Immagine non generata, la slide «{slide['heading']}» resta solo testo.")
-    return None
+    return None, "down"
+
+
+def generate(slide, cfg, width=1024, height=640):
+    """Restituisce un'immagine PIL, oppure None se Pollinations non risponde (la slide resta solo testo)."""
+    global _key_failed
+    prompt = build_prompt(slide)
+    params = {"width": width, "height": height, "seed": _seed(prompt), "nologo": "true",
+              "model": cfg.get("image_model") or DEFAULT_MODEL}
+    key = os.environ.get("POLLINATIONS_API_KEY")
+
+    if key and not _key_failed:
+        img, why = _request(NEW_API + quote(prompt, safe=""), params,
+                            {"Authorization": f"Bearer {key}"}, anonymous=False)
+        if img is not None:
+            return img
+        if why == "key":
+            _key_failed = True
+            print("  La chiave Pollinations non funziona (credito finito?): passo al piano gratuito anonimo.")
+        else:
+            print(f"  Immagine non generata, la slide «{slide['heading']}» resta solo testo.")
+            return None
+
+    img, _ = _request(LEGACY_API + quote(prompt, safe=""), params, {}, anonymous=True)
+    if img is None:
+        print(f"  Immagine non generata, la slide «{slide['heading']}» resta solo testo.")
+    return img
