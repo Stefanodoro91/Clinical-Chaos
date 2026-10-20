@@ -1,1 +1,138 @@
-[]
+[
+  {
+    "title": "Did Blinding Actually Work in Your Trial?",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "An assumption rarely tested",
+        "body": "Thousands of trials claim double-blinding, but few evaluate if it succeeded. A meta-analysis showed only 45% of double-blind trials described regimen similarity, and only 26% reported allocation protection.",
+        "image_prompt": "a researcher holding a magnifying glass toward two identical medicine bottles while two patients sit across a table wearing blindfolds"
+      },
+      {
+        "heading": "How the blind breaks down",
+        "body": "Technical masking of appearance, smell, and taste is not enough. Side effects, perceived therapeutic efficacy, or informal conversations often provide clues that unmask participants and clinicians beyond chance.",
+        "image_prompt": "two patients at a table opening identical pill bottles, one noticing steam and a rash while a physician observes attentively"
+      },
+      {
+        "heading": "Eliciting participant guesses",
+        "body": "The degree of blinding is assessed by asking participants at the end to guess their assignment: active drug, placebo, or do not know. This creates a simple two-by-three contingency table for statistical testing.",
+        "image_prompt": "a patient sitting before three voting ballot boxes labeled with simple icons of a pill, an empty capsule, and a closed box"
+      },
+      {
+        "heading": "Why unblinding threatens validity",
+        "body": "Unblinding can introduce ascertainment bias, alter participant compliance, and even affect ancillary care and attention, potentially compromising trial validity even when measuring objective outcomes.",
+        "image_prompt": "a set of balance scales tilted unevenly, with a patient figure placing a heavy block on one side while holding an unfastened blindfold"
+      }
+    ],
+    "takeaway": "Blinding cannot simply be assumed; side effects and perceived efficacy can easily unmask trials if not measured.",
+    "caption": "Most researchers assume that identical pill bottles guarantee blinding throughout a trial.\\nYet side effects and noticeable efficacy can quietly unmask both patients and clinicians.\\nAssessing treatment guesses at the end of a study can reveal whether masking truly held.\\nWithout assessing blinding, it is hard to prove outcomes arose solely from treatment efficacy.\\nHave you ever formally tested blinding success in your clinical studies?",
+    "hashtags": [
+      "#ClinicalTrials审#Randomization审#ClinicalResearch审#ResearchMethodology审#Blinding审#EvidenceBasedMedicine审#Biostatistics审#TrialDesign审#ClinicalStudy"
+    ],
+    "source_hint": "pages 1-3, 11-13",
+    "id": "11f743d0",
+    "source": "Blinding.pdf"
+  },
+  {
+    "title": "The Major Blind Spot of James' Blinding Index",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "The traditional approach",
+        "body": "James' blinding index adapts kappa to measure disagreement. It scores between 0 (total unblinding) and 1 (complete blinding), with 0.5 representing random guessing, placing the highest weight on 'do not know' responses.",
+        "image_prompt": "a circular dial gauge with a needle pointing to the center between red and green zones, beside two distinct pill bottles"
+      },
+      {
+        "heading": "Dominated by 'Don't Know'",
+        "body": "When 30% to 70% of participants answer 'do not know', James' index almost never rejects the null hypothesis of successful blinding, even when all participants who ventured a guess were completely unblinded.",
+        "image_prompt": "a large pile of blank envelopes completely burying a small pile of marked voting cards on an examination table"
+      },
+      {
+        "heading": "The fatal cancelling effect",
+        "body": "James' index pools all arms into one score. If the drug arm correctly guesses drug, but the placebo arm also guesses drug due to optimism, the opposing patterns cancel out into a false appearance of perfect blinding.",
+        "image_prompt": "two groups of people walking in opposite directions on a platform, while a single central scale stays completely level"
+      },
+      {
+        "heading": "The need for arm-specific analysis",
+        "body": "Because blinding mechanisms and expectations differ between active and control arms, evaluating blinding must be done separately for each arm rather than collapsing everything into a single overall metric.",
+        "image_prompt": "a researcher dividing a large data sheet into two separate clipboards, one for each arm of a trial"
+      }
+    ],
+    "takeaway": "A single overall blinding index can conceal unblinding when high proportions of 'don't know' or opposing arm biases cancel out.",
+    "caption": "Measuring blinding with a single aggregate metric sounds convenient, but it hides critical trial dynamics.\\nJames' blinding index places maximum weight on 'don't know' responses, which can artificially mask unblinding.\\nEven worse, if both arms guess they received active treatment, their opposite directions cancel out.\\nEvaluating each treatment arm independently prevents these misleading conclusions.\\nHave you encountered studies where 'don't know' responses skewed your data analysis?",
+    "hashtags": [
+      "#ClinicalTrials审#ResearchMethodology审#Biostatistics审#Blinding审#ClinicalResearch审#StudyDesign审#Epidemiology审#DataAnalysis审#MedicalResearch"
+    ],
+    "source_hint": "pages 4-5, 8-10",
+    "id": "43d41637",
+    "source": "Blinding.pdf"
+  },
+  {
+    "title": "Bang's Blinding Index: A Better Way to Measure",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "Arm-specific evaluation",
+        "body": "Bang and colleagues proposed calculating a separate blinding index for each arm using a multinomial model. This answers two distinct questions: Was the treatment arm blinded, and was the placebo arm blinded?",
+        "image_prompt": "two separate balance scales on a lab bench, each holding a different colored pill bottle and isolated weights"
+      },
+      {
+        "heading": "Understanding the -1 to +1 scale",
+        "body": "The index ranges from -1 to 1. Zero represents random balance under perfect blinding. Positive values mean excess correct guesses beyond chance, while negative values indicate participants mostly guessed the other arm.",
+        "image_prompt": "a straight horizontal ruler with zero marked in the center, flanked by two colored arrow tokens pointing in opposite directions"
+      },
+      {
+        "heading": "Direct proportion interpretation",
+        "body": "The index value directly estimates the proportion of unblinded patients beyond chance. An index of 0.20 in the active arm means exactly 20% of participants correctly identified their treatment beyond random chance.",
+        "image_prompt": "a group of ten stylized silhouette figures where two figures hold raised blindfolds while eight remain completely blindfolded"
+      },
+      {
+        "heading": "When to flag a blinding issue",
+        "body": "Authors suggest reporting potential unblinding if the index exceeds 0.20, if statistical testing rejects the null hypothesis of random guessing, or if Bang's and James' indices yield conflicting conclusions.",
+        "image_prompt": "a researcher pointing a red warning flag beside a document displaying two separate measured indicators"
+      }
+    ],
+    "takeaway": "Bang's index evaluates arms separately, giving a clear proportion of participants unblinded beyond chance between -1 and +1.",
+    "caption": "Traditional blinding tests tell you whether the study as a whole looked blinded, but not what happened in each arm.\\nBang's Blinding Index evaluates each arm on a scale from -1 to +1.\\nZero represents perfect random guessing, while positive values show the proportion of unblinded participants beyond chance.\\nIn the CRISP trial, this revealed that 21% of the Lovastatin arm was unmasked, while the placebo arm was at 1%.\\nHow do you currently evaluate whether blinding succeeded in your trials?",
+    "hashtags": [
+      "#ClinicalResearch审#ClinicalTrials审#BlindingIndex审#Biostatistics审#ResearchDesign审#Methodology审#RandomizedControlledTrial审#DataScience审#StatisticalMethods"
+    ],
+    "source_hint": "pages 5-7, 10-12",
+    "id": "90bc6cd4",
+    "source": "Blinding.pdf"
+  },
+  {
+    "title": "Is It Unblinding or Just Response Bias?",
+    "category": "Bias & confounding",
+    "slides": [
+      {
+        "heading": "The wishful thinking effect",
+        "body": "Participants often assume they are receiving active medication due to optimism, mild symptoms, or expectation. Conversely, patients lacking quick relief may automatically guess they are on placebo.",
+        "image_prompt": "two patients in separate booths both pointing toward a single illuminated pill bottle displayed on a central pedestal"
+      },
+      {
+        "heading": "Testing for response bias",
+        "body": "When one arm has a positive index and the other a negative index, don't rush to conclusions. Testing whether their sum equals zero formally evaluates whether participants simply shared a systematic response bias.",
+        "image_prompt": "two mathematical weights placed on opposite ends of a seesaw, settling into a balanced equilibrium"
+      },
+      {
+        "heading": "CRISP trial: unblinding vs bias",
+        "body": "In the CRISP trial of Lovastatin vs placebo, the drug arm had an index of 0.21, but placebo was 0.01. Because placebo was near zero rather than negative, this reflected genuine treatment unmasking, not response bias.",
+        "image_prompt": "two pill containers on a table, one surrounded by several observant figures looking closely and the other surrounded by blindfolded figures"
+      },
+      {
+        "heading": "What to do if unblinding occurs",
+        "body": "If unblinding is detected, perform secondary subgroup analyses adjusting for treatment perception. More importantly, investigate unblinding factors to improve formulation, dummy designs, and masking in future studies.",
+        "image_prompt": "a team of researchers examining divided columns of patient data folders under an overhead lamp"
+      }
+    ],
+    "takeaway": "Opposite guessing between arms often signals response bias rather than true unblinding, requiring a formal test of their sum.",
+    "caption": "When participants guess their treatment, their answers aren't just driven by true unmasking.\\nResponse bias is common: participants frequently believe they received active treatment simply because they hope it works.\\nIf drug patients guess drug and placebo patients also guess drug, that isn't equal blinding—it is response bias.\\nTesting if the two indices cancel to zero reveals whether optimism or true unmasking drove the guesses.\\nHave you noticed participants assuming they are on active therapy in your trials?",
+    "hashtags": [
+      "#ClinicalTrials审#ResearchBias审#ResponseBias审#ResearchMethodology审#ClinicalResearch审#Biostatistics审#TrialDesign审#EvidenceBasedMedicine审#Epidemiology"
+    ],
+    "source_hint": "pages 6-7, 10-12",
+    "id": "d77f2998",
+    "source": "Blinding.pdf"
+  }
+]
