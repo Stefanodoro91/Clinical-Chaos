@@ -1,52 +1,5 @@
 [
   {
-    "title": "Do Researchers Ever Test If Blinding Actually Worked?",
-    "title_highlight": "",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "The Forgotten Assessment",
-        "body": "Although thousands of ostensibly double-blind trials are conducted annually, attempts to measure the effectiveness of blinding are rarely discussed.",
-        "image_prompt": "a clinical trial document with a large unanswered question mark stamped over a section labeled blinding success",
-        "highlight": "",
-        "source": "Bang et al., 2004"
-      },
-      {
-        "heading": "Hidden Clues Lead to Unblinding",
-        "body": "Even with technical efforts, beneficial therapeutic efficacy, side effects or internal conversation are frequently cited as clues to treatment identity.",
-        "image_prompt": "a patient and a physician examining two pill bottles while a magnifying glass highlights small hidden details",
-        "highlight": "",
-        "source": "Bang et al., 2004"
-      },
-      {
-        "heading": "The Lack of Standard Methods",
-        "body": "Although several methods to assess blinding in clinical trials have been published, none of these are widely used or considered standard.",
-        "image_prompt": "several different measuring tools and rulers scattered on a table next to a clinical research notebook",
-        "highlight": "",
-        "source": "Bang et al., 2004"
-      }
-    ],
-    "takeaway": "Despite the prevalence of double-blind trials, evaluating the actual success of blinding is rarely performed.",
-    "takeaway_highlight": "",
-    "references": [
-      "Bang, H., Ni, L., & Davis, C. E. (2004). Assessment of blinding in clinical trials. Controlled Clinical Trials, 25(2), 143–156. https://doi.org/10.1016/j.cct.2003.10.016"
-    ],
-    "caption": "We design trials to be double-blind, but do we ever check if the participants and investigators actually remained blind? Without formal evaluation, we often assume blinding succeeded without evidence. How often do you see blinding success assessed in published trials?",
-    "hashtags": [
-      "#ClinicalTrials",
-      "#ResearchMethods",
-      "#Blinding",
-      "#ClinicalResearch",
-      "#ResearchEthics",
-      "#TrialDesign",
-      "#Biostatistics",
-      "#Methodology"
-    ],
-    "source_hint": "pages 1-2",
-    "id": "24cb1895",
-    "source": "Blinding.pdf"
-  },
-  {
     "title": "Why James' Blinding Index Falls Short",
     "title_highlight": "",
     "category": "Randomization & blinding",
