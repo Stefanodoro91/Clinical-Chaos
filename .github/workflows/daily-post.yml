@@ -1,9 +1,12 @@
 name: Post giornaliero ricerca clinica
 
 on:
-  # Un post al giorno alle 23:30 ora italiana (GitHub può partire con qualche minuto di ritardo).
+  # Due post al giorno, ora italiana (GitHub può partire con qualche minuto di ritardo):
+  # alle 12:30 un bando, alle 23:30 un post di metodologia.
   # Il fuso Europe/Rome gestisce da solo il cambio tra ora legale e ora solare.
   schedule:
+    - cron: "30 12 * * *"
+      timezone: "Europe/Rome"
     - cron: "30 23 * * *"
       timezone: "Europe/Rome"
   workflow_dispatch:
@@ -13,10 +16,10 @@ on:
         type: boolean
         default: true
       post_type:
-        description: "Tipo di post (auto = bando il mercoledì e il sabato, metodologia gli altri giorni)"
+        description: "Tipo di post: research = metodologia, grant = bando"
         type: choice
-        options: [auto, research, grant]
-        default: auto
+        options: [research, grant]
+        default: research
 
 permissions:
   contents: write   # per salvare immagini e registro nel repository
@@ -58,7 +61,7 @@ jobs:
           POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
-          POST_TYPE: ${{ inputs.post_type || 'auto' }}
+          POST_TYPE: ${{ github.event_name == 'schedule' && (github.event.schedule == '30 12 * * *' && 'grant' || 'research') || inputs.post_type || 'research' }}
         run: python bot.py
 
       - name: Salva anteprima (solo in modalità prova)

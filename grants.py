@@ -133,19 +133,23 @@ def candidates(grants, posted, verified, cfg, today=None):
     """Bandi da pubblicare: verificati sul testo ufficiale, call aperta, pertinenza Alta/Media,
     scadenza abbastanza lontana, mai pubblicati. Tutti i Paesi."""
     today = today or date.today()
-    min_days = int(cfg.get("grant_min_days_left", 14))
     done = {p.get("grant_id") for p in posted if p.get("grant_id")}
-    out = []
-    for g in grants:
-        v = verified.get(g.get("id"), {})
-        deadline = _date(g.get("scadenza"))
-        if (v.get("status") == "ok" and v.get("is_open_call") != "no" and not v.get("coming_soon")
-                and g.get("rilevanza") in RELEVANCE_ORDER
-                and deadline and deadline >= today + timedelta(days=min_days)
-                and g.get("id") not in done and g.get("url")):
-            out.append(g)
-    # prima la pertinenza alla riabilitazione, poi la scadenza più vicina
-    return sorted(out, key=lambda g: (RELEVANCE_ORDER[g["rilevanza"]], g["scadenza"]))
+    # largo anticipo: prima i bandi che scadono tra almeno «grant_min_days_left» giorni (45),
+    # se non ce ne sono quelli con almeno «grant_fallback_days_left» (30)
+    for min_days in (int(cfg.get("grant_min_days_left", 45)), int(cfg.get("grant_fallback_days_left", 30))):
+        out = []
+        for g in grants:
+            v = verified.get(g.get("id"), {})
+            deadline = _date(g.get("scadenza"))
+            if (v.get("status") == "ok" and v.get("is_open_call") != "no" and not v.get("coming_soon")
+                    and g.get("rilevanza") in RELEVANCE_ORDER
+                    and deadline and deadline >= today + timedelta(days=min_days)
+                    and g.get("id") not in done and g.get("url")):
+                out.append(g)
+        if out:
+            # prima la pertinenza alla riabilitazione, poi la scadenza più vicina
+            return sorted(out, key=lambda g: (RELEVANCE_ORDER[g["rilevanza"]], g["scadenza"]))
+    return []
 
 
 def _money(value, currency):
@@ -185,6 +189,61 @@ EU_PROGRAMMES = {"HORIZON": "Horizon Europe", "EU4H": "EU4Health", "DIGITAL": "D
                  "EIC": "European Innovation Council", "ERASMUS": "Erasmus+"}
 HORIZON_CLUSTERS = {"HLTH": "Cluster 1: Health", "CL4": "Cluster 4: Digital, Industry and Space",
                     "EIC": "European Innovation Council"}
+
+
+REGIONS = ["International & intercontinental", "Europe", "North America", "Latin America", "Asia", "Africa", "Oceania"]
+CONTINENTE = {"internazionale": REGIONS[0], "europa": "Europe", "nord america": "North America",
+              "america latina": "Latin America", "asia": "Asia", "africa": "Africa", "oceania": "Oceania"}
+RX_ANY_COUNTRY = re.compile(r"any country|all countries|worldwide|world-wide|global|international|"
+                            r"non-?us organi[sz]ations eligible|foreign organi[sz]ations (are )?eligible", re.I)
+REGION_WORDS = {
+    "Europe": r"\beu\b|europe|european|united kingdom|\buk\b|england|scotland|wales|ireland|germany|france|"
+              r"netherlands|switzerland|austria|belgium|norway|sweden|denmark|finland|spain|portugal|poland|italy",
+    "North America": r"united states|\bu\.?s\.?\b|\busa\b|canada|north america",
+    "Latin America": r"brazil|argentina|chile|colombia|mexico|peru|latin america",
+    "Asia": r"japan|china|india|singapore|korea|taiwan|hong kong|asia",
+    "Africa": r"africa|nigeria|kenya|ghana|uganda|tanzania|ethiopia",
+    "Oceania": r"australia|new zealand|oceania",
+}
+_sources_cache = {}
+
+
+def funder_continents(cfg):
+    """{nome fonte: continente} dal file fonti_web.csv di GrantFinder."""
+    if "map" not in _sources_cache:
+        import csv
+        import io
+        url = (cfg.get("grantfinder_url") or DEFAULT_URL).replace("dati/stato.json", "fonti_web.csv")
+        try:
+            r = requests.get(url, timeout=30)
+            r.raise_for_status()
+            rows = csv.DictReader(io.StringIO(r.content.decode("utf-8-sig")), delimiter=";")
+            _sources_cache["map"] = {x["nome"]: CONTINENTE.get((x.get("continente") or "").strip().lower())
+                                     for x in rows}
+        except Exception:
+            _sources_cache["map"] = {}
+    return _sources_cache["map"]
+
+
+def region(g, v, cfg):
+    """Continente della call: dai Paesi ammessi verificati; se non indicati, dalla sede del finanziatore."""
+    ec = (v or {}).get("eligible_countries") or ""
+    if (v or {}).get("countries_evidence"):
+        if RX_ANY_COUNTRY.search(ec):
+            return REGIONS[0]
+        found = [r for r, rx in REGION_WORDS.items() if re.search(rx, ec, re.I)]
+        if len(found) > 1:
+            return REGIONS[0]                      # più continenti: collaborazione intercontinentale
+        if found:
+            return found[0]
+    gid = g.get("id", "")
+    if "EDCTP" in gid.upper():
+        return REGIONS[0]
+    if gid.startswith("EU-"):
+        return "Europe"
+    if gid.startswith("GG-") or g.get("fonte") == "Grants.gov":
+        return "North America"
+    return funder_continents(cfg).get(g.get("fonte") or "") or REGIONS[0]
 
 
 def programme_family(g):
@@ -384,6 +443,9 @@ def check_eligibility(g, text, out):
         italy, i_ev = "unclear", ""
         if c_ev and re.search(r"non-?domestic|foreign", c_ev, re.I):
             countries, c_ev = "", ""
+    if italy == "unclear" and c_ev and RX_ANY_COUNTRY.search(countries) and not (
+            is_nih(g) and re.search(r"non-?domestic|foreign", c_ev, re.I)):
+        italy, i_ev = "yes", c_ev          # «any country» provato dalla call vale anche per l'Italia
     return {"eligible_countries": countries[:120] or "Not stated in the official text: check the call",
             "countries_evidence": c_ev[:400], "italy": italy, "italy_evidence": i_ev[:400]}
 
@@ -516,13 +578,6 @@ def build_post(g, v, cfg):
     }
 
 
-def is_grant_day(cfg, now=None):
-    """Giorni dei bandi in ora italiana (0 = lunedì). Default: mercoledì e sabato."""
-    from zoneinfo import ZoneInfo
-    now = now or datetime.now(ZoneInfo("Europe/Rome"))
-    return now.weekday() in cfg.get("grant_weekdays", [2, 5])
-
-
 def next_grant_post(posted, cfg, grants_list=None, verified=None):
     """Il post del prossimo bando verificato, oppure None (nessun bando adatto o GrantFinder non raggiungibile)."""
     try:
@@ -571,6 +626,11 @@ PAGE = """<!doctype html>
   section.macro {{ margin-top: 34px; }}
   section.macro > h2 {{ font-size: 23px; font-weight: 800; margin: 0 0 4px; }}
   section.macro > p {{ color: var(--soft); font-size: 14px; margin: 0 0 18px; }}
+  h2.region {{ font-size: 19px; font-weight: 800; margin: 34px 0 2px; padding-top: 14px; border-top: 1px solid var(--muted);
+              display: flex; justify-content: space-between; gap: 10px; }}
+  h2.region span {{ color: var(--muted); font-weight: 600; }}
+  .tag.check-tag {{ background: var(--muted); }}
+  .pending {{ color: var(--soft); font-size: 14px; font-style: italic; margin: 0 0 12px; }}
   h3.prog {{ font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: var(--accent);
             margin: 28px 0 10px; display: flex; justify-content: space-between; gap: 10px; }}
   h3.prog span {{ color: var(--muted); font-weight: 600; }}
@@ -605,17 +665,19 @@ PAGE = """<!doctype html>
 <main>
   <span class="badge">OPEN CALLS</span>
   <h1>Research funding calls</h1>
-  <p class="intro">Open calls for clinical and rehabilitation research, each checked against the official call text.
-  Grouped by funding programme and sorted by deadline. Closed calls are removed automatically.</p>
-  <nav class="jump"><a href="#italy">Open to Italian institutions <b>{n_italy}</b></a><a href="#other">Other calls <b>{n_other}</b></a></nav>
+  <p class="intro">All open calls for clinical and rehabilitation research found by our monitoring, from funders worldwide.
+  Each call is checked against its official text; grouped by region and funding programme, sorted by deadline.
+  Closed calls are removed automatically.</p>
+  <nav class="jump">{nav}</nav>
   <section class="macro" id="italy">
     <h2>Open to Italian institutions</h2>
     <p>The official call explicitly allows organisations based in Italy (directly, as EU Member State, or as any country).</p>
 {italy}
   </section>
   <section class="macro" id="other">
-    <h2>Other calls</h2>
-    <p>Calls restricted to other countries, or where the official text does not state whether Italian organisations can apply.</p>
+    <h2>All other calls, by region</h2>
+    <p>Grouped by where applicants can be based: international and intercontinental calls first, then each continent.
+    Calls whose official text does not say where applicants can be based are listed under the funder's region.</p>
 {other}
   </section>
   <footer>
@@ -630,15 +692,20 @@ PAGE = """<!doctype html>
 
 
 def page_entries(grants_list, verified, today=None):
-    """Bandi da mostrare: attivi in GrantFinder, verificati sul testo ufficiale, non chiusi, scadenza futura o non indicata."""
+    """Bandi da mostrare: attivi in GrantFinder, non chiusi, scadenza futura o non indicata.
+    Verificati sul testo ufficiale, oppure non ancora verificati ma con una scadenza futura nota (in verifica)."""
     today = today or date.today()
     out = []
     for g in grants_list:
         v = verified.get(g.get("id"), {})
         d = _date(g.get("scadenza"))
-        if (g.get("_attivo", True) and g.get("url") and v.get("status") == "ok" and v.get("is_open_call") != "no"
-                and (d is None or d >= today)):
-            out.append((g, v, d))
+        if not (g.get("_attivo", True) and g.get("url")) or (d is not None and d < today):
+            continue
+        if v.get("status") == "ok":
+            if v.get("is_open_call") != "no":
+                out.append((g, v, d))
+        elif d is not None:                     # in attesa di verifica (o verifica non riuscita): resta visibile
+            out.append((g, {}, d))
     return out
 
 
@@ -659,7 +726,10 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     featured = {p.get("grant_id") for p in posted if p.get("kind") == "grant" and not p.get("withdrawn")}
     entries = page_entries(grants_list, verified, today)
     italy = [e for e in entries if e[1].get("italy") == "yes"]
-    other = [e for e in entries if e[1].get("italy") != "yes"]
+    by_region = {r: [] for r in REGIONS}
+    for e in entries:
+        if e[1].get("italy") != "yes":
+            by_region[region(e[0], e[1], cfg)].append(e)
 
     def card(g, v, d, css):
         if d:
@@ -670,35 +740,47 @@ def build_page(grants_list, verified, posted, cfg, today=None):
         tag = '<span class="tag">ON INSTAGRAM</span>' if g["id"] in featured else ""
         if v.get("coming_soon"):
             tag += '<span class="tag soon-tag">COMING SOON</span>'
-        countries = v.get("eligible_countries") or "check the call"
-        ev = v.get("countries_evidence") or v.get("italy_evidence")
-        proof = (f'<details><summary>From the official call</summary><p>&ldquo;{escape(ev)}&rdquo;</p></details>'
-                 if ev else "")
+        if not v:
+            tag += '<span class="tag check-tag">BEING CHECKED</span>'
+            body = '<p class="pending">Details are being checked against the official call.</p>'
+        else:
+            ev = v.get("countries_evidence") or v.get("italy_evidence")
+            proof = (f'<details><summary>From the official call</summary><p>&ldquo;{escape(ev)}&rdquo;</p></details>'
+                     if ev else "")
+            body = (f'{f"<p class=\"summary\">{escape(v["summary"])}</p>" if v.get("summary") else ""}\n'
+                    f'      <p class="countries"><b>Eligible countries:</b> {escape(v.get("eligible_countries") or "check the call")}</p>\n'
+                    f'      {proof}')
         return f"""    <article class="call {css}">
       <div class="funder">{escape(v.get("programme") or programme_detail(g))}{tag}</div>
       <h4>{escape(v.get("title") or g.get("titolo") or "")}</h4>
-      {f'<p class="summary">{escape(v["summary"])}</p>' if v.get("summary") else ""}
-      <p class="countries"><b>Eligible countries:</b> {escape(countries)}</p>
-      {proof}
+      {body}
       <div class="row">
         <div class="deadline">{when}</div>
         <a class="btn" href="{escape(g["url"], quote=True)}" target="_blank" rel="noopener">Official call &rarr;</a>
       </div>
     </article>"""
 
-    def section(items, css, empty):
-        if not items:
-            return f'    <p class="empty">{empty}</p>'
-        html_parts = []
+    def programmes(items, css):
+        parts = []
         for prog, group in _group(items):
-            html_parts.append(f'    <h3 class="prog">{escape(prog)} <span>{len(group)}</span></h3>')
-            html_parts += [card(g, v, d, css) for g, v, d in group]
-        return "\n".join(html_parts)
+            parts.append(f'    <h3 class="prog">{escape(prog)} <span>{len(group)}</span></h3>')
+            parts += [card(g, v, d, css) for g, v, d in group]
+        return "\n".join(parts)
 
+    def slug(r):
+        return re.sub(r"[^a-z]+", "-", r.lower()).strip("-")
+
+    italy_html = programmes(italy, "") if italy else '    <p class="empty">No verified calls open to Italian institutions right now.</p>'
+    other_parts = []
+    for r in REGIONS:
+        if by_region[r]:
+            other_parts.append(f'    <h2 class="region" id="{slug(r)}">{escape(r)} <span>{len(by_region[r])}</span></h2>')
+            other_parts.append(programmes(by_region[r], "other"))
+    other_html = "\n".join(other_parts) or '    <p class="empty">No other calls right now.</p>'
+    nav = [f'<a href="#italy">Open to Italy <b>{len(italy)}</b></a>']
+    nav += [f'<a href="#{slug(r)}">{escape(r)} <b>{len(by_region[r])}</b></a>' for r in REGIONS if by_region[r]]
     c = cfg["colors"]
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
-                       accent=cfg.get("grant_accent", "#FFB547"), n_italy=len(italy), n_other=len(other),
-                       italy=section(italy, "", "No verified calls open to Italian institutions right now."),
-                       other=section(other, "other", "No other verified calls right now."),
-                       updated=_fmt_date(today))
+                       accent=cfg.get("grant_accent", "#FFB547"), nav="".join(nav),
+                       italy=italy_html, other=other_html, updated=_fmt_date(today))

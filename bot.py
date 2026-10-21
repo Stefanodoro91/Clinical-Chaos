@@ -222,26 +222,25 @@ def main():
     queue = load(QUEUE_FILE, [])
     posted = load(POSTED_FILE, [])
 
-    # Il run pianificato salta se un post è già uscito nelle ultime 20 ore (es. dopo un lancio manuale).
-    if os.environ.get("GITHUB_EVENT_NAME") == "schedule" and posted and posted[-1].get("time"):
-        hours = (datetime.now(timezone.utc) - datetime.fromisoformat(posted[-1]["time"])).total_seconds() / 3600
+    # Due post al giorno, in due run separati: un bando (POST_TYPE=grant) e un post di metodologia (research).
+    post_type = (os.environ.get("POST_TYPE") or "research").strip().lower()
+    kind = "grant" if post_type == "grant" else "research"
+    # Il run pianificato salta se un post dello stesso tipo è uscito nelle ultime 20 ore (es. dopo un lancio manuale).
+    same = [p for p in posted if (p.get("kind") or "research") == kind and p.get("time")]
+    if os.environ.get("GITHUB_EVENT_NAME") == "schedule" and same:
+        hours = (datetime.now(timezone.utc) - datetime.fromisoformat(same[-1]["time"])).total_seconds() / 3600
         if hours < 20:
-            print(f"Ultimo post pubblicato {hours:.1f} ore fa: oggi salto.")
+            print(f"Ultimo post di tipo {kind} pubblicato {hours:.1f} ore fa: salto.")
             return
 
-    files_waiting = ingest(drive, queue)
-
-    # Mercoledì e sabato (configurabili) un bando da GrantFinder; se non ce ne sono, un post di metodologia.
-    post_type = (os.environ.get("POST_TYPE") or "auto").strip().lower()
-    post = None
-    wants_grant = post_type == "grant" or (
-        post_type == "auto" and CONFIG.get("grant_posts", True) and (grants.is_grant_day(CONFIG) or not queue))
-    if wants_grant:
+    if kind == "grant":
+        files_waiting = 1                      # il run dei bandi non legge Drive e non avvisa sulla coda
         post = grants.next_grant_post(posted, CONFIG)
         if post is None:
-            print("Nessun bando pubblicabile oggi: passo alla metodologia.")
-
-    if post is None:
+            print("::notice title=Nessun bando oggi::Nessun bando verificato con abbastanza anticipo: oggi niente post bando.")
+            return
+    else:
+        files_waiting = ingest(drive, queue)
         if not queue:
             notify("Coda vuota: il bot è in pausa",
                    "Non ci sono post da pubblicare. Aggiungi nuovo materiale nella cartella Drive.")
