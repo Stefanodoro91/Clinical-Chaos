@@ -148,6 +148,53 @@ def ingest(drive, queue, limit=None):
 
 
 # ---------------------------------------------------------------- fase 2: pubblicazione
+def _similar(a, b):
+    from difflib import SequenceMatcher
+    norm = lambda x: " ".join(w for w in "".join(ch.lower() if ch.isalnum() else " " for ch in x).split()
+                              if w not in {"the", "a", "an", "in", "of", "your", "do", "does", "why", "is", "it", "and", "for", "to"})
+    return SequenceMatcher(None, norm(a), norm(b)).ratio()
+
+
+DUP_SCHEMA = {"type": "OBJECT", "properties": {"duplicates": {"type": "ARRAY", "items": {"type": "OBJECT",
+              "properties": {"index": {"type": "INTEGER"}, "same_as": {"type": "STRING"}},
+              "required": ["index", "same_as"]}}}, "required": ["duplicates"]}
+
+
+def drop_repeats(queue, posted, threshold=0.72):
+    """Toglie dalla coda i post che ripetono un concetto già pubblicato (o già presente prima in coda):
+    prima il confronto dei titoli, poi Gemini sul significato (titolo + messaggio chiave)."""
+    seen = [p["title"] for p in posted if (p.get("kind") or "research") == "research"]
+    kept = []
+    for q in queue:
+        twin = next((t for t in seen if _similar(q["title"], t) >= threshold), None)
+        if twin:
+            print(f"::notice title=Post doppione tolto::«{q['title']}» somiglia a «{twin}»")
+            continue
+        kept.append(q)
+        seen.append(q["title"])
+    published = [p["title"] for p in posted if (p.get("kind") or "research") == "research"]
+    if not kept or not published:
+        return kept
+    lines = "\n".join(f"{i}: {q['title']} — {q.get('takeaway', '')}" for i, q in enumerate(kept))
+    prompt = ("You curate an educational Instagram page on clinical research methodology. Below are the posts already "
+              "published and the candidate posts in the queue. List the candidates that teach essentially the SAME "
+              "concept as a published post or as an EARLIER candidate (same main idea, even if worded differently). "
+              "Different aspects of the same broad topic are NOT duplicates.\n\nPublished:\n- "
+              + "\n- ".join(published) + f"\n\nCandidates:\n{lines}")
+    try:
+        dups = content.gemini_json([{"text": prompt}], DUP_SCHEMA, 0.0).get("duplicates", [])
+    except Exception as e:
+        print(f"Controllo doppioni non riuscito ({e}): la coda resta com'è.")
+        return kept
+    drop = set()
+    for d in dups:
+        i = d.get("index")
+        if isinstance(i, int) and 0 <= i < len(kept):
+            drop.add(i)
+            print(f"::notice title=Post doppione tolto::«{kept[i]['title']}» ripete «{d.get('same_as', '')}»")
+    return [q for i, q in enumerate(kept) if i not in drop]
+
+
 def pick_next(queue, posted):
     """Prende il primo post della coda, alternando le fonti quando possibile."""
     last_source = posted[-1]["source"] if posted else None
@@ -271,6 +318,11 @@ def main():
             return
     else:
         files_waiting = ingest(drive, queue)
+        before = len(queue)
+        queue[:] = drop_repeats(queue, posted)
+        if len(queue) != before and not DRY_RUN:
+            save(QUEUE_FILE, queue)
+            commit_and_push([QUEUE_FILE.name], "Coda: tolti i post doppioni")
         if not queue:
             notify("Coda vuota: il bot è in pausa",
                    "Non ci sono post da pubblicare. Aggiungi nuovo materiale nella cartella Drive.")

@@ -147,8 +147,13 @@ def candidates(grants, posted, verified, cfg, today=None):
                     and g.get("id") not in done and g.get("url")):
                 out.append(g)
         if out:
-            # prima la pertinenza alla riabilitazione, poi la scadenza più vicina
-            return sorted(out, key=lambda g: (RELEVANCE_ORDER[g["rilevanza"]], g["scadenza"]))
+            # varietà: i programmi usati negli ultimi 5 post bando passano in fondo; poi pertinenza e scadenza
+            recent = [verified.get(p.get("grant_id"), {}).get("programme_family")
+                      for p in posted if p.get("kind") == "grant"][-5:]
+            def key(g):
+                fam = verified.get(g["id"], {}).get("programme_family") or programme_family(g)
+                return (recent.count(fam), RELEVANCE_ORDER[g["rilevanza"]], g["scadenza"])
+            return sorted(out, key=key)
     return []
 
 
