@@ -1,52 +1,5 @@
 [
   {
-    "title": "Minimization: Balancing Covariates Dynamically",
-    "title_highlight": "Minimization",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "What is Minimization",
-        "body": "Minimization was first introduced as a covariate adaptive method to balance the prognostic factors. The information of previous subjects is used to allocate newly recruited subjects.",
-        "image_prompt": "a digital scale balancing blocks of different colors representing patient covariates",
-        "highlight": "",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "How Allocation Works",
-        "body": "First, the total number of imbalances is calculated after virtually allocating a newly recruited subject to all groups. The subject will be allocated to the group with lowest total number of imbalances.",
-        "image_prompt": "a researcher comparing two folders with scoring tallies and pointing to the lower number",
-        "highlight": "",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "The Statistical Trade-off",
-        "body": "A concern from a statistical point of view is that minimization does not satisfy randomness, which is the basic assumption of statistical inference. Analysis of covariance or permutation tests are proposed.",
-        "image_prompt": "a question mark hovering over a random number sequence document next to a calculator",
-        "highlight": "does not satisfy randomness",
-        "source": "Lim & In, 2019"
-      }
-    ],
-    "takeaway": "Minimization dynamically balances covariates across study arms but sacrifices strict mathematical randomness.",
-    "takeaway_highlight": "sacrifices strict mathematical randomness",
-    "references": [
-      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
-    ],
-    "caption": "Minimization is a powerful covariate-adaptive technique that replaces rigid stratification by evaluating existing imbalances before assigning each new participant. While it achieves exceptional baseline balance, it compromises pure randomness, requiring specific analytical approaches like permutation tests. Have you used minimization in your clinical trials?",
-    "hashtags": [
-      "#ClinicalTrials",
-      "#Biostatistics",
-      "#Minimization",
-      "#ResearchMethods",
-      "#ClinicalResearch",
-      "#DataScience",
-      "#StudyDesign",
-      "#StatisticalAnalysis"
-    ],
-    "source_hint": "pages 4-6",
-    "id": "a33cce13",
-    "source": "Randomization.pdf"
-  },
-  {
     "title": "Response-Adaptive Randomization: Promise and Pitfalls",
     "title_highlight": "Response-Adaptive Randomization",
     "category": "Randomization & blinding",
