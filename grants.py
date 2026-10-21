@@ -912,3 +912,92 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None):
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
                        amber=cfg.get("grant_accent", "#FFB547"), lilac=cfg.get("positions_accent", "#A78BFA"),
                        calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today))
+
+
+# ---------------------------------------------------------------- decorazione animata ai lati (solo schermi larghi)
+DECOR = """
+<div id="crc-rain" aria-hidden="true"></div>
+<div id="crc-orbit" aria-hidden="true"></div>
+<style>
+  #crc-rain, #crc-orbit { position: fixed; top: 0; bottom: 0; pointer-events: none; z-index: 0; display: none; }
+  #crc-rain { left: 0; width: calc((100vw - 740px) / 2); }
+  #crc-orbit { right: 0; width: calc((100vw - 740px) / 2); }
+  #crc-rain canvas, #crc-orbit canvas { display: block; width: 100%; height: 100%; }
+  @media (min-width: 1180px) { #crc-rain, #crc-orbit { display: block; } }
+  main, header, footer, .bar { position: relative; z-index: 1; }
+</style>
+<script>
+(function () {
+  var wide = window.matchMedia("(min-width: 1180px)");
+  var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var started = false;
+  function start() {
+    if (started || !wide.matches) return;
+    started = true;
+    var COLORS = ["#3DD9C1", "#14A085", "#FFFFFF", "#7F96AB"];
+    function layer(id) {
+      var el = document.getElementById(id), c = document.createElement("canvas"), ctx = c.getContext("2d");
+      el.appendChild(c);
+      return { ctx: ctx, fit: function () {
+        var r = el.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+        c.width = r.width * d; c.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); return r; } };
+    }
+    /* sinistra: cascata lenta di quadratini, singoli o a piccoli gruppi come nel logo */
+    var rain = layer("crc-rain"), R = rain.fit(), drops = [];
+    function drop(y) {
+      var sizes = [4, 6, 8, 10, 12], s = sizes[Math.floor(Math.random() * sizes.length)];
+      var shapes = [[], [], [[1, 0]], [[0, 1]], [[1, 0], [0, 1]], [[1, 0], [1, 1]]];
+      return { x: Math.random() * R.width, y: (y === undefined ? -40 : y), s: s, v: 7 + Math.random() * 20,
+               c: COLORS[Math.floor(Math.random() * COLORS.length)], a: 0.12 + Math.random() * 0.5,
+               shape: shapes[Math.floor(Math.random() * shapes.length)] };
+    }
+    function seed() { drops = []; var n = Math.round(R.width * R.height / 7500);
+      for (var i = 0; i < n; i++) drops.push(drop(Math.random() * R.height)); }
+    seed();
+    /* destra: cuore del logo fermo, quadratini periferici in orbita lenta */
+    var orbit = layer("crc-orbit"), O = orbit.fit();
+    var core = new Image(); core.src = "logo-core-light.png";
+    var word = new Image(); word.src = "logo-wordmark-light.png";
+    var sats = [];
+    for (var i = 0; i < 48; i++) sats.push({ r: 0.64 + Math.random() * 0.5, a: Math.random() * 6.283,
+      w: (0.035 + Math.random() * 0.09) * (Math.random() < 0.5 ? -1 : 1), s: 3 + Math.random() * 7,
+      c: Math.random() < 0.6 ? "#3DD9C1" : "#FFFFFF", al: 0.35 + Math.random() * 0.6, ph: Math.random() * 6.283 });
+    var last = performance.now();
+    function frame(t) {
+      var dt = Math.min(0.05, (t - last) / 1000); last = t;
+      var rc = rain.ctx; rc.clearRect(0, 0, R.width, R.height);
+      drops.forEach(function (d) {
+        d.y += d.v * dt;
+        if (d.y > R.height + 40) { var n = drop(); for (var k in n) d[k] = n[k]; }
+        rc.globalAlpha = d.a; rc.fillStyle = d.c; rc.fillRect(d.x, d.y, d.s, d.s);
+        d.shape.forEach(function (o) { rc.fillRect(d.x + o[0] * (d.s + 2), d.y + o[1] * (d.s + 2), d.s, d.s); });
+      });
+      var oc = orbit.ctx, cx = O.width / 2, cy = O.height * 0.44, Rr = Math.min(O.width, O.height) * 0.27;
+      oc.clearRect(0, 0, O.width, O.height); oc.globalAlpha = 1;
+      if (core.complete && core.naturalWidth) { var cw = Rr * 1.05, ch = cw * core.naturalHeight / core.naturalWidth;
+        oc.drawImage(core, cx - cw / 2, cy - ch / 2, cw, ch); }
+      sats.forEach(function (q) {
+        q.a += q.w * dt;
+        var rr = Rr * q.r + Math.sin(t / 1000 * 0.6 + q.ph) * 5;
+        oc.globalAlpha = q.al; oc.fillStyle = q.c;
+        oc.fillRect(cx + Math.cos(q.a) * rr - q.s / 2, cy + Math.sin(q.a) * rr - q.s / 2, q.s, q.s);
+      });
+      oc.globalAlpha = 1;
+      if (word.complete && word.naturalWidth) { var ww = Rr * 1.7, wh = ww * word.naturalHeight / word.naturalWidth;
+        oc.drawImage(word, cx - ww / 2, cy + Rr * 1.4, ww, wh); }
+      if (!still) requestAnimationFrame(frame);
+    }
+    window.addEventListener("resize", function () { R = rain.fit(); O = orbit.fit(); seed(); if (still) frame(performance.now()); });
+    core.onload = word.onload = function () { if (still) frame(performance.now()); };
+    requestAnimationFrame(frame);
+  }
+  start();
+  if (wide.addEventListener) wide.addEventListener("change", start);
+})();
+</script>
+"""
+
+
+def add_decor(html):
+    """Aggiunge la decorazione animata ai lati (cascata di quadratini e logo in orbita) prima di </body>."""
+    return html.replace("</body>", DECOR + "</body>", 1) if "crc-rain" not in html else html

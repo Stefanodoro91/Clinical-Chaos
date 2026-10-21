@@ -472,7 +472,7 @@ def update_positions(posted=None, verify_limit=None):
         positions.refresh(archive, limit=int(verify_limit or CONFIG.get("positions_verify_per_run", 25)))
         save(ROOT / positions.ARCHIVE_FILE, archive)
     POSITIONS_PAGE.parent.mkdir(exist_ok=True)
-    POSITIONS_PAGE.write_text(positions.build_page(archive, posted, CONFIG), encoding="utf-8")
+    POSITIONS_PAGE.write_text(grants.add_decor(positions.build_page(archive, posted, CONFIG)), encoding="utf-8")
     n = len(positions.active(archive))
     print(f"::notice title=Pagina posizioni::{n} posizioni aperte in pagina")
     home = write_home()
@@ -489,7 +489,8 @@ def write_home():
     n_calls = calls.count("Official call &rarr;")
     m = _re.search(r'Open to Italy <b>(\d+)</b>', calls)
     n_positions = jobs.count("Advertisement &rarr;")
-    HOME_FILE.write_text(grants.build_home(n_calls, int(m.group(1)) if m else 0, n_positions, CONFIG), encoding="utf-8")
+    HOME_FILE.write_text(grants.add_decor(grants.build_home(n_calls, int(m.group(1)) if m else 0, n_positions, CONFIG)),
+                         encoding="utf-8")
     return HOME_FILE.relative_to(ROOT).as_posix()
 
 
@@ -514,12 +515,13 @@ def update_grants(posted=None, verify_limit=None):
         grants.refresh_verified(grants_list, verified, CONFIG, limit=verify_limit)
         save(ROOT / grants.VERIFIED_FILE, verified)
     PAGE_FILE.parent.mkdir(exist_ok=True)
-    PAGE_FILE.write_text(grants.build_page(grants_list, verified, posted, CONFIG), encoding="utf-8")
+    PAGE_FILE.write_text(grants.add_decor(grants.build_page(grants_list, verified, posted, CONFIG)), encoding="utf-8")
     entries = grants.page_entries(grants_list, verified)
     pending = sum(1 for g in grants_list if g["id"] not in verified)
     print(f"::notice title=Pagina bandi::{len(entries)} bandi in pagina, {pending} ancora da verificare")
     home = write_home()
-    commit_and_push([grants.VERIFIED_FILE, PAGE_FILE.relative_to(ROOT).as_posix(), home, "docs/logo.png"],
+    commit_and_push([grants.VERIFIED_FILE, PAGE_FILE.relative_to(ROOT).as_posix(), home, "docs/logo.png",
+                     "docs/logo-core-light.png", "docs/logo-wordmark-light.png"],
                     "Bandi verificati e pagina aggiornata")
     trigger_deploy()
 
