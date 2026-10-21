@@ -139,7 +139,8 @@ def candidates(grants, posted, verified, cfg, today=None):
     for g in grants:
         v = verified.get(g.get("id"), {})
         deadline = _date(g.get("scadenza"))
-        if (v.get("status") == "ok" and v.get("is_open_call") != "no" and g.get("rilevanza") in RELEVANCE_ORDER
+        if (v.get("status") == "ok" and v.get("is_open_call") != "no" and not v.get("coming_soon")
+                and g.get("rilevanza") in RELEVANCE_ORDER
                 and deadline and deadline >= today + timedelta(days=min_days)
                 and g.get("id") not in done and g.get("url")):
             out.append(g)
@@ -392,6 +393,10 @@ def verify(g, cfg):
     out = content.gemini_json([{"text": VERIFY_PROMPT.format(source=source, official=text[:60000], data=data)}],
                               VERIFY_SCHEMA, 0.1)
     elig = check_eligibility(g, text, out)
+    coming_soon = bool(NIH_NUMBER.search(g.get("programma") or "")) and not source.startswith("NIH Guide")
+    if coming_soon:
+        elig.update({"eligible_countries": "Coming soon: published with the full call", "countries_evidence": "",
+                     "italy": "unclear", "italy_evidence": ""})
     programme = (out.get("programme") or "").strip()
     if not (programme and _words_found(programme, text)):
         programme = ""
@@ -401,7 +406,7 @@ def verify(g, cfg):
         "is_open_call": out.get("is_open_call", "unclear"),
         "title": content._clip(out.get("title") or g.get("titolo") or "", 140),
         "programme": content._clip(programme, 120), "programme_family": programme_family(g),
-        "summary": content._clip(out.get("summary", ""), 700), **elig,
+        "summary": content._clip(out.get("summary", ""), 700), "coming_soon": coming_soon, **elig,
     }
 
 
@@ -422,6 +427,8 @@ def refresh_verified(grants, verified, cfg, limit=None, today=None):
         v = verified.get(g["id"])
         if not v:
             return True
+        if v.get("coming_soon"):
+            return (today - (_date(v.get("checked")) or today)).days >= 7
         if v.get("status") == "failed":
             last = _date(v.get("checked")) or today
             return v.get("attempts", 1) < 3 and (today - last).days >= 7
@@ -568,6 +575,7 @@ PAGE = """<!doctype html>
   .funder {{ color: var(--soft); font-size: 13px; font-weight: 600; margin-bottom: 6px; }}
   .tag {{ display: inline-block; background: var(--teal); color: var(--bg); font-size: 11px; font-weight: 800;
          letter-spacing: .05em; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }}
+  .tag.soon-tag {{ background: var(--accent); }}
   .call h4 {{ font-size: 18px; margin: 0 0 10px; line-height: 1.3; }}
   .summary {{ color: var(--soft); font-size: 15px; margin: 0 0 12px; }}
   .countries {{ font-size: 14px; margin: 0 0 4px; }}
@@ -656,6 +664,9 @@ def build_page(grants_list, verified, posted, cfg, today=None):
         else:
             when = "Deadline <b>see official call</b>"
         tag = '<span class="tag">ON INSTAGRAM</span>' if g["id"] in featured else ""
+        if v.get("coming_soon"):
+            tag += '<span class="tag soon-tag">COMING SOON</span>'
+        countries = v.get("eligible_countries") or "check the call"
         ev = v.get("countries_evidence") or v.get("italy_evidence")
         proof = (f'<details><summary>From the official call</summary><p>&ldquo;{escape(ev)}&rdquo;</p></details>'
                  if ev else "")
@@ -663,7 +674,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
       <div class="funder">{escape(v.get("programme") or programme_detail(g))}{tag}</div>
       <h4>{escape(v.get("title") or g.get("titolo") or "")}</h4>
       {f'<p class="summary">{escape(v["summary"])}</p>' if v.get("summary") else ""}
-      <p class="countries"><b>Eligible countries:</b> {escape(v.get("eligible_countries") or "check the call")}</p>
+      <p class="countries"><b>Eligible countries:</b> {escape(countries)}</p>
       {proof}
       <div class="row">
         <div class="deadline">{when}</div>
