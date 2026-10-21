@@ -1,741 +1,619 @@
 [
   {
     "title": "Is It Unblinding or Just Response Bias?",
+    "title_highlight": "Response Bias",
     "category": "Bias & confounding",
     "slides": [
       {
-        "heading": "The wishful thinking effect",
-        "body": "Participants often assume they are receiving active medication due to optimism, mild symptoms, or expectation. Conversely, patients lacking quick relief may automatically guess they are on placebo.",
-        "image_prompt": "two patients in separate booths both pointing toward a single illuminated pill bottle displayed on a central pedestal"
+        "heading": "The Active Drug Assumption",
+        "body": "In trial exit surveys, all subjects tend to believe that they are on active treatment. This response bias stems from favorable effects, side effects, or simply wishful thinking about receiving the experimental therapy.",
+        "image_prompt": "Two patients seated at a clinic table, each holding an identical plain pill bottle and smiling with hopeful expressions as they point toward their bottles.",
+        "highlight": "wishful thinking",
+        "source": "Bang et al., 2004"
       },
       {
-        "heading": "Testing for response bias",
-        "body": "When one arm has a positive index and the other a negative index, don't rush to conclusions. Testing whether their sum equals zero formally evaluates whether participants simply shared a systematic response bias.",
-        "image_prompt": "two mathematical weights placed on opposite ends of a seesaw, settling into a balanced equilibrium"
+        "heading": "The Placebo Expectation",
+        "body": "Conversely, participants are inclined to believe they receive a placebo in the absence of any therapeutic effects, because subjects who presume they receive an active drug anticipate noticeable clinical improvements.",
+        "image_prompt": "A disappointed patient looking into an empty measuring cup, while a researcher standing nearby holds a clipboard and observes quietly.",
+        "highlight": "absence of any therapeutic effects",
+        "source": "Bang et al., 2004"
       },
       {
-        "heading": "CRISP trial: unblinding vs bias",
-        "body": "In the CRISP trial of Lovastatin vs placebo, the drug arm had an index of 0.21, but placebo was 0.01. Because placebo was near zero rather than negative, this reflected genuine treatment unmasking, not response bias.",
-        "image_prompt": "two pill containers on a table, one surrounded by several observant figures looking closely and the other surrounded by blindfolded figures"
+        "heading": "Testing for Response Bias",
+        "body": "If one arm suggests unblinding and the other suggests opposite guessing, test if both arm indices sum to zero. If not rejected, there is evidence that this trial may experience response bias.",
+        "image_prompt": "A pair of balance scales on a wooden desk holding two paper forms that tilt equally in opposite directions, balancing perfectly flat.",
+        "highlight": "experience response bias",
+        "source": "Bang et al., 2004"
       },
       {
-        "heading": "What to do if unblinding occurs",
-        "body": "If unblinding is detected, perform secondary subgroup analyses adjusting for treatment perception. More importantly, investigate unblinding factors to improve formulation, dummy designs, and masking in future studies.",
-        "image_prompt": "a team of researchers examining divided columns of patient data folders under an overhead lamp"
+        "heading": "Why Arm-Specific Checks Matter",
+        "body": "A single combined index merges both arms, hiding whether participants broke masking or just guessed optimistically. Testing arms separately reveals whether true unblinding or participant expectations drove the results.",
+        "image_prompt": "A researcher examining two identical pill bottles through a magnifying glass, realizing both bottles are sealed identically despite differing patient guesses.",
+        "highlight": "participant expectations drove",
+        "source": "Bang et al., 2004"
       }
     ],
-    "takeaway": "Opposite guessing between arms often signals response bias rather than true unblinding, requiring a formal test of their sum.",
-    "caption": "When participants guess their treatment, their answers aren't just driven by true unmasking.\\nResponse bias is common: participants frequently believe they received active treatment simply because they hope it works.\\nIf drug patients guess drug and placebo patients also guess drug, that isn't equal blinding—it is response bias.\\nTesting if the two indices cancel to zero reveals whether optimism or true unmasking drove the guesses.\\nHave you noticed participants assuming they are on active therapy in your trials?",
-    "hashtags": [
-      "#ClinicalTrials审#ResearchBias审#ResponseBias审#ResearchMethodology审#ClinicalResearch审#Biostatistics审#TrialDesign审#EvidenceBasedMedicine审#Epidemiology"
+    "takeaway": "Response bias from participant expectations can mimic unblinding unless both study arms are evaluated and tested separately.",
+    "takeaway_highlight": "Response bias",
+    "references": [
+      "Bang, H., Ni, L., & Davis, C. E. (2004). Assessment of blinding in clinical trials. Controlled Clinical Trials, 25(2), 143–156. https://doi.org/10.1016/j.cct.2003.10.016"
     ],
-    "source_hint": "pages 6-7, 10-12",
-    "id": "d77f2998",
+    "caption": "When trial participants guess what they received, are they truly unblinded or just being optimistic? Bang, Ni, and Davis (2004) highlighted that subjects often guess active drug out of wishful thinking, or placebo when immediate relief fails to appear. Combining all arms into one index can completely mask this response bias. By assessing arms separately and testing their sum against zero, researchers can differentiate real unmasking from psychological bias. Have you ever evaluated blinding guesses and seen patient hope skew the numbers?",
+    "hashtags": [
+      "#ClinicalTrials",
+      "#Blinding",
+      "#ClinicalResearch",
+      "#ResearchMethodology",
+      "#BiasAndConfounding",
+      "#Biostatistics",
+      "#PlaceboEffect",
+      "#EvidenceBasedMedicine"
+    ],
+    "source_hint": "page 6, section 3.2",
+    "id": "458aedc6",
     "source": "Blinding.pdf"
   },
   {
-    "title": "The Hidden Risk in Block Randomization",
+    "title": "Does Unblinding Ruin Your Trial Results?",
+    "title_highlight": "Ruin Your Trial",
     "category": "Randomization & blinding",
     "slides": [
       {
-        "heading": "Forcing Balance Across Groups",
-        "body": "Block randomization divides recruitment into small blocks to maintain balanced group sizes throughout enrollment. This prevents severe group imbalance and preserves study power.",
-        "image_prompt": "A researcher arranging colored rectangular blocks into neat, matching compartments within a large wooden tray."
+        "heading": "Unblinding Is Not Automatic Ruin",
+        "body": "Investigators assume a broken blind automatically invalidates study findings. However, empirical studies show that unsuccessful blindness may not influence statistical analyses or alter overall treatment conclusions.",
+        "image_prompt": "A researcher in a white coat reviewing a data printout, with a blindfold resting on the desk next to an intact bell-curve illustration.",
+        "highlight": "unsuccessful blindness may not influence",
+        "source": "Bang et al., 2004"
       },
       {
-        "heading": "The Block Size of Two Trap",
-        "body": "If the block size is two, knowing the first participant's allocation allows the investigator to deduce the second participant's group with certainty, creating high risk for observation bias.",
-        "image_prompt": "A doctor holding two envelopes, opening one while looking knowingly at a patient waiting across the examination table."
+        "heading": "The Subgroup Consistency Test",
+        "body": "In a nicotine gum trial, drug effect was preserved among subjects who guessed correctly, incorrectly, or could not tell. Failure to maintain blindness did not alter trial findings across different participant subgroups.",
+        "image_prompt": "Three groups of simple patient silhouettes standing beside three different symbols, all walking forward beneath identical upward-trending arrows.",
+        "highlight": "did not alter trial findings",
+        "source": "Hughes & Krahn, 1985"
       },
       {
-        "heading": "The Last-Patient Leak",
-        "body": "Even with larger blocks of four or more, if researchers know the block size, the final assignment in every block becomes predictable, driving selection bias.",
-        "image_prompt": "A person looking through a magnifying glass at a sequence of sealed envelopes, pointing at the final unsealed envelope."
+        "heading": "When Perceptions Alter Endpoints",
+        "body": "Unblinding can still distort trials, especially with subjective outcomes. In a famous trial of vitamin C for cold symptoms, participant perceptions directly altered reported endpoints, confounding the true drug effect.",
+        "image_prompt": "A patient holding a cold compress to their forehead while filling out a questionnaire beside an unmarked bottle of tablets.",
+        "highlight": "perceptions directly altered reported endpoints",
+        "source": "Karlowski et al., 1975"
       },
       {
-        "heading": "The Solution: Varying Block Sizes",
-        "body": "To minimize predictability, researchers should use block sizes of four or more and randomly vary block sizes across the trial so the pattern cannot be guessed.",
-        "image_prompt": "A pair of hands mixing together several boxes of different sizes containing randomized green and orange cards."
+        "heading": "Objective Endpoints Are Not Immune",
+        "body": "Even with hard endpoints like survival, knowing allocation can alter adherence or ancillary care. If unblinding is detected, researchers should conduct subgroup analyses and identify specific unblinding factors.",
+        "image_prompt": "A clinician offering extra care and attention to one patient in a clinical room, while another patient sits completely unattended nearby.",
+        "highlight": "conduct subgroup analyses",
+        "source": "Bang et al., 2004"
       }
     ],
-    "takeaway": "Known or tiny block sizes enable allocation prediction, defeating the primary purpose of randomization.",
-    "caption": "Block randomization is standard practice for keeping arm sizes balanced during ongoing recruitment.\nHowever, predictability is the enemy of allocation concealment.\nIf recruiters deduce or know the block length, the final assignment in each block is no longer a secret.\nHave you ever seen an investigator guess the next assignment due to fixed block sizes?",
+    "takeaway": "Unblinding does not automatically invalidate a trial, but requires subgroup analyses to prove treatment effects were preserved.",
+    "takeaway_highlight": "requires subgroup analyses",
+    "references": [
+      "Bang, H., Ni, L., & Davis, C. E. (2004). Assessment of blinding in clinical trials. Controlled Clinical Trials, 25(2), 143–156. https://doi.org/10.1016/j.cct.2003.10.016",
+      "Hughes, J. R., & Krahn, D. (1985). Blindness and the validity of the double-blind procedure. J Clin Psychopharmacol, 5(3), 138–142.",
+      "Karlowski, T. R., Chalmers, T. C., Frenkel, L. D., et al. (1975). Ascorbic acid for the common cold: a prophylactic and therapeutic trial. JAMA, 231, 1038–1042."
+    ],
+    "caption": "Finding out your trial was partially unblinded is every methodologist's nightmare. But does it immediately ruin your results? Not always. As Bang et al. (2004) note, a classic nicotine gum study demonstrated that drug efficacy remained identical regardless of whether patients guessed correctly, incorrectly, or had no idea. Yet when outcomes are subjective, or when unblinding shifts ancillary care, bias creeps in quickly. When unblinding occurs, running stratified subgroup analyses by guess category is essential. How does your team address post-trial unblinding in your statistical reports?",
     "hashtags": [
-      "#Randomization",
       "#ClinicalTrials",
-      "#SelectionBias",
-      "#AllocationConcealment",
-      "#TrialDesign",
-      "#Biostatistics",
+      "#RandomizedControlledTrial",
       "#ResearchMethods",
-      "#GoodClinicalPractice"
-    ],
-    "source_hint": "page 3, Block randomization",
-    "id": "9c7e27e5",
-    "source": "Randomization.pdf"
-  },
-  {
-    "title": "The Problem with Stratified Randomization",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "Controlling Key Baseline Covariates",
-        "body": "Randomization does not guarantee balance across baseline prognostic factors. Stratified randomization creates separate strata for factors like sex, age, or trial site, randomizing independently within each.",
-        "image_prompt": "A set of clear sorting bins separating incoming participant profile folders into categories based on color tags."
-      },
-      {
-        "heading": "The Combinatorial Explosion",
-        "body": "Strata multiply rapidly. Accounting for just 2 trial sites, 2 sexes, and 3 age groups creates 12 distinct strata, each requiring its own separate random sequence.",
-        "image_prompt": "A tree branching outward from two trunks into dozens of smaller twigs, each holding a tiny empty birdhouse."
-      },
-      {
-        "heading": "The Trap of Sparse Strata",
-        "body": "When too many strata are formed relative to the target sample size, several strata remain empty or sparse. This paradoxically causes imbalances in group allocation.",
-        "image_prompt": "A grid of twelve clear glass jars where several jars are completely empty while others hold only one marble."
-      },
-      {
-        "heading": "Keep Stratification Focused",
-        "body": "Carefully limit stratified factors to essential prognostic variables and recruitment sites, and account for these factors again during final statistical analysis.",
-        "image_prompt": "A researcher holding a checklist, deliberately crossing off multiple low-priority criteria while circling one main variable."
-      }
-    ],
-    "takeaway": "Stratifying by too many factors creates sparse cells, undermining the very balance stratification aims to achieve.",
-    "caption": "Balancing prognostic factors between arms is essential for valid statistical inference.\nStratified randomization works well, but researchers often over-stratify by adding age, sex, stage, and site all at once.\nEach added factor multiplies the required strata, quickly leading to empty or sparsely filled cells.\nHow many stratification factors do you typically allow in your trial protocols?",
-    "hashtags": [
-      "#Stratification",
-      "#Randomization",
-      "#ClinicalResearch",
-      "#TrialDesign",
+      "#ClinicalEpidemiology",
+      "#Blinding",
+      "#DataAnalysis",
       "#Biostatistics",
-      "#Covariates",
-      "#ClinicalTrials",
-      "#StudyDesign"
+      "#TrialIntegrity"
     ],
-    "source_hint": "pages 3-4, Stratified randomization & Fig. 3",
-    "id": "77eafa84",
-    "source": "Randomization.pdf"
+    "source_hint": "page 13, section 6 (Discussion)",
+    "id": "948d3c83",
+    "source": "Blinding.pdf"
   },
   {
-    "title": "How Minimization Balances Covariates",
+    "title": "The Hidden Predictability Flaw in Block Randomization",
+    "title_highlight": "Predictability Flaw",
     "category": "Randomization & blinding",
     "slides": [
       {
-        "heading": "Beyond Static Stratification",
-        "body": "When several prognostic factors must be balanced, static strata fragment. Minimization (covariate-adaptive randomization) dynamically allocates each subject to minimize overall imbalance.",
-        "image_prompt": "A balancing scale dynamically adjusting its position as colored tokens are carefully placed on opposite sides."
+        "heading": "Balancing Group Sizes with Blocks",
+        "body": "Block randomization keeps group sample sizes balanced by creating small blocks and randomizing within each block. This limits the maximum imbalance between groups throughout the trial.",
+        "image_prompt": "two equal stacks of blue and orange wooden blocks standing side by side on a plain table.",
+        "highlight": "limits the maximum imbalance",
+        "source": ""
       },
       {
-        "heading": "How the Algorithm Decides",
-        "body": "The first subject is allocated by simple randomization. For subsequent subjects, the algorithm virtually tests assignment to each group and assigns the subject to the group with the lowest total imbalance score.",
-        "image_prompt": "A researcher calculating numbers on a notepad while comparing two rows of patient profile cards on a desk."
+        "heading": "The Danger of Block Size Two",
+        "body": "If the block size is 2, the allocation result of the second subject in the block can be easily predicted with a high risk of observation bias. Small fixed blocks compromise concealment.",
+        "image_prompt": "two closed envelopes on a wooden desk, one slightly translucent revealing a card inside while a doctor observes.",
+        "highlight": "easily predicted with a high risk",
+        "source": ""
       },
       {
-        "heading": "Breaking Ties with Chance",
-        "body": "If the calculated total imbalance score is identical for both treatment and control groups, the allocation defaults back to simple randomization.",
-        "image_prompt": "A coin spinning midair above two balanced trays holding equal numbers of blue and red tokens."
+        "heading": "Selection Bias from Known Block Sizes",
+        "body": "Even with larger blocks, if the block size is known to the researcher, the risk of selection bias will increase because the treatment of the last subject in the block will be revealed.",
+        "image_prompt": "a doctor looking at a calendar clipboard while pointing an incoming patient toward an already open treatment door.",
+        "highlight": "risk of selection bias will increase",
+        "source": ""
       },
       {
-        "heading": "The Statistical Trade-Off",
-        "body": "Minimization does not satisfy pure randomness, which is a core assumption of statistical inference. It requires specific analyses like ANCOVA or permutation tests, and risks prediction if profiles leak.",
-        "image_prompt": "An open medical dossier lying beside a computer monitor displaying an algorithm decision tree and padlock icon."
+        "heading": "How to Guard Against Guessing",
+        "body": "To protect allocation integrity, block sizes should preferably be 4 or more. To reduce the risk of predictability, investigators should vary the block size randomly throughout recruitment.",
+        "image_prompt": "three opaque wooden boxes of noticeably different sizes lined up on a table with sealed envelopes beside them.",
+        "highlight": "vary the block size randomly",
+        "source": "Schulz & Grimes, 2002"
       }
     ],
-    "takeaway": "Minimization balances multiple prognostic factors without fragmented strata, but sacrifices strict theoretical randomness.",
-    "caption": "When multiple prognostic factors need control, standard stratification can break down into empty cells.\nMinimization provides a dynamic alternative by using previously enrolled patient profiles to allocate the next subject.\nWhile it guarantees tight balance across baseline traits, it departs from pure randomness and demands specific analytical techniques.\nHave you implemented minimization in your studies, or do you stick to stratified blocks?",
+    "takeaway": "Keep block sizes at 4 or more and vary the block size randomly to prevent predictable allocation and selection bias.",
+    "takeaway_highlight": "vary the block size randomly",
+    "references": [
+      "Schulz, K. F., & Grimes, D. A. (2002). Unequal group sizes in randomised trials: guarding against guessing. Lancet, 359(9310), 966-970."
+    ],
+    "caption": "Block randomization is the go-to technique to prevent sample size imbalances across study arms. But when block sizes are fixed and small, allocation becomes predictable before the block closes.\nIf investigators can anticipate what comes next, selection bias enters the study even with strict protocols in place.\nVarying block sizes randomly keeps allocation concealment intact from start to finish.\nHow do you handle block sizing and allocation concealment in your trial designs?",
     "hashtags": [
+      "#ClinicalTrials",
+      "#Randomization",
+      "#Biostatistics",
+      "#ClinicalResearch",
+      "#StudyDesign",
+      "#SelectionBias",
+      "#ClinicalEpidemiology",
+      "#EvidenceBasedMedicine",
+      "#Methodology"
+    ],
+    "source_hint": "page 3, Block randomization section",
+    "id": "ff51bb59",
+    "source": "Randomization.pdf"
+  },
+  {
+    "title": "Why Stratified Randomization Can Backfire",
+    "title_highlight": "Stratified Randomization Can Backfire",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "Balancing Prognostic Covariates",
+        "body": "Stratified randomization divides participants into subgroups based on prognostic factors like sex or site before randomizing within each stratum, aiming to balance key covariates between arms.",
+        "image_prompt": "a crowd of human figures split into two distinct groups before passing through separate colored sorting arches.",
+        "highlight": "balance key covariates between arms",
+        "source": ""
+      },
+      {
+        "heading": "The Strata Explosion Problem",
+        "body": "If several prognostic factors affect the outcome, the number of strata increases rapidly. For example, 2 hospital sites, 2 sexes, and 3 age groups combine into 12 separate strata.",
+        "image_prompt": "a single line branching outward into twelve smaller distinct boxes drawn across a large drafting board.",
+        "highlight": "number of strata increases rapidly",
+        "source": "Rosenberger & Lachin, 2016"
+      },
+      {
+        "heading": "The Threat of Sparse Strata",
+        "body": "When there are too many strata relative to sample size, the number of subjects allocated to a few strata may be empty or sparse. This paradoxically causes an imbalance between treatment groups.",
+        "image_prompt": "a grid of twelve glass jars on shelves where most jars are completely empty and two contain single marbles.",
+        "highlight": "empty or sparse",
+        "source": ""
+      },
+      {
+        "heading": "Keeping Stratification Disciplined",
+        "body": "To prevent sparse strata, prognostic factors should be carefully selected and strictly limited. These covariates must also be considered again during the final statistical analysis.",
+        "image_prompt": "a researcher using a magnifying glass to inspect a short list of checked items on a clinical clipboard.",
+        "highlight": "carefully selected and strictly limited",
+        "source": ""
+      }
+    ],
+    "takeaway": "Too many strata lead to empty or sparse cells, defeating the purpose of stratified randomization and creating imbalances.",
+    "takeaway_highlight": "empty or sparse cells",
+    "references": [
+      "Rosenberger, W. F., & Lachin, J. M. (2016). Randomization in Clinical Trials (2nd ed.). John Wiley & Sons, Inc."
+    ],
+    "caption": "Stratification seems like the perfect solution when you have baseline covariates that strongly influence your clinical outcome.\nHowever, each new covariate multiplies the number of required strata exponentially.\nIn moderate sample sizes, cells quickly become empty or sparse, generating the very imbalance you wanted to avoid.\nKeeping strata strictly limited and adjusting for them in the final model is essential.\nHow many stratification factors do you typically allow in your clinical trial protocols?",
+    "hashtags": [
+      "#ClinicalTrials",
+      "#StratifiedRandomization",
+      "#Biostatistics",
+      "#ClinicalResearch",
+      "#StudyDesign",
+      "#PrognosticFactors",
+      "#ClinicalEpidemiology",
+      "#ResearchMethodology",
+      "#DataAnalysis"
+    ],
+    "source_hint": "pages 3-4, Stratified randomization section",
+    "id": "0b735693",
+    "source": "Randomization.pdf"
+  },
+  {
+    "title": "Minimization: Smart Balancing with a Hidden Catch",
+    "title_highlight": "Minimization",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "When Stratification Falls Short",
+        "body": "When numerous prognostic factors make traditional stratification impractical, covariate-adaptive randomization, known as minimization, dynamically allocates subjects to balance baseline characteristics.",
+        "image_prompt": "a balance scale on a desk with colored tokens being moved between two pans to restore perfect level.",
+        "highlight": "balance baseline characteristics",
+        "source": "Taves, 1974"
+      },
+      {
+        "heading": "How Minimization Decides Allocation",
+        "body": "The first subject is allocated by simple randomization. Subsequent patients are virtually assigned to each group, and the subject is allocated to the group that yields the lowest total number of imbalances.",
+        "image_prompt": "a researcher comparing two tally sheets on a wall and placing a green participant token into a lower-sum basket.",
+        "highlight": "lowest total number of imbalances",
+        "source": "Pocock & Simon, 1975"
+      },
+      {
+        "heading": "The Loss of Pure Randomness",
+        "body": "From a statistical standpoint, minimization does not satisfy randomness, violating a core assumption of statistical inference. This requires special analytical methods like permutation tests or ANCOVA.",
+        "image_prompt": "a pair of dice resting motionless next to a statistical bell curve chart on a dark wooden table.",
+        "highlight": "does not satisfy randomness",
+        "source": "Schulz & Grimes, 2002"
+      },
+      {
+        "heading": "The Risk of Allocation Prediction",
+        "body": "Because allocation depends on past participant data, exposure of the subjects' information can lead to a certain degree of allocation prediction for the next subjects, opening the door to bias.",
+        "image_prompt": "a researcher observing an open patient ledger while anticipating the path of a participant approaching two doors.",
+        "highlight": "allocation prediction for the next subjects",
+        "source": ""
+      }
+    ],
+    "takeaway": "Minimization balances multiple covariates dynamically, but it does not satisfy randomness and can lead to allocation prediction.",
+    "takeaway_highlight": "does not satisfy randomness",
+    "references": [
+      "Pocock, S. J., & Simon, R. (1975). Sequential treatment assignment with balancing for prognostic factors in the controlled clinical trial. Biometrics, 31(1), 103-115.",
+      "Schulz, K. F., & Grimes, D. A. (2002). Generation of allocation sequences in randomised trials: chance, not choice. Lancet, 359(9305), 515-519.",
+      "Taves, D. R. (1974). Minimization: a new method of assigning patients to treatment and control groups. Clinical Pharmacology & Therapeutics, 15(5), 443-453."
+    ],
+    "caption": "When clinical trials involve multiple baseline prognostic factors, traditional stratification quickly fractures into too many sparse strata.\nMinimization provides an elegant solution by calculating cumulative imbalances and assigning each newcomer to restore balance.\nYet it comes with real methodological trade-offs: pure randomness is lost, and predictable allocation sequences can emerge if patient data is visible.\nHave you used minimization in your clinical studies, or do you stick to standard stratified blocks?",
+    "hashtags": [
+      "#ClinicalTrials",
       "#Minimization",
       "#AdaptiveRandomization",
       "#Biostatistics",
-      "#ClinicalTrials",
-      "#TrialDesign",
-      "#Methodology",
-      "#Covariates",
-      "#ResearchMethods"
-    ],
-    "source_hint": "pages 4-6, Minimization & Tables 1-4",
-    "id": "9854c143",
-    "source": "Randomization.pdf"
-  },
-  {
-    "title": "Can Randomization Adapt to Patient Response?",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "Fixed Probability Assumptions",
-        "body": "Standard trials keep allocation probabilities fixed throughout. But should allocation ratios remain static if accumulating trial data shows unequal treatment effects as the study progresses?",
-        "image_prompt": "A divided pathway with equal directional signposts pointing toward two identical clinic buildings under a clear sky."
-      },
-      {
-        "heading": "The Play-the-Winner Concept",
-        "body": "In response-adaptive designs like randomized play-the-winner, if a patient responds successfully, the next patient is assigned to that same arm. Otherwise, they go to another arm.",
-        "image_prompt": "A doctor guiding an incoming patient toward an illuminated green door after another patient successfully exited it."
-      },
-      {
-        "heading": "The Ethical Advantage",
-        "body": "Response adaptation aims to maximize patient benefit during the trial, allowing a greater proportion of participants to receive therapies showing superior interim results.",
-        "image_prompt": "A crowd of stylized figures gently funneling in greater numbers toward a glowing medical treatment station."
-      },
-      {
-        "heading": "The Practical Limitations",
-        "body": "Response-adaptive allocation leads to sample size imbalances between groups. Crucially, it cannot be recommended if evaluating the patient response takes a long time.",
-        "image_prompt": "An hourglass with sand slowly trickling through while a queue of patients waits outside a consultation room door."
-      }
-    ],
-    "takeaway": "Response-adaptive randomization ethically favors effective treatments, but requires rapid, observable outcomes.",
-    "caption": "Traditional RCTs allocate patients with fixed probabilities regardless of interim outcomes.\nResponse-adaptive designs challenge this by altering allocation ratios based on accumulating participant responses.\nWhile ethically appealing, they introduce sample size imbalances and completely fail if primary endpoints require long follow-up periods.\nHave you ever worked with response-adaptive designs in practice, or do endpoint delays make them impractical?",
-    "hashtags": [
-      "#AdaptiveDesign",
-      "#ResponseAdaptive",
-      "#ClinicalTrials",
-      "#Bioethics",
-      "#TrialDesign",
-      "#Biostatistics",
-      "#ResearchEthics",
-      "#ClinicalResearch"
-    ],
-    "source_hint": "page 6, Response-adaptive randomization",
-    "id": "738b4124",
-    "source": "Randomization.pdf"
-  },
-  {
-    "title": "The Ethical Tension Behind Random Allocation",
-    "category": "Research ethics",
-    "slides": [
-      {
-        "heading": "Probability Over Physician Choice",
-        "body": "In an RCT, a patient's treatment is determined by probability rather than clinical judgment. This fundamental design requirement sparks an ongoing ethical dilemma.",
-        "image_prompt": "A physician standing thoughtfully with hands folded while a glowing pair of balance scales decides between two medicines."
-      },
-      {
-        "heading": "The Mandate for Objectivity",
-        "body": "Decisions are governed by probability because trials evaluate efficacy and safety objectively. Excluding physician prejudice and bias is essential to confirm true causality.",
-        "image_prompt": "A blindfolded scientist holding a magnifying glass over two identical unmarked medicine vials resting on a wooden table."
-      },
-      {
-        "heading": "Individual vs Collective Ethics",
-        "body": "Participants accept risks or placebo exposure for ambiguous individual gain. Their participation acts as a social cost paid for the benefit of future patients.",
-        "image_prompt": "A small group of patient silhouettes stepping forward onto a bridge that helps a much larger crowd cross safely."
-      },
-      {
-        "heading": "Why Researcher Bias Breaks the Deal",
-        "body": "If an investigator introduces bias or undermines random allocation, the social sacrifice made by patients is wasted and the trial's scientific credibility collapses.",
-        "image_prompt": "A broken marble pedestal holding a fractured set of balance scales in front of a research facility."
-      }
-    ],
-    "takeaway": "Randomization demands a social cost from participants, ethically justified only by rigorous, unbiased science.",
-    "caption": "Randomizing human subjects to medical interventions creates an inevitable friction between individual care and collective knowledge.\nParticipants take on personal risk and potential placebo exposure to generate reliable evidence for future patients.\nBecause this contribution represents a genuine social cost, maintaining uncompromised allocation and rigorous objectivity is an ethical imperative.\nHow do you explain the concept of random assignment when consenting hesitant trial participants?",
-    "hashtags": [
-      "#ResearchEthics",
-      "#Bioethics",
-      "#ClinicalTrials",
-      "#Randomization",
-      "#InformedConsent",
       "#ClinicalResearch",
-      "#TrialMethodology",
-      "#EvidenceBasedMedicine"
-    ],
-    "source_hint": "page 7, Ethics of Randomization",
-    "id": "66795092",
-    "source": "Randomization.pdf"
-  },
-  {
-    "title": "Does PICO actually improve literature searches?",
-    "category": "Research methods",
-    "slides": [
-      {
-        "heading": "The default question framework",
-        "body": "PICO is taught across health disciplines as the essential tool for clinical inquiry. Yet very few empirical studies have tested whether structuring a search with PICO actually helps find more relevant evidence.",
-        "image_prompt": "A researcher sitting at a desk examining two stacks of printed papers under a magnifying glass, with an open notebook nearby."
-      },
-      {
-        "heading": "What trials of PICO search have found",
-        "body": "A pilot randomized trial found higher precision with PICO, but the finding did not reach statistical significance. Another trial showed PICO did not improve results for quick searches in PubMed.",
-        "image_prompt": "A pair of balance scales holding a small stack of documents on one side and an empty tray on the other, perfectly level."
-      },
-      {
-        "heading": "Systematic review found no clear proof",
-        "body": "A systematic review evaluating PICO's impact on literature search quality found only three eligible studies. The authors concluded that evidence supporting PICO's effect on search quality is lacking.",
-        "image_prompt": "A researcher holding a document up against bright light, finding empty spaces where lines of text should be."
-      },
-      {
-        "heading": "Formatting has outpaced evidence",
-        "body": "Designed to aid search precision between clinicians and databases, PICO has become entrenched in training despite a surprising lack of rigorous proof that it improves actual retrieval success.",
-        "image_prompt": "A person fitting a square block into a round hole on a wooden puzzle board, while other shaped blocks sit unused."
-      }
-    ],
-    "takeaway": "Despite widespread adoption, evidence that PICO improves literature search quality remains remarkably thin.",
-    "caption": "We teach PICO as if its effectiveness were an undisputed scientific fact.\nYet clinical trials and systematic reviews show little empirical proof that it improves search precision.\nIn practice, unguided searching has performed just as well for quick queries.\nStructured questioning has a place, but treating PICO as evidence-based dogma overlooks its unproven utility.\nHave you found PICO templates genuinely helpful in your own literature searches?",
-    "hashtags": [
-      "#PICO",
-      "#EvidenceBasedPractice",
-      "#ResearchMethods",
-      "#LiteratureSearch",
-      "#InformationRetrieval",
-      "#ClinicalResearch",
-      "#SystematicReviews",
-      "#CriticalAppraisal"
-    ],
-    "source_hint": "Section 3, pages 1-2 (Schardt 2007, Hoogendam 2012, Eriksen & Frandsen 2018)",
-    "id": "0c7c61fb",
-    "source": "PICO.pdf"
-  },
-  {
-    "title": "When PICO breaks down",
-    "category": "Research methods",
-    "slides": [
-      {
-        "heading": "Built for one specific question type",
-        "body": "PICO was designed for comparative medical interventions: which therapy works better between two options. It is an epidemiological tool tailored specifically to comparative therapy and treatment dilemmas.",
-        "image_prompt": "A person standing at a fork in a stone path, looking at two distinct direction arrows carved into wooden posts."
-      },
-      {
-        "heading": "Where the framework falls short",
-        "body": "Evaluations show PICO lacks usefulness for questions of diagnosis, etiology, and prognosis. It cannot naturally accommodate everyday clinical inquiries that ask what, when, how, or why.",
-        "image_prompt": "A person attempting to push a large star-shaped key into a narrow circular keyhole on a heavy door."
-      },
-      {
-        "heading": "Neglecting qualitative inquiry",
-        "body": "Clinical practice frequently centers on patient experience, process, and meaning. PICO is ill-suited for identifying qualitative research articles, even when the comparator element is removed.",
-        "image_prompt": "A researcher interviewing a patient seated on a wooden bench, holding a notebook while listening attentively."
-      },
-      {
-        "heading": "Other questions need other frameworks",
-        "body": "Frameworks like SPIDER and SPICE were built for qualitative inquiry, while ECLIPSE and CIMO serve management questions. Forcing every clinical question into PICO artificially restricts the scope of inquiry.",
-        "image_prompt": "An open toolbox displaying four distinct hand tools, each resting in a slot matched to its unique outline."
-      }
-    ],
-    "takeaway": "PICO only fits comparative therapy questions; forcing diagnosis, etiology, or qualitative questions into it distorts inquiry.",
-    "caption": "PICO was created to address comparative treatment choices: Intervention A versus Comparator B.\nWhen applied to diagnosis, prognosis, etiology, or patient lived experience, the framework quickly falls apart.\nInstead of broadening inquiry, clinicians and students end up manipulating genuine questions just to fit the PICO template.\nRecognizing PICO's boundaries allows us to choose the right search framework for the right problem.\nHave you ever had to twist a genuine research question just to force it into PICO?",
-    "hashtags": [
-      "#PICO",
-      "#ResearchMethodology",
-      "#EvidenceBasedPractice",
-      "#QualitativeResearch",
-      "#SPIDERframework",
       "#StudyDesign",
-      "#ClinicalInquiry",
-      "#ResearchMethods"
+      "#ClinicalEpidemiology",
+      "#Methodology",
+      "#DataScience"
     ],
-    "source_hint": "Section 3, pages 2-3 (Huang 2006, Cooke 2012, Ou 2017)",
-    "id": "2a787ac8",
-    "source": "PICO.pdf"
+    "source_hint": "pages 4-6, Adaptive randomization and Minimization section",
+    "id": "3317e8ee",
+    "source": "Randomization.pdf"
   },
   {
-    "title": "PICO is not evidence-based practice",
-    "category": "Research methods",
-    "slides": [
-      {
-        "heading": "Confusing step one with the whole process",
-        "body": "Evidence-based practice is an iterative five-step cycle: Ask, Acquire, Appraise, Apply, and Assess. PICO belongs solely to the Ask phase, yet it is often taught as if it represents the entirety of EBP.",
-        "image_prompt": "A staircase of five stone steps where a person stands on the bottom step looking upward at the remaining four."
-      },
-      {
-        "heading": "The danger of rote formatting",
-        "body": "The rote exercise of assembling a structured PICO statement can engulf the true objective of EBP: complex, critical decision-making in care delivery based on evaluating evidence.",
-        "image_prompt": "A person filling out an oversized checklist on a wooden clipboard without looking at the open reference books beside them."
-      },
-      {
-        "heading": "The myth of settled background facts",
-        "body": "PICO relegates non-comparative questions to static textbook background. But clinical science is iterative; evidence thought to be established fact is continually challenged, overturned, and rewritten.",
-        "image_prompt": "An open textbook on a table with a researcher placing fresh loose pages directly over the bound printed leaves."
-      },
-      {
-        "heading": "Refocusing on critical appraisal",
-        "body": "Mastering question formatting does not make someone an evidence-based practitioner. Education must de-emphasize rigid mnemonics and restore focus on critical evaluation across the complete EBP cycle.",
-        "image_prompt": "Two clinicians at a table examining a research report, pointing together at a single paragraph of text."
-      }
-    ],
-    "takeaway": "PICO is merely one prompt for step one of EBP; treating it as the definition of EBP undermines critical thinking.",
-    "caption": "In many health science programs, PICO has become synonymous with evidence-based practice.\nStudents and trainees spend hours massaging questions into templates, confusing formatting with critical inquiry.\nYet EBP requires five full steps: Ask, Acquire, Appraise, Apply, and Assess.\nMastering a questioning mnemonic does not replace the demanding work of critically appraising data and evaluating practice.\nDo your colleagues or trainees view PICO as the entirety of evidence-based practice?",
-    "hashtags": [
-      "#EvidenceBasedPractice",
-      "#EBP",
-      "#PICO",
-      "#ResearchMethods",
-      "#CriticalThinking",
-      "#CriticalAppraisal",
-      "#HealthEducation",
-      "#ClinicalResearch"
-    ],
-    "source_hint": "Sections 2, 4, 5, and 6, pages 1-3",
-    "id": "e21414a7",
-    "source": "PICO.pdf"
-  },
-  {
-    "title": "Why Reviewing a Questionnaire is Multiple Reviews in One",
-    "category": "Research methods",
-    "slides": [
-      {
-        "heading": "Beyond intervention reviews",
-        "body": "Systematic reviews of patient-reported outcome measures (PROMs) are not like reviewing drug trials. A single review of a PROM actually comprises multiple reviews: one for each distinct measurement property.",
-        "image_prompt": "A researcher examining a questionnaire through a magnifying glass, with separate path arrows branching outward toward distinct folders on a desk."
-      },
-      {
-        "heading": "The 3-phase COSMIN roadmap",
-        "body": "The COSMIN guideline breaks the review into 10 steps across three core parts: Part A for the literature search, Part B to evaluate measurement properties, and Part C to select the most suitable PROM.",
-        "image_prompt": "Three large stepping stones across a calm stream, marked by a stack of research papers, an open inspection checklist, and a gold trophy."
-      },
-      {
-        "heading": "Filtering out indirect evidence",
-        "body": "When selecting studies, include only those aiming to evaluate measurement properties, development, or interpretability. Exclude studies that merely used the PROM as an endpoint in a trial.",
-        "image_prompt": "A pair of hands holding a fine wire sieve, separating formal validation reports from large clinical trial outcome dossiers into two distinct piles."
-      },
-      {
-        "heading": "End with one clear recommendation",
-        "body": "The ultimate objective is standardization. Rather than leaving researchers with an ambiguous menu, reviews synthesize evidence to recommend the single most suitable PROM for a specific construct and population.",
-        "image_prompt": "A hand selecting a single clean questionnaire form from a lineup of diverse questionnaires standing upright on a wooden table."
-      }
-    ],
-    "takeaway": "A systematic review of a PROM requires evaluating each measurement property separately to select the best tool.",
-    "caption": "Conducting a systematic review of a patient-reported outcome measure is fundamentally different from a clinical intervention review.\nInstead of evaluating one pooled treatment effect, you are essentially conducting multiple reviews in one—evaluating each measurement property on its own.\nThe COSMIN guideline standardizes this complex process into a clear 10-step protocol to help researchers choose the right instrument.\nHave you ever conducted or appraised a systematic review of a PROM?",
-    "hashtags": [
-      "#COSMIN",
-      "#SystematicReview",
-      "#PROMs",
-      "#PatientReportedOutcomes",
-      "#ResearchMethodology",
-      "#ClinicalResearch",
-      "#OutcomeMeasures",
-      "#Epidemiology",
-      "#EvidenceBasedMedicine",
-      "#HealthMeasurement"
-    ],
-    "source_hint": "pages 1-4, Abstract, Introduction, Fig. 1, Steps 1-4",
-    "id": "cf89bed2",
-    "source": "COSMIN.pdf"
-  },
-  {
-    "title": "Stop Testing Reliability Before Content Validity",
-    "category": "Endpoints & outcomes",
-    "slides": [
-      {
-        "heading": "The most critical property",
-        "body": "Content validity is the degree to which a PROM's content reflects the construct to be measured. COSMIN considers it the most important measurement property of all.",
-        "image_prompt": "A doctor and a patient reviewing a clipboard checklist together, pointing directly at individual question items under a spotlight."
-      },
-      {
-        "heading": "Three core questions to answer",
-        "body": "To evaluate content validity, reviewers assess whether all items in the questionnaire are relevant, comprehensive, and comprehensible to both patients and the target population.",
-        "image_prompt": "Three interlocking puzzle pieces resting on a table, representing relevance, complete coverage, and clear wording of survey items."
-      },
-      {
-        "heading": "The ultimate review dealbreaker",
-        "body": "If there is high-quality evidence that a PROM's content validity is insufficient, stop right there. Do not waste effort evaluating internal structure or reliability—the PROM drops out immediately.",
-        "image_prompt": "A reviewer placing a red stop sign next to a stack of flawed survey forms, halting a conveyor belt of further evaluation tests."
-      }
-    ],
-    "takeaway": "Never evaluate reliability or responsiveness if high-quality evidence shows content validity is already flawed.",
-    "caption": "In health measurement and PROM evaluation, researchers often rush to calculate Cronbach's alpha or test-retest reliability.\nAccording to the COSMIN guideline, content validity is the king of measurement properties.\nIf items are not relevant, comprehensive, and comprehensible to the target population, good statistical reliability means very little.\nIf content validity fails with high-quality evidence, COSMIN recommends stopping further evaluation of that instrument entirely.\nHow do you evaluate whether a questionnaire's items truly reflect your patient population's experience?",
-    "hashtags": [
-      "#ContentValidity",
-      "#PROMs",
-      "#PatientReportedOutcomes",
-      "#COSMIN",
-      "#HealthMeasurement",
-      "#SurveyDesign",
-      "#ResearchMethods",
-      "#ClinicalOutcomes",
-      "#Psychometrics",
-      "#ClinicalResearch"
-    ],
-    "source_hint": "page 5, Step 5",
-    "id": "07f213a8",
-    "source": "COSMIN.pdf"
-  },
-  {
-    "title": "Why Cronbach's Alpha Alone Is Never Enough",
-    "category": "Statistics",
-    "slides": [
-      {
-        "heading": "The prerequisite for consistency",
-        "body": "Internal consistency reflects how items interrelate, often assessed by Cronbach's alpha. But calculating alpha is meaningless unless you first establish structural validity.",
-        "image_prompt": "A builder trying to place roof tiles onto a house frame that has missing foundation pillars and uneven walls."
-      },
-      {
-        "heading": "Reflective vs formative models",
-        "body": "Item correlation analyses only apply to reflective models, where items are manifestations of an underlying construct (like anxiety). In formative models, items are not expected to correlate, so this step is omitted.",
-        "image_prompt": "A central glowing core radiating outward arrows to several matching symptom icons, contrasted with independent disconnected blocks."
-      },
-      {
-        "heading": "The strict COSMIN criterion",
-        "body": "Under COSMIN criteria, an alpha of 0.70 or higher only rates as sufficient (+) if there is at least low evidence for sufficient structural validity (unidimensionality) of the scale.",
-        "image_prompt": "A balance scale weighing an open statistical ledger against a sturdy single pillar, tipping into equilibrium with a green checkmark."
-      },
-      {
-        "heading": "No unidimensionality, no rating",
-        "body": "If evidence for structural validity is lacking or indeterminate, the internal consistency of that scale cannot be rated as sufficient, regardless of how high the Cronbach's alpha appears.",
-        "image_prompt": "A reviewer holding a red question mark stamp hovering over a printed column of statistical test scores."
-      }
-    ],
-    "takeaway": "High Cronbach's alpha is uninterpretable without prior evidence of unidimensional structural validity.",
-    "caption": "Reporting Cronbach's alpha without proving unidimensionality is one of the most common pitfalls in clinical measurement.\nCOSMIN clarifies a vital rule: internal consistency only makes sense for unidimensional reflective scales.\nYou must first evaluate structural validity (via factor analysis or IRT) before interpreting alpha.\nWithout at least low-quality evidence supporting structural validity, an alpha above 0.70 cannot be rated as sufficient.\nHow often do you see studies report alpha without showing that the scale is actually unidimensional?",
-    "hashtags": [
-      "#Biostatistics",
-      "#CronbachsAlpha",
-      "#StructuralValidity",
-      "#FactorAnalysis",
-      "#COSMIN",
-      "#Psychometrics",
-      "#PROMs",
-      "#ResearchMethodology",
-      "#MeasurementProperties",
-      "#StatisticalAnalysis"
-    ],
-    "source_hint": "pages 5-7, Step 6, Step 6.1, Step 6.2, and Table 1",
-    "id": "d90e8d33",
-    "source": "COSMIN.pdf"
-  },
-  {
-    "title": "How COSMIN Modifies GRADE for Outcome Measures",
-    "category": "Critical appraisal",
-    "slides": [
-      {
-        "heading": "Assessing evidence trustworthiness",
-        "body": "In systematic reviews of PROMs, rating a measurement property as sufficient is not enough. Reviewers must also grade how confident they are that the pooled result is trustworthy using GRADE principles.",
-        "image_prompt": "An open research document being examined under a large magnifying glass held by an investigator wearing a lab coat."
-      },
-      {
-        "heading": "4 downgrade factors",
-        "body": "COSMIN adapts four GRADE factors: risk of bias (study quality), inconsistency (unexplained differing results), imprecision (small total sample size), and indirectness (mismatched populations).",
-        "image_prompt": "Four descending stairs leading down from a high platform, each step marked with a caution barrier symbol."
-      },
-      {
-        "heading": "Start high, downgrade down",
-        "body": "The starting assumption is that evidence is high quality. Reviewers downgrade by 1 or 2 levels for serious or very serious flaws, ending at moderate, low, or very low confidence.",
-        "image_prompt": "A four-level vertical meter with a dial moving downward from a high green zone toward yellow and red zones."
-      }
-    ],
-    "takeaway": "A good score on a measurement property is only as reliable as the GRADE quality of evidence supporting it.",
-    "caption": "Just because a questionnaire shows good reliability or construct validity in published papers doesn't mean you can trust the number.\nCOSMIN incorporates a modified GRADE approach specifically for systematic reviews of PROMs.\nReviewers start with the assumption of high-quality evidence, then downgrade for risk of bias, inconsistency, imprecision, or indirectness.\nPublication bias is omitted here due to the lack of prospective registries for measurement property studies.\nHave you ever applied GRADE to measurement properties rather than clinical intervention trials?",
-    "hashtags": [
-      "#GRADEapproach",
-      "#QualityOfEvidence",
-      "#COSMIN",
-      "#RiskOfBias",
-      "#SystematicReviews",
-      "#PROMs",
-      "#CriticalAppraisal",
-      "#ResearchMethodology",
-      "#Epidemiology",
-      "#ClinicalResearch"
-    ],
-    "source_hint": "pages 5, 7, Table 2 & Table 3",
-    "id": "c62343de",
-    "source": "COSMIN.pdf"
-  },
-  {
-    "title": "Categorizing PROMs: Which One Should You Recommend?",
+    "title": "Can You Change Treatment Allocation Mid-Study?",
+    "title_highlight": "",
     "category": "Study design",
     "slides": [
       {
-        "heading": "Moving from review to recommendation",
-        "body": "The end goal of a systematic review of PROMs is to guide clinicians and trialists toward the single best tool, categorizing evaluated instruments into three distinct groups: A, B, or C.",
-        "image_prompt": "Three open sorting bins labeled with distinct color tags, receiving sorted questionnaire documents from a researcher."
+        "heading": "Adapting Allocation to Patient Outcomes",
+        "body": "Rather than fixing allocation ratios upfront, response-adaptive randomization changes the allocation probability during the study based on accumulating evidence of therapeutic response.",
+        "image_prompt": "a mechanical switch on a path directing figures toward one of two clinical treatment rooms.",
+        "highlight": "changes the allocation probability",
+        "source": "Rosenberger & Lachin, 1993"
       },
       {
-        "heading": "Category A: The green light",
-        "body": "PROMs with potential to be recommended must have evidence of sufficient content validity (at any level) AND at least low-quality evidence for sufficient internal consistency.",
-        "image_prompt": "A questionnaire document stamped with an approved seal, resting securely on top of a solid green pedestal."
+        "heading": "The Randomized Play-the-Winner Rule",
+        "body": "In the randomized play-the-winner rule, if an enrolled patient achieves a successful outcome, the next patient is assigned to that same treatment; otherwise, they are assigned to another arm.",
+        "image_prompt": "a doctor guiding a patient through an open doorway illuminated by a green lamp while an adjacent doorway remains unlit.",
+        "highlight": "randomized play-the-winner rule",
+        "source": "Rosenberger & Lachin, 2016"
       },
       {
-        "heading": "Category B vs Category C",
-        "body": "Category B PROMs show potential but lack full evidence, requiring further validation studies. Category C PROMs have high-quality evidence of an insufficient measurement property and should NOT be recommended.",
-        "image_prompt": "Two documents side-by-side: one marked with an hourglass for further testing, the other marked with a firm red cross."
+        "heading": "The Ethical Advantage and Sample Imbalance",
+        "body": "This method is grounded in the ethics of allowing more patients to receive effective treatments. However, it can lead to severe sample size imbalances between groups, potentially harming study power.",
+        "image_prompt": "a seesaw heavily tilted to one side with many figures gathered on one seat and only one figure on the other.",
+        "highlight": "severe sample size imbalances",
+        "source": ""
       },
       {
-        "heading": "Feasibility breaks the tie",
-        "body": "If multiple PROMs share high quality, feasibility factors decide the winner: completion time, cost, length, and ease of administration for patients and clinicians within budget.",
-        "image_prompt": "Two equal weights on a balance scale being tipped to one side by a small pocket stopwatch and an open wallet."
+        "heading": "The Critical Timing Limitation",
+        "body": "If clinical studies take a very long time to obtain the results of patient responses, response-adaptive randomization cannot be recommended, as outcome delays prevent timely probability updates.",
+        "image_prompt": "an hourglass with slowly trickling sand placed beside a long row of patients waiting in chairs.",
+        "highlight": "cannot be recommended",
+        "source": ""
       }
     ],
-    "takeaway": "Only PROMs with sufficient content validity and internal consistency belong in Category A; fatal flaws land tools in Category C.",
-    "caption": "How do you translate a comprehensive systematic review of outcome measures into a practical decision for your next trial?\nCOSMIN provides a transparent recommendation framework dividing instruments into three categories:\nCategory A instruments have sufficient content validity and internal consistency, making them primary candidates.\nCategory B tools need further validation, while Category C instruments have proven fatal flaws and must not be used.\nWhen two tools tie in quality, feasibility aspects like completion time and cost break the tie.\nWhat factors matter most to you when picking a PROM for your study—psychometric strength or completion time?",
-    "hashtags": [
-      "#PROMs",
-      "#OutcomeMeasures",
-      "#ClinicalTrialDesign",
-      "#COSMIN",
-      "#ResearchDesign",
-      "#Feasibility",
-      "#StudyDesign",
-      "#ClinicalEpidemiology",
-      "#HealthOutcomes",
-      "#MedicalResearch"
+    "takeaway": "Response-adaptive allocation ethically favors winning arms, but cannot be recommended when outcome results take long to obtain.",
+    "takeaway_highlight": "cannot be recommended",
+    "references": [
+      "Rosenberger, W. F., & Lachin, J. M. (1993). The use of response-adaptive designs in clinical trials. Controlled Clinical Trials, 14(6), 471-484.",
+      "Rosenberger, W. F., & Lachin, J. M. (2016). Randomization in Clinical Trials (2nd ed.). John Wiley & Sons, Inc."
     ],
-    "source_hint": "pages 8-9, Step 8, Step 9",
-    "id": "58474520",
-    "source": "COSMIN.pdf"
-  },
-  {
-    "title": "Appraisal Tool or Reporting Guideline? Don't Mix Them Up",
-    "category": "Critical appraisal",
-    "slides": [
-      {
-        "heading": "Two distinct toolsets in EBP",
-        "body": "Evidence-based practice relies on two different toolsets: critical appraisal tools and reporting guidelines. Though both are essential, they serve opposite sides of the evidence process.",
-        "image_prompt": "a researcher sitting at a desk with two distinct tools, holding a magnifying glass in one hand and an ink pen in the other hand over open documents"
-      },
-      {
-        "heading": "Critical appraisal: evaluating evidence",
-        "body": "Critical appraisal is an objective, structured approach to evaluate a study's strengths and weaknesses. It helps the evidence consumer assess validity, reliability, and clinical applicability.",
-        "image_prompt": "a researcher holding a large magnifying glass over a stack of medical papers, inspecting individual pages carefully next to a balancing scale"
-      },
-      {
-        "heading": "Reporting guidelines: writing the study",
-        "body": "Reporting guidelines are checklists specifying the minimum items authors must report. They ensure a study or project is disseminated with clarity, completeness, and transparency for future readers.",
-        "image_prompt": "a person writing on a manuscript document while ticking off items on an adjacent printed checklist laid across the desk"
-      },
-      {
-        "heading": "Why the distinction matters",
-        "body": "Opaque reporting hides study methods, while using the wrong appraisal tool leads to flawed evaluation. To translate evidence into practice, you must know whether you are assessing evidence or sharing it.",
-        "image_prompt": "two parallel pathways diverging from a fork in a road, one leading toward an evaluation microscope and the other toward an open printing press"
-      }
-    ],
-    "takeaway": "Appraisal tools evaluate published evidence; reporting guidelines ensure your own research is published transparently.",
-    "caption": "Are you consuming evidence or reporting it?\nMany researchers confuse critical appraisal tools with reporting guidelines.\nCritical appraisal tools guide readers through evaluating a study's validity and methodological rigor.\nReporting guidelines provide authors with minimum checklists to ensure transparent, complete publications.\nUsing the right instrument for the right task is an essential research competency.\nHave you ever seen an author use an appraisal checklist as a reporting template, or vice versa?",
+    "caption": "In conventional trials, allocation ratios remain fixed from the first patient to the last.\nResponse-adaptive randomization challenges this by updating allocation probabilities based on accruing therapeutic success, offering an ethical advantage for trial participants.\nHowever, it can introduce substantial sample size imbalances and falls apart when patient outcomes require months or years to assess.\nHave you ever worked on a response-adaptive clinical trial, or do fixed designs remain your gold standard?",
     "hashtags": [
-      "#EvidenceBasedPractice",
-      "#CriticalAppraisal",
-      "#ReportingGuidelines",
-      "#ResearchMethodology",
-      "#AcademicPublishing",
+      "#ClinicalTrials",
+      "#AdaptiveDesign",
+      "#ResponseAdaptive",
+      "#Biostatistics",
       "#ClinicalResearch",
-      "#HealthResearch",
-      "#EvidenceBasedMedicine",
-      "#SystematicReview",
-      "#NursingResearch"
+      "#StudyDesign",
+      "#ResearchEthics",
+      "#ClinicalEpidemiology",
+      "#Methodology"
     ],
-    "source_hint": "pages 1-2, 8",
-    "id": "2d4db1ec",
-    "source": "Critical appraisal"
+    "source_hint": "page 6, Response-adaptive randomization section",
+    "id": "8b0342e0",
+    "source": "Randomization.pdf"
   },
   {
-    "title": "Stop Using One Appraisal Tool for Everything",
+    "title": "Does PICO Actually Improve Your Literature Search?",
+    "title_highlight": "Does PICO Actually Improve",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "The Goal of Structured Searching",
+        "body": "PICO was introduced to help clinicians formulate structured search terms and improve precision when retrieving evidence from bibliographic databases like PubMed or CINAHL.",
+        "image_prompt": "A researcher examining a stack of open documents through a large magnifying glass while arrows guide papers toward an archive shelf.",
+        "highlight": "improve precision when retrieving evidence",
+        "source": "Booth et al., 2000"
+      },
+      {
+        "heading": "What Search Trials Discovered",
+        "body": "A pilot trial by Schardt et al. noted higher precision with PICO, but without statistical significance. Hoogendam et al. found PICO did not improve results for quick searches.",
+        "image_prompt": "A researcher seated at a table comparing two folders, placing one open sheet beside a blank checklist under a desk lamp.",
+        "highlight": "did not improve results",
+        "source": "Hoogendam et al., 2012"
+      },
+      {
+        "heading": "Systematic Review Evidence",
+        "body": "A systematic review by Eriksen and Frandsen examined PICO search quality across available studies. Finding only three qualifying articles, they concluded evidence was lacking.",
+        "image_prompt": "A person standing before a two-pan balance scale holding three small paper slips on one side and an empty tray on the other.",
+        "highlight": "concluded evidence was lacking",
+        "source": "Eriksen & Frandsen, 2018"
+      },
+      {
+        "heading": "Mnemonic vs Real Retrieval",
+        "body": "Structured question templates offer organizational comfort, but evidence supporting search efficiency remains weak. Database searching requires critical information retrieval.",
+        "image_prompt": "A scientist putting aside a rigid ruler to arrange several loose research documents across a wide wooden desk.",
+        "highlight": "evidence supporting search efficiency remains weak",
+        "source": "Kloda et al., 2020"
+      }
+    ],
+    "takeaway": "Evidence that the PICO mnemonic improves database search quality and precision is surprisingly scarce.",
+    "takeaway_highlight": "surprisingly scarce",
+    "references": [
+      "Booth, A., O’Rourke, A. J., & Ford, N. J. (2000). Structuring the pre-search reference interview: a useful technique for handling clinical questions. Bulletin of the Medical Library Association, 88(3), 239–246.",
+      "Eriksen, M. B., & Frandsen, T. F. (2018). The impact of patient, intervention, comparison, outcome (PICO) as a search strategy tool on literature search quality: a systematic review. Journal of the Medical Library Association, 106(4), 420–431. https://doi.org/10.5195/jmla.2018.345",
+      "Hoogendam, A., de Vries Robbé, P. F., & Overbeke, A. J. P. M. (2012). Comparing patient characteristics, type of intervention, control, and outcome (PICO) queries with unguided searching: a randomized controlled crossover trial. Journal of the Medical Library Association, 100(2), 121–126. https://doi.org/10.3163/1536-5050.100.2.010",
+      "Kloda, L. A., Boruff, J. T., & Cavalcante, A. S. (2020). A comparison of patient, intervention, comparison, outcome (PICO) to a new, alternative clinical question framework for search skills, search results, and selfefficacy: a randomized controlled trial. Journal of the Medical Library Association, 108(2), 185–194. https://doi.org/10.5195/jmla.2020.739",
+      "Schardt, C., Adams, M. B., Owens, T., Keitz, S., & Fontelo, P. (2007). Utilization of the PICO framework to improve searching PubMed for clinical questions. BMC Medical Informatics and Decision Making, 7, 16. https://doi.org/1472-6947-7-16"
+    ],
+    "caption": "We are often taught that framing every query through PICO guarantees higher search precision in PubMed or CINAHL. Yet trials evaluating PICO show surprisingly limited empirical support. Schardt et al. saw non-significant gains in a pilot study, while Hoogendam et al. found no benefit for rapid searches. A systematic review identified only three studies, concluding solid proof of search quality enhancement is lacking. How do you structure your bibliographic searches when PICO feels too rigid?",
+    "hashtags": [
+      "#EvidenceBasedPractice",
+      "#LiteratureSearch",
+      "#ResearchMethodology",
+      "#PICO",
+      "#InformationRetrieval",
+      "#HealthResearch",
+      "#SystematicReview",
+      "#ClinicalInquiry"
+    ],
+    "source_hint": "pages 1-2, Section 3 'How effective is PICO?'",
+    "id": "b0b06fa7",
+    "source": "PICO.pdf"
+  },
+  {
+    "title": "The Hidden Limitation of the PICO Framework",
+    "title_highlight": "Hidden Limitation",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Built for Therapy Comparisons",
+        "body": "PICO originated from an epidemiological framework to evaluate medical therapies. It works best for comparative questions asking which treatment or intervention is more effective.",
+        "image_prompt": "Two identical pill bottles resting on opposite sides of a balance scale with a directional arrow hovering between them.",
+        "highlight": "",
+        "source": "Huang et al., 2006"
+      },
+      {
+        "heading": "The Non-Intervention Gap",
+        "body": "Huang et al. demonstrated that PICO lacks utility for questions on diagnosis, etiology, and prognosis. Questions addressing what, when, how, and why rarely fit a two-option mold.",
+        "image_prompt": "A researcher attempting to push a round wooden peg into a square wooden slot carved into a work table.",
+        "highlight": "lacks utility for questions on diagnosis",
+        "source": "Huang et al., 2006"
+      },
+      {
+        "heading": "Qualitative Context and Meaning",
+        "body": "Nursing and clinical inquiries often seek to understand patient experiences. PICO cannot easily accommodate qualitative inquiry, prompting alternatives like SPIDER and ECLIPSE.",
+        "image_prompt": "A clinician sitting across from a patient, listening closely while taking handwritten notes on an open clipboard.",
+        "highlight": "cannot easily accommodate qualitative inquiry",
+        "source": "Cooke et al., 2012"
+      },
+      {
+        "heading": "The Risk of Question Massaging",
+        "body": "When forced into PICO templates, clinicians often modify their real clinical concerns into artificial foreground questions simply to satisfy the mnemonic rather than patient care.",
+        "image_prompt": "A pair of hands bending and folding a flat paper document to force it inside a small metal box.",
+        "highlight": "modify their real clinical concerns",
+        "source": "Sisson, 2017"
+      }
+    ],
+    "takeaway": "PICO suits comparative therapy questions, but forces non-interventional inquiries into an artificial mold.",
+    "takeaway_highlight": "forces non-interventional inquiries",
+    "references": [
+      "Cooke, A., Smith, D., & Booth, A. (2012). Beyond PICO. Qualitative Health Research, 22(10), 1435–1443. https://doi.org/10.1177/1049732312452938",
+      "Huang, X., Lin, J., & Demner-Fushman, D. (2006). Evaluation of PICO as a knowledge representation for clinical questions. AMIA Annual Symposium Proceedings, 2006, 359–363.",
+      "Sisson, H. (2017). How helpful are mnemonics in the development of a research question? Nurse Researcher, 25(3), 42–45. https://doi.org/10.7748/nr.2017.e1540"
+    ],
+    "caption": "PICO is widely taught as the universal standard for clinical questioning. But it was engineered specifically for intervention questions comparing one therapy to another. When clinicians investigate etiology, diagnosis, prognosis, or qualitative experiences, PICO breaks down. Alternative mnemonics like SPIDER, SPICE, or ECLIPSE emerged because real healthcare questions are broader than 'which pill wins'. Have you ever had to distort a clinical question just to fit the PICO format?",
+    "hashtags": [
+      "#ResearchMethods",
+      "#PICO",
+      "#EvidenceBasedPractice",
+      "#QualitativeResearch",
+      "#ClinicalEpidemiology",
+      "#HealthResearch",
+      "#StudyDesign",
+      "#CriticalAppraisal"
+    ],
+    "source_hint": "pages 2-3, Sections 3 and 4",
+    "id": "028c4953",
+    "source": "PICO.pdf"
+  },
+  {
+    "title": "Why Formulating a PICO Question Is Not EBP",
+    "title_highlight": "Is Not EBP",
     "category": "Critical appraisal",
     "slides": [
       {
-        "heading": "There is no universal 'gold standard'",
-        "body": "No single appraisal tool fits every study design. Researchers often default to a familiar checklist, regardless of whether it matches the methodology of the paper they are evaluating.",
-        "image_prompt": "a person holding a single large square key and trying unsuccessfully to force it into three completely different shaped keyholes on a wooden chest"
+        "heading": "Only One Step of Five",
+        "body": "Evidence-based practice is an iterative five-step cycle: Ask, Acquire, Appraise, Apply, and Assess. PICO only facilitates question formulation in the very first step.",
+        "image_prompt": "A path of five numbered stone steps ascending upward, with a researcher standing entirely on the very first step.",
+        "highlight": "iterative five-step cycle",
+        "source": "Guyatt & Meade, 2015"
       },
       {
-        "heading": "Step 1: Prioritize preappraised evidence",
-        "body": "When starting an appraisal roadmap, determine the type of evidence first. Prioritize preappraised syntheses—systematic reviews, meta-analyses, and clinical practice guidelines—over individual primary studies.",
-        "image_prompt": "a set of descending wooden steps where a thick synthesis binder sits on the highest step above several scattered single-page primary study papers"
+        "heading": "Made for Consumers, Not Creators",
+        "body": "Richardson et al. designed PICO for evidence consumers using bedside scenarios. It was never intended as a universal formula for research scientists creating novel study designs.",
+        "image_prompt": "A doctor holding a patient chart at a clinic bed, consulting reference notes beside a stethoscope on a tray.",
+        "highlight": "designed PICO for evidence consumers",
+        "source": "Richardson et al., 1995"
       },
       {
-        "heading": "Step 2: Match the tool to the design",
-        "body": "Different designs require specific tools. For guidelines, use AGREE II. For trials, JBI, CASP, or Johns Hopkins. Using a qualitative checklist on an RCT produces meaningless quality ratings.",
-        "image_prompt": "a hand sorting three distinct scientific documents into three clearly matching color-coded archive boxes spread across a wooden worktable"
+        "heading": "Background Questions Aren't Fixed",
+        "body": "Treating descriptive questions as settled background knowledge ignores how medicine evolves. Evidence changes rapidly, textbooks are rewritten, and medical reversals happen regularly.",
+        "image_prompt": "An open medical textbook lying on a desk with several printed research papers taped over older crossed-out paragraphs.",
+        "highlight": "medical reversals happen regularly",
+        "source": "Herrera-Perez et al., 2020"
       },
       {
-        "heading": "Step 3: Check tool complexity",
-        "body": "Tools vary in format. CASP uses 10 to 12 yes-or-no items but may challenge novices working alone. JBI provides in-depth question explanations. Johns Hopkins uses 3 simple questions to establish evidence level.",
-        "image_prompt": "a researcher standing before two open booklets, one containing a simple checklist and the other showing detailed explanatory sections"
+        "heading": "Beyond Rote Acronyms",
+        "body": "Treating PICO as synonymous with EBP replaces rich clinical judgment with mechanical formatting. True practice relies on critical literature appraisal, context, and patient preferences.",
+        "image_prompt": "A researcher holding a magnifying glass over an article while comparing it against clinical notes and patient preference files.",
+        "highlight": "critical literature appraisal",
+        "source": ""
       }
     ],
-    "takeaway": "There is no gold standard appraisal tool: you must always match your checklist to the study design.",
-    "caption": "Reaching for the same appraisal tool every time is a common trap in evidence synthesis.\nCritical appraisal tools are not one-size-fits-all.\nEvaluating a clinical practice guideline requires AGREE II, while observational studies or qualitative research need dedicated checklists like CASP, JBI, or Johns Hopkins.\nFurthermore, preappraised evidence like systematic reviews and guidelines should always be prioritized over individual primary studies.\nWhich critical appraisal tool do you find yourself using most frequently?",
-    "hashtags": [
-      "#CriticalAppraisal",
-      "#EvidenceBasedPractice",
-      "#ResearchMethodology",
-      "#SystematicReview",
-      "#ClinicalGuidelines",
-      "#CASP",
-      "#JBI",
-      "#GRADE",
-      "#HealthResearch",
-      "#EvidenceBasedMedicine"
+    "takeaway": "PICO is just a question prompt for step one; it must not be mistaken for the entire evidence-based practice process.",
+    "takeaway_highlight": "must not be mistaken",
+    "references": [
+      "Gallagher Ford, L., & Melnyk, B. M. (2019). The underappreciated and misunderstood PICOT question: a critical step in the EBP process. Worldviews on Evidence-Based Nursing, 16(6), 422–423. https://doi.org/10.1111/wvn.12408",
+      "Guyatt, G., & Meade, M. O. (Eds.). (2015). How to Use the Medical Literature—and this Book—to Improve Your Patient Care. McGraw-Hill Education.",
+      "Herrera-Perez, D., Fox-Lee, R., Bien, J., & Prasad, V. (2020). Frequency of medical reversal among published randomized controlled trials assessing cardiopulmonary resuscitation (CPR). Mayo Clinic Proceedings, 95(5), 889–910. https://doi.org/S0025-6196(20)30136-1",
+      "Richardson, W. S., Wilson, M. C., Nishikawa, J., & Hayward, R. S. (1995). The well-built clinical question: a key to evidence-based decisions. ACP Journal Club, 123(3), A12."
     ],
-    "source_hint": "pages 2-5, Table 1",
-    "id": "6f5c572d",
-    "source": "Critical appraisal"
+    "caption": "In many healthcare classrooms, learning evidence-based practice has been reduced to filling out PICO worksheets. But EBP is a comprehensive five-step process: Ask, Acquire, Appraise, Apply, and Assess. PICO only touches part of the 'Ask' step, and was built for clinicians consuming bedside literature, not researchers designing studies. Confusing an acronym with the entire discipline risks trading critical thinking for rote formatting. How is evidence-based practice taught in your institution?",
+    "hashtags": [
+      "#EvidenceBasedPractice",
+      "#EvidenceBasedMedicine",
+      "#CriticalAppraisal",
+      "#ResearchMethodology",
+      "#MedicalEducation",
+      "#NursingResearch",
+      "#ClinicalPractice",
+      "#HealthcareEducation"
+    ],
+    "source_hint": "pages 1-3, Sections 2, 4, and 5",
+    "id": "18072e3b",
+    "source": "PICO.pdf"
   },
   {
-    "title": "Opaque Reporting Directly Causes Biased Conclusions",
-    "category": "Reporting & publication",
+    "title": "Appraisal Tools vs. Reporting Guidelines: Not the Same",
+    "title_highlight": "Not the Same",
+    "category": "Critical appraisal",
     "slides": [
       {
-        "heading": "The danger of opaque reporting",
-        "body": "Without a clear understanding of how a study was done, readers cannot judge reliability. Incomplete reporting directly links to biased conclusions, publishing errors, and wasted scarce resources.",
-        "image_prompt": "a researcher trying to read a blurry, fog-covered document on a desk while a wastebasket next to the table overflows with discarded papers"
+        "heading": "Two Tools, Two Different Jobs",
+        "body": "Critical appraisal tools evaluate study validity and methodological rigor. Reporting guidelines specify items authors must report to ensure publication clarity and transparency. They serve completely different purposes.",
+        "image_prompt": "A researcher holding a magnifying glass inspecting a blueprint on one side, while another researcher uses a checklist to bind a finished book on the other.",
+        "highlight": "completely different purposes",
+        "source": ""
       },
       {
-        "heading": "Minimum standards for transparency",
-        "body": "Reporting guidelines provide structured checklists of minimum items that must appear in a manuscript. They ensure the research process and findings are fully visible for critical appraisal.",
-        "image_prompt": "a crisp, well-lit document lying flat on a table next to a neat checklist with green checkmarks placed beside each item"
+        "heading": "What Happens When Reporting Is Opaque?",
+        "body": "Without clear reporting, readers cannot determine if findings are reliable. Opaque reporting directly links to biased conclusions and wasted biomedical research resources.",
+        "image_prompt": "A researcher reading a study report covered in dark fog, unable to see the methodology steps beneath the cloudy obstruction.",
+        "highlight": "biased conclusions",
+        "source": "Moher et al., 2014"
       },
       {
-        "heading": "Match the guideline to your study",
-        "body": "Use CONSORT for RCTs, STROBE for observational designs (cohort, case-control, cross-sectional), PRISMA for systematic reviews, COREQ for interviews/focus groups, and SQUIRE 2.0 for quality improvement.",
-        "image_prompt": "four distinct scientific manuscripts arranged on a desk, each paired directly with a matching colored checklist booklet"
+        "heading": "The One-Size-Fits-All Trap",
+        "body": "There is no gold standard appraisal tool. Researchers frequently reuse a familiar checklist even when it does not fit the study methodology being evaluated, compromising the entire evaluation.",
+        "image_prompt": "A person attempting to force a large triangular wooden peg into a round hole on a wooden testing board.",
+        "highlight": "no gold standard appraisal tool",
+        "source": "Katrak et al., 2004"
       },
       {
-        "heading": "The EQUATOR Network resource",
-        "body": "Not sure which guideline applies? The EQUATOR Network maintains a centralized library containing over 200 reporting guidelines and toolkits to help researchers improve healthcare reporting.",
-        "image_prompt": "a large open reference library where neat rows of organized books stand on shelves illuminated by overhead lamps"
+        "heading": "Transparency Does Not Equal Rigor",
+        "body": "A study may follow reporting guidelines like CONSORT perfectly while still having poor methodological design. Reporting guidelines ensure transparency, not methodological quality.",
+        "image_prompt": "A transparent glass box containing a visibly cracked and bent gear, visible clearly from all angles.",
+        "highlight": "ensure transparency, not methodological quality",
+        "source": ""
       }
     ],
-    "takeaway": "Reporting guidelines define the minimum details needed so readers can evaluate whether study findings are reliable.",
-    "caption": "If readers cannot see exactly what you did, they cannot trust what you found.\nReporting guidelines specify the minimum necessary information to report in biomedical and healthcare research.\nOpaque reporting fuels biased conclusions, errors in the literature, and wasted resources.\nFrom CONSORT for randomized trials to STROBE for observational studies and PRISMA for systematic reviews, matching your manuscript to the right guideline is standard practice.\nThe EQUATOR Network hosts more than 200 reporting guidelines to help you find the exact checklist you need.\nDo you routinely consult reporting checklists before submitting a manuscript?",
+    "takeaway": "Reporting guidelines ensure transparency in publishing; critical appraisal tools evaluate methodological validity.",
+    "takeaway_highlight": "ensure transparency",
+    "references": [
+      "Katrak, P., Bialocerkowski, A. E., Massy-Westropp, N., Kumar, V. S., & Grimmer, K. A. (2004). A systematic review of the content of critical appraisal tools. BMC Medical Research Methodology, 4(22), e1–11. https://doi.org/10.1186/1471-2288-4-22",
+      "Moher, D., Altman, D. G., Schulz, K. F., Simera, I., & Wager, E. (2014). Guidelines for reporting health research: A user’s manual. Chichester, UK: Wiley."
+    ],
+    "caption": "Confusing reporting guidelines with critical appraisal tools is one of the most common pitfalls in research methodology.\n\nReporting guidelines (such as CONSORT, PRISMA, or STROBE) tell authors what information must be disclosed in a paper.\n\nCritical appraisal tools (like CASP, AGREE II, or JBI) assess whether the study design was methodologically rigorous and valid.\n\nA paper can follow reporting guidelines flawlessly while describing a deeply flawed study.\n\nWhich appraisal tools do you most frequently use when evaluating literature?",
     "hashtags": [
+      "#CriticalAppraisal",
       "#ReportingGuidelines",
-      "#EQUATORNetwork",
-      "#AcademicPublishing",
+      "#EvidenceBasedPractice",
+      "#ResearchMethodology",
       "#CONSORT",
       "#PRISMA",
-      "#STROBE",
-      "#ResearchTransparency",
-      "#MedicalWriting",
       "#ClinicalResearch",
-      "#OpenScience"
+      "#Epidemiology",
+      "#EvidenceBasedMedicine",
+      "#AcademicPublishing"
     ],
-    "source_hint": "pages 2, 6-8, Table 3",
-    "id": "488c840e",
+    "source_hint": "pages 463-465, 470",
+    "id": "2284bb4e",
     "source": "Critical appraisal"
   },
   {
-    "title": "What the Cochrane Risk of Bias Tool Actually Does",
+    "title": "The Cochrane Risk of Bias Tool Has Only One Job",
+    "title_highlight": "Has Only One Job",
     "category": "Bias & confounding",
     "slides": [
       {
-        "heading": "Bias distorts intervention effects",
-        "body": "Bias occurs when methodological flaws cause authors to overestimate or underestimate intervention effects. This directly undermines the validity of study findings in clinical trials.",
-        "image_prompt": "a tilted mechanical balance scale where an unseen weight pulls one side down unevenly despite equal-sized pill bottles on both pans"
+        "heading": "It Is Not a General Quality Checklist",
+        "body": "Most critical appraisal tools evaluate multiple aspects of a study. The Cochrane Risk of Bias Tool supports just one specific column in an evidence table: assessing the risk of internal bias.",
+        "image_prompt": "A scale balancing two weighted blocks while a researcher inspects a hidden weight concealed under one side of the balance pan.",
+        "highlight": "risk of internal bias",
+        "source": ""
       },
       {
-        "heading": "Not a complete appraisal checklist",
-        "body": "Unlike general appraisal tools that assess overall study quality, the Cochrane Risk of Bias tool is designed specifically for Cochrane reviews and supports just one column in an evidence table: risk of bias.",
-        "image_prompt": "a large data table on a desk where only a single highlighted vertical column is being inspected through a magnifying glass"
+        "heading": "Why Assessing Bias Matters",
+        "body": "Bias occurs when methodological flaws cause authors to overestimate or underestimate the effect of interventions. This directly distorts evidence and threatens study validity.",
+        "image_prompt": "An archer aiming an arrow at a bullseye target, but a strong wind arrow deflects the trajectory off-center.",
+        "highlight": "overestimate or underestimate",
+        "source": ""
       },
       {
-        "heading": "Five common clinical trial biases",
-        "body": "The tool evaluates five major trial biases: selection bias, performance bias, detection bias, attrition bias, and reporting bias across its seven standard assessment items.",
-        "image_prompt": "five distinct obstacle blocks placed sequentially along a running track, each partially obstructing a walking human figure"
+        "heading": "Common Biases in Clinical Trials",
+        "body": "In clinical trials, common types of bias include selection bias, performance bias, detection bias, attrition bias, and reporting bias. Each represents a distinct methodological flaw.",
+        "image_prompt": "Five distinct shields guarding a doorway, each shield deflecting a different incoming hazard like water, wind, and stones.",
+        "highlight": "distinct methodological flaw",
+        "source": "Higgins et al., 2011"
       },
       {
-        "heading": "Support for judgment",
-        "body": "Each item includes a 'Support for Judgment' field providing background criteria, and a 'Review Authors' Judgment' field with standard phrasing for transparent synthesis in review tables.",
-        "image_prompt": "a researcher writing concise explanatory notes into a standardized two-column evaluation form under a desk lamp"
+        "heading": "Support for Judgment Is Required",
+        "body": "The tool includes a Support for Judgment field providing background on how to evaluate items, and a Review Authors' Judgment field with language to record the evaluation in an evidence table.",
+        "image_prompt": "An open evaluation ledger where a researcher writes detailed notes beside a stamped decision badge on the page.",
+        "highlight": "Support for Judgment",
+        "source": ""
       }
     ],
-    "takeaway": "The Cochrane Risk of Bias Tool evaluates five key trial biases across seven items—it is a bias tool, not a full appraisal scale.",
-    "caption": "Many researchers think the Cochrane Risk of Bias tool evaluates the entire quality of a study.\nIn reality, it supports just one specific column in an evidence table: the risk of bias column.\nDeveloped to evaluate studies in Cochrane Systematic Reviews, it targets 5 major bias types: selection, performance, detection, attrition, and reporting bias.\nEach of its seven items requires review authors to provide explicit support for their judgment rather than a vague overall score.\nHave you used the Cochrane Risk of Bias tool in your own systematic reviews?",
+    "takeaway": "The Cochrane Risk of Bias Tool assesses whether methodological flaws distort intervention effects, not overall writing quality.",
+    "takeaway_highlight": "distort intervention effects",
+    "references": [
+      "Higgins, J. P. T., Altman, D. G., & Sterne, J. A. C. (2011). Assessing risk of bias in included studies. In J. P. T. Higgins & S. Green (Eds.), Cochrane handbook of systematic reviews of interventions (Version 5.1.0). Cochrane Collaboration."
+    ],
+    "caption": "Many researchers mistake the Cochrane Risk of Bias Tool for an overall quality assessment checklist.\n\nIt does not grade reporting completeness or clinical applicability.\n\nInstead, it assesses specific methodological flaws that cause studies to overestimate or underestimate intervention effects.\n\nIt evaluates selection, performance, detection, attrition, and reporting bias, requiring reviewers to justify every judgment.\n\nHow do you handle reviewer discrepancies when assessing risk of bias in your team?",
     "hashtags": [
       "#RiskOfBias",
       "#Cochrane",
       "#SystematicReview",
       "#ClinicalTrials",
-      "#BiasInResearch",
-      "#Biostatistics",
       "#ResearchMethodology",
+      "#Biostatistics",
       "#EvidenceBasedMedicine",
-      "#CriticalAppraisal",
-      "#TrialMethodology"
+      "#ClinicalResearch",
+      "#StudyDesign",
+      "#BiasInResearch"
     ],
-    "source_hint": "pages 3-4, 6",
-    "id": "87fb41f0",
+    "source_hint": "pages 465-466",
+    "id": "98a5265c",
     "source": "Critical appraisal"
   }
 ]
