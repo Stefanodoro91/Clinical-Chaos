@@ -39,6 +39,7 @@ jobs:
       - name: Verifica bandi e aggiorna la pagina
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CF_DEPLOY_HOOK: ${{ secrets.CF_DEPLOY_HOOK }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           GRANT_VERIFY_LIMIT: ${{ inputs.limit }}
         run: python bot.py --grants

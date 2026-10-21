@@ -38,6 +38,7 @@ jobs:
       - name: Raccogli e verifica le posizioni
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CF_DEPLOY_HOOK: ${{ secrets.CF_DEPLOY_HOOK }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           POSITIONS_VERIFY_LIMIT: ${{ inputs.limit }}
         run: python bot.py --positions

@@ -388,7 +388,7 @@ def main():
                    **({"kind": "grant", "grant_id": post["grant_id"], "url": post["url"],
                        "deadline": post["deadline_iso"], "funder": post.get("funder", ""),
                        "summary": post.get("summary", ""), "italy_evidence": post.get("italy_evidence", ""),
-                       "official_source": post.get("official_source", "")}
+                       "official_source": post.get("official_source", ""), "grant_title": post.get("official_title", "")}
                       if post.get("kind") == "grant" else {})})
     save(QUEUE_FILE, queue)
     save(POSTED_FILE, posted)
@@ -464,7 +464,20 @@ def update_positions(posted=None, verify_limit=None):
     n = len(positions.active(archive))
     print(f"::notice title=Pagina posizioni::{n} posizioni aperte in pagina")
     commit_and_push([positions.ARCHIVE_FILE, positions.STATUS_FILE, POSITIONS_PAGE.relative_to(ROOT).as_posix()],
+    trigger_deploy()
                     "Posizioni accademiche verificate e pagina aggiornata")
+
+
+def trigger_deploy():
+    """Chiede a Cloudflare Pages di ripubblicare il sito (deploy hook nel secret CF_DEPLOY_HOOK)."""
+    hook = os.environ.get("CF_DEPLOY_HOOK")
+    if not hook or DRY_RUN:
+        return
+    try:
+        r = requests.post(hook, timeout=30)
+        print(f"::notice title=Sito::ripubblicazione richiesta a Cloudflare ({r.status_code})")
+    except requests.RequestException as e:
+        print(f"::warning title=Sito::deploy hook non raggiungibile: {e}")
 
 
 def update_grants(posted=None, verify_limit=None):
@@ -481,6 +494,7 @@ def update_grants(posted=None, verify_limit=None):
     pending = sum(1 for g in grants_list if g["id"] not in verified)
     print(f"::notice title=Pagina bandi::{len(entries)} bandi in pagina, {pending} ancora da verificare")
     commit_and_push([grants.VERIFIED_FILE, PAGE_FILE.relative_to(ROOT).as_posix()], "Bandi verificati e pagina aggiornata")
+    trigger_deploy()
 
 
 def recheck_references(drive, queue, skip=()):

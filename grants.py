@@ -129,6 +129,16 @@ def fetch(cfg):
     return list(r.json().get("bandi", {}).values())
 
 
+def _norm_title(t):
+    stop = {"the", "a", "an", "of", "in", "for", "and", "to", "on", "with", "call", "program", "programme", "award", "grant"}
+    return " ".join(w for w in re.sub(r"[^a-z0-9]+", " ", (t or "").lower()).split() if w not in stop)
+
+
+def similar(a, b):
+    from difflib import SequenceMatcher
+    return SequenceMatcher(None, _norm_title(a), _norm_title(b)).ratio()
+
+
 def candidates(grants, posted, verified, cfg, today=None):
     """Bandi da pubblicare: verificati sul testo ufficiale, call aperta, pertinenza Alta/Media,
     scadenza abbastanza lontana, mai pubblicati. Tutti i Paesi."""
@@ -146,14 +156,19 @@ def candidates(grants, posted, verified, cfg, today=None):
                     and deadline and deadline >= today + timedelta(days=min_days)
                     and g.get("id") not in done and g.get("url")):
                 out.append(g)
+        # mai doppioni: niente bandi con titolo simile a uno già pubblicato (es. call gemelle dello stesso programma)
+        grant_posts = [p for p in posted if p.get("kind") == "grant"]
+        posted_titles = [verified.get(p.get("grant_id"), {}).get("title") or p.get("grant_title") or p.get("title", "")
+                         for p in grant_posts]
+        out = [g for g in out if not any(similar(verified.get(g["id"], {}).get("title") or g.get("titolo", ""), t) >= 0.6
+                                         for t in posted_titles if t)]
+        # varietà: niente programmi usati negli ultimi 3 post bando (se resta almeno un bando), poi pertinenza e scadenza
+        recent = [verified.get(p.get("grant_id"), {}).get("programme_family") for p in grant_posts][-3:]
+        fam = lambda g: verified.get(g["id"], {}).get("programme_family") or programme_family(g)
+        fresh = [g for g in out if fam(g) not in recent]
+        out = fresh or out
         if out:
-            # varietà: i programmi usati negli ultimi 5 post bando passano in fondo; poi pertinenza e scadenza
-            recent = [verified.get(p.get("grant_id"), {}).get("programme_family")
-                      for p in posted if p.get("kind") == "grant"][-5:]
-            def key(g):
-                fam = verified.get(g["id"], {}).get("programme_family") or programme_family(g)
-                return (recent.count(fam), RELEVANCE_ORDER[g["rilevanza"]], g["scadenza"])
-            return sorted(out, key=key)
+            return sorted(out, key=lambda g: (RELEVANCE_ORDER[g["rilevanza"]], g["scadenza"]))
     return []
 
 
@@ -591,7 +606,7 @@ def build_post(g, v, cfg):
         "url": g["url"], "slides": slides, "facts": [(k, val) for k, val in facts if val],
         "closing_cta": ("Check the official call before applying", "All open calls: link in bio"),
         "caption": caption, "hashtags": ["#ResearchFunding", "#GrantOpportunity"] + tags[:10],
-        "summary": v.get("summary", ""), "italy_evidence": v.get("italy_evidence", ""),
+        "summary": v.get("summary", ""), "italy_evidence": v.get("italy_evidence", ""), "official_title": v.get("title", ""),
         "official_source": v.get("official_source", ""), "source": "GrantFinder", "source_hint": g.get("fonte", ""),
     }
 
@@ -732,7 +747,12 @@ def page_entries(grants_list, verified, today=None):
                 out.append((g, v, d))
         elif d is not None:                     # in attesa di verifica (o verifica non riuscita): resta visibile
             out.append((g, {}, d))
-    return out
+    unique = []
+    for e in sorted(out, key=lambda e: not e[1]):          # prima le voci verificate
+        t = e[1].get("title") or e[0].get("titolo") or ""
+        if not any(u[2] == e[2] and similar(t, u[1].get("title") or u[0].get("titolo") or "") >= 0.92 for u in unique):
+            unique.append(e)
+    return unique
 
 
 def _group(entries):

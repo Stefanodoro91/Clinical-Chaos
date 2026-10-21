@@ -234,7 +234,19 @@ def active(archive, today=None):
         seen = _date(v.get("first_seen")) or today
         if (d and d >= today) or (not d and (today - seen).days <= 45):
             out.append((k, v, d))
-    return out
+    # la stessa posizione può arrivare da più siti: si tiene una sola voce (stesso ente e titolo quasi uguale)
+    unique = []
+    for e in sorted(out, key=lambda e: (e[1].get("relevance") != "high", e[0])):
+        if not any(_same_job(e[1], u[1]) for u in unique):
+            unique.append(e)
+    return unique
+
+
+def _same_job(a, b):
+    from difflib import SequenceMatcher
+    norm = lambda x: " ".join(re.sub(r"[^a-z0-9]+", " ", (x or "").lower()).split())
+    same_place = norm(a.get("institution")) == norm(b.get("institution")) or norm(a.get("country")) == norm(b.get("country"))
+    return same_place and SequenceMatcher(None, norm(a.get("title")), norm(b.get("title"))).ratio() >= 0.85
 
 
 def region_of(v):
@@ -368,8 +380,10 @@ def weekly_post(archive, posted, cfg, today=None):
     """Carosello con 4-6 posizioni mai pubblicate, varie per tipo e Paese, con almeno 10 giorni prima della scadenza."""
     today = today or date.today()
     done = {pid for p in posted if p.get("kind") == "positions" for pid in p.get("position_ids", [])}
+    done_jobs = [archive[pid] for pid in done if pid in archive]
     pool = [(k, v, d) for k, v, d in active(archive, today)
-            if k not in done and (d is None or d >= today + timedelta(days=int(cfg.get("positions_min_days_left", 10))))]
+            if k not in done and not any(_same_job(v, j) for j in done_jobs)       # mai la stessa posizione due volte
+            and (d is None or d >= today + timedelta(days=int(cfg.get("positions_min_days_left", 10))))]
     rel = {"high": 0, "medium": 1}
     pool.sort(key=lambda e: (rel[e[1]["relevance"]], e[2] is None, e[2] or date.max))
     picked, used_types, used_countries = [], {}, {}
