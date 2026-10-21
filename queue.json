@@ -496,5 +496,149 @@
     "source_hint": "section 3",
     "id": "68352541",
     "source": "PICO.pdf"
+  },
+  {
+    "title": "Why Content Validity Comes First in PROM Reviews",
+    "title_highlight": "Content Validity",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "The Core of PROM Quality",
+        "body": "Content validity refers to the degree to which the content of a PROM is an adequate reflection of the construct to be measured.",
+        "image_prompt": "a magnifying glass held over a structured document filled with checkmarks, revealing a clear core concept highlighted in bright ink",
+        "highlight": "Content validity refers",
+        "source": "Mokkink et al., 2010"
+      },
+      {
+        "heading": "Why It Ranks First",
+        "body": "Content validity is considered to be the most important measurement property because items must be relevant, comprehensive, and comprehensible.",
+        "image_prompt": "a researcher balancing a stack of heavy survey documents on one hand while pointing at a foundational bedrock block at the base",
+        "highlight": "most important measurement property",
+        "source": "Prinsen et al., 2018"
+      },
+      {
+        "heading": "The Stop Rule for Bad Content",
+        "body": "If there is high quality evidence that the content validity is insufficient, the PROM will not be considered further in steps six to eight.",
+        "image_prompt": "a large red stop sign blocking a pathway of stacked papers, forcing a simple figure to turn in a different direction",
+        "highlight": "content validity is insufficient",
+        "source": "Prinsen et al., 2018"
+      }
+    ],
+    "takeaway": "Content validity is the primary check in reviewing PROMs; if it fails, further evaluation stops.",
+    "takeaway_highlight": "Content validity is",
+    "references": [
+      "Mokkink, L. B., Terwee, C. B., Patrick, D. L., Alonso, J., Stratford, P. W., Knol, D. L., Bouter, L. M., & de Vet, H. C. (2010). The COSMIN study reached international consensus on taxonomy, terminology, and definitions of measurement properties for health-related patient-reported outcomes. Journal of Clinical Epidemiology, 63(7), 737–745. https://doi.org/10.1016/j.jclinepi.2010.02.006",
+      "Prinsen, C. A. C., Mokkink, L. B., Bouter, L. M., Alonso, J., Patrick, D. L., de Vet, H. C. W., & Terwee, C. B. (2018). COSMIN guideline for systematic reviews of patient-reported outcome measures. Quality of Life Research, 27(1147–1157)."
+    ],
+    "caption": "When conducting a systematic review of patient-reported outcome measures, not all steps carry equal weight. Content validity acts as the absolute gatekeeper. If an instrument fails to capture the construct properly, testing its internal structure or reliability is a waste of time. How do you weight content validity in your current review protocols?",
+    "hashtags": [
+      "#ClinicalResearch",
+      "#PROMs",
+      "#ResearchMethodology",
+      "#SystematicReview",
+      "#HealthOutcomes",
+      "#PatientReportedOutcomes",
+      "#Methodology",
+      "#ClinicalTrials"
+    ],
+    "source_hint": "pages 5, 7, Steps 5 and 6.1",
+    "id": "f1be1bfc",
+    "source": "COSMIN.pdf"
+  },
+  {
+    "title": "Reflective vs. Formative Models in Scale Testing",
+    "title_highlight": "Reflective vs. Formative",
+    "category": "Study design",
+    "slides": [
+      {
+        "heading": "Understanding Reflective Models",
+        "body": "A reflective model assumes that all items in a scale are manifestations of one underlying construct and are expected to be correlated.",
+        "image_prompt": "a central glowing core connected by multiple dotted lines to several identical smaller glowing spheres floating around it",
+        "highlight": "manifestations of one underlying construct",
+        "source": ""
+      },
+      {
+        "heading": "The Example of Anxiety",
+        "body": "Anxiety manifests itself in specific characteristics such as worrying thoughts, panic, and restlessness, reflecting the core construct.",
+        "image_prompt": "a simple figure surrounded by small floating icons representing different symptoms all pointing inward toward the person",
+        "highlight": "",
+        "source": "Prinsen et al., 2018"
+      },
+      {
+        "heading": "When Step Six Does Not Apply",
+        "body": "If items in a scale are not supposed to be correlated, known as a formative model, internal structure analyses are not relevant.",
+        "image_prompt": "a researcher sorting separate building blocks into distinct independent piles rather than connecting them into a single tower",
+        "highlight": "formative model",
+        "source": "Prinsen et al., 2018"
+      }
+    ],
+    "takeaway": "Internal structure tests only apply to reflective models where items reflect an underlying construct.",
+    "takeaway_highlight": "reflective models",
+    "references": [
+      "de Vet, H. C., Terwee, C. B., Mokkink, L. B., & Knol, D. L. (2011). Measurement in medicine. Cambridge: Cambridge University Press.",
+      "Prinsen, C. A. C., Mokkink, L. B., Bouter, L. M., Alonso, J., Patrick, D. L., de Vet, H. C. W., & Terwee, C. B. (2018). COSMIN guideline for systematic reviews of patient-reported outcome measures. Quality of Life Research, 27(5), 1147–1157. https://doi.org/10.1007/s11136-018-1798-3"
+    ],
+    "caption": "Before running factor analyses or checking internal consistency, you must identify whether your scale is reflective or formative. Applying classical psychometric tests to a formative index will yield misleading conclusions. Does your instrument treat items as causes or manifestations?",
+    "hashtags": [
+      "#Psychometrics",
+      "#Biostatistics",
+      "#ResearchMethods",
+      "#ClinicalResearch",
+      "#DataAnalysis",
+      "#ScaleDevelopment",
+      "#HealthOutcomes",
+      "#ResearchDesign"
+    ],
+    "source_hint": "page 7, Step 6",
+    "id": "eae4ddb5",
+    "source": "COSMIN.pdf"
+  },
+  {
+    "title": "Why Structural Validity Must Precede Internal Consistency",
+    "title_highlight": "Structural Validity",
+    "category": "Study design",
+    "slides": [
+      {
+        "heading": "The Sequence of Psychometric Testing",
+        "body": "A proven scale or subscale structure is a prerequisite for the proper interpretation of internal consistency analyses like Cronbach alpha.",
+        "image_prompt": "a builder carefully placing a solid foundation block on the ground before stacking upper levels of a building",
+        "highlight": "",
+        "source": "Prinsen et al., 2018"
+      },
+      {
+        "heading": "Evaluating Structural Validity",
+        "body": "Structural validity refers to the degree to which scores reflect the dimensionality of the construct, usually assessed via factor analysis.",
+        "image_prompt": "a magnifying glass focused on a complex web of intersecting lines being sorted into clean parallel columns",
+        "highlight": "dimensionality of the construct",
+        "source": "Mokkink et al., 2010"
+      },
+      {
+        "heading": "Unidimensionality and Subscales",
+        "body": "Multiple factor analyses assess whether each subscale on its own measures a single construct before calculating internal consistency.",
+        "image_prompt": "a large group of mixed shapes being separated into distinct uniform boxes by a series of dividers",
+        "highlight": "measures a single construct",
+        "source": "Prinsen et al., 2018"
+      }
+    ],
+    "takeaway": "Never calculate Cronbach alpha before confirming that the scale is actually unidimensional.",
+    "takeaway_highlight": "unidimensional",
+    "references": [
+      "Mokkink, L. B., Terwee, C. B., Patrick, D. L., Alonso, J., Stratford, P. W., Knol, D. L., et al. (2010). The COSMIN study reached international consensus on taxonomy, terminology, and definitions of measurement properties for health-related patient-reported outcomes. Journal of Clinical Epidemiology, 63(7), 737–745.",
+      "Prinsen, C. A. C., Mokkink, L. B., Bouter, L. M., Alonso, J., Patrick, D. L., de Vet, H. C. W., & Terwee, C. B. (2018). COSMIN guideline for systematic reviews of patient-reported outcome measures. Quality of Life Research, 27(1147–1157)."
+    ],
+    "caption": "Calculating Cronbach alpha on a multidimensional scale is a common methodological trap. Internal consistency assumes unidimensionality. If your factor structure is flawed, your alpha value is meaningless. How often do you check structural validity before diving into reliability coefficients?",
+    "hashtags": [
+      "#Biostatistics",
+      "#Psychometrics",
+      "#ClinicalResearch",
+      "#DataAnalysis",
+      "#ResearchMethods",
+      "#Statistics",
+      "#HealthOutcomes",
+      "#Measurement"
+    ],
+    "source_hint": "pages 7-8, Steps 6.1 and 6.2",
+    "id": "212aab99",
+    "source": "COSMIN.pdf"
   }
 ]
