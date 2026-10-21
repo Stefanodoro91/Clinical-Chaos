@@ -115,6 +115,36 @@ def source_line(draw, slide, cfg):
         draw.text((MARGIN, H - 165), f"Source: {slide['source']}"[:80], font=f, fill=cfg["colors"]["muted"])
 
 
+ASSETS = Path(__file__).resolve().parent / "assets"
+_logo_cache = {}
+
+
+def paste_logo(img, name, x, y, height=None, width=None):
+    """Incolla assets/<name>.png (trasparente) alto `height` o largo `width`; restituisce (larghezza, altezza)."""
+    path = ASSETS / f"{name}.png"
+    if not path.exists():
+        return None
+    key = (name, height, width)
+    if key not in _logo_cache:
+        logo = Image.open(path).convert("RGBA")
+        ratio = (height / logo.height) if height else (width / logo.width)
+        _logo_cache[key] = logo.resize((round(logo.width * ratio), round(logo.height * ratio)), Image.LANCZOS)
+    logo = _logo_cache[key]
+    img.paste(logo, (int(x), int(y)), logo)
+    return logo.size
+
+
+def logo_lockup(img, d, x, y, cfg, light=False):
+    """Simbolo e scritta affiancati (copertina). Senza i file del logo usa il monogramma provvisorio."""
+    suffix = "-light" if light else ""
+    size = paste_logo(img, f"logo-symbol{suffix}", x, y, height=170)
+    if not size:
+        logo_mark(img, d, x, y, 72, cfg["colors"]["background"], PAPER, cfg)
+        return 72
+    paste_logo(img, f"logo-wordmark{suffix}", x + size[0] + 24, y + 22, height=126)
+    return 170
+
+
 def logo_mark(img, d, x, y, size, fg, bg, cfg):
     """Logo in alto a sinistra: il file indicato in config «logo_path», altrimenti un monogramma provvisorio."""
     path = Path(__file__).resolve().parent / (cfg.get("logo_path") or "logo.png")
@@ -158,15 +188,17 @@ def cover(post, cfg, total):
     c = cfg["colors"]
     navy = c["background"]
     img, d = light_canvas(cfg, 1, total)
-    logo_mark(img, d, MARGIN, 120, 72, navy, PAPER, cfg)
+    logo_h = logo_lockup(img, d, MARGIN - 10, 80, cfg)
+    pill_top = 80 + logo_h + 50
     pill_f = font("Bold", 30)
     label = post.get("category", "Research methods").upper()
     pw = d.textlength(label, font=pill_f) + 56
-    d.rounded_rectangle((MARGIN, 236, MARGIN + pw, 296), radius=30, outline=navy, width=3)
-    d.text((MARGIN + 28, 247), label, font=pill_f, fill=navy)
-    fnt, lines, size = fit(d, post["title"], "ExtraBold", 104, 60, W - 2 * MARGIN, 640, 1.12)
+    d.rounded_rectangle((MARGIN, pill_top, MARGIN + pw, pill_top + 60), radius=30, outline=navy, width=3)
+    d.text((MARGIN + 28, pill_top + 11), label, font=pill_f, fill=navy)
+    title_top = pill_top + 110
+    fnt, lines, size = fit(d, post["title"], "ExtraBold", 104, 60, W - 2 * MARGIN, H - 300 - title_top, 1.12)
     phrase = post.get("title_highlight") or (lines[-1] if lines else "")
-    draw_rich(d, post["title"], phrase, fnt, size, MARGIN, 350, W - 2 * MARGIN, navy, 1.12, c["accent"], half=True)
+    draw_rich(d, post["title"], phrase, fnt, size, MARGIN, title_top, W - 2 * MARGIN, navy, 1.12, c["accent"], half=True)
     d.text((MARGIN, H - 240), "Swipe  →", font=font("Bold", 40), fill=navy)
     return img
 
@@ -180,6 +212,7 @@ def grant_cover(post, cfg, total):
     bw = d.textlength("OPEN CALL", font=badge_f) + 64
     d.rounded_rectangle((MARGIN, 150, MARGIN + bw, 220), radius=35, fill=c["accent"])
     d.text((MARGIN + 32, 162), "OPEN CALL", font=badge_f, fill=navy)
+    paste_logo(img, "logo-symbol", W - MARGIN - 120, 120, height=120)
     y = 260
     if post.get("funder"):
         ff, fl, fs = fit(d, post["funder"], "SemiBold", 38, 28, W - 2 * MARGIN, 100, 1.25)
@@ -295,10 +328,15 @@ def closing(post, cfg, total):
     draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 240, W - 2 * MARGIN,
               navy, 1.2, c["accent"], half=True)
     d.rounded_rectangle((MARGIN, card_top, W - MARGIN, card_top + 420), radius=32, fill=navy)
-    logo_mark(img, d, MARGIN + 50, card_top + 46, 90, c["accent"], navy, cfg)
-    d.text((MARGIN + 165, card_top + 52), cfg["brand_name"], font=font("Bold", 38), fill="#FFFFFF")
-    d.text((MARGIN + 165, card_top + 102), cfg.get("tagline", "Methodology made practical"),
-           font=font("Regular", 30), fill=c["muted_text"])
+    sym = paste_logo(img, "logo-symbol-light", MARGIN + 30, card_top + 22, height=140)
+    if sym:
+        wx = MARGIN + 30 + sym[0] + 18
+        paste_logo(img, "logo-wordmark-light", wx, card_top + 30, height=100)
+    else:
+        logo_mark(img, d, MARGIN + 50, card_top + 46, 90, c["accent"], navy, cfg)
+        d.text((MARGIN + 165, card_top + 52), cfg["brand_name"], font=font("Bold", 38), fill="#FFFFFF")
+        d.text((MARGIN + 165, card_top + 102), cfg.get("tagline", "Methodology made practical"),
+               font=font("Regular", 30), fill=c["muted_text"])
     x, ay = MARGIN + 50, card_top + 200
     for icon, label in ((_person_plus, "Follow"), (_bookmark, "Save"), (_plane, "Share")):
         icon(d, x, ay, c["accent"])
