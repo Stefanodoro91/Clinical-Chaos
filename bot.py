@@ -463,7 +463,7 @@ def update_positions(posted=None, verify_limit=None):
     POSITIONS_PAGE.write_text(positions.build_page(archive, posted, CONFIG), encoding="utf-8")
     n = len(positions.active(archive))
     print(f"::notice title=Pagina posizioni::{n} posizioni aperte in pagina")
-    commit_and_push([positions.ARCHIVE_FILE, POSITIONS_PAGE.relative_to(ROOT).as_posix()],
+    commit_and_push([positions.ARCHIVE_FILE, positions.STATUS_FILE, POSITIONS_PAGE.relative_to(ROOT).as_posix()],
                     "Posizioni accademiche verificate e pagina aggiornata")
 
 

@@ -1,8 +1,9 @@
 nome;url;tipo;note
-jobs.ac.uk – rehabilitation;https://www.jobs.ac.uk/search/?keywords=rehabilitation&format=rss;rss;Regno Unito e Irlanda
-jobs.ac.uk – physiotherapy;https://www.jobs.ac.uk/search/?keywords=physiotherapy&format=rss;rss;
-jobs.ac.uk – occupational therapy;https://www.jobs.ac.uk/search/?keywords=occupational+therapy&format=rss;rss;
-jobs.ac.uk – stroke;https://www.jobs.ac.uk/search/?keywords=stroke&format=rss;rss;
+jobs.ac.uk – health and medical (RSS);https://www.jobs.ac.uk/jobs/health-and-medical?format=rss;rss;Regno Unito e Irlanda, filtrato per riabilitazione
+jobs.ac.uk – rehabilitation;https://www.jobs.ac.uk/search/?keywords=rehabilitation;html;
+jobs.ac.uk – physiotherapy;https://www.jobs.ac.uk/search/?keywords=physiotherapy;html;
+jobs.ac.uk – occupational therapy;https://www.jobs.ac.uk/search/?keywords=occupational+therapy;html;
+jobs.ac.uk – stroke;https://www.jobs.ac.uk/search/?keywords=stroke;html;
 EURAXESS – rehabilitation;https://euraxess.ec.europa.eu/jobs/search?keywords=rehabilitation;html;Europa, compresi i posti RTD/RTT italiani
 EURAXESS – physiotherapy;https://euraxess.ec.europa.eu/jobs/search?keywords=physiotherapy;html;
 EURAXESS – stroke;https://euraxess.ec.europa.eu/jobs/search?keywords=stroke;html;

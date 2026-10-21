@@ -20,8 +20,10 @@ import grants
 ROOT = Path(__file__).resolve().parent
 SOURCES_FILE = ROOT / "positions_sources.csv"
 ARCHIVE_FILE = "positions.json"
-HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; ClinicalResearchChaosBot/1.0)",
+HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+           "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,application/rss+xml;q=0.9,*/*;q=0.8",
            "Accept-Language": "en,it;q=0.8"}
+STATUS_FILE = "positions_sources_status.json"
 
 # temi: clinica riabilitativa (inglese e italiano)
 RX_REHAB = re.compile(
@@ -135,20 +137,25 @@ def _html_items(html, base):
 def collect(sources=None):
     """Annunci candidati da tutte le fonti: titolo con un tipo di posizione e un tema di riabilitazione
     (nel titolo o nell'estratto). Restituisce (candidati, diagnostica per fonte)."""
+    from urllib.parse import unquote
     found, report = {}, []
     for src in sources or read_sources():
         try:
             r = requests.get(src["url"], headers=HEADERS, timeout=45)
             r.raise_for_status()
             text = r.text
-            if src.get("tipo") == "rss" or text.lstrip().startswith("<?xml") or "<rss" in text[:500]:
+            head = text.lstrip()[:500].lower()
+            if head.startswith("<?xml") or "<rss" in head or "<feed" in head:
                 items = _rss_items(text)
-            else:
+            else:   # anche le fonti «rss» che rispondono con una pagina HTML
                 items = _html_items(text, src["url"])
+            # se la fonte è già una ricerca per tema (es. «rehabilitation»), basta che sia una posizione:
+            # la pertinenza la controlla poi Gemini sull'annuncio
+            topic_search = bool(RX_REHAB.search(unquote(src["url"])))
             kept = 0
             for it in items:
                 blob = f"{it['title']} {it['snippet']}"
-                if it["url"] and RX_POSITION.search(blob) and RX_REHAB.search(blob):
+                if it["url"] and RX_POSITION.search(blob) and (topic_search or RX_REHAB.search(blob)):
                     found.setdefault(_id(it["url"]), dict(it, source=src["nome"]))
                     kept += 1
             report.append((src["nome"], len(items), kept, ""))
@@ -185,8 +192,10 @@ def refresh(archive, limit=25, today=None):
     """Raccoglie gli annunci nuovi e ne verifica fino a `limit`. Restituisce la diagnostica delle fonti."""
     today = today or date.today()
     found, report = collect()
-    for name, n, kept, err in report:
-        print(f"::notice title=Fonte posizioni::{name}: {n} annunci letti, {kept} pertinenti" + (f" – errore: {err}" if err else ""))
+    status = {name: {"letti": n, "pertinenti": kept, "errore": err, "data": today.isoformat()} for name, n, kept, err in report}
+    json.dump(status, open(ROOT / STATUS_FILE, "w", encoding="utf-8"), indent=2, ensure_ascii=False)
+    ok = sum(1 for x in status.values() if not x["errore"])
+    print(f"::notice title=Fonti posizioni::{ok} fonti su {len(status)} rispondono; {len(found)} annunci candidati (dettagli in {STATUS_FILE})")
     todo = [(k, v) for k, v in found.items() if k not in archive]
     done = 0
     for k, item in todo[:limit]:
