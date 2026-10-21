@@ -426,7 +426,8 @@ def weekly_post(archive, posted, cfg, today=None):
     return {
         "id": f"positions-{today.isoformat()}", "kind": "positions",
         "position_ids": [k for k, v, d in picked],
-        "title": f"{len(jobs)} open positions in rehabilitation research",
+        "title": (f"{len(jobs)} open positions in rehabilitation research" if len(jobs) > 1
+                  else "Open position in rehabilitation research"),
         "title_highlight": "rehabilitation research",
         "category": "Academic positions", "week": week, "jobs": jobs, "slides": [],
         "takeaway": "New PhD, post-doc and faculty positions every week.",
