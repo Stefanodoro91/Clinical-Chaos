@@ -293,12 +293,57 @@ def main():
     save(POSTED_FILE, posted)
     # pagina «link in bio»: rigenerata a ogni post, così i bandi scaduti spariscono da soli
     PAGE_FILE.parent.mkdir(exist_ok=True)
-    PAGE_FILE.write_text(grants.build_page(posted, CONFIG), encoding="utf-8")
-    commit_and_push([QUEUE_FILE.name, POSTED_FILE.name, PAGE_FILE.relative_to(ROOT).as_posix()], f"Post del {today}")
+    commit_and_push([QUEUE_FILE.name, POSTED_FILE.name], f"Post del {today}")
+    try:
+        update_grants(posted, verify_limit=0)      # la pagina segna subito il bando come «on Instagram»
+    except Exception as e:
+        print(f"::warning title=Pagina bandi non aggiornata::{e}")
 
     if len(queue) <= int(CONFIG.get("low_queue_warning", 5)) and files_waiting == 0:
         notify("Post in esaurimento",
                f"Restano {len(queue)} post in coda. Aggiungi nuovo materiale nella cartella Drive.")
+
+
+def update_grants(posted=None, verify_limit=None):
+    """Verifica sul testo ufficiale i bandi nuovi di GrantFinder e rigenera la pagina «link in bio»."""
+    posted = posted if posted is not None else load(POSTED_FILE, [])
+    grants_list = grants.fetch(CONFIG)
+    verified = grants.load_verified()
+    if verify_limit != 0:
+        grants.refresh_verified(grants_list, verified, CONFIG, limit=verify_limit)
+        save(ROOT / grants.VERIFIED_FILE, verified)
+    PAGE_FILE.parent.mkdir(exist_ok=True)
+    PAGE_FILE.write_text(grants.build_page(grants_list, verified, posted, CONFIG), encoding="utf-8")
+    entries = grants.page_entries(grants_list, verified)
+    pending = sum(1 for g in grants_list if g["id"] not in verified)
+    print(f"::notice title=Pagina bandi::{len(entries)} bandi in pagina, {pending} ancora da verificare")
+    commit_and_push([grants.VERIFIED_FILE, PAGE_FILE.relative_to(ROOT).as_posix()], "Bandi verificati e pagina aggiornata")
+
+
+def recheck_references(drive, queue, skip=()):
+    """Ricontrolla le reference dei post in coda con le regole attuali (materiale + Crossref), senza Gemini."""
+    sources = {x["name"]: x for x in load(SOURCES_FILE, [])}
+    for name in {p["source"] for p in queue if p.get("references") and p["source"] not in skip}:
+        src = sources.get(name)
+        if not src:
+            continue
+        try:
+            f = drive.files().get(fileId=src["drive_id"], fields="id, name, mimeType", supportsAllDrives=True).execute()
+            material = content.material_text(content.material_part(drive, f))
+        except Exception as e:
+            print(f"::warning title=Reference non ricontrollate::{name}: {str(e)[:200]}")
+            continue
+        before = after = 0
+        for p in queue:
+            if p["source"] != name or not p.get("references"):
+                continue
+            before += len(p["references"])
+            p["references"] = content.verified_references(p["references"], material)
+            after += len(p["references"])
+            for sl in p["slides"]:
+                sl["source"] = content._source_ok(sl.get("source"), p["references"])
+        print(f"::notice title=Reference ricontrollate::{name}: {after} su {before} confermate")
+    return queue
 
 
 def rebuild():
@@ -330,12 +375,10 @@ def rebuild():
         for p in posts:
             p.update({"id": uuid.uuid4().hex[:8], "source": f["name"]})
         new_queue += posts
-    if not todo:
-        print("::notice title=Coda rigenerata::Tutti i post sono già nel formato nuovo.")
-        return
-    if not new_queue:
+    if todo and not new_queue:
         print("Nessun post rigenerato: la coda resta com'è.")
         sys.exit(1)
+    new_queue = recheck_references(drive, new_queue, skip=todo)
     save(QUEUE_FILE, new_queue)
     commit_and_push([QUEUE_FILE.name], f"Coda rigenerata: {len(new_queue)} post con evidenziazioni e reference")
 
@@ -361,5 +404,7 @@ if __name__ == "__main__":
         status()
     elif "--rebuild" in sys.argv:
         rebuild()
+    elif "--grants" in sys.argv:
+        update_grants(verify_limit=int(os.environ.get("GRANT_VERIFY_LIMIT") or 0) or None)
     else:
         main()

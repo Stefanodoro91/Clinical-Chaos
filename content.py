@@ -6,6 +6,7 @@ import json
 import os
 import re
 import time
+import unicodedata
 from pathlib import Path
 
 import requests
@@ -229,8 +230,83 @@ def _ref_key(ref):
     return m.group(1).strip().split()[-1].lower(), year
 
 
+CROSSREF = "https://api.crossref.org/works"
+
+
+def _ref_title(ref):
+    """Titolo di una reference APA: il testo tra «(Anno). » e il punto successivo."""
+    m = re.search(r"\(\d{4}[a-z]?\)\.\s*(.+?[.?!])(\s|$)", ref)
+    return m.group(1).strip() if m else ""
+
+
+def _simple(x):
+    return re.sub(r"[^a-z0-9]+", " ", unicodedata.normalize("NFKD", str(x)).encode("ascii", "ignore").decode().lower()).strip()
+
+
+def _title_in_material(title, material, share=0.75):
+    words = [w for w in _simple(title).split() if len(w) > 3]
+    if len(words) < 2:
+        return False
+    low = _simple(material)
+    return sum(1 for w in words if w in low) / len(words) >= share
+
+
+def _apa_from_crossref(item):
+    """Reference APA 7 costruita dai metadati ufficiali di Crossref."""
+    authors = []
+    for a in (item.get("author") or [])[:20]:
+        fam = a.get("family") or a.get("name") or ""
+        initials = " ".join(f"{p[0]}." for p in re.split(r"[\s-]+", a.get("given") or "") if p)
+        authors.append(f"{fam}, {initials}".strip(", "))
+    if len(authors) > 1:
+        auth = ", ".join(authors[:-1]) + ", & " + authors[-1]
+    else:
+        auth = authors[0] if authors else ""
+    year = ((item.get("issued") or {}).get("date-parts") or [[None]])[0][0]
+    title = " ".join((item.get("title") or [""])[0].split()).rstrip(".")
+    journal = (item.get("container-title") or [""])[0]
+    vol, issue, pages = item.get("volume"), item.get("issue"), item.get("page")
+    tail = journal
+    if vol:
+        tail += f", {vol}" + (f"({issue})" if issue else "")
+    if pages:
+        tail += f", {pages.replace('-', '–')}"
+    ref = f"{auth} ({year}). {title}." + (f" {tail}." if tail else "")
+    if item.get("DOI"):
+        ref += f" https://doi.org/{item['DOI']}"
+    return ref
+
+
+def crossref_reference(ref):
+    """Cerca la reference su Crossref; se autore, anno e titolo coincidono restituisce la versione ufficiale."""
+    key, title = _ref_key(ref), _ref_title(ref)
+    if not key or not title:
+        return None
+    try:
+        r = requests.get(CROSSREF, params={"query.bibliographic": ref[:300], "rows": 3},
+                         headers={"User-Agent": "ClinicalResearchChaosBot/1.0"}, timeout=20)
+        r.raise_for_status()
+        items = r.json().get("message", {}).get("items", [])
+    except Exception:
+        return None
+    from difflib import SequenceMatcher
+    for it in items:
+        it_title = (it.get("title") or [""])[0]
+        year = ((it.get("issued") or {}).get("date-parts") or [[None]])[0][0]
+        fam = _simple(((it.get("author") or [{}])[0]).get("family", ""))
+        if (str(year) == key[1] and fam and _simple(key[0]).endswith(fam.split()[-1])
+                and SequenceMatcher(None, _simple(title), _simple(it_title)).ratio() >= 0.85):
+            return _apa_from_crossref(it)
+    return None
+
+
 def verified_references(refs, material):
-    """Tiene solo le reference il cui primo autore e anno compaiono nel testo del materiale."""
+    """Reference controllate in tre passi:
+    1) primo autore e anno devono comparire nel materiale (niente reference inventate);
+    2) se Crossref trova lo stesso articolo (autore, anno e titolo coincidono), si usa la sua versione ufficiale,
+       completa di rivista, volume, pagine e DOI;
+    3) altrimenti si tiene solo se anche il titolo si ritrova nel materiale, togliendo rivista e DOI
+       quando non compaiono nel materiale (libri, linee guida, articoli non indicizzati)."""
     if not material:
         return []
     low = material.lower()
@@ -238,8 +314,23 @@ def verified_references(refs, material):
     for r in refs or []:
         r = " ".join(str(r).split())
         key = _ref_key(r)
-        if key and key[0] in low and key[1] in material and r not in out:
-            out.append(r[:400])
+        if not key or key[0] not in low or key[1] not in material:
+            continue
+        official = crossref_reference(r)
+        if official:
+            ref = official
+        else:
+            title = _ref_title(r)
+            if not _title_in_material(title, material):
+                continue
+            head = r[: r.find(title) + len(title)] if title in r else r
+            rest = r[len(head):].strip()
+            rest = re.sub(r"https?://doi\.org/\S+|doi:\s*\S+", "", rest).strip()
+            journal = re.split(r",\s*\d", rest)[0].strip(" .")
+            ref = head if not journal or not _title_in_material(journal, material, 0.6) else f"{head} {rest}".strip()
+        if ref not in out:
+            out.append(ref[:400])
+        time.sleep(0.3)
     return out[:6]
 
 

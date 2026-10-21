@@ -1,0 +1,42 @@
+name: Aggiorna bandi e pagina link in bio
+
+# Ogni giorno verifica sul testo ufficiale i bandi nuovi trovati da GrantFinder (programma, Paesi
+# ammessi, Italia, sommario) e rigenera la pagina «link in bio». Non pubblica niente su Instagram.
+on:
+  schedule:
+    - cron: "17 7 * * *"
+      timezone: "Europe/Rome"
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Quanti bandi nuovi verificare (vuoto = valore di config.json)"
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram-post
+  cancel-in-progress: false
+
+jobs:
+  grants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Configura git
+        run: |
+          git config user.name "research-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Verifica bandi e aggiorna la pagina
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          GRANT_VERIFY_LIMIT: ${{ inputs.limit }}
+        run: python bot.py --grants

@@ -26,5 +26,8 @@
   "grantfinder_url": "https://raw.githubusercontent.com/Stefanodoro91/GrantFinder/main/dati/stato.json",
   "grant_accent": "#FFB547",
   "tagline": "Methodology made practical",
-  "logo_path": "logo.png"
+  "logo_path": "logo.png",
+  "image_candidates": 3,
+  "image_min_relevance": 6,
+  "grant_verify_per_run": 8
 }

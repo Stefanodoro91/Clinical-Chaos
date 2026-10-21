@@ -82,11 +82,77 @@ def _request(url, params, headers, anonymous):
     return None, "down"
 
 
+JUDGE_PROMPT = """You are the art director of an Instagram page for clinical researchers. Below is the text of
+one carousel slide, followed by {n} candidate illustrations (Image 1 ... Image {n}).
+
+Slide heading: {heading}
+Slide text: {body}
+
+For EACH image return:
+- relevance: 1-10, how clearly a researcher would connect the image to the slide's idea at a glance
+  (10 = the visual metaphor explains the concept; 1 = unrelated or generic decoration).
+- has_text: true if the image contains any letters, words, numbers or fake writing.
+- style_ok: true if it is a clean flat 2D vector illustration (no 3D render, no photorealism, no clutter),
+  with dark navy background and teal/white elements.
+- problems: a few words on what is wrong ("" if nothing)."""
+
+JUDGE_SCHEMA = {
+    "type": "OBJECT",
+    "properties": {"images": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {
+        "relevance": {"type": "INTEGER"}, "has_text": {"type": "BOOLEAN"}, "style_ok": {"type": "BOOLEAN"},
+        "problems": {"type": "STRING"}}, "required": ["relevance", "has_text", "style_ok", "problems"]}}},
+    "required": ["images"],
+}
+
+
+def choose_best(slide, pictures, cfg):
+    """Gemini guarda le candidate insieme al testo della slide e sceglie la migliore.
+    Restituisce None se nessuna è pertinente, pulita e in stile (la slide resta solo testo)."""
+    import base64
+    import content
+    parts = [{"text": JUDGE_PROMPT.format(n=len(pictures), heading=slide["heading"], body=slide["body"])}]
+    for i, pic in enumerate(pictures, 1):
+        buf = io.BytesIO()
+        pic.convert("RGB").resize((512, 320)).save(buf, "JPEG", quality=85)
+        parts += [{"text": f"Image {i}:"},
+                  {"inline_data": {"mime_type": "image/jpeg", "data": base64.b64encode(buf.getvalue()).decode()}}]
+    try:
+        scores = content.gemini_json(parts, JUDGE_SCHEMA, 0.0).get("images", [])
+    except Exception as e:
+        print(f"  Valutazione delle immagini non riuscita ({e}): uso la prima candidata.")
+        return pictures[0]
+    minimum = int(cfg.get("image_min_relevance", 6))
+    best, best_score = None, -1
+    for i, (pic, sc) in enumerate(zip(pictures, scores), 1):
+        ok = not sc.get("has_text") and sc.get("style_ok") and int(sc.get("relevance", 0)) >= minimum
+        print(f"  Candidata {i}: pertinenza {sc.get('relevance')}, testo {sc.get('has_text')}, "
+              f"stile {sc.get('style_ok')}{' – ' + sc['problems'] if sc.get('problems') else ''}")
+        if ok and int(sc["relevance"]) > best_score:
+            best, best_score = pic, int(sc["relevance"])
+    if best is None:
+        print(f"  Nessuna candidata abbastanza buona: la slide «{slide['heading']}» resta solo testo.")
+    return best
+
+
 def generate(slide, cfg, width=1024, height=640):
-    """Restituisce un'immagine PIL, oppure None se Pollinations non risponde (la slide resta solo testo)."""
+    """Genera alcune candidate (config «image_candidates», default 3) e tiene la migliore secondo Gemini.
+    Restituisce None se non ce n'è una adatta o se Pollinations non risponde (la slide resta solo testo)."""
+    n = max(1, int(cfg.get("image_candidates", 3)))
+    pictures = []
+    for i in range(n):
+        pic = generate_one(slide, cfg, width, height, variant=i)
+        if pic is not None:
+            pictures.append(pic)
+    if not pictures:
+        return None
+    return choose_best(slide, pictures, cfg) if len(pictures) > 1 or cfg.get("image_judge_single", True) else pictures[0]
+
+
+def generate_one(slide, cfg, width=1024, height=640, variant=0):
+    """Una sola immagine da Pollinations (seed diverso per ogni variante), oppure None."""
     global _key_failed
     prompt = build_prompt(slide)
-    params = {"width": width, "height": height, "seed": _seed(prompt), "nologo": "true",
+    params = {"width": width, "height": height, "seed": (_seed(prompt) + variant * 7919) % 1_000_000, "nologo": "true",
               "model": cfg.get("image_model") or DEFAULT_MODEL}
     key = os.environ.get("POLLINATIONS_API_KEY")
 
