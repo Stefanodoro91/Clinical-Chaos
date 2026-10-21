@@ -1,52 +1,5 @@
 [
   {
-    "title": "Stratified Randomization and the Sparse Strata Trap",
-    "title_highlight": "Stratified Randomization",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "Balancing Prognostic Factors",
-        "body": "Stratified randomization refers to the situation where the strata are based on level of prognostic factors or covariates, and randomization is applied to each stratum.",
-        "image_prompt": "a complex sorting tree diagram dividing simple figures by gender and age into separate boxes",
-        "highlight": "",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "The Risk of Too Many Strata",
-        "body": "If several important prognostic factors affect the outcome, the number of strata would increase. In case of several strata in relation to the target sample size, strata may be empty or sparse.",
-        "image_prompt": "many small empty boxes on a shelf with only a couple containing figures",
-        "highlight": "number of strata would increase",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "Careful Selection is Crucial",
-        "body": "To reduce this risk, the prognostic factors should be carefully selected. These prognostic factors should be considered again during the statistical analysis and at the end of the study.",
-        "image_prompt": "a researcher pointing at a document checklist with a pen, crossing out extra items",
-        "highlight": "prognostic factors should be carefully selected",
-        "source": "Lim & In, 2019"
-      }
-    ],
-    "takeaway": "Too many strata in a trial will leave your subgroups empty and ruin your randomization balance.",
-    "takeaway_highlight": "leave your subgroups empty",
-    "references": [
-      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
-    ],
-    "caption": "Stratification ensures that vital prognostic factors like age, sex, or clinical site are balanced across study arms. But add too many variables, and your contingency tables will suffer from sparse or empty strata. How many stratifying variables do you allow before switching to a covariate-adaptive method?",
-    "hashtags": [
-      "#ClinicalTrials",
-      "#Biostatistics",
-      "#StratifiedRandomization",
-      "#ResearchMethods",
-      "#ClinicalResearch",
-      "#StudyDesign",
-      "#Epidemiology",
-      "#DataAnalysis"
-    ],
-    "source_hint": "pages 3-4",
-    "id": "ed888e90",
-    "source": "Randomization.pdf"
-  },
-  {
     "title": "Minimization: Balancing Covariates Dynamically",
     "title_highlight": "Minimization",
     "category": "Randomization & blinding",
