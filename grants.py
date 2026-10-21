@@ -165,8 +165,10 @@ def candidates(grants, posted, verified, cfg, today=None):
         # varietà: niente programmi usati negli ultimi 3 post bando (se resta almeno un bando), poi pertinenza e scadenza
         recent = [verified.get(p.get("grant_id"), {}).get("programme_family") for p in grant_posts][-3:]
         fam = lambda g: verified.get(g["id"], {}).get("programme_family") or programme_family(g)
+        if recent:                                   # mai lo stesso programma due giorni di fila (regola rigida)
+            out = [g for g in out if fam(g) != recent[-1]]
         fresh = [g for g in out if fam(g) not in recent]
-        out = fresh or out
+        out = fresh or out                           # possibilmente nessun programma degli ultimi 3 post
         if out:
             return sorted(out, key=lambda g: (RELEVANCE_ORDER[g["rilevanza"]], g["scadenza"]))
     return []
