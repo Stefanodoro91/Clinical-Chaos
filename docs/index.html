@@ -25,6 +25,11 @@
   section.macro { margin-top: 34px; }
   section.macro > h2 { font-size: 23px; font-weight: 800; margin: 0 0 4px; }
   section.macro > p { color: var(--soft); font-size: 14px; margin: 0 0 18px; }
+  h2.region { font-size: 19px; font-weight: 800; margin: 34px 0 2px; padding-top: 14px; border-top: 1px solid var(--muted);
+              display: flex; justify-content: space-between; gap: 10px; }
+  h2.region span { color: var(--muted); font-weight: 600; }
+  .tag.check-tag { background: var(--muted); }
+  .pending { color: var(--soft); font-size: 14px; font-style: italic; margin: 0 0 12px; }
   h3.prog { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: var(--accent);
             margin: 28px 0 10px; display: flex; justify-content: space-between; gap: 10px; }
   h3.prog span { color: var(--muted); font-weight: 600; }
@@ -59,9 +64,10 @@
 <main>
   <span class="badge">OPEN CALLS</span>
   <h1>Research funding calls</h1>
-  <p class="intro">Open calls for clinical and rehabilitation research, each checked against the official call text.
-  Grouped by funding programme and sorted by deadline. Closed calls are removed automatically.</p>
-  <nav class="jump"><a href="#italy">Open to Italian institutions <b>12</b></a><a href="#other">Other calls <b>21</b></a></nav>
+  <p class="intro">All open calls for clinical and rehabilitation research found by our monitoring, from funders worldwide.
+  Each call is checked against its official text; grouped by region and funding programme, sorted by deadline.
+  Closed calls are removed automatically.</p>
+  <nav class="jump"><a href="#italy">Open to Italy <b>12</b></a><a href="#international-intercontinental">International &amp; intercontinental <b>2</b></a><a href="#north-america">North America <b>19</b></a></nav>
   <section class="macro" id="italy">
     <h2>Open to Italian institutions</h2>
     <p>The official call explicitly allows organisations based in Italy (directly, as EU Member State, or as any country).</p>
@@ -202,8 +208,10 @@
     </article>
   </section>
   <section class="macro" id="other">
-    <h2>Other calls</h2>
-    <p>Calls restricted to other countries, or where the official text does not state whether Italian organisations can apply.</p>
+    <h2>All other calls, by region</h2>
+    <p>Grouped by where applicants can be based: international and intercontinental calls first, then each continent.
+    Calls whose official text does not say where applicants can be based are listed under the funder's region.</p>
+    <h2 class="region" id="international-intercontinental">International &amp; intercontinental <span>2</span></h2>
     <h3 class="prog">Michael J. Fox Foundation <span>2</span></h3>
     <article class="call other">
       <div class="funder">Bridge Funding for Disrupted Neurodegenerative Research (BFDN) grant program</div>
@@ -227,6 +235,7 @@
         <a class="btn" href="https://www.michaeljfox.org/grant/parkinsons-disease-therapeutics-pipeline-program" target="_blank" rel="noopener">Official call &rarr;</a>
       </div>
     </article>
+    <h2 class="region" id="north-america">North America <span>19</span></h2>
     <h3 class="prog">NIH – US National Institutes of Health <span>9</span></h3>
     <article class="call other">
       <div class="funder">HEAL Initiative<span class="tag soon-tag">COMING SOON</span></div>
