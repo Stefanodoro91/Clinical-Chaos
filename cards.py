@@ -356,13 +356,16 @@ def render_carousel(post, cfg):
     has_facts = bool(post.get("facts"))
     total = len(post["slides"]) + 2 + has_facts
     use_images = cfg.get("ai_images", True)
+    max_images = int(cfg.get("max_images_per_post", 2))
+    used = 0
     pages = [grant_cover(post, cfg, total) if post.get("kind") == "grant" else cover(post, cfg, total)]
     for i, slide in enumerate(post["slides"], start=1):
         index = i + 1
         picture = None
-        if use_images and index % 2 == 0:
+        if use_images and index % 2 == 0 and used < max_images:
             print(f"Genero l'immagine per la slide {index}: {slide['heading']}")
             picture = images.generate(slide, cfg)
+            used += 1
         if picture is not None:
             pages.append(illustrated(slide, i, cfg, index, total, picture))
         else:
