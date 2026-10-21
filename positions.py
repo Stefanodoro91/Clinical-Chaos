@@ -32,13 +32,22 @@ RX_REHAB = re.compile(
     r"parkinson|multiple sclerosis|sclerosi multipla|cerebral palsy|amputee|prosthet|orthot|exoskeleton|"
     r"motor (control|recovery|learning)|gait|mobility|disabilit|chronic pain|musculoskeletal|"
     r"sports? (medicine|physiotherapy)|cardiac rehab|pulmonary rehab|geriatric|frailty|falls? prevention", re.I)
+# per la pertinenza «media»: termini riabilitativi clinici; «rehabilitation» da solo non basta
+# (esclude riabilitazione di detenuti, animali, edifici)
+RX_CLINICAL_REHAB = re.compile(
+    r"physiotherap|fisioterap|physical therap|occupational therap|terapia occupazionale|speech (and language )?therap|"
+    r"logoped|neurorehab|neuroriabilit|stroke|ictus|spinal cord injur|brain injur|parkinson|multiple sclerosis|"
+    r"sclerosi multipla|cerebral palsy|amputee|prosthet|orthot|exoskeleton|motor (control|recovery|learning)|"
+    r"(physical|motor|neuro\w*|clinical|cardiac|pulmonary|musculoskeletal|stroke|geriatric|paediatric|pediatric) rehabilit", re.I)
 # tipi di posizione scelti: PhD, post-doc e assegni, faculty
 RX_POSITION = re.compile(
     r"\bph\.?d\b|doctoral|doctorate|dottorat|studentship|"
     r"post-?doc|postdoctoral|research fellow|assegn\w* di ricerca|"
     r"professor|lecturer|faculty|tenure|\brtd\b|\brtt\b|ricercat\w* a tempo determinato|professore|"
-    r"assistant prof|associate prof|reader in|chair in", re.I)
-TYPES = {"phd": "PhD", "postdoc": "Post-doc", "faculty": "Faculty"}
+    r"assistant prof|associate prof|reader in|chair in|research (assistant|associate|scientist|officer)|"
+    r"clinical academic|clinical research fellow|clinical fellowship|fellowship|borsa di ricerca|tecnologo", re.I)
+TYPES = {"phd": "PhD", "postdoc": "Post-doc", "research": "Research assistant / associate",
+         "clinical": "Clinical academic & fellowship", "faculty": "Faculty"}
 
 VERIFY_PROMPT = """You check ONE academic job advertisement for a public list of open positions in clinical
 rehabilitation research. Use ONLY the text of the advertisement below; never guess.
@@ -47,8 +56,10 @@ Return:
 - is_open_position: "yes" if it is an open academic position you can apply for, "no" if it is closed,
   expired, a news item, a course, a list of jobs or not a position, "unclear" otherwise.
 - position_type: "phd" (PhD, doctoral studentship, dottorato), "postdoc" (post-doctoral position,
-  research fellow, assegno di ricerca), "faculty" (assistant/associate/full professor, lecturer, reader,
-  tenure-track, RTD/RTT), or "other".
+  research fellow, assegno di ricerca), "research" (research assistant, research associate, research
+  scientist or officer, borsa di ricerca, tecnologo), "clinical" (clinical academic post, clinical research
+  fellowship or training fellowship for clinicians and therapists), "faculty" (assistant/associate/full
+  professor, lecturer, reader, tenure-track, RTD/RTT), or "other".
 - relevance: "high" if the position is about clinical rehabilitation research (rehabilitation,
   physiotherapy, occupational or speech therapy, neurorehabilitation, stroke, spinal cord or brain injury,
   Parkinson, MS, prosthetics, disability, motor recovery); "medium" if rehabilitation is one clearly stated
@@ -69,7 +80,7 @@ VERIFY_SCHEMA = {
     "type": "OBJECT",
     "properties": {
         "is_open_position": {"type": "STRING", "enum": ["yes", "no", "unclear"]},
-        "position_type": {"type": "STRING", "enum": ["phd", "postdoc", "faculty", "other"]},
+        "position_type": {"type": "STRING", "enum": ["phd", "postdoc", "research", "clinical", "faculty", "other"]},
         "relevance": {"type": "STRING", "enum": ["high", "medium", "low"]},
         "title": {"type": "STRING"}, "institution": {"type": "STRING"}, "country": {"type": "STRING"},
         "city": {"type": "STRING"}, "deadline": {"type": "STRING"}, "deadline_evidence": {"type": "STRING"},
@@ -229,6 +240,9 @@ def active(archive, today=None):
     for k, v in archive.items():
         if v.get("status") != "ok" or v.get("is_open") == "no" or v.get("relevance") not in ("high", "medium") \
                 or v.get("type") not in TYPES:
+            continue
+        # pertinenza «media» solo se un termine riabilitativo compare davvero nel titolo o nella descrizione
+        if v.get("relevance") == "medium" and not RX_CLINICAL_REHAB.search(f"{v.get('title', '')} {v.get('summary', '')}"):
             continue
         d = _date(v.get("deadline"))
         seen = _date(v.get("first_seen")) or today
