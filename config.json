@@ -27,5 +27,7 @@
   "image_min_relevance": 6,
   "grant_verify_per_run": 20,
   "grant_fallback_days_left": 30,
-  "max_images_per_post": 2
+  "max_images_per_post": 2,
+  "facebook": true,
+  "links_page_url": "https://clinical-chaos-dsv.pages.dev"
 }

@@ -206,6 +206,36 @@ def publish_carousel(image_urls, caption):
     return ig("POST", f"{user}/media_publish", creation_id=carousel)["id"]
 
 
+def facebook_caption(caption):
+    """Su Facebook i link sono cliccabili: «link in bio» diventa l'indirizzo della pagina dei bandi."""
+    page = CONFIG.get("links_page_url")
+    if page:
+        caption = (caption.replace("Clickable link in bio, with all open calls we have shared.", f"All open calls: {page}")
+                          .replace("All open calls, grouped by programme: link in bio.", f"All open calls, grouped by region and programme: {page}")
+                          .replace("link in bio", page))
+    return caption
+
+
+def publish_facebook(image_urls, caption):
+    """Pubblica le stesse slide sulla Pagina Facebook come un unico post con più foto. Restituisce l'id del post."""
+    page_id = os.environ.get("FB_PAGE_ID")
+    token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
+    base = f"https://graph.facebook.com/{GRAPH_VERSION}/{page_id}"
+    media = []
+    for url in image_urls:
+        r = requests.post(f"{base}/photos", data={"url": url, "published": "false", "access_token": token}, timeout=90)
+        if not r.ok:
+            raise RuntimeError(f"Errore Facebook (foto) {r.status_code}: {r.text[:300]}")
+        media.append(r.json()["id"])
+    data = {"message": facebook_caption(caption), "access_token": token}
+    for i, mid in enumerate(media):
+        data[f"attached_media[{i}]"] = json.dumps({"media_fbid": mid})
+    r = requests.post(f"{base}/feed", data=data, timeout=90)
+    if not r.ok:
+        raise RuntimeError(f"Errore Facebook (post) {r.status_code}: {r.text[:300]}")
+    return r.json().get("id")
+
+
 def wait_until_public(url):
     for _ in range(12):
         try:
@@ -279,10 +309,19 @@ def main():
     media_id = publish_carousel(urls, caption)
     print(f"Pubblicato su Instagram! id={media_id}")
 
+    fb_id = None
+    if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID"):
+        try:   # un errore su Facebook non blocca il post Instagram già uscito
+            fb_id = publish_facebook(urls, caption)
+            print(f"Pubblicato su Facebook! id={fb_id}")
+        except Exception as e:
+            print(f"::warning title=Facebook non pubblicato::{str(e)[:300]}")
+            notify("Post non pubblicato su Facebook", f"Il post «{post['title']}» è uscito su Instagram ma non su Facebook: {e}")
+
     queue = [q for q in queue if q["id"] != post["id"]]
     posted.append({"date": today, "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                    "id": post["id"], "title": post["title"],
-                   "source": post["source"], "media_id": media_id,
+                   "source": post["source"], "media_id": media_id, "facebook_id": fb_id,
                    **({"kind": "grant", "grant_id": post["grant_id"], "url": post["url"],
                        "deadline": post["deadline_iso"], "funder": post.get("funder", ""),
                        "summary": post.get("summary", ""), "italy_evidence": post.get("italy_evidence", ""),
@@ -319,6 +358,9 @@ def check_token():
     scopes = ", ".join(sorted(data.get("scopes", [])))
     print(f"::notice title=Token Instagram::valido: {data.get('is_valid')} | tipo: {data.get('type')} | "
           f"scade: {when(exp)} | accesso ai dati fino al: {when(access)} | permessi: {scopes}")
+    if os.environ.get("FB_PAGE_ID"):
+        missing = [p for p in ("pages_manage_posts", "pages_read_engagement") if p not in data.get("scopes", [])]
+        print(f"::notice title=Pagina Facebook::ID impostato; permessi mancanti: {', '.join(missing) or 'nessuno'}")
     days = [(t - time.time()) / 86400 for t in (exp, access) if t]
     if not data.get("is_valid") or (days and min(days) < 14):
         notify("Il token Instagram sta per scadere",
