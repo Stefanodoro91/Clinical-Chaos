@@ -48,53 +48,6 @@
     "source": "Blinding.pdf"
   },
   {
-    "title": "Block Randomization: Fixing Group Imbalances",
-    "title_highlight": "Block Randomization",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "Why Use Block Randomization",
-        "body": "To avoid sample size imbalances in small trials, we set blocks for randomization and balance the number of subjects in each block.",
-        "image_prompt": "four identical boxes containing balanced pairs of blue and red tokens representing study subjects",
-        "highlight": "",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "The Danger of Small Block Sizes",
-        "body": "If the block size is 2, the allocation result of the second subject in the block can be easily predicted with a high risk of observation bias.",
-        "image_prompt": "a researcher peering through a magnifying glass at an open envelope with a visible letter inside",
-        "highlight": "allocation result of the second subject",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "Protecting Against Selection Bias",
-        "body": "Therefore, the block size used should preferably be 4 or more. To reduce the risk of predictability from the use of one block size, the size may be varied.",
-        "image_prompt": "four different sized wooden blocks lined up in a row on a table next to documents",
-        "highlight": "",
-        "source": "Lim & In, 2019"
-      }
-    ],
-    "takeaway": "Use block sizes of 4 or more to maintain equal group sizes without triggering severe selection bias.",
-    "takeaway_highlight": "",
-    "references": [
-      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
-    ],
-    "caption": "Block randomization keeps treatment and control groups balanced throughout the trial. However, small blocks like a size of 2 make the next allocation entirely predictable, opening the door to selection bias. Varying your block sizes or keeping them at 4 or higher is a key safeguard. What block sizes do you typically implement in your protocols?",
-    "hashtags": [
-      "#ClinicalTrials",
-      "#ResearchMethods",
-      "#Randomization",
-      "#Biostatistics",
-      "#ClinicalResearch",
-      "#Methodology",
-      "#TrialDesign",
-      "#ResearchEthics"
-    ],
-    "source_hint": "page 3",
-    "id": "c917f598",
-    "source": "Randomization.pdf"
-  },
-  {
     "title": "Stratified Randomization and the Sparse Strata Trap",
     "title_highlight": "Stratified Randomization",
     "category": "Randomization & blinding",
