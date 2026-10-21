@@ -317,17 +317,29 @@ def _person_plus(d, x, y, c, s=48):
     d.line([(x + s * .94, y + s * .14), (x + s * .94, y + s * .46)], fill=c, width=5)
 
 
+def _instagram_glyph(d, x, y, c, s=44):
+    d.rounded_rectangle((x, y, x + s, y + s), radius=int(s * .28), outline=c, width=4)
+    d.ellipse((x + s * .27, y + s * .27, x + s * .73, y + s * .73), outline=c, width=4)
+    d.ellipse((x + s * .72, y + s * .16, x + s * .84, y + s * .28), fill=c)
+
+
+def _facebook_glyph(d, x, y, c, bg, s=44):
+    d.ellipse((x, y, x + s, y + s), fill=c)
+    f = font("ExtraBold", int(s * .78))
+    d.text((x + s * .5 - d.textlength("f", font=f) / 2 + 2, y + s * .2), "f", font=f, fill=bg)
+
+
 def closing(post, cfg, total):
     """Chiusura in negativo: messaggio da ricordare evidenziato, scheda profilo con Follow / Save / Share."""
     c = cfg["colors"]
     navy = c["background"]
     img, d = light_canvas(cfg, total, total)
     d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 34), fill=DARK_ACCENT.get(c["accent"], navy))
-    card_top = H - 580
+    card_top = H - 660
     fnt, lines, size = fit(d, post["takeaway"], "ExtraBold", 72, 44, W - 2 * MARGIN, card_top - 240 - 50, 1.2)
     draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 240, W - 2 * MARGIN,
               navy, 1.2, c["accent"], half=True)
-    d.rounded_rectangle((MARGIN, card_top, W - MARGIN, card_top + 420), radius=32, fill=navy)
+    d.rounded_rectangle((MARGIN, card_top, W - MARGIN, card_top + 500), radius=32, fill=navy)
     sym = paste_logo(img, "logo-symbol-light", MARGIN + 30, card_top + 22, height=140)
     if sym:
         wx = MARGIN + 30 + sym[0] + 18
@@ -346,6 +358,12 @@ def closing(post, cfg, total):
     cta = cta1 + (f" · {cta2}" if cta2 else "")
     cf, cl, cs = fit(d, cta, "Regular", 28, 22, W - 2 * MARGIN - 100, 40, 1.2)
     d.text((MARGIN + 50, card_top + 345), cl[0], font=cf, fill=c["muted_text"])
+    # dove trovarci: Instagram e Facebook con lo stesso nome
+    d.line((MARGIN + 50, card_top + 400, W - MARGIN - 50, card_top + 400), fill="#2A4560", width=2)
+    sy = card_top + 425
+    _instagram_glyph(d, MARGIN + 50, sy, "#FFFFFF")
+    _facebook_glyph(d, MARGIN + 116, sy, "#FFFFFF", navy)
+    d.text((MARGIN + 186, sy + 4), cfg["handle"], font=font("SemiBold", 32), fill="#FFFFFF")
     return img
 
 

@@ -106,12 +106,12 @@ def move(drive, file_id, src, dst):
 
 
 # ---------------------------------------------------------------- fase 1: lettura materiale
-def ingest(drive, queue):
+def ingest(drive, queue, limit=None):
     inbox, done_folder = os.environ["GDRIVE_FOLDER_ID"], os.environ["GDRIVE_DONE_FOLDER_ID"]
     sources = load(SOURCES_FILE, [])
     seen = {s["drive_id"] for s in sources}
     pending = [f for f in list_files(drive, inbox) if f["id"] not in seen]
-    limit = int(CONFIG.get("max_new_files_per_run", 1))
+    limit = int(limit or CONFIG.get("max_new_files_per_run", 1))
 
     for f in pending[:limit]:
         if not content.is_supported(f):
@@ -255,11 +255,11 @@ def main():
     # Due post al giorno, in due run separati: un bando (POST_TYPE=grant) e un post di metodologia (research).
     post_type = (os.environ.get("POST_TYPE") or "research").strip().lower()
     kind = "grant" if post_type == "grant" else "research"
-    # Il run pianificato salta se un post dello stesso tipo è uscito nelle ultime 20 ore (es. dopo un lancio manuale).
+    # Il run pianificato salta se un post dello stesso tipo è uscito nelle ultime 12 ore (es. dopo un lancio manuale).
     same = [p for p in posted if (p.get("kind") or "research") == kind and p.get("time")]
     if os.environ.get("GITHUB_EVENT_NAME") == "schedule" and same:
         hours = (datetime.now(timezone.utc) - datetime.fromisoformat(same[-1]["time"])).total_seconds() / 3600
-        if hours < 20:
+        if hours < 12:
             print(f"Ultimo post di tipo {kind} pubblicato {hours:.1f} ore fa: salto.")
             return
 
@@ -423,6 +423,21 @@ def recheck_references(drive, queue, skip=()):
     return queue
 
 
+def restart():
+    """Riparte da capo: svuota la coda e il registro dei file letti e rilegge subito tutti i documenti
+    della cartella Drive (spostandoli poi negli elaborati). Il registro dei post pubblicati resta, così
+    Gemini non ripete argomenti già usciti."""
+    drive = drive_service()
+    save(QUEUE_FILE, [])
+    save(SOURCES_FILE, [])
+    queue = []
+    ingest(drive, queue, limit=1000)
+    refs = sum(1 for p in queue if p.get("references"))
+    print(f"::notice title=Ripartenza::{len(queue)} post in coda ({refs} con reference) da {len(load(SOURCES_FILE, []))} documenti")
+    save(QUEUE_FILE, queue)
+    commit_and_push([QUEUE_FILE.name, SOURCES_FILE.name], f"Ripartenza: {len(queue)} post in coda")
+
+
 def rebuild():
     """Rigenera la coda rileggendo i file già elaborati (con evidenziazioni e reference),
     senza ripetere gli argomenti già pubblicati. Non pubblica niente."""
@@ -479,6 +494,8 @@ def status():
 if __name__ == "__main__":
     if "--status" in sys.argv:
         status()
+    elif "--restart" in sys.argv:
+        restart()
     elif "--rebuild" in sys.argv:
         rebuild()
     elif "--token" in sys.argv:

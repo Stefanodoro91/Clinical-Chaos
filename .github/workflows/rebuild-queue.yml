@@ -4,9 +4,15 @@ name: Rigenera la coda dei post
 # senza ripetere gli argomenti già pubblicati. Non pubblica niente su Instagram.
 on:
   workflow_dispatch:
+    inputs:
+      restart:
+        description: "Riparti da capo: svuota la coda e rileggi tutti i documenti della cartella Drive"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: instagram-post
@@ -15,7 +21,7 @@ concurrency:
 jobs:
   rebuild:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -34,4 +40,5 @@ jobs:
           GDRIVE_DONE_FOLDER_ID: ${{ secrets.GDRIVE_DONE_FOLDER_ID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
-        run: python bot.py --rebuild
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python bot.py ${{ inputs.restart && '--restart' || '--rebuild' }}
