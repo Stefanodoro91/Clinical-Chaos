@@ -440,7 +440,7 @@ def render_carousel(post, cfg):
         return out
     has_facts = bool(post.get("facts"))
     total = len(post["slides"]) + 2 + has_facts
-    use_images = cfg.get("ai_images", True)
+    use_images = cfg.get("ai_images", True) and not post.get("no_images")
     max_images = int(cfg.get("max_images_per_post", 2))
     used = 0
     pages = [grant_cover(post, cfg, total) if post.get("kind") == "grant" else cover(post, cfg, total)]

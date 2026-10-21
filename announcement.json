@@ -1,0 +1,29 @@
+{
+  "id": "announcement-2026-10-21-open-calls-page",
+  "kind": "announcement",
+  "no_images": true,
+  "title": "33 open research funding calls, all in one place",
+  "title_highlight": "all in one place",
+  "category": "Page update",
+  "slides": [
+    {"heading": "Every open call, checked",
+     "body": "Our link-in-bio page now lists all the open calls for clinical and rehabilitation research found by our monitoring: 33 today, each checked against the official call text.",
+     "highlight": "checked against the official call text", "source": ""},
+    {"heading": "Organised the way you search",
+     "body": "Calls are grouped by region and funding programme and sorted by deadline, with a section for calls open to Italian institutions and Find partners links for EU calls.",
+     "highlight": "grouped by region and funding programme", "source": ""},
+    {"heading": "Academic positions, too",
+     "body": "A new page lists PhD, post-doc, research and faculty positions in rehabilitation research, checked on the official ads and updated every day.",
+     "highlight": "checked on the official ads", "source": ""},
+    {"heading": "How to use it",
+     "body": "Tap the link in our bio, choose your region or programme and open the official call. Always check eligibility and deadlines in the call before applying.",
+     "highlight": "Tap the link in our bio", "source": ""}
+  ],
+  "takeaway": "All open calls and academic positions, checked and updated every day: link in bio.",
+  "takeaway_highlight": "updated every day",
+  "closing_cta": ["Save it and share it with your research team", "All open calls: link in bio"],
+  "caption": "Big update to our link-in-bio page 🎉\n\n33 open funding calls for clinical and rehabilitation research, each checked against the official call text and grouped by region and funding programme, from Horizon Europe to NIH and private foundations. 12 of them are open to Italian institutions.\n\nNew: a page with PhD, post-doc, research and faculty positions in rehabilitation research, updated every day.\n\nOpen calls: https://clinical-chaos-dsv.pages.dev\nAcademic positions: https://clinical-chaos-dsv.pages.dev/positions.html\n\nWhich funders should we add next? Tell us in the comments.",
+  "hashtags": ["#ResearchFunding", "#GrantOpportunity", "#AcademicJobs", "#RehabilitationResearch", "#ClinicalTrials", "#HorizonEurope", "#NIH"],
+  "references": [],
+  "source": "Announcement"
+}

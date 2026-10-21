@@ -305,7 +305,7 @@ def main():
 
     # Due post al giorno, in due run separati: un bando (POST_TYPE=grant) e un post di metodologia (research).
     post_type = (os.environ.get("POST_TYPE") or "research").strip().lower()
-    kind = post_type if post_type in ("grant", "positions") else "research"
+    kind = post_type if post_type in ("grant", "positions", "announcement") else "research"
     # Il run pianificato salta se un post dello stesso tipo è uscito nelle ultime 12 ore (es. dopo un lancio manuale).
     same = [p for p in posted if (p.get("kind") or "research") == kind and p.get("time")]
     if os.environ.get("GITHUB_EVENT_NAME") == "schedule" and same:
@@ -314,9 +314,19 @@ def main():
             print(f"Ultimo post di tipo {kind} pubblicato {hours:.1f} ore fa: salto.")
             return
 
-    if kind == "positions":
+    if kind == "announcement":
+        # post scritto a mano in announcement.json, pubblicato una sola volta
+        post = load(ROOT / "announcement.json", None)
+        if not post or any(p.get("id") == post.get("id") for p in posted):
+            print("::notice title=Annuncio::nessun annuncio nuovo da pubblicare")
+            return
+        post["closing_cta"] = tuple(post.get("closing_cta") or ())
         files_waiting = 1
-        post = positions.weekly_post(positions.load_archive(), posted, CONFIG)
+    elif kind == "positions":
+        files_waiting = 1
+        n = os.environ.get("POSITIONS_PER_POST")
+        cfg = {**CONFIG, "positions_per_post": int(n), "positions_min_per_post": 1} if n else CONFIG
+        post = positions.weekly_post(positions.load_archive(), posted, cfg)
         if post is None:
             print("::notice title=Nessuna raccolta di posizioni::Meno di 3 posizioni nuove verificate: questa settimana niente post.")
             return
@@ -385,6 +395,7 @@ def main():
                    "id": post["id"], "title": post["title"],
                    "source": post["source"], "media_id": media_id, "facebook_id": fb_id,
                    **({"kind": "positions", "position_ids": post["position_ids"]} if post.get("kind") == "positions" else {}),
+                   **({"kind": "announcement"} if post.get("kind") == "announcement" else {}),
                    **({"kind": "grant", "grant_id": post["grant_id"], "url": post["url"],
                        "deadline": post["deadline_iso"], "funder": post.get("funder", ""),
                        "summary": post.get("summary", ""), "italy_evidence": post.get("italy_evidence", ""),
