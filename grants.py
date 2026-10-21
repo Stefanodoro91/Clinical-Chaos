@@ -246,6 +246,17 @@ def region(g, v, cfg):
     return funder_continents(cfg).get(g.get("fonte") or "") or REGIONS[0]
 
 
+EU_PARTNER_SEARCH = "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/partner-search"
+
+
+def partner_search(g):
+    """(link, ID del topic) per le call del portale UE, che hanno una ricerca partner ufficiale; altrimenti None."""
+    gid = g.get("id", "")
+    if gid.startswith("EU-") and "topic-details" in (g.get("url") or ""):
+        return EU_PARTNER_SEARCH, gid[3:]
+    return None
+
+
 def programme_family(g):
     """Programma di finanziamento usato per raggruppare la pagina (deterministico, dai dati ufficiali)."""
     gid = g.get("id", "")
@@ -561,7 +572,9 @@ def build_post(g, v, cfg):
                f"{countries_line}\n"
                f"Deadline: {_fmt_date(deadline)}\n"
                f"Official call: {g['url']}\n"
-               "All open calls, grouped by programme: link in bio.\n\n"
+               + (f"Looking for consortium partners? EU partner search: {partner_search(g)[0]} (topic ID: {partner_search(g)[1]})\n"
+                  if partner_search(g) else "")
+               + "All open calls, grouped by programme: link in bio.\n\n"
                "Details are compiled automatically from the official call: always check eligibility, amounts and dates before applying.")
     tags = ["#" + t.lstrip("#").replace(" ", "") for t in out.get("hashtags", []) if t.strip("# ")]
     return {
@@ -647,6 +660,11 @@ PAGE = """<!doctype html>
   details {{ font-size: 13px; color: var(--soft); margin: 0 0 14px; }}
   details summary {{ cursor: pointer; color: var(--muted); }}
   details p {{ border-left: 2px solid var(--muted); padding-left: 10px; margin: 8px 0 0; font-style: italic; }}
+  .partners {{ font-size: 13px; color: var(--soft); margin: 0 0 14px; }}
+  .partners code {{ font-size: 12px; background: rgba(255,255,255,.08); padding: 1px 6px; border-radius: 6px; word-break: break-all; }}
+  .btns {{ display: flex; flex-wrap: wrap; gap: 8px; }}
+  a.btn.ghost {{ background: transparent; color: var(--text); border: 2px solid var(--accent); padding: 9px 16px; }}
+  .call.other a.btn.ghost {{ background: transparent; border-color: var(--teal); }}
   .row {{ display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }}
   .deadline {{ font-size: 14px; color: var(--soft); }}
   .deadline b {{ color: var(--text); font-size: 16px; }}
@@ -738,6 +756,11 @@ def build_page(grants_list, verified, posted, cfg, today=None):
         else:
             when = "Deadline <b>see official call</b>"
         tag = '<span class="tag">ON INSTAGRAM</span>' if g["id"] in featured else ""
+        ps = partner_search(g)
+        partners = (f'<p class="partners">Looking for consortium partners? Search topic <code>{escape(ps[1])}</code> in the '
+                    f'EU partner search, or see &ldquo;Partner search announcements&rdquo; on the call page.</p>') if ps else ""
+        find = (f'<a class="btn ghost" href="{escape(ps[0], quote=True)}" target="_blank" rel="noopener">Find partners</a>'
+                if ps else "")
         if v.get("coming_soon"):
             tag += '<span class="tag soon-tag">COMING SOON</span>'
         if not v:
@@ -754,9 +777,10 @@ def build_page(grants_list, verified, posted, cfg, today=None):
       <div class="funder">{escape(v.get("programme") or programme_detail(g))}{tag}</div>
       <h4>{escape(v.get("title") or g.get("titolo") or "")}</h4>
       {body}
+      {partners}
       <div class="row">
         <div class="deadline">{when}</div>
-        <a class="btn" href="{escape(g["url"], quote=True)}" target="_blank" rel="noopener">Official call &rarr;</a>
+        <div class="btns">{find}<a class="btn" href="{escape(g["url"], quote=True)}" target="_blank" rel="noopener">Official call &rarr;</a></div>
       </div>
     </article>"""
 
