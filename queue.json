@@ -1,53 +1,5 @@
 [
   {
-    "title": "Why James' Blinding Index Falls Short",
-    "title_highlight": "",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "A Single Index Value",
-        "body": "James et al. proposed a blinding index that incorporates nonrespondents, but it combines all arms into a single index value for the entire trial.",
-        "image_prompt": "a single numerical scale ranging from zero to one with multiple overlapping arrows pointing to the center",
-        "highlight": "",
-        "source": "Bang et al., 2004"
-      },
-      {
-        "heading": "The Danger of Arm Cancellation",
-        "body": "Because James' BI combines all treatment arms, some cancelling or mixing effects may result in wrong conclusions when arms differ significantly.",
-        "image_prompt": "two opposing scale pans balancing each other out while a researcher looks confused at a clipboard",
-        "highlight": "",
-        "source": "Bang et al., 2004"
-      },
-      {
-        "heading": "Dominated by Uncertain Responses",
-        "body": "James' method is critically dominated by Don't Know responses, and when their proportion is high, the method almost always concludes successful blinding.",
-        "image_prompt": "a large question mark tile dominating a grid of smaller tiles representing trial participant guesses",
-        "highlight": "",
-        "source": "Bang et al., 2004"
-      }
-    ],
-    "takeaway": "Single-index blinding measures can mask arm-specific differences and overemphasize uncertain responses.",
-    "takeaway_highlight": "",
-    "references": [
-      "Bang, H., Ni, L., & Davis, C. E. (2004). Assessment of blinding in clinical trials. Controlled Clinical Trials, 25(2), 143–156. https://doi.org/10.1016/j.cct.2003.10.016",
-      "JAMES, K. E., BLOCH, D. A., LEE, K. K., KRAEMER, H. C., & FULLER, R. K. (1996). AN INDEX FOR ASSESSING BLINDNESS IN A MULTI‐CENTRE CLINICAL TRIAL: DISULFIRAM FOR ALCOHOL CESSATION—A VA COOPERATIVE STUDY. Statistics in Medicine, 15(13), 1421–1434. https://doi.org/10.1002/(sici)1097-0258(19960715)15:13<1421::aid-sim266>3.3.co;2-8"
-    ],
-    "caption": "Summary indices like James' Blinding Index offer a quick overview, but they can hide important differences between the treatment and placebo arms. When a large percentage of participants answer Don't Know, the index can be heavily skewed. What challenges do you face when analyzing blinding data?",
-    "hashtags": [
-      "#ClinicalTrials",
-      "#Biostatistics",
-      "#ResearchMethods",
-      "#Blinding",
-      "#DataAnalysis",
-      "#ClinicalResearch",
-      "#TrialDesign",
-      "#Methodology"
-    ],
-    "source_hint": "pages 4, 10",
-    "id": "7f24c08a",
-    "source": "Blinding.pdf"
-  },
-  {
     "title": "Stratified Randomization and the Sparse Strata Trap",
     "title_highlight": "Stratified Randomization",
     "category": "Randomization & blinding",
