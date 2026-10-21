@@ -382,5 +382,119 @@
     "source_hint": "page 7",
     "id": "1d35242a",
     "source": "Randomization.pdf"
+  },
+  {
+    "title": "Does PICO Actually Improve Literature Search Quality?",
+    "title_highlight": "Improve Literature Search",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "The Search for Evidence on PICO",
+        "body": "Few studies have been performed to evaluate the effectiveness of PICO or its variations in identifying relevant research articles in evidence-based practice.",
+        "image_prompt": "a researcher holding a magnifying glass over a stack of medical journals and a computer keyboard, searching for specific documents",
+        "highlight": "Few studies have been performed",
+        "source": "Kloda et al., 2020"
+      },
+      {
+        "heading": "Pilot Trials and Precision",
+        "body": "A pilot randomized trial found that searches using PICO resulted in higher percentages of relevant citations, but the findings did not reach statistical significance.",
+        "image_prompt": "a simple figure looking at a balancing scale with one side slightly heavier than the other, representing statistical results",
+        "highlight": "did not reach statistical significance",
+        "source": "Schardt et al., 2007"
+      },
+      {
+        "heading": "Quick Searches in PubMed",
+        "body": "Researchers investigated the PICO format usefulness for quick searches in PubMed and found that using PICO did not improve the results for quick searching.",
+        "image_prompt": "a researcher looking at a computer screen displaying search results with a question mark floating above the monitor",
+        "highlight": "did not improve the results",
+        "source": "Hoogendam et al., 2012"
+      },
+      {
+        "heading": "What Systematic Reviews Show",
+        "body": "A systematic review aimed to determine if PICO improved search quality, but could only include three articles and concluded that evidence was lacking.",
+        "image_prompt": "three identical folders resting on a table with a researcher examining them closely under a desk lamp",
+        "highlight": "evidence was lacking",
+        "source": "Eriksen and Frandsen, 2018"
+      }
+    ],
+    "takeaway": "Evidence supporting the overall effectiveness of PICO as a literature search tool is lacking.",
+    "takeaway_highlight": "",
+    "references": [
+      "Kloda, L. A., Boruff, J. T., & Soares Cavalcante, A. (2020). A comparison of patient, intervention, comparison, outcome (PICO) to a new, alternative clinical question framework for search skills, search results, and self-efficacy: a randomized controlled trial. Journal of the Medical Library Association, 108(2). https://doi.org/10.5195/jmla.2020.739",
+      "Schardt, C., Adams, M. B., Owens, T., Keitz, S., & Fontelo, P. (2007). Utilization of the PICO framework to improve searching PubMed for clinical questions. BMC Medical Informatics and Decision Making, 7(1). https://doi.org/10.1186/1472-6947-7-16",
+      "Hoogendam, A., de Vries Robbé, P. F., & Overbeke, A. J. P. (2012). Comparing patient characteristics, type of intervention, control, and outcome (PICO) queries with unguided searching: a randomized controlled crossover trial. Journal of the Medical Library Association : JMLA, 100(2), 121–126. https://doi.org/10.3163/1536-5050.100.2.010",
+      "Eriksen, M. B., & Frandsen, T. F. (2018). The impact of patient, intervention, comparison, outcome (PICO) as a search strategy tool on literature search quality: a systematic review. Journal of the Medical Library Association, 106(4). https://doi.org/10.5195/jmla.2018.345"
+    ],
+    "caption": "PICO is a cornerstone of evidence-based practice teaching, but empirical data on whether it actually improves search outcomes is surprisingly thin. When we look closely at the published evaluations, the expected boost in search precision doesn't always show up. How much do you rely on strict formatting when building your literature searches?",
+    "hashtags": [
+      "#ClinicalResearch",
+      "#LiteratureReview",
+      "#EvidenceBasedPractice",
+      "#ResearchMethods",
+      "#PubMed",
+      "#ClinicalTrials",
+      "#SearchStrategy",
+      "#NursingResearch"
+    ],
+    "source_hint": "section 3",
+    "id": "0f97d51d",
+    "source": "PICO.pdf"
+  },
+  {
+    "title": "Why PICO Fails Non-Intervention Questions",
+    "title_highlight": "Fails Non-Intervention Questions",
+    "category": "Study design",
+    "slides": [
+      {
+        "heading": "Origins in Epidemiology",
+        "body": "The PICO mnemonic was originally developed from an epidemiological perspective for medical intervention or exposure questions comparing one treatment over another.",
+        "image_prompt": "two distinct pill bottles sitting side by side on a table with a directional arrow pointing from one to the other",
+        "highlight": "medical intervention or exposure questions",
+        "source": "Booth et al., 2000"
+      },
+      {
+        "heading": "Built for Which Questions",
+        "body": "PICO is most suitable for which type questions that compare one treatment, therapy, or intervention over another, but lacks usefulness for diagnosis and prognosis.",
+        "image_prompt": "a researcher holding a scale balancing two different medical documents representing a comparison between options",
+        "highlight": "most suitable for which type questions",
+        "source": "Huang et al., 2006"
+      },
+      {
+        "heading": "Beyond the Medical Model",
+        "body": "Nursing practice is routinely concerned with questions of what, when, how, and why, which often lie outside a strict medical model of cure or therapy.",
+        "image_prompt": "a simple figure surrounded by question mark symbols of different sizes pointing in various directions",
+        "highlight": "",
+        "source": "Ou et al., 2017"
+      },
+      {
+        "heading": "The Qualitative Blind Spot",
+        "body": "Despite adaptations like removing the comparator, PICO remains ill-suited for identifying qualitative research articles focused on process and meaning.",
+        "image_prompt": "an open journal page displaying a person icon and a speech bubble symbol next to a magnifying glass",
+        "highlight": "ill-suited for identifying qualitative research",
+        "source": "Cooke et al., 2012"
+      }
+    ],
+    "takeaway": "PICO is tailored for intervention comparisons and struggles with qualitative, diagnostic, or descriptive inquiries.",
+    "takeaway_highlight": "tailored for intervention comparisons",
+    "references": [
+      "Booth, A., O’Rourke, A. J., & Ford, N. J. (2000). Structuring the pre-search reference interview: a useful technique for handling clinical questions.",
+      "Huang, X., Lin, J., & Demner-Fushman, D. (2006). Evaluation of PICO as a knowledge representation for clinical questions.",
+      "Ou, C. H. K., Hall, W. A., & Thorne, S. E. (2017). Can nursing epistemology embrace <i>p</i>‐values?. Nursing Philosophy, 18(4). https://doi.org/10.1111/nup.12173",
+      "Cooke, A., Smith, D., & Booth, A. (2012). Beyond PICO. Qualitative Health Research, 22(10), 1435–1443. https://doi.org/10.1177/1049732312452938"
+    ],
+    "caption": "When your research question is about patient experience, meaning, or complex care processes, forcing it into a PICO framework can be like trying to fit a square peg in a round hole. Because it was built for comparative intervention trials, it leaves out vital dimensions of clinical inquiry. How do you structure your searches for qualitative or descriptive topics?",
+    "hashtags": [
+      "#QualitativeResearch",
+      "#ResearchDesign",
+      "#ClinicalInquiry",
+      "#NursingScience",
+      "#EvidenceBasedPractice",
+      "#Methodology",
+      "#HealthResearch",
+      "#SystematicReview"
+    ],
+    "source_hint": "section 3",
+    "id": "68352541",
+    "source": "PICO.pdf"
   }
 ]
