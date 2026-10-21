@@ -640,5 +640,93 @@
     "source_hint": "pages 7-8, Steps 6.1 and 6.2",
     "id": "212aab99",
     "source": "COSMIN.pdf"
+  },
+  {
+    "title": "Critical Appraisal vs. Reporting Guidelines: Know the Difference",
+    "title_highlight": "",
+    "category": "Critical appraisal",
+    "slides": [
+      {
+        "heading": "Two Distinct Sets of Tools",
+        "body": "Nurses engaged in evidence-based practice have two important sets of tools: critical appraisal tools and reporting guidelines.",
+        "image_prompt": "a researcher standing between two large filing cabinets, one labeled with a checkmark and the other with a magnifying glass",
+        "highlight": "two important sets of tools",
+        "source": ""
+      },
+      {
+        "heading": "Evaluating with Critical Appraisal Tools",
+        "body": "Critical appraisal tools facilitate the appraisal process and guide a consumer of evidence through an objective, analytical, evaluation process.",
+        "image_prompt": "a magnifying glass held over a stack of scientific documents on a wooden table, revealing clean grid lines",
+        "highlight": "objective, analytical, evaluation process",
+        "source": ""
+      },
+      {
+        "heading": "Ensuring Clarity with Reporting Guidelines",
+        "body": "Reporting guidelines are checklists of items that should be included in a publication to ensure clarity, completeness, and transparency.",
+        "image_prompt": "a person checking items off a large clipboard using a marker while looking at a completed manuscript",
+        "highlight": "",
+        "source": ""
+      }
+    ],
+    "takeaway": "Critical appraisal evaluates evidence quality, while reporting guidelines ensure transparent dissemination of findings.",
+    "takeaway_highlight": "evaluates evidence quality",
+    "references": [
+      "Buccheri, R. K., & Sharifi, C. (2017). Critical Appraisal Tools and Reporting Guidelines for Evidence‐Based Practice. Worldviews on Evidence-Based Nursing, 14(6), 463–472. https://doi.org/10.1111/wvn.12258"
+    ],
+    "caption": "It is easy to mix up the tools used to evaluate literature and the tools used to write papers. Understanding this distinction is fundamental for evidence-based practice. Which tool do you use most frequently in your journal clubs?",
+    "hashtags": [
+      "#CriticalAppraisal",
+      "#EvidenceBasedPractice",
+      "#ResearchMethods",
+      "#ClinicalResearch",
+      "#ResearchIntegrity",
+      "#ScientificWriting",
+      "#NursingResearch",
+      "#Biostatistics"
+    ],
+    "source_hint": "Introduction and background",
+    "id": "6276a0d4",
+    "source": "Critical appraisal"
+  },
+  {
+    "title": "Why Opaque Reporting Sabotages Research",
+    "title_highlight": "Opaque Reporting Sabotages",
+    "category": "Reporting & publication",
+    "slides": [
+      {
+        "heading": "The Danger of Opaque Reporting",
+        "body": "Opaque reporting is directly associated with biased conclusions and errors in biomedical publishing.",
+        "image_prompt": "a stack of heavy medical journals covered by a dark cloth with a question mark printed on top",
+        "highlight": "directly associated with biased conclusions",
+        "source": ""
+      },
+      {
+        "heading": "Judging Reliability Becomes Impossible",
+        "body": "Without a clear understanding of how a study was done, readers are unable to judge whether the findings are reliable.",
+        "image_prompt": "a person holding two puzzle pieces that do not fit together over an open research paper",
+        "highlight": "",
+        "source": "Moher et al., 2014"
+      }
+    ],
+    "takeaway": "Without clear methodological details, readers cannot judge if study findings are reliable.",
+    "takeaway_highlight": "readers cannot judge",
+    "references": [
+      "Moher, D., Altman, D. G., Schulz, K. F., Simera, I., & Wager, E. (2014). Guidelines for reporting health research: A user’s manual.",
+      "Buccheri, R. K., & Sharifi, C. (2017). Critical Appraisal Tools and Reporting Guidelines for Evidence‐Based Practice. Worldviews on Evidence-Based Nursing, 14(6), 463–472. https://doi.org/10.1111/wvn.12258"
+    ],
+    "caption": "Poor reporting wastes scarce resources and leads to flawed clinical decisions. Transparency in methodology is non-negotiable. Have you ever encountered a published paper missing critical procedural details?",
+    "hashtags": [
+      "#ResearchTransparency",
+      "#ClinicalTrials",
+      "#ResearchEthics",
+      "#CriticalAppraisal",
+      "#ScientificPublishing",
+      "#BiomedicalResearch",
+      "#ResearchMethods",
+      "#EvidenceBasedPractice"
+    ],
+    "source_hint": "Rationale for Using Reporting Guidelines in Publishing",
+    "id": "7bc8e19b",
+    "source": "Critical appraisal"
   }
 ]
