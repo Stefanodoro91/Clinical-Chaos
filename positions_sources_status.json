@@ -6,14 +6,14 @@
     "data": "2026-10-21"
   },
   "jobs.ac.uk – rehabilitation": {
-    "letti": 19,
-    "pertinenti": 19,
+    "letti": 21,
+    "pertinenti": 21,
     "errore": "",
     "data": "2026-10-21"
   },
   "jobs.ac.uk – physiotherapy": {
-    "letti": 8,
-    "pertinenti": 8,
+    "letti": 12,
+    "pertinenti": 12,
     "errore": "",
     "data": "2026-10-21"
   },
@@ -24,8 +24,8 @@
     "data": "2026-10-21"
   },
   "jobs.ac.uk – stroke": {
-    "letti": 4,
-    "pertinenti": 4,
+    "letti": 5,
+    "pertinenti": 5,
     "errore": "",
     "data": "2026-10-21"
   },
@@ -59,30 +59,6 @@
     "errore": "",
     "data": "2026-10-21"
   },
-  "FindAPhD – rehabilitation": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://www.findaphd.com/phds/?Keywords=rehabilitation",
-    "data": "2026-10-21"
-  },
-  "FindAPhD – physiotherapy": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://www.findaphd.com/phds/?Keywords=physiotherapy",
-    "data": "2026-10-21"
-  },
-  "FindAPostDoc – rehabilitation": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://www.findapostdoc.com/search/?Keywords=rehabilitation",
-    "data": "2026-10-21"
-  },
-  "ScholarshipDb – rehabilitation": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://scholarshipdb.net/jobs?q=rehabilitation",
-    "data": "2026-10-21"
-  },
   "Times Higher Education – rehabilitation": {
     "letti": 10,
     "pertinenti": 10,
@@ -95,12 +71,6 @@
     "errore": "403 Client Error: Forbidden for url: https://www.universityaffairs.ca/search-job/?keywords=rehabilitation",
     "data": "2026-10-21"
   },
-  "HigherEdJobs – rehabilitation": {
-    "letti": 8,
-    "pertinenti": 8,
-    "errore": "",
-    "data": "2026-10-21"
-  },
   "ACRM Career Center": {
     "letti": 0,
     "pertinenti": 0,
@@ -111,6 +81,48 @@
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
+    "data": "2026-10-21"
+  },
+  "EURAXESS – fisioterapia": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=fisioterapia",
+    "data": "2026-10-21"
+  },
+  "EURAXESS – neuroriabilitazione": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=neuroriabilitazione",
+    "data": "2026-10-21"
+  },
+  "EURAXESS – MED/48 scienze riabilitative": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=MED%2F48",
+    "data": "2026-10-21"
+  },
+  "EURAXESS – occupational therapy": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=occupational%20therapy",
+    "data": "2026-10-21"
+  },
+  "EURAXESS – neurorehabilitation": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=neurorehabilitation",
+    "data": "2026-10-21"
+  },
+  "Nature Careers – physiotherapy": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Exceeded 30 redirects.",
+    "data": "2026-10-21"
+  },
+  "Nature Careers – stroke": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Exceeded 30 redirects.",
     "data": "2026-10-21"
   }
 }
