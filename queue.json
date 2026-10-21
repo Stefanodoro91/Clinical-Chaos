@@ -95,60 +95,6 @@
     "source": "Blinding.pdf"
   },
   {
-    "title": "Why Simple Randomization Fails Small Trials",
-    "title_highlight": "Simple Randomization",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "The Power of Simple Randomization",
-        "body": "In simple randomization, a coin or a die roll may be used to allocate subjects to a group. The best part of simple randomization is that it minimizes any bias by eliminating predictability.",
-        "image_prompt": "a researcher flipping a coin above a table with two identical treatment files and simple figures",
-        "highlight": "minimizes any bias by eliminating predictability",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "The Sample Size Trap",
-        "body": "Simple randomization cannot prevent the imbalances in the sample size or prognostic factors that are likely to occur as the number of subjects participating in the study decreases.",
-        "image_prompt": "two scales unbalanced with a small group of figures on one side and a large group on the other",
-        "highlight": "",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "Power Loss in Small Groups",
-        "body": "If the ratio of number of subjects shows an imbalance, that is, it is not 1 : 1, even with the same number of subjects participating, the power of mobility and study will fall.",
-        "image_prompt": "a downward sloping line on a graph next to two uneven stacks of documents representing study arms",
-        "highlight": "",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "When to Use Simple Randomization",
-        "body": "This is the randomization method recommended for large-scale clinical trials, because the likelihood of imbalance in trials with a small number of subjects is high.",
-        "image_prompt": "a large group of simple figures walking in two equal lines toward two large containers",
-        "highlight": "recommended for large-scale clinical trials",
-        "source": "Lim & In, 2019"
-      }
-    ],
-    "takeaway": "Simple randomization works well for large trials but creates dangerous sample size imbalances in small studies.",
-    "takeaway_highlight": "sample size imbalances",
-    "references": [
-      "Lim, C. Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221–232. https://doi.org/10.4097/kja.19049"
-    ],
-    "caption": "Simple randomization is the gold standard for large trials because it eliminates predictability and selection bias. But when sample sizes shrink, the math works against you. An uneven allocation ratio directly compromises statistical power. Have you encountered severe group imbalances in your small trials despite using proper randomization?",
-    "hashtags": [
-      "#ClinicalTrials",
-      "#Biostatistics",
-      "#ResearchMethods",
-      "#Randomization",
-      "#StudyDesign",
-      "#ClinicalResearch",
-      "#Sample魎Size",
-      "#ResearchIntegrity"
-    ],
-    "source_hint": "pages 2-3",
-    "id": "28731450",
-    "source": "Randomization.pdf"
-  },
-  {
     "title": "Block Randomization: Fixing Group Imbalances",
     "title_highlight": "Block Randomization",
     "category": "Randomization & blinding",
