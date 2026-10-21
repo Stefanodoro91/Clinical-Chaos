@@ -633,6 +633,8 @@ PAGE = """<!doctype html>
   body {{ margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }}
   .bar {{ height: 6px; background: var(--accent); }}
   main {{ max-width: 680px; margin: 0 auto; padding: 28px 16px 48px; }}
+  .switch {{ display: inline-block; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
+            border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px; margin-bottom: 18px; }}
   .badge {{ display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
            letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; }}
   h1 {{ font-size: 30px; font-weight: 800; margin: 14px 0 6px; line-height: 1.15; }}
@@ -686,6 +688,7 @@ PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
+  <a class="switch" href="positions.html">Academic positions &rarr;</a><br>
   <span class="badge">OPEN CALLS</span>
   <h1>Research funding calls</h1>
   <p class="intro">All open calls for clinical and rehabilitation research found by our monitoring, from funders worldwide.

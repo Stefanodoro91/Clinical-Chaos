@@ -21,6 +21,7 @@ from googleapiclient.discovery import build
 import cards
 import content
 import grants
+import positions
 
 ROOT = Path(__file__).resolve().parent
 CONFIG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
@@ -253,9 +254,12 @@ def publish_carousel(image_urls, caption):
     return ig("POST", f"{user}/media_publish", creation_id=carousel)["id"]
 
 
-def facebook_caption(caption):
-    """Su Facebook i link sono cliccabili: «link in bio» diventa l'indirizzo della pagina dei bandi."""
+def facebook_caption(caption, kind=None):
+    """Su Facebook i link sono cliccabili: «link in bio» diventa l'indirizzo della pagina dei bandi
+    (o di quella delle posizioni accademiche)."""
     page = CONFIG.get("links_page_url")
+    if page and kind == "positions":
+        page = page.rstrip("/") + "/positions.html"
     if page:
         caption = (caption.replace("Clickable link in bio, with all open calls we have shared.", f"All open calls: {page}")
                           .replace("All open calls, grouped by programme: link in bio.", f"All open calls, grouped by region and programme: {page}")
@@ -263,7 +267,7 @@ def facebook_caption(caption):
     return caption
 
 
-def publish_facebook(image_urls, caption):
+def publish_facebook(image_urls, caption, kind=None):
     """Pubblica le stesse slide sulla Pagina Facebook come un unico post con più foto. Restituisce l'id del post."""
     page_id = os.environ.get("FB_PAGE_ID")
     token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
@@ -274,7 +278,7 @@ def publish_facebook(image_urls, caption):
         if not r.ok:
             raise RuntimeError(f"Errore Facebook (foto) {r.status_code}: {r.text[:300]}")
         media.append(r.json()["id"])
-    data = {"message": facebook_caption(caption), "access_token": token}
+    data = {"message": facebook_caption(caption, kind), "access_token": token}
     for i, mid in enumerate(media):
         data[f"attached_media[{i}]"] = json.dumps({"media_fbid": mid})
     r = requests.post(f"{base}/feed", data=data, timeout=90)
@@ -301,16 +305,22 @@ def main():
 
     # Due post al giorno, in due run separati: un bando (POST_TYPE=grant) e un post di metodologia (research).
     post_type = (os.environ.get("POST_TYPE") or "research").strip().lower()
-    kind = "grant" if post_type == "grant" else "research"
+    kind = post_type if post_type in ("grant", "positions") else "research"
     # Il run pianificato salta se un post dello stesso tipo è uscito nelle ultime 12 ore (es. dopo un lancio manuale).
     same = [p for p in posted if (p.get("kind") or "research") == kind and p.get("time")]
     if os.environ.get("GITHUB_EVENT_NAME") == "schedule" and same:
         hours = (datetime.now(timezone.utc) - datetime.fromisoformat(same[-1]["time"])).total_seconds() / 3600
-        if hours < 12:
+        if hours < (72 if kind == "positions" else 12):
             print(f"Ultimo post di tipo {kind} pubblicato {hours:.1f} ore fa: salto.")
             return
 
-    if kind == "grant":
+    if kind == "positions":
+        files_waiting = 1
+        post = positions.weekly_post(positions.load_archive(), posted, CONFIG)
+        if post is None:
+            print("::notice title=Nessuna raccolta di posizioni::Meno di 3 posizioni nuove verificate: questa settimana niente post.")
+            return
+    elif kind == "grant":
         files_waiting = 1                      # il run dei bandi non legge Drive e non avvisa sulla coda
         post = grants.next_grant_post(posted, CONFIG)
         if post is None:
@@ -364,7 +374,7 @@ def main():
     fb_id = None
     if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID"):
         try:   # un errore su Facebook non blocca il post Instagram già uscito
-            fb_id = publish_facebook(urls, caption)
+            fb_id = publish_facebook(urls, caption, post.get("kind"))
             print(f"Pubblicato su Facebook! id={fb_id}")
         except Exception as e:
             print(f"::warning title=Facebook non pubblicato::{str(e)[:300]}")
@@ -374,6 +384,7 @@ def main():
     posted.append({"date": today, "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                    "id": post["id"], "title": post["title"],
                    "source": post["source"], "media_id": media_id, "facebook_id": fb_id,
+                   **({"kind": "positions", "position_ids": post["position_ids"]} if post.get("kind") == "positions" else {}),
                    **({"kind": "grant", "grant_id": post["grant_id"], "url": post["url"],
                        "deadline": post["deadline_iso"], "funder": post.get("funder", ""),
                        "summary": post.get("summary", ""), "italy_evidence": post.get("italy_evidence", ""),
@@ -384,6 +395,11 @@ def main():
     # pagina «link in bio»: rigenerata a ogni post, così i bandi scaduti spariscono da soli
     PAGE_FILE.parent.mkdir(exist_ok=True)
     commit_and_push([QUEUE_FILE.name, POSTED_FILE.name], f"Post del {today}")
+    if post.get("kind") == "positions":
+        try:
+            update_positions(posted, verify_limit=0)
+        except Exception as e:
+            print(f"::warning title=Pagina posizioni non aggiornata::{e}")
     try:
         update_grants(posted, verify_limit=0)      # la pagina segna subito il bando come «on Instagram»
     except Exception as e:
@@ -431,6 +447,24 @@ def check_token():
     if not data.get("is_valid") or (days and min(days) < 14):
         notify("Il token Instagram sta per scadere",
                f"Scadenza: {when(exp)}; accesso ai dati fino al {when(access)}. Genera un nuovo token e aggiorna il secret IG_ACCESS_TOKEN.")
+
+
+POSITIONS_PAGE = ROOT / "docs" / "positions.html"
+
+
+def update_positions(posted=None, verify_limit=None):
+    """Raccoglie e verifica le posizioni accademiche nuove e rigenera la pagina «Academic positions»."""
+    posted = posted if posted is not None else load(POSTED_FILE, [])
+    archive = positions.load_archive()
+    if verify_limit != 0:
+        positions.refresh(archive, limit=int(verify_limit or CONFIG.get("positions_verify_per_run", 25)))
+        save(ROOT / positions.ARCHIVE_FILE, archive)
+    POSITIONS_PAGE.parent.mkdir(exist_ok=True)
+    POSITIONS_PAGE.write_text(positions.build_page(archive, posted, CONFIG), encoding="utf-8")
+    n = len(positions.active(archive))
+    print(f"::notice title=Pagina posizioni::{n} posizioni aperte in pagina")
+    commit_and_push([positions.ARCHIVE_FILE, POSITIONS_PAGE.relative_to(ROOT).as_posix()],
+                    "Posizioni accademiche verificate e pagina aggiornata")
 
 
 def update_grants(posted=None, verify_limit=None):
@@ -552,6 +586,8 @@ if __name__ == "__main__":
         rebuild()
     elif "--token" in sys.argv:
         check_token()
+    elif "--positions" in sys.argv:
+        update_positions(verify_limit=int(os.environ.get("POSITIONS_VERIFY_LIMIT") or 0) or None)
     elif "--grants" in sys.argv:
         update_grants(verify_limit=int(os.environ.get("GRANT_VERIFY_LIMIT") or 0) or None)
     else:

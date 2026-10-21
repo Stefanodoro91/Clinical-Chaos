@@ -55,7 +55,7 @@ def draw_lines(draw, lines, fnt, size, x, y, color, spacing):
 
 
 PAPER, INK_MUTED = "#F3F6F9", "#5B7186"          # copertina e chiusura «in negativo»
-DARK_ACCENT = {"#3DD9C1": "#1C8C7B", "#FFB547": "#A86A12"}   # accento leggibile su fondo chiaro
+DARK_ACCENT = {"#3DD9C1": "#1C8C7B", "#FFB547": "#A86A12", "#A78BFA": "#6D4FD8"}   # accento leggibile su fondo chiaro
 
 
 def _norm_word(w):
@@ -367,10 +367,77 @@ def closing(post, cfg, total):
     return img
 
 
+def positions_cover(post, cfg, total):
+    """Copertina della raccolta settimanale di posizioni accademiche (in negativo, accento proprio)."""
+    c = cfg["colors"]
+    navy = c["background"]
+    img, d = light_canvas(cfg, 1, total)
+    logo_lockup(img, d, MARGIN - 10, 80, cfg)
+    badge_f = font("ExtraBold", 34)
+    label = "ACADEMIC POSITIONS"
+    bw = d.textlength(label, font=badge_f) + 60
+    d.rounded_rectangle((MARGIN, 300, MARGIN + bw, 366), radius=33, fill=c["accent"])
+    d.text((MARGIN + 30, 312), label, font=badge_f, fill=navy)
+    d.text((MARGIN, 396), f"Week of {post.get('week', '')}", font=font("SemiBold", 36), fill=INK_MUTED)
+    fnt, lines, size = fit(d, post["title"], "ExtraBold", 100, 60, W - 2 * MARGIN, 420, 1.12)
+    draw_rich(d, post["title"], post.get("title_highlight"), fnt, size, MARGIN, 470, W - 2 * MARGIN, navy, 1.12,
+              c["accent"], half=True)
+    counts = {}
+    for j in post.get("jobs", []):
+        counts[j["type"]] = counts.get(j["type"], 0) + 1
+    x, y = MARGIN, H - 330
+    for t, n in counts.items():
+        chip = f"{n} {t}"
+        cw = d.textlength(chip, font=font("Bold", 32)) + 44
+        d.rounded_rectangle((x, y, x + cw, y + 60), radius=30, outline=navy, width=3)
+        d.text((x + 22, y + 11), chip, font=font("Bold", 32), fill=navy)
+        x += cw + 16
+    d.text((MARGIN, H - 220), "Swipe  →", font=font("Bold", 40), fill=navy)
+    return img
+
+
+def position_slide(job, number, cfg, index, total):
+    """Una posizione per slide: tipo, titolo, ente e luogo, scadenza, breve descrizione."""
+    c = cfg["colors"]
+    img, d = canvas(cfg, index, total)
+    tf = font("ExtraBold", 32)
+    tw = d.textlength(job["type"].upper(), font=tf) + 48
+    d.rounded_rectangle((MARGIN, 130, MARGIN + tw, 190), radius=30, fill=c["accent"])
+    d.text((MARGIN + 24, 141), job["type"].upper(), font=tf, fill=c["background"])
+    d.text((W - MARGIN - d.textlength(f"{number:02d}", font=font("ExtraBold", 72)), 118), f"{number:02d}",
+           font=font("ExtraBold", 72), fill=c["accent"])
+    hf, hl, hs = fit(d, job["title"], "Bold", 58, 38, W - 2 * MARGIN, 300, 1.18)
+    y = draw_lines(d, hl, hf, hs, MARGIN, 240, c["text"], 1.18) + 26
+    inst = job["institution"] + (f" · {job['place']}" if job.get("place") else "")
+    nf, nl, ns = fit(d, inst, "SemiBold", 36, 28, W - 2 * MARGIN, 130, 1.25)
+    y = draw_lines(d, nl, nf, ns, MARGIN, y, c["muted_text"], 1.25) + 34
+    d.rounded_rectangle((MARGIN, y, W - MARGIN, y + 130), radius=24, outline=c["accent"], width=3)
+    d.text((MARGIN + 36, y + 22), "DEADLINE", font=font("Bold", 26), fill=c["accent"])
+    d.text((MARGIN + 36, y + 58), job["deadline"], font=font("ExtraBold", 48), fill=c["text"])
+    y += 170
+    if job.get("summary"):
+        bf, bl, bs = fit(d, job["summary"], "Regular", 36, 26, W - 2 * MARGIN, H - 190 - y, 1.4)
+        draw_lines(d, bl, bf, bs, MARGIN, y, c["muted_text"], 1.4)
+    return img
+
+
 def render_carousel(post, cfg):
     """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
     if post.get("kind") == "grant":   # i bandi hanno un colore d'accento proprio, per riconoscerli a colpo d'occhio
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("grant_accent", "#FFB547")}}
+    if post.get("kind") == "positions":   # raccolta settimanale di posizioni: senza illustrazioni AI
+        cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("positions_accent", "#A78BFA")}}
+        jobs = post.get("jobs", [])
+        total = len(jobs) + 2
+        pages = [positions_cover(post, cfg, total)]
+        pages += [position_slide(j, i, cfg, i + 1, total) for i, j in enumerate(jobs, start=1)]
+        pages.append(closing(post, cfg, total))
+        out = []
+        for img in pages:
+            buf = io.BytesIO()
+            img.save(buf, "JPEG", quality=92, optimize=True)
+            out.append(buf.getvalue())
+        return out
     has_facts = bool(post.get("facts"))
     total = len(post["slides"]) + 2 + has_facts
     use_images = cfg.get("ai_images", True)

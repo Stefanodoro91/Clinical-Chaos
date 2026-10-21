@@ -29,5 +29,10 @@
   "grant_fallback_days_left": 30,
   "max_images_per_post": 2,
   "facebook": true,
-  "links_page_url": "https://clinical-chaos-dsv.pages.dev"
+  "links_page_url": "https://clinical-chaos-dsv.pages.dev",
+  "positions_accent": "#A78BFA",
+  "positions_per_post": 6,
+  "positions_min_per_post": 3,
+  "positions_min_days_left": 10,
+  "positions_verify_per_run": 25
 }

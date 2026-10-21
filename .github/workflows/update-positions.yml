@@ -1,0 +1,43 @@
+name: Aggiorna posizioni accademiche
+
+# Ogni giorno raccoglie dai portali di annunci accademici le posizioni (PhD, post-doc, faculty) in ricerca
+# clinica riabilitativa, le verifica sull'annuncio originale e rigenera la pagina «Academic positions».
+# Non pubblica niente su Instagram.
+on:
+  schedule:
+    - cron: "47 6 * * *"
+      timezone: "Europe/Rome"
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Quanti annunci nuovi verificare (vuoto = valore di config.json)"
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram-post
+  cancel-in-progress: false
+
+jobs:
+  positions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Configura git
+        run: |
+          git config user.name "research-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Raccogli e verifica le posizioni
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          POSITIONS_VERIFY_LIMIT: ${{ inputs.limit }}
+        run: python bot.py --positions
