@@ -12,6 +12,7 @@ from pathlib import Path
 import requests
 
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL") or "gemini-flash-latest"
+GEMINI_FALLBACK = os.environ.get("GEMINI_FALLBACK_MODEL") or "gemini-flash-lite-latest"
 MAX_INLINE_BYTES = 15 * 1024 * 1024
 MAX_TEXT_CHARS = 300_000
 
@@ -387,18 +388,23 @@ def gemini_json(parts, schema, temperature=0.5):
             "responseSchema": schema,
         },
     }
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
     last_error = None
-    for attempt in range(3):
-        r = requests.post(url, headers={"x-goog-api-key": key}, json=body, timeout=300)
-        if r.status_code == 429 or r.status_code >= 500:
-            last_error = f"{r.status_code}: {r.text[:300]}"
-            time.sleep(30 * (attempt + 1))
-            continue
-        if not r.ok:
-            raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:500]}")
-        text = "".join(p.get("text", "") for p in r.json()["candidates"][0]["content"]["parts"])
-        return json.loads(text)
+    # quando la quota del modello principale finisce si passa a quello più leggero (quota separata)
+    for model in dict.fromkeys([GEMINI_MODEL, GEMINI_FALLBACK]):
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+        for attempt in range(3):
+            r = requests.post(url, headers={"x-goog-api-key": key}, json=body, timeout=300)
+            if r.status_code == 429 or r.status_code >= 500:
+                last_error = f"{model} {r.status_code}: {r.text[:300]}"
+                if r.status_code == 429 and ("PerDay" in r.text or "per day" in r.text.lower()):
+                    break                     # quota giornaliera finita: inutile riprovare questo modello
+                time.sleep(30 * (attempt + 1))
+                continue
+            if not r.ok:
+                raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:500]}")
+            text = "".join(p.get("text", "") for p in r.json()["candidates"][0]["content"]["parts"])
+            return json.loads(text)
+        print(f"  Gemini {model} non disponibile, provo il modello di riserva.")
     raise RuntimeError(f"Gemini non disponibile: {last_error}")
 
 

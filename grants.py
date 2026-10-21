@@ -245,7 +245,10 @@ def official_text(g):
         number = m.group(1).upper()
         folder = {"RFA": "rfa-files", "NOT": "notice-files", "OTA": "notice-files"}.get(number.split("-")[0], "pa-files")
         url = NIH_GUIDE.format(folder=folder, number=number)
-        return html_to_text(_get(url)), f"NIH Guide {number}", url
+        try:
+            return html_to_text(_get(url)), f"NIH Guide {number}", url
+        except requests.HTTPError:
+            pass   # call annunciata ma non ancora sul NIH Guide: si usa la scheda di Grants.gov
     if gid.startswith("EU-") and "topic-details" in (g.get("url") or ""):
         topic = gid[3:]
         files = {"languages": (None, json.dumps(["en"]), "application/json")}
@@ -272,8 +275,36 @@ def official_text(g):
         types = [t.get("description", "") for t in (syn.get("applicantTypes") or []) if isinstance(t, dict)]
         if types:
             parts.append("Eligible applicant types: " + "; ".join(types))
+        parts += _gg_announcements(data)
         return ". ".join(p for p in parts if p), f"Grants.gov opportunity {m.group(1)}", g["url"]
     return html_to_text(_get(g["url"])), "official call page", g["url"]
+
+
+GG_ATTACHMENT = "https://apply07.grants.gov/grantsws/rest/opportunity/att/download/{id}"
+RX_ANNOUNCEMENT = re.compile(r"announcement|nofo|funding opportunity|program|solicitation|guidelines", re.I)
+
+
+def _gg_announcements(data, limit=2):
+    """Testo dei PDF allegati alla scheda Grants.gov (es. il Program Announcement dei bandi CDMRP),
+    dove spesso si trovano le condizioni sugli enti esteri."""
+    import io
+    out = []
+    atts = []
+    for folder in data.get("synopsisAttachmentFolders") or []:
+        for a in folder.get("synopsisAttachments") or []:
+            name = f"{a.get('fileName', '')} {a.get('fileDescription', '')}"
+            if str(a.get("mimeType", "")).endswith("pdf") or name.lower().strip().endswith(".pdf"):
+                atts.append((0 if RX_ANNOUNCEMENT.search(name) else 1, a))
+    for _, a in sorted(atts, key=lambda x: x[0])[:limit]:
+        try:
+            r = requests.get(GG_ATTACHMENT.format(id=a["id"]), headers=HEADERS, timeout=60)
+            r.raise_for_status()
+            from pypdf import PdfReader
+            text = " ".join((p.extract_text() or "") for p in PdfReader(io.BytesIO(r.content)).pages[:40])
+            out.append(f"Attachment {a.get('fileName', '')}: " + re.sub(r"\s+", " ", text)[:40000])
+        except Exception as e:
+            print(f"  Allegato Grants.gov non letto ({a.get('fileName')}): {e}")
+    return out
 
 
 def _simple(x):

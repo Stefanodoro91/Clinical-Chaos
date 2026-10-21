@@ -29,108 +29,6 @@
     "italy": "unclear",
     "italy_evidence": ""
   },
-  "GG-RFA-NS-26-028": {
-    "status": "failed",
-    "checked": "2026-10-21",
-    "attempts": 1,
-    "error": "404 Client Error: Not Found for url: https://grants.nih.gov/grants/guide/rfa-files/RFA-NS-26-028.html"
-  },
-  "GG-HT942526PRPEIRA": {
-    "status": "ok",
-    "checked": "2026-10-21",
-    "official_source": "Grants.gov opportunity 362866",
-    "official_url": "https://www.grants.gov/search-results-detail/362866",
-    "is_open_call": "yes",
-    "title": "DoW Parkinson's, Early Investigator Research Award",
-    "programme": "Parkinson’s Research Program",
-    "programme_family": "US Department of Defense – CDMRP",
-    "summary": "The FY26 Parkinson’s Research Program Early Investigator Research Award supports Parkinson’s disease research by investigators in the early stages of their careers. Proposed research must address at least one of four program focus areas; clinical trials are not allowed. Two funding levels are offered: Funding Level 1 for fellows (requiring guidance from an experienced mentor) and Funding Level 2 for early-career independent investigators (requiring preliminary data). Applicant eligibility is unrestricted.",
-    "eligible_countries": "Not stated in the official text: check the call",
-    "countries_evidence": "",
-    "italy": "unclear",
-    "italy_evidence": ""
-  },
-  "GG-HT942526PRPIIRA": {
-    "status": "ok",
-    "checked": "2026-10-21",
-    "official_source": "Grants.gov opportunity 362868",
-    "official_url": "https://www.grants.gov/search-results-detail/362868",
-    "is_open_call": "yes",
-    "title": "DoW Parkinson's, Investigator-Initiated Research Award",
-    "programme": "Parkinson’s Research Program (PRP)",
-    "programme_family": "US Department of Defense – CDMRP",
-    "summary": "The FY26 Parkinson’s Research Program Investigator-Initiated Research Award supports rigorous, multidisciplinary research projects with the potential to make significant contributions to Parkinson’s disease research. Projects must address at least one FY26 PRP focus area, with clinical trials allowed and preliminary data required. Eligibility is unrestricted by entity type, and applications may include a Partnering Principal Investigator option with one initiating PI and up to two partnering PIs.",
-    "eligible_countries": "Not stated in the official text: check the call",
-    "countries_evidence": "",
-    "italy": "unclear",
-    "italy_evidence": ""
-  },
-  "GG-PAR-27-007": {
-    "status": "failed",
-    "checked": "2026-10-21",
-    "attempts": 1,
-    "error": "404 Client Error: Not Found for url: https://grants.nih.gov/grants/guide/pa-files/PAR-27-007.html"
-  },
-  "GG-HT942526SCIRPTRA": {
-    "status": "ok",
-    "checked": "2026-10-21",
-    "official_source": "Grants.gov opportunity 362222",
-    "official_url": "https://www.grants.gov/search-results-detail/362222",
-    "is_open_call": "yes",
-    "title": "DoW Spinal Cord Injury, Translational Research Award",
-    "programme": "Spinal Cord Injury Research Program (SCIRP)",
-    "programme_family": "US Department of Defense – CDMRP",
-    "summary": "The FY26 Spinal Cord Injury Research Program Translational Research Award supports translational research aimed at moving promising ideas into clinical applications for spinal cord injury. Funding supports translational projects, including an Early-Career Partnership Option with two principal investigators. Applications must include at least one community partner with lived experience. Eligible applicant types are unrestricted, open to any type of entity subject to clarification in the full announcement.",
-    "eligible_countries": "Not stated in the official text: check the call",
-    "countries_evidence": "",
-    "italy": "unclear",
-    "italy_evidence": ""
-  },
-  "GG-HT942526SCIRPCTA": {
-    "status": "ok",
-    "checked": "2026-10-21",
-    "official_source": "Grants.gov opportunity 362224",
-    "official_url": "https://www.grants.gov/search-results-detail/362224",
-    "is_open_call": "yes",
-    "title": "DoW Spinal Cord Injury, Clinical Trial Award",
-    "programme": "Spinal Cord Injury Research Program (SCIRP)",
-    "programme_family": "US Department of Defense – CDMRP",
-    "summary": "The Spinal Cord Injury Research Program Clinical Trial Award supports the rapid implementation of clinical trials with the potential to significantly impact the treatment or management of spinal cord injury. Funding supports clinical trials, featuring an Early-Career Partnership Option that allows two Principal Investigators. Applications are open to unrestricted applicant types, but must include at least two spinal cord injury community partners who provide consultation and advice throughout the project.",
-    "eligible_countries": "Not stated in the official text: check the call",
-    "countries_evidence": "",
-    "italy": "unclear",
-    "italy_evidence": ""
-  },
-  "GG-HT942526SCIRPCTRA": {
-    "status": "ok",
-    "checked": "2026-10-21",
-    "official_source": "Grants.gov opportunity 362225",
-    "official_url": "https://www.grants.gov/search-results-detail/362225",
-    "is_open_call": "yes",
-    "title": "DoW Spinal Cord Injury, Clinical Translation Research Award",
-    "programme": "Spinal Cord Injury Research Program (SCIRP)",
-    "programme_family": "US Department of Defense – CDMRP",
-    "summary": "The FY26 Spinal Cord Injury Research Program Clinical Translation Research Award supports high-impact, new, or emerging clinical research requiring preliminary studies—such as feasibility, pilot, or optimization—to prepare for future larger-scale clinical trials or implementation. It aims to accelerate translation of interventions into clinical use and improve diagnosis, treatment, and rehabilitation options. Applicant types are unrestricted, with mandatory inclusion of at least two spinal cord injury community partners.",
-    "eligible_countries": "Not stated in the official text: check the call",
-    "countries_evidence": "",
-    "italy": "unclear",
-    "italy_evidence": ""
-  },
-  "GG-HT942526SCIRPIIRA": {
-    "status": "ok",
-    "checked": "2026-10-21",
-    "official_source": "Grants.gov opportunity 362226",
-    "official_url": "https://www.grants.gov/search-results-detail/362226",
-    "is_open_call": "yes",
-    "title": "DoW Spinal Cord Injury, Investigator-Initiated Research Award",
-    "programme": "Spinal Cord Injury Research Program (SCIRP)",
-    "programme_family": "US Department of Defense – CDMRP",
-    "summary": "The FY26 Spinal Cord Injury Research Program Investigator-Initiated Research Award supports studies that make significant contributions to spinal cord injury research, patient care, or quality of life. Funding covers projects across basic through translational science, while studies solely identifying intervention targets are discouraged. Eligible applicant types are unrestricted. Additionally, an Early-Career Partnership Option allows two Principal Investigators to submit applications, provided at least one is an early-career investigator.",
-    "eligible_countries": "Not stated in the official text: check the call",
-    "countries_evidence": "",
-    "italy": "unclear",
-    "italy_evidence": ""
-  },
   "GG-PAR-25-226": {
     "status": "ok",
     "checked": "2026-10-21",
@@ -145,11 +43,5 @@
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply."
-  },
-  "GG-RFA-TS-27-018": {
-    "status": "failed",
-    "checked": "2026-10-21",
-    "attempts": 1,
-    "error": "404 Client Error: Not Found for url: https://grants.nih.gov/grants/guide/rfa-files/RFA-TS-27-018.html"
   }
 }
