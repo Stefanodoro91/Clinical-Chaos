@@ -325,6 +325,35 @@ def _words_found(phrase, text, share=0.6):
     return sum(1 for w in words if w in low) / len(words) >= share
 
 
+RX_LIST_EVIDENCE = re.compile(r"other eligible applicants|applicanteligibilitydesc|eligible applicant types|"
+                              r"^\W*non-?domestic\s*\(non-?u\.?s\.?\)\s*entities\s*\(foreign\s+\w+\)\W*$", re.I)
+RX_STATEMENT = re.compile(r"\b(eligible|eligibility|may apply|can apply|allowed|permitted|open to|must be|"
+                          r"restricted|limited to|only|based in|established in)\b", re.I)
+
+
+def _statement(ev):
+    """Una prova vale solo se è una frase su chi può candidarsi, non un elenco di tipi di ente."""
+    if not ev or RX_LIST_EVIDENCE.search(ev) or not RX_STATEMENT.search(ev) or ev.count(";") >= 3:
+        return ""
+    return ev
+
+
+def clean_programme(prog, g, text):
+    """Nome del programma: scarta agenzie, uffici contratti e numeri della call; per il CDMRP cerca il «… Research Program»."""
+    number = g.get("id", "").split("-", 1)[-1].lower()
+    ente = (g.get("ente") or "").lower()
+    low = (prog or "").lower()
+    if (not low or number in low.replace(" ", "") or low == ente or "contracting activity" in low
+            or low in ("national institutes of health", "nih")):
+        prog = ""
+    if not prog and programme_family(g).startswith("US Department of Defense"):
+        m = re.search(r"\b((?:[A-Z][\w’'\-]*\s){1,6}Research Program)\b(?:\s*\(([A-Z]{2,8})\))?", text)
+        if m:
+            name = re.sub(r"^FY\s?\d{2,4}\s+", "", m.group(1))
+            prog = f"CDMRP – {name}" + (f" ({m.group(2)})" if m.group(2) else "")
+    return prog or programme_detail(g)
+
+
 def check_eligibility(g, text, out):
     """Paesi ammessi e ammissibilità dell'Italia, con la frase che lo prova.
     Prima le regole deterministiche (frase ufficiale NIH, regole dei programmi UE), poi le frasi citate
@@ -341,10 +370,15 @@ def check_eligibility(g, text, out):
         rule = "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible."
         return {"eligible_countries": "EU Member States and associated countries", "countries_evidence": rule,
                 "italy": "yes", "italy_evidence": rule}
-    c_ev = _quoted(out.get("countries_evidence"), text, 15)
+    c_ev = _statement(_quoted(out.get("countries_evidence"), text, 15))
     countries = (out.get("eligible_countries") or "").strip() if c_ev else ""
-    i_ev = _quoted(out.get("italy_evidence"), text)
+    i_ev = _statement(_quoted(out.get("italy_evidence"), text))
     italy = out.get("italy_eligible") if (i_ev and out.get("italy_eligible") in ("yes", "no")) else "unclear"
+    if NIH_NUMBER.search(g.get("programma") or "") and italy == "yes":
+        # per il NIH vale solo la frase ufficiale della call completa (sopra); la scheda Grants.gov non basta
+        italy, i_ev = "unclear", ""
+        if c_ev and re.search(r"non-?domestic|foreign", c_ev, re.I):
+            countries, c_ev = "", ""
     return {"eligible_countries": countries[:120] or "Not stated in the official text: check the call",
             "countries_evidence": c_ev[:400], "italy": italy, "italy_evidence": i_ev[:400]}
 
@@ -360,7 +394,8 @@ def verify(g, cfg):
     elig = check_eligibility(g, text, out)
     programme = (out.get("programme") or "").strip()
     if not (programme and _words_found(programme, text)):
-        programme = programme_detail(g)
+        programme = ""
+    programme = clean_programme(programme, g, text)
     return {
         "status": "ok", "checked": date.today().isoformat(), "official_source": source, "official_url": source_url,
         "is_open_call": out.get("is_open_call", "unclear"),
