@@ -307,9 +307,12 @@ def rebuild():
     drive = drive_service()
     posted = load(POSTED_FILE, [])
     published = [x["title"] for x in posted]
-    new_queue = []
+    old_queue = load(QUEUE_FILE, [])
+    # si rifanno solo i file con post ancora nel vecchio formato (senza «references»)
+    todo = {p["source"] for p in old_queue if "references" not in p}
+    new_queue = [p for p in old_queue if p["source"] not in todo]
     for src in load(SOURCES_FILE, []):
-        if not src.get("posts"):
+        if not src.get("posts") or src["name"] not in todo:
             continue
         try:
             f = drive.files().get(fileId=src["drive_id"], fields="id, name, mimeType",
@@ -320,12 +323,16 @@ def rebuild():
                                            published + [x["title"] for x in new_queue])
         except Exception as e:
             print(f"::warning title=File non rigenerato::{src['name']}: {str(e)[:300]}")
+            new_queue += [p for p in old_queue if p["source"] == src["name"]]   # restano i post vecchi
             continue
         refs = sum(1 for p in posts if p.get("references"))
         print(f"::notice title=Coda rigenerata::{src['name']}: {len(posts)} post, {refs} con reference")
         for p in posts:
             p.update({"id": uuid.uuid4().hex[:8], "source": f["name"]})
         new_queue += posts
+    if not todo:
+        print("::notice title=Coda rigenerata::Tutti i post sono già nel formato nuovo.")
+        return
     if not new_queue:
         print("Nessun post rigenerato: la coda resta com'è.")
         sys.exit(1)
