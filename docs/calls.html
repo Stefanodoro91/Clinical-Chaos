@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open calls · Clinical Research Chaos</title>
+<meta name="description" content="Open research funding calls checked against the official call text, grouped by funding programme.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #0E2233; --card: #15304A; --text: #FFFFFF; --muted: #7F96AB; --soft: #D3DEE8; --accent: #FFB547; --teal: #3DD9C1; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }
+  .bar { height: 6px; background: var(--accent); }
+  main { max-width: 680px; margin: 0 auto; padding: 28px 16px 48px; }
+  .switch { display: inline-block; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
+            border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px; margin-bottom: 18px; }
+  .badge { display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
+           letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; }
+  h1 { font-size: 30px; font-weight: 800; margin: 14px 0 6px; line-height: 1.15; }
+  .intro { color: var(--soft); margin: 0 0 18px; font-size: 15px; }
+  nav.jump { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 30px; }
+  nav.jump a { color: var(--text); text-decoration: none; border: 1px solid var(--muted); border-radius: 999px;
+               padding: 8px 14px; font-size: 14px; font-weight: 600; }
+  nav.jump a b { color: var(--accent); }
+  section.macro { margin-top: 34px; }
+  section.macro > h2 { font-size: 23px; font-weight: 800; margin: 0 0 4px; }
+  section.macro > p { color: var(--soft); font-size: 14px; margin: 0 0 18px; }
+  h2.region { font-size: 19px; font-weight: 800; margin: 34px 0 2px; padding-top: 14px; border-top: 1px solid var(--muted);
+              display: flex; justify-content: space-between; gap: 10px; }
+  h2.region span { color: var(--muted); font-weight: 600; }
+  .tag.check-tag { background: var(--muted); }
+  .pending { color: var(--soft); font-size: 14px; font-style: italic; margin: 0 0 12px; }
+  h3.prog { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: var(--accent);
+            margin: 28px 0 10px; display: flex; justify-content: space-between; gap: 10px; }
+  h3.prog span { color: var(--muted); font-weight: 600; }
+  .call { background: var(--card); border-radius: 18px; padding: 20px; margin-bottom: 14px; border-left: 4px solid var(--accent); }
+  .call.other { border-left-color: var(--teal); }
+  .funder { color: var(--soft); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .tag { display: inline-block; background: var(--teal); color: var(--bg); font-size: 11px; font-weight: 800;
+         letter-spacing: .05em; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }
+  .tag.soon-tag { background: var(--accent); }
+  .call h4 { font-size: 18px; margin: 0 0 10px; line-height: 1.3; }
+  .summary { color: var(--soft); font-size: 15px; margin: 0 0 12px; }
+  .countries { font-size: 14px; margin: 0 0 4px; }
+  .countries b { color: var(--soft); font-weight: 600; }
+  details { font-size: 13px; color: var(--soft); margin: 0 0 14px; }
+  details summary { cursor: pointer; color: var(--muted); }
+  details p { border-left: 2px solid var(--muted); padding-left: 10px; margin: 8px 0 0; font-style: italic; }
+  .partners { font-size: 13px; color: var(--soft); margin: 0 0 14px; }
+  .partners code { font-size: 12px; background: rgba(255,255,255,.08); padding: 1px 6px; border-radius: 6px; word-break: break-all; }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  a.btn.ghost { background: transparent; color: var(--text); border: 2px solid var(--accent); padding: 9px 16px; }
+  .call.other a.btn.ghost { background: transparent; border-color: var(--teal); }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+  .deadline { font-size: 14px; color: var(--soft); }
+  .deadline b { color: var(--text); font-size: 16px; }
+  .soon { color: var(--accent); font-weight: 800; font-size: 12px; margin-left: 6px; }
+  a.btn { background: var(--accent); color: var(--bg); text-decoration: none; font-weight: 800; font-size: 15px;
+           padding: 11px 18px; border-radius: 12px; }
+  .call.other a.btn { background: var(--teal); }
+  a.btn:focus-visible, nav.jump a:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+  .empty { color: var(--soft); background: var(--card); border-radius: 18px; padding: 22px; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 36px; }
+  footer a { color: var(--teal); }
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<main>
+  <a class="switch" href="positions.html">Academic positions &rarr;</a><br>
+  <span class="badge">OPEN CALLS</span>
+  <h1>Research funding calls</h1>
+  <p class="intro">All open calls for clinical and rehabilitation research found by our monitoring, from funders worldwide.
+  Each call is checked against its official text; grouped by region and funding programme, sorted by deadline.
+  Closed calls are removed automatically.</p>
+  <nav class="jump"><a href="#italy">Open to Italy <b>12</b></a><a href="#international-intercontinental">International &amp; intercontinental <b>2</b></a><a href="#north-america">North America <b>19</b></a></nav>
+  <section class="macro" id="italy">
+    <h2>Open to Italian institutions</h2>
+    <p>The official call explicitly allows organisations based in Italy (directly, as EU Member State, or as any country).</p>
+    <h3 class="prog">US Department of Defense – CDMRP <span>6</span></h3>
+    <article class="call ">
+      <div class="funder">CDMRP – Parkinson’s Research Program (PRP)</div>
+      <h4>DoW Parkinson&#x27;s, Early Investigator Research Award</h4>
+      <p class="summary">The fiscal year 2026 Parkinson’s Research Program Early Investigator Research Award supports Parkinson’s disease research for early-career investigators. Offering two funding levels, the call aids fellows with required mentorship and early-career independent investigators with required preliminary data. Proposed projects must address specific program focus areas, aiming to decrease disease risk, slow progression, or ease symptoms. Eligible applicants include domestic and foreign organizations, both for-profit and nonprofit, with clinical trials being explicitly disallowed.</p>
+      <p class="countries"><b>Eligible countries:</b> Any country</p>
+      <details><summary>From the official call</summary><p>&ldquo;Extramural and intramural U.S. Department of War (DOW) organizations are eligible to apply, including foreign and domestic organizations, for-profit and nonprofit organizations, and public or private entities.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>6 Nov 2026</b><span class="soon">CLOSING SOON</span></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/362866" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call ">
+      <div class="funder">CDMRP – Parkinson’s Research Program (PRP)</div>
+      <h4>DoW Parkinson&#x27;s, Investigator-Initiated Research Award</h4>
+      <p class="summary">The fiscal year 2026 Parkinson&#x27;s Research Program Investigator-Initiated Research Award supports rigorous, multidisciplinary, high-impact research projects addressing Parkinson&#x27;s disease focus areas. The award covers the full spectrum of research from basic science to clinical trials, with a maximum period of performance of 3 years and a total cost cap of $2 million. Eligible applicants include domestic and foreign, public and private, for-profit and nonprofit organizations.</p>
+      <p class="countries"><b>Eligible countries:</b> Any country</p>
+      <details><summary>From the official call</summary><p>&ldquo;Extramural and intramural U.S. Department of War (DOW) organizations are eligible to apply, including foreign and domestic organizations, for-profit and nonprofit organizations, and public or private entities.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>6 Nov 2026</b><span class="soon">CLOSING SOON</span></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/362868" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call ">
+      <div class="funder">CDMRP – Spinal Cord Injury Research Program (SCIRP)</div>
+      <h4>DoW Spinal Cord Injury, Translational Research Award</h4>
+      <p class="summary">The fiscal year 2026 Spinal Cord Injury Research Program Translational Research Award supports translational research accelerating promising ideas in spinal cord injury into clinical applications. It funds preclinical and clinical studies, including pilot clinical trials, addressing specific program priorities. Eligible applicants include domestic and foreign organizations, for-profit and nonprofit entities, and public or private organizations. Applications must include at least one community partner with lived experience of spinal cord injury.</p>
+      <p class="countries"><b>Eligible countries:</b> Any country</p>
+      <details><summary>From the official call</summary><p>&ldquo;Extramural and intramural U.S. Department of War (DOW) organizations are eligible to apply, including foreign and domestic organizations, for-profit and nonprofit organizations, and public or private entities.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>12 Nov 2026</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/362222" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call ">
+      <div class="funder">CDMRP – Spinal Cord Injury Research Program (SCIRP)</div>
+      <h4>DoW Spinal Cord Injury, Clinical Trial Award</h4>
+      <p class="summary">The fiscal year 2026 Spinal Cord Injury Research Program Clinical Trial Award supports the rapid implementation of clinical trials designed to have a significant impact on the treatment or management of spinal cord injury. Funding is available for extramural and intramural organizations, including domestic and foreign entities, for-profit and nonprofit organizations. Proposed projects must involve at least two spinal cord injury community partners and address key programmatic goals such as acute injury intervention, secondary health effects, psychosocial well-being, or rehabilitation and regeneration.</p>
+      <p class="countries"><b>Eligible countries:</b> Any country</p>
+      <details><summary>From the official call</summary><p>&ldquo;Extramural and intramural U.S. Department of War (DOW) organizations are eligible to apply, including foreign and domestic organizations, for-profit and nonprofit organizations, and public or private entities.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>12 Nov 2026</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/362224" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call ">
+      <div class="funder">CDMRP – Spinal Cord Injury Research Program (SCIRP)</div>
+      <h4>DoW Spinal Cord Injury, Clinical Translation Research Award</h4>
+      <p class="summary">The fiscal year 2026 Spinal Cord Injury Research Program Clinical Translation Research Award supports high-impact clinical research and trials to accelerate the translation of techniques into clinical use or inform decision-making for patients. The call funds prospective clinical studies requiring feasibility or optimization, addressing specific priority areas in spinal cord injury. Eligible applicants include domestic and foreign organizations, both for-profit and nonprofit. Projects must include spinal cord injury community partners and can involve early-career investigator partnerships.</p>
+      <p class="countries"><b>Eligible countries:</b> Any country</p>
+      <details><summary>From the official call</summary><p>&ldquo;Extramural and intramural U.S. Department of War (DOW) organizations are eligible to apply, including foreign and domestic organizations, for-profit and nonprofit organizations, and public or private entities.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>12 Nov 2026</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/362225" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call ">
+      <div class="funder">CDMRP – Spinal Cord Injury Research Program (SCIRP)</div>
+      <h4>Spinal Cord Injury, Investigator-Initiated Research Award</h4>
+      <p class="summary">The fiscal year 2026 Spinal Cord Injury Research Program Investigator-Initiated Research Award supports studies aiming to make important contributions to spinal cord injury research, patient care, and quality of life. It funds research ranging from basic to translational science. Eligible applicants include domestic and foreign, for-profit and nonprofit organizations, as well as public and private entities. The call offers a single Principal Investigator option and an Early-Career Partnership Option.</p>
+      <p class="countries"><b>Eligible countries:</b> Any country</p>
+      <details><summary>From the official call</summary><p>&ldquo;Extramural and intramural U.S. Department of War (DOW) organizations are eligible to apply, including foreign and domestic organizations, for-profit and nonprofit organizations, and public or private entities.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>12 Nov 2026</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/362226" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <h3 class="prog">NIH – US National Institutes of Health <span>3</span></h3>
+    <article class="call ">
+      <div class="funder">NIH – US National Institutes of Health</div>
+      <h4>Seamless Early-Stage Clinical Drug Development (Phase 1 to 2a) for Novel therapeutic Agents for the Spectrum of Alzheimer&#x27;s Disease</h4>
+      <p class="summary">This funding opportunity invites applications that bundle independent protocols for phase 1 clinical trials with phase 1b/phase 2a clinical trials to streamline the early-stage evaluation of promising pharmacological interventions for Alzheimer&#x27;s disease and related dementias. It funds non-amyloid/non-tau therapeutic approaches targeting cognitive or neuropsychiatric symptoms across disease stages using a phased UG3/UH3 cooperative agreement mechanism. Eligible applicants include domestic and foreign higher education institutions, nonprofits, for-profit organizations, and government entities worldwide.</p>
+      <p class="countries"><b>Eligible countries:</b> Any country (non-US organisations eligible)</p>
+      <details><summary>From the official call</summary><p>&ldquo;Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>19 Nov 2026</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/357343" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call ">
+      <div class="funder">NIH – US National Institutes of Health</div>
+      <h4>NCMRR Early Career Research Award (R03 Clinical Trial Optional)</h4>
+      <p class="summary">The National Institutes of Health funding opportunity supports early-career rehabilitation scientists conducting basic and clinical research aligned with the NCMRR mission. The goal is to generate preliminary data for future R01 grant applications. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and non-domestic foreign entities. Projects may include clinical trials up to Phase I and must incorporate a plan for the inclusion of people with lived experience.</p>
+      <p class="countries"><b>Eligible countries:</b> Any country (non-US organisations eligible)</p>
+      <details><summary>From the official call</summary><p>&ldquo;Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>7 Jan 2028</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/357206" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call ">
+      <div class="funder">NIH – US National Institutes of Health</div>
+      <h4>NINDS Efficacy and Exploratory Clinical Trials</h4>
+      <p class="summary">This funding opportunity encourages investigator-initiated clinical trials within the mission of the National Institute of Neurological Disorders and Stroke. It supports early- and middle-phase exploratory clinical trials, Phase 3 confirmatory trials, and comparative effectiveness studies involving small molecules, biologics, devices, and surgical, behavioral, diet-based, or rehabilitation therapies across the lifespan. Eligible applicants include domestic and foreign organizations, though foreign subawards are restricted.</p>
+      <p class="countries"><b>Eligible countries:</b> Any country (non-US organisations eligible)</p>
+      <details><summary>From the official call</summary><p>&ldquo;Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>9 Mar 2029</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/360404" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <h3 class="prog">Horizon Europe <span>3</span></h3>
+    <article class="call ">
+      <div class="funder">Horizon Europe – HORIZON Research and Innovation Actions</div>
+      <h4>Clinical trials for advancing innovative interventions for neurodegenerative diseases</h4>
+      <p class="summary">This call funds early-stage clinical trials to assess the safety and efficacy of innovative, multidisciplinary therapeutic interventions for non-rare neurodegenerative diseases. Funded projects should combine active pharmaceutical substances with complementary approaches such as lifestyle changes, cognitive training, and digital monitoring technologies. Eligible applicants include international consortia of universities, clinical centres, SMEs, patient organisations, and other relevant entities established in EU Member States and Associated Countries.</p>
+      <p class="countries"><b>Eligible countries:</b> EU Member States and associated countries</p>
+      <details><summary>From the official call</summary><p>&ldquo;EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.&rdquo;</p></details>
+      <p class="partners">Looking for consortium partners? Search topic <code>HORIZON-HLTH-2027-02-DISEASE-14-two-stage</code> in the EU partner search, or see &ldquo;Partner search announcements&rdquo; on the call page.</p>
+      <div class="row">
+        <div class="deadline">Deadline <b>17 Feb 2027</b></div>
+        <div class="btns"><a class="btn ghost" href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/partner-search" target="_blank" rel="noopener">Find partners</a><a class="btn" href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-02-DISEASE-14-two-stage" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call ">
+      <div class="funder">Horizon Europe – Cluster 1: Health</div>
+      <h4>Innovative healthcare interventions for non-communicable diseases</h4>
+      <p class="summary">This call supports early-stage clinical trials to validate novel or refined healthcare interventions for specific non-communicable diseases, namely cardiovascular diseases, diabetes, chronic respiratory diseases, or chronic kidney diseases. Funded projects should incorporate digital technologies, leverage health data infrastructures, and perform health-economic analyses. Research organisations, clinical practitioners, patient organisations, regulators, and social sciences experts can participate, with the involvement of start-ups and small and medium-sized enterprises strongly encouraged.</p>
+      <p class="countries"><b>Eligible countries:</b> EU Member States and associated countries</p>
+      <details><summary>From the official call</summary><p>&ldquo;EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.&rdquo;</p></details>
+      <p class="partners">Looking for consortium partners? Search topic <code>HORIZON-HLTH-2027-02-DISEASE-01-two-stage</code> in the EU partner search, or see &ldquo;Partner search announcements&rdquo; on the call page.</p>
+      <div class="row">
+        <div class="deadline">Deadline <b>17 Feb 2027</b></div>
+        <div class="btns"><a class="btn ghost" href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/partner-search" target="_blank" rel="noopener">Find partners</a><a class="btn" href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-02-DISEASE-01-two-stage" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call ">
+      <div class="funder">Horizon Europe – Cluster 1: Health</div>
+      <h4>Prevention and management of chronic non-communicable diseases in children and young people</h4>
+      <p class="summary">This funding call supports implementation research focused on the prevention, screening, diagnosis, and management of chronic non-communicable diseases in children and young people aged 1 to 24 years. It targets low- and middle-income countries and underserved populations in high-income countries. Funded activities include policy evaluation, educational strategies, digital screening tools, and patient-centred management. Eligible applicants typically include researchers, healthcare providers, and policymakers forming transnational consortia according to standard Horizon Europe rules.</p>
+      <p class="countries"><b>Eligible countries:</b> EU Member States and associated countries</p>
+      <details><summary>From the official call</summary><p>&ldquo;EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.&rdquo;</p></details>
+      <p class="partners">Looking for consortium partners? Search topic <code>HORIZON-HLTH-2027-01-DISEASE-10</code> in the EU partner search, or see &ldquo;Partner search announcements&rdquo; on the call page.</p>
+      <div class="row">
+        <div class="deadline">Deadline <b>17 Feb 2027</b></div>
+        <div class="btns"><a class="btn ghost" href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/partner-search" target="_blank" rel="noopener">Find partners</a><a class="btn" href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-DISEASE-10" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+  </section>
+  <section class="macro" id="other">
+    <h2>All other calls, by region</h2>
+    <p>Grouped by where applicants can be based: international and intercontinental calls first, then each continent.
+    Calls whose official text does not say where applicants can be based are listed under the funder's region.</p>
+    <h2 class="region" id="international-intercontinental">International &amp; intercontinental <span>2</span></h2>
+    <h3 class="prog">Michael J. Fox Foundation <span>2</span></h3>
+    <article class="call other">
+      <div class="funder">Bridge Funding for Disrupted Neurodegenerative Research (BFDN) grant program</div>
+      <h4>Bridge Funding for Disrupted Neurodegenerative Research Grant Program (BFDN) Powering the Next Generation of Research</h4>
+      <p class="summary">This program supports early-career investigators whose research projects on Alzheimer&#x27;s, Parkinson&#x27;s, and related neurodegenerative disorders were disrupted by operational or priority changes in U.S. federal funding. Grants provide up to $250,000 for 3 to 12 months to cover salary and direct research costs, requiring up to 25% institutional cost-sharing. Eligible principal investigators must meet NIH Early Stage Investigator definitions (or be within seven years of designation) and have experienced specific disruptions to federal grants.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>30 Oct 2026</b><span class="soon">CLOSING SOON</span></div>
+        <div class="btns"><a class="btn" href="https://www.michaeljfox.org/grant/bridge-funding-disrupted-neurodegenerative-research-grant-program-bfdn-powering-next" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">Parkinson&#x27;s Disease Therapeutics Pipeline Program</div>
+      <h4>Parkinson&#x27;s Disease Therapeutics Pipeline Program</h4>
+      <p class="summary">The Parkinson&#x27;s Disease Therapeutics Pipeline Program by the Michael J. Fox Foundation accelerates pre-clinical and clinical development of disease-modifying or symptomatic interventions for Parkinson&#x27;s disease, including biomarker tools. Funding ranges from $250,000 to upwards of $5M for durations of one to three years. The call is open to industry, academic and industry partnerships, and certain academic-led projects. Pre-proposals are accepted on a rolling basis, followed by invited full proposals across multiple annual review cycles.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>see official call</b></div>
+        <div class="btns"><a class="btn" href="https://www.michaeljfox.org/grant/parkinsons-disease-therapeutics-pipeline-program" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <h2 class="region" id="north-america">North America <span>19</span></h2>
+    <h3 class="prog">NIH – US National Institutes of Health <span>9</span></h3>
+    <article class="call other">
+      <div class="funder">HEAL Initiative<span class="tag soon-tag">COMING SOON</span></div>
+      <h4>HEAL Initiative: Optimization of Therapeutic Medical Devices through Team Science Mechanistic Research (RM1)</h4>
+      <p class="summary">This forthcoming funding opportunity supports interdisciplinary team research investigating the mechanisms of action of therapeutic medical devices to improve clinical outcomes. Supported activities include mechanistic clinical trials, animal studies, and computational modeling or simulation for investigational or FDA-approved devices. Applications will be accepted from interdisciplinary teams across higher education institutions, nonprofits, businesses, government entities, and non-domestic (non-U.S.) foreign institutions.</p>
+      <p class="countries"><b>Eligible countries:</b> Coming soon: published with the full call</p>
+      
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>30 Oct 2026</b><span class="soon">CLOSING SOON</span></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/361520" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">NIH – US National Institutes of Health<span class="tag soon-tag">COMING SOON</span></div>
+      <h4>Amyotrophic Lateral Sclerosis (ALS) Intermediate Patient Population Expanded Access</h4>
+      <p class="summary">This funding opportunity solicits applications to conduct scientific research utilizing data from expanded access for investigational drugs or biological products. The research targets intermediate size populations of patients living with amyotrophic lateral sclerosis who are ineligible for ongoing clinical trials. Eligible applicants must be specific U.S. clinical trial sites participating in phase 2/3 or phase 3 efficacy clinical trials supported by a small business concern acting as the FDA-designated sponsor.</p>
+      <p class="countries"><b>Eligible countries:</b> Coming soon: published with the full call</p>
+      
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>10 Nov 2026</b><span class="soon">CLOSING SOON</span></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/360400" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">NIH – US National Institutes of Health</div>
+      <h4>NIH StrokeNet Clinical Trials and Biomarker Studies for Stroke Treatment, Recovery, and Prevention</h4>
+      <p class="summary">This funding opportunity encourages applications for multi-site exploratory and confirmatory clinical trials, biomarker or outcome measure validation studies, and ancillary studies focused on stroke prevention, treatment, and recovery. Successful applicants must conduct their studies within the NIH StrokeNet infrastructure. Eligible applicants include domestic U.S. higher education institutions, non-profits, for-profit organizations, and government entities, while non-U.S. organizations are ineligible to apply directly.</p>
+      <p class="countries"><b>Eligible countries:</b> United States only (foreign organisations not eligible)</p>
+      <details><summary>From the official call</summary><p>&ldquo;Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>19 Nov 2026</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/357256" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">NIH HEAL Initiative<span class="tag soon-tag">COMING SOON</span></div>
+      <h4>HEAL Initiative: Integrative Management of Chronic Pain and OUD for Whole Recovery (IMPOWR): Research Centers</h4>
+      <p class="summary">The National Institutes of Health announces the renewal of the Integrative Management of Chronic Pain and OUD for Whole Recovery research network. The initiative funds research centers to test new approaches for individuals with both chronic pain and opioid use disorder, improving health system care delivery. Eligible applicants include domestic and foreign institutions, non-profits, small businesses, educational institutions, and government agencies.</p>
+      <p class="countries"><b>Eligible countries:</b> Coming soon: published with the full call</p>
+      
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>26 Jan 2027</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/360048" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">NIH – US National Institutes of Health</div>
+      <h4>NIA Expanding Research in AD/ADRD (ERA) Summer Research Education Program</h4>
+      <p class="summary">This National Institutes of Health funding opportunity supports summer research education programs focused on Alzheimer&#x27;s disease and related dementias for high school students, undergraduate students, or science teachers. The program aims to expand and broaden the skilled research workforce by providing hands-on research experiences and mentorship. Eligible applicant organizations are domestic U.S. institutions, while foreign organizations and foreign components are strictly excluded from applying to this grant.</p>
+      <p class="countries"><b>Eligible countries:</b> United States only (foreign organisations not eligible)</p>
+      <details><summary>From the official call</summary><p>&ldquo;Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>26 May 2027</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/359655" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">NIH – US National Institutes of Health</div>
+      <h4>NIA Expanding Research in AD/ADRD (ERA) Postbaccalaureate Research Education Program</h4>
+      <p class="summary">The National Institute on Aging (NIA) invites applications for the Research Education Program (R25) to support intensive, one-to-two-year research education experiences for recent baccalaureates. The initiative aims to expand and diversify the Alzheimer&#x27;s Disease and Alzheimer&#x27;s Disease-Related Dementias (AD/ADRD) research workforce by preparing participants to transition into advanced, research-focused degree programs or competitive private sector research careers. Eligible applicant organizations include domestic higher education institutions, non-profits, and for-profit organizations based in the United States.</p>
+      <p class="countries"><b>Eligible countries:</b> United States only (foreign organisations not eligible)</p>
+      <details><summary>From the official call</summary><p>&ldquo;Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>26 May 2027</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/359653" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">NIH – US National Institutes of Health</div>
+      <h4>NIA Academic Leadership Career Award (K07 Independent Clinical Trial Not Allowed)</h4>
+      <p class="summary">This National Institutes of Health funding opportunity provides support for established investigators to enhance aging and Alzheimer&#x27;s disease research capacity within their academic institutions. The award funds research and educational infrastructure, curriculum development, mentorship, and career development activities. Eligible applicants are established investigators with necessary skills at domestic U.S. eligible institutions. Independent clinical trials are not allowed under this career award mechanism.</p>
+      <p class="countries"><b>Eligible countries:</b> United States only (foreign organisations not eligible)</p>
+      <details><summary>From the official call</summary><p>&ldquo;Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>12 Nov 2027</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/357000" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">NIH – US National Institutes of Health</div>
+      <h4>Development of Biomarkers or Composite Biomarkers for Neurological and Neuromuscular Disorders (R61/R33)</h4>
+      <p class="summary">This funding opportunity promotes the development of candidate biomarkers and composite biomarkers for neurological and neuromuscular disorders to improve clinical trials and clinical practice. Funded through a phased R61/R33 mechanism, projects will conduct proof-of-concept studies using human samples and data, followed by preliminary clinical validation for a specified context of use. Eligible applicant organizations include domestic higher education institutions, nonprofits, for-profit organizations, and governments based in the United States.</p>
+      <p class="countries"><b>Eligible countries:</b> United States only (foreign organisations not eligible)</p>
+      <details><summary>From the official call</summary><p>&ldquo;Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>7 Jan 2028</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/356874" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">NIH – US National Institutes of Health</div>
+      <h4>Grants for Early Medical/Surgical Specialists&#x27; Transition to Aging Research (GEMSSTAR)</h4>
+      <p class="summary">The Grants for Early Medical/Surgical Specialists&#x27; Transition to Aging Research program supports early-career clinician-scientists in medical or surgical specialties to develop leadership in aging- or geriatric-focused research. The call funds transdisciplinary pilot projects and a professional development plan within a supportive research environment. Eligible applicants are restricted to U.S.-based organizations, and non-domestic entities are not allowed to apply.</p>
+      <p class="countries"><b>Eligible countries:</b> United States only (foreign organisations not eligible)</p>
+      <details><summary>From the official call</summary><p>&ldquo;Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>16 Jul 2028</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/359940" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <h3 class="prog">Centers for Disease Control and Prevention - ERA <span>1</span></h3>
+    <article class="call other">
+      <div class="funder">Centers for Disease Control and Prevention - ERA</div>
+      <h4>Identify and Evaluate Potential Risk Factors for Amyotrophic Lateral Sclerosis (ALS)</h4>
+      <p class="summary">The Centers for Disease Control and Prevention invites research proposals to study potential risk factors for Amyotrophic Lateral Sclerosis. The call funds four options covering existing evidence, exploratory research, risk in affected populations, and biological sample analysis from the Guamanian ALS cluster. Eligible applicants include various government entities, higher education institutions, and non-profit organizations. The aim is to improve the understanding of ALS risk factors, mechanisms, and potential prevention strategies.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>1 Dec 2026</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/363115" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <h3 class="prog">Administration for Community Living <span>6</span></h3>
+    <article class="call other">
+      <div class="funder">Administration for Community Living<span class="tag">ON INSTAGRAM</span></div>
+      <h4>Advanced Rehabilitation Research Training (ARRT) Program - Community Living and Participation</h4>
+      <p class="summary">The Advanced Rehabilitation Research Training Program provides advanced research training and experience to individuals with doctorates or similar advanced degrees. Projects must enhance the capacity of researchers to conduct high-quality multidisciplinary disability and rehabilitation research focused on community living and participation outcomes among people with disabilities. Eligible applicants are public, state-controlled, and private institutions of higher education.</p>
+      <p class="countries"><b>Eligible countries:</b> United States only</p>
+      <details><summary>From the official call</summary><p>&ldquo;Foreign entities are not eligible to compete for, or receive, awards made under this announcement.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>7 Dec 2026</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/363963" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">Administration for Community Living<span class="tag">ON INSTAGRAM</span></div>
+      <h4>Advanced Rehabilitation Research Training (ARRT) Program - Employment</h4>
+      <p class="summary">The Administration for Community Living announces the Advanced Rehabilitation Research Training Program to provide advanced research training and experience to individuals with doctorates or similar advanced degrees. Projects must enhance capacity to conduct high-quality multidisciplinary disability and rehabilitation research focused on employment outcomes among people with disabilities. Eligible applicants are limited to public, state-controlled, and private institutions of higher education located in the United States, as foreign entities are explicitly excluded.</p>
+      <p class="countries"><b>Eligible countries:</b> United States only</p>
+      <details><summary>From the official call</summary><p>&ldquo;Foreign entities are not eligible to compete for, or receive, awards made under this announcement.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>7 Dec 2026</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/363964" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">Administration for Community Living<span class="tag">ON INSTAGRAM</span></div>
+      <h4>Advanced Rehabilitation Research Training (ARRT) Program - Health and Function</h4>
+      <p class="summary">The Advanced Rehabilitation Research Training Program funded by NIDILRR provides advanced multidisciplinary research training and experience to individuals holding doctorates or similar advanced degrees. The call aims to enhance the capacity of rehabilitation researchers, including those with disabilities, to conduct high-quality research focused on health and function outcomes. Eligible applicants are limited to public, state-controlled, and private institutions of higher education based in the United States.</p>
+      <p class="countries"><b>Eligible countries:</b> United States only</p>
+      <details><summary>From the official call</summary><p>&ldquo;Foreign entities are not eligible to compete for, or receive, awards made under this announcement.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>7 Dec 2026</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/363965" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">Administration for Community Living</div>
+      <h4>Traumatic Brain Injury Model Systems Centers</h4>
+      <p class="summary">The Traumatic Brain Injury Model Systems Centers funding opportunity aims to conduct research contributing to evidence-based TBI rehabilitation. It funds site-specific research, collaborative research, and contributions to a longitudinal database to improve health, function, community living, and employment outcomes for individuals with TBI. Eligible applicants include US states, public or private agencies, organizations, institutions of higher education, and tribal organizations, while foreign entities are strictly excluded from applying.</p>
+      <p class="countries"><b>Eligible countries:</b> United States only</p>
+      <details><summary>From the official call</summary><p>&ldquo;Foreign entities are not eligible to compete for, or receive, awards made under this announcement.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>1 Apr 2027</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/363970" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">Rehabilitation Engineering Research Centers (RERC) program</div>
+      <h4>Rehabilitation Engineering Research Center on Recreational, Sport, and Exercise Technologies for People with Disabilities</h4>
+      <p class="summary">The Rehabilitation Engineering Research Center program aims to improve rehabilitation services through advanced engineering research and the development of innovative technologies that solve rehabilitation problems or remove environmental barriers. This specific grant focuses on technologies promoting exercise and health among people with disabilities. Eligible applicants include states, public or private agencies, organizations, institutions of higher education, and Indian tribes, restricted to domestic entities.</p>
+      <p class="countries"><b>Eligible countries:</b> United States only</p>
+      <details><summary>From the official call</summary><p>&ldquo;Foreign entities are not eligible to compete for, or receive, awards made under this announcement.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>15 Apr 2027</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/363973" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">Rehabilitation Engineering Research Centers (RERC) program</div>
+      <h4>Rehabilitation Engineering Research Center on Technologies for People Who are Blind or have Low Vision</h4>
+      <p class="summary">The Rehabilitation Engineering Research Center (RERC) program aims to conduct advanced engineering research and development of innovative technologies to promote independence and community living for individuals who are blind or have low vision. One grant with a sixty-month project period will be awarded. Eligible applicants include states, public or private agencies and organizations, institutions of higher education, and Indian tribes. Foreign entities are excluded from applying for or receiving these awards.</p>
+      <p class="countries"><b>Eligible countries:</b> United States only</p>
+      <details><summary>From the official call</summary><p>&ldquo;Foreign entities are not eligible to compete for, or receive, awards made under this announcement.&rdquo;</p></details>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>22 Apr 2027</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/363974" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <h3 class="prog">Foundation for Physical Therapy Research <span>1</span></h3>
+    <article class="call other">
+      <div class="funder">Promotion of Doctoral Studies Scholarships<span class="tag">ON INSTAGRAM</span></div>
+      <h4>Promotion of Doctoral Studies Scholarships</h4>
+      <p class="summary">The Promotion of Doctoral Studies Scholarships by the Foundation for Physical Therapy Research provide financial support for licensed physical therapists and physical therapist assistants pursuing academic doctoral degrees with the intent to focus on physical therapy research. The call offers funding through two distinct phases: pre-candidate and doctoral candidate awards. Eligible applicants must be APTA members. Applications are submitted via ProposalCentral with a deadline of January 20, 2027.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>20 Jan 2027</b></div>
+        <div class="btns"><a class="btn" href="https://foundation4pt.org/foundation-funding-opportunities/scholarships/" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <h3 class="prog">U.S. National Science Foundation <span>1</span></h3>
+    <article class="call other">
+      <div class="funder">U.S. National Science Foundation</div>
+      <h4>Engineering Biological and Biomedical Systems (EBBS)</h4>
+      <p class="summary">The Engineering Biological and Biomedical Systems program supports fundamental engineering research to expand understanding of biological and physiological systems and improve human health. It funds projects involving biosensing platforms, optical imaging, tissue engineering, and rehabilitation engineering. Eligible applicants include a wide range of entities. The call aims to generate mechanistic insights and develop novel biomedical technologies, while excluding clinical trials, commercialization-focused projects, and primary drug design.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>see official call</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/362062" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+    <h3 class="prog">Food and Drug Administration <span>1</span></h3>
+    <article class="call other">
+      <div class="funder">Food and Drug Administration</div>
+      <h4>Studies Addressing Rare Neurodegenerative Diseases including ALS</h4>
+      <p class="summary">This funding opportunity announcement supports studies that advance medical product development of interventions intended to prevent, diagnose, mitigate, treat, or cure ALS and other rare neurodegenerative diseases in adults and children. The initiative aims to address critical knowledge gaps and inform current or future product development. Eligible applicants include a wide range of organizations such as small businesses, higher education institutions, governments, and nonprofits, depending on specific eligibility criteria.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>see official call</b></div>
+        <div class="btns"><a class="btn" href="https://www.grants.gov/search-results-detail/356046" target="_blank" rel="noopener">Official call &rarr;</a></div>
+      </div>
+    </article>
+  </section>
+  <footer>
+    Calls collected by our monitoring and checked automatically against the official text: always verify eligibility,
+    amounts and dates in the official call before applying.<br>
+    Updated 21 Oct 2026 · <a href="https://www.instagram.com/clinicalresearchchaos/">@clinicalresearchchaos on Instagram</a>
+  </footer>
+</main>
+</body>
+</html>

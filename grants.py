@@ -650,6 +650,7 @@ PAGE = """<!doctype html>
   body {{ margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }}
   .bar {{ height: 6px; background: var(--accent); }}
   main {{ max-width: 680px; margin: 0 auto; padding: 28px 16px 48px; }}
+  .home {{ display: inline-block; color: var(--soft); font-size: 14px; text-decoration: none; margin-bottom: 10px; }}
   .switch {{ display: inline-block; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
             border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px; margin-bottom: 18px; }}
   .badge {{ display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
@@ -706,6 +707,7 @@ PAGE = """<!doctype html>
 <div class="bar"></div>
 <main>
   <a class="switch" href="positions.html">Academic positions &rarr;</a><br>
+  <a class="home" href="index.html">&larr; Home</a>
   <span class="badge">OPEN CALLS</span>
   <h1>Research funding calls</h1>
   <p class="intro">All open calls for clinical and rehabilitation research found by our monitoring, from funders worldwide.
@@ -838,3 +840,75 @@ def build_page(grants_list, verified, posted, cfg, today=None):
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
                        accent=cfg.get("grant_accent", "#FFB547"), nav="".join(nav),
                        italy=italy_html, other=other_html, updated=_fmt_date(today))
+
+
+# ---------------------------------------------------------------- pagina iniziale (link in bio)
+HOME = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{brand}</title>
+<meta name="description" content="Open research funding calls and academic positions in clinical and rehabilitation research, checked on the official texts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {{ --bg: {bg}; --paper: #F3F6F9; --card: #15304A; --text: #FFFFFF; --soft: {soft}; --muted: {muted};
+           --teal: {teal}; --amber: {amber}; --lilac: {lilac}; }}
+  * {{ box-sizing: border-box; }}
+  body {{ margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }}
+  .top {{ background: var(--paper); padding: 34px 16px 30px; text-align: center; border-top: 6px solid var(--teal); }}
+  .top img {{ width: 170px; height: auto; display: block; margin: 0 auto 12px; }}
+  .top p {{ color: #5B7186; margin: 0 auto; max-width: 420px; font-size: 15px; }}
+  main {{ max-width: 520px; margin: 0 auto; padding: 26px 16px 40px; display: grid; gap: 16px; }}
+  a.big {{ display: block; text-decoration: none; color: var(--bg); border-radius: 22px; padding: 22px 22px 20px; }}
+  a.big.calls {{ background: var(--amber); }}
+  a.big.jobs {{ background: var(--lilac); }}
+  a.big .label {{ font-size: 13px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; opacity: .8; }}
+  a.big .name {{ display: flex; justify-content: space-between; align-items: center; font-size: 27px; font-weight: 800; margin: 4px 0 6px; }}
+  a.big .count {{ font-size: 15px; font-weight: 600; }}
+  a.big:focus-visible {{ outline: 3px solid var(--text); outline-offset: 3px; }}
+  a.big:hover {{ filter: brightness(1.05); }}
+  .social {{ display: flex; justify-content: center; gap: 18px; margin-top: 8px; }}
+  .social a {{ color: var(--soft); text-decoration: none; font-weight: 600; font-size: 14px; border: 1px solid var(--muted);
+              border-radius: 999px; padding: 8px 14px; }}
+  footer {{ color: var(--muted); font-size: 12px; text-align: center; padding: 0 16px 30px; max-width: 520px; margin: 0 auto; }}
+</style>
+</head>
+<body>
+<header class="top">
+  <img src="logo.png" alt="{brand}" width="170" height="215">
+  <p>Clinical research methodology, made practical. Open funding calls and academic positions, checked on the official texts.</p>
+</header>
+<main>
+  <a class="big calls" href="calls.html">
+    <span class="label">Open calls</span>
+    <span class="name">Funding calls <span aria-hidden="true">&rarr;</span></span>
+    <span class="count">{calls_line}</span>
+  </a>
+  <a class="big jobs" href="positions.html">
+    <span class="label">Open positions</span>
+    <span class="name">Academic positions <span aria-hidden="true">&rarr;</span></span>
+    <span class="count">{jobs_line}</span>
+  </a>
+  <div class="social">
+    <a href="https://www.instagram.com/{ig}/">Instagram</a>
+    <a href="https://www.facebook.com/{ig}">Facebook</a>
+  </div>
+</main>
+<footer>Educational content for researchers and health professionals; not medical advice. Always check eligibility and deadlines in the official call or advertisement. Updated {updated}.</footer>
+</body>
+</html>
+"""
+
+
+def build_home(n_calls, n_italy, n_positions, cfg, today=None):
+    from html import escape
+    today = today or date.today()
+    c = cfg["colors"]
+    calls_line = f"{n_calls} open calls worldwide" + (f" · {n_italy} open to Italian institutions" if n_italy else "")
+    jobs_line = f"{n_positions} open PhD, post-doc and faculty positions" if n_positions else "PhD, post-doc and faculty positions"
+    return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"],
+                       soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
+                       amber=cfg.get("grant_accent", "#FFB547"), lilac=cfg.get("positions_accent", "#A78BFA"),
+                       calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today))

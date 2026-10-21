@@ -30,7 +30,8 @@ POSTED_FILE = ROOT / "posted_log.json"
 SOURCES_FILE = ROOT / "sources_log.json"
 IMAGES_DIR = ROOT / "published_images"
 PREVIEW_DIR = ROOT / "preview"
-PAGE_FILE = ROOT / "docs" / "index.html"   # pagina «link in bio» (GitHub Pages, cartella /docs)
+PAGE_FILE = ROOT / "docs" / "calls.html"   # pagina dei bandi
+HOME_FILE = ROOT / "docs" / "index.html"   # pagina iniziale del link in bio: due pulsanti, bandi e posizioni
 
 GRAPH_VERSION = os.environ.get("GRAPH_API_VERSION") or "v23.0"
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
@@ -474,9 +475,22 @@ def update_positions(posted=None, verify_limit=None):
     POSITIONS_PAGE.write_text(positions.build_page(archive, posted, CONFIG), encoding="utf-8")
     n = len(positions.active(archive))
     print(f"::notice title=Pagina posizioni::{n} posizioni aperte in pagina")
-    commit_and_push([positions.ARCHIVE_FILE, positions.STATUS_FILE, POSITIONS_PAGE.relative_to(ROOT).as_posix()],
+    home = write_home()
+    commit_and_push([positions.ARCHIVE_FILE, positions.STATUS_FILE, POSITIONS_PAGE.relative_to(ROOT).as_posix(), home],
                     "Posizioni accademiche verificate e pagina aggiornata")
     trigger_deploy()
+
+
+def write_home():
+    """Pagina iniziale con i conteggi letti dalle due pagine (bandi e posizioni)."""
+    import re as _re
+    calls = PAGE_FILE.read_text(encoding="utf-8") if PAGE_FILE.exists() else ""
+    jobs = POSITIONS_PAGE.read_text(encoding="utf-8") if POSITIONS_PAGE.exists() else ""
+    n_calls = calls.count("Official call &rarr;")
+    m = _re.search(r'Open to Italy <b>(\d+)</b>', calls)
+    n_positions = jobs.count("Advertisement &rarr;")
+    HOME_FILE.write_text(grants.build_home(n_calls, int(m.group(1)) if m else 0, n_positions, CONFIG), encoding="utf-8")
+    return HOME_FILE.relative_to(ROOT).as_posix()
 
 
 def trigger_deploy():
@@ -504,7 +518,9 @@ def update_grants(posted=None, verify_limit=None):
     entries = grants.page_entries(grants_list, verified)
     pending = sum(1 for g in grants_list if g["id"] not in verified)
     print(f"::notice title=Pagina bandi::{len(entries)} bandi in pagina, {pending} ancora da verificare")
-    commit_and_push([grants.VERIFIED_FILE, PAGE_FILE.relative_to(ROOT).as_posix()], "Bandi verificati e pagina aggiornata")
+    home = write_home()
+    commit_and_push([grants.VERIFIED_FILE, PAGE_FILE.relative_to(ROOT).as_posix(), home, "docs/logo.png"],
+                    "Bandi verificati e pagina aggiornata")
     trigger_deploy()
 
 

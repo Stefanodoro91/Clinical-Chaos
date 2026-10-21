@@ -323,7 +323,7 @@ PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
-  <a class="switch" href="index.html">&larr; Research funding calls</a><br>
+  <a class="switch" href="index.html">&larr; Home</a> &nbsp; <a class="switch" href="calls.html">Research funding calls &rarr;</a><br>
   <span class="badge">ACADEMIC POSITIONS</span>
   <h1>Positions in clinical rehabilitation research</h1>
   <p class="intro">Open PhD, post-doc and faculty positions from universities and research institutes worldwide,
