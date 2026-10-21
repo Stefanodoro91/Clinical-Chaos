@@ -464,8 +464,8 @@ def update_positions(posted=None, verify_limit=None):
     n = len(positions.active(archive))
     print(f"::notice title=Pagina posizioni::{n} posizioni aperte in pagina")
     commit_and_push([positions.ARCHIVE_FILE, positions.STATUS_FILE, POSITIONS_PAGE.relative_to(ROOT).as_posix()],
-    trigger_deploy()
                     "Posizioni accademiche verificate e pagina aggiornata")
+    trigger_deploy()
 
 
 def trigger_deploy():
