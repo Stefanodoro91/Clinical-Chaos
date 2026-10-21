@@ -55,7 +55,7 @@ def draw_lines(draw, lines, fnt, size, x, y, color, spacing):
 
 
 PAPER, INK_MUTED = "#F3F6F9", "#5B7186"          # copertina e chiusura «in negativo»
-DARK_ACCENT = {"#3DD9C1": "#1C8C7B", "#FFB547": "#A86A12", "#A78BFA": "#6D4FD8"}   # accento leggibile su fondo chiaro
+DARK_ACCENT = {"#3DD9C1": "#1C8C7B", "#FFB547": "#A86A12", "#A78BFA": "#6D4FD8", "#FF7A59": "#C2410C"}   # accento leggibile su fondo chiaro
 
 
 def _norm_word(w):
@@ -425,6 +425,8 @@ def render_carousel(post, cfg):
     """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
     if post.get("kind") == "grant":   # i bandi hanno un colore d'accento proprio, per riconoscerli a colpo d'occhio
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("grant_accent", "#FFB547")}}
+    if post.get("accent"):   # post speciali (annunci): colore d'accento proprio
+        cfg = {**cfg, "colors": {**cfg["colors"], "accent": post["accent"]}}
     if post.get("kind") == "positions":   # raccolta settimanale di posizioni: senza illustrazioni AI
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("positions_accent", "#A78BFA")}}
         jobs = post.get("jobs", [])
