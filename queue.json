@@ -93,5 +93,294 @@
     "source_hint": "pages 4, 10",
     "id": "7f24c08a",
     "source": "Blinding.pdf"
+  },
+  {
+    "title": "Why Simple Randomization Fails Small Trials",
+    "title_highlight": "Simple Randomization",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "The Power of Simple Randomization",
+        "body": "In simple randomization, a coin or a die roll may be used to allocate subjects to a group. The best part of simple randomization is that it minimizes any bias by eliminating predictability.",
+        "image_prompt": "a researcher flipping a coin above a table with two identical treatment files and simple figures",
+        "highlight": "minimizes any bias by eliminating predictability",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "The Sample Size Trap",
+        "body": "Simple randomization cannot prevent the imbalances in the sample size or prognostic factors that are likely to occur as the number of subjects participating in the study decreases.",
+        "image_prompt": "two scales unbalanced with a small group of figures on one side and a large group on the other",
+        "highlight": "",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "Power Loss in Small Groups",
+        "body": "If the ratio of number of subjects shows an imbalance, that is, it is not 1 : 1, even with the same number of subjects participating, the power of mobility and study will fall.",
+        "image_prompt": "a downward sloping line on a graph next to two uneven stacks of documents representing study arms",
+        "highlight": "",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "When to Use Simple Randomization",
+        "body": "This is the randomization method recommended for large-scale clinical trials, because the likelihood of imbalance in trials with a small number of subjects is high.",
+        "image_prompt": "a large group of simple figures walking in two equal lines toward two large containers",
+        "highlight": "recommended for large-scale clinical trials",
+        "source": "Lim & In, 2019"
+      }
+    ],
+    "takeaway": "Simple randomization works well for large trials but creates dangerous sample size imbalances in small studies.",
+    "takeaway_highlight": "sample size imbalances",
+    "references": [
+      "Lim, C. Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221–232. https://doi.org/10.4097/kja.19049"
+    ],
+    "caption": "Simple randomization is the gold standard for large trials because it eliminates predictability and selection bias. But when sample sizes shrink, the math works against you. An uneven allocation ratio directly compromises statistical power. Have you encountered severe group imbalances in your small trials despite using proper randomization?",
+    "hashtags": [
+      "#ClinicalTrials",
+      "#Biostatistics",
+      "#ResearchMethods",
+      "#Randomization",
+      "#StudyDesign",
+      "#ClinicalResearch",
+      "#Sample魎Size",
+      "#ResearchIntegrity"
+    ],
+    "source_hint": "pages 2-3",
+    "id": "28731450",
+    "source": "Randomization.pdf"
+  },
+  {
+    "title": "Block Randomization: Fixing Group Imbalances",
+    "title_highlight": "Block Randomization",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "Why Use Block Randomization",
+        "body": "To avoid sample size imbalances in small trials, we set blocks for randomization and balance the number of subjects in each block.",
+        "image_prompt": "four identical boxes containing balanced pairs of blue and red tokens representing study subjects",
+        "highlight": "",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "The Danger of Small Block Sizes",
+        "body": "If the block size is 2, the allocation result of the second subject in the block can be easily predicted with a high risk of observation bias.",
+        "image_prompt": "a researcher peering through a magnifying glass at an open envelope with a visible letter inside",
+        "highlight": "allocation result of the second subject",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "Protecting Against Selection Bias",
+        "body": "Therefore, the block size used should preferably be 4 or more. To reduce the risk of predictability from the use of one block size, the size may be varied.",
+        "image_prompt": "four different sized wooden blocks lined up in a row on a table next to documents",
+        "highlight": "",
+        "source": "Lim & In, 2019"
+      }
+    ],
+    "takeaway": "Use block sizes of 4 or more to maintain equal group sizes without triggering severe selection bias.",
+    "takeaway_highlight": "",
+    "references": [
+      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
+    ],
+    "caption": "Block randomization keeps treatment and control groups balanced throughout the trial. However, small blocks like a size of 2 make the next allocation entirely predictable, opening the door to selection bias. Varying your block sizes or keeping them at 4 or higher is a key safeguard. What block sizes do you typically implement in your protocols?",
+    "hashtags": [
+      "#ClinicalTrials",
+      "#ResearchMethods",
+      "#Randomization",
+      "#Biostatistics",
+      "#ClinicalResearch",
+      "#Methodology",
+      "#TrialDesign",
+      "#ResearchEthics"
+    ],
+    "source_hint": "page 3",
+    "id": "c917f598",
+    "source": "Randomization.pdf"
+  },
+  {
+    "title": "Stratified Randomization and the Sparse Strata Trap",
+    "title_highlight": "Stratified Randomization",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "Balancing Prognostic Factors",
+        "body": "Stratified randomization refers to the situation where the strata are based on level of prognostic factors or covariates, and randomization is applied to each stratum.",
+        "image_prompt": "a complex sorting tree diagram dividing simple figures by gender and age into separate boxes",
+        "highlight": "",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "The Risk of Too Many Strata",
+        "body": "If several important prognostic factors affect the outcome, the number of strata would increase. In case of several strata in relation to the target sample size, strata may be empty or sparse.",
+        "image_prompt": "many small empty boxes on a shelf with only a couple containing figures",
+        "highlight": "number of strata would increase",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "Careful Selection is Crucial",
+        "body": "To reduce this risk, the prognostic factors should be carefully selected. These prognostic factors should be considered again during the statistical analysis and at the end of the study.",
+        "image_prompt": "a researcher pointing at a document checklist with a pen, crossing out extra items",
+        "highlight": "prognostic factors should be carefully selected",
+        "source": "Lim & In, 2019"
+      }
+    ],
+    "takeaway": "Too many strata in a trial will leave your subgroups empty and ruin your randomization balance.",
+    "takeaway_highlight": "leave your subgroups empty",
+    "references": [
+      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
+    ],
+    "caption": "Stratification ensures that vital prognostic factors like age, sex, or clinical site are balanced across study arms. But add too many variables, and your contingency tables will suffer from sparse or empty strata. How many stratifying variables do you allow before switching to a covariate-adaptive method?",
+    "hashtags": [
+      "#ClinicalTrials",
+      "#Biostatistics",
+      "#StratifiedRandomization",
+      "#ResearchMethods",
+      "#ClinicalResearch",
+      "#StudyDesign",
+      "#Epidemiology",
+      "#DataAnalysis"
+    ],
+    "source_hint": "pages 3-4",
+    "id": "ed888e90",
+    "source": "Randomization.pdf"
+  },
+  {
+    "title": "Minimization: Balancing Covariates Dynamically",
+    "title_highlight": "Minimization",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "What is Minimization",
+        "body": "Minimization was first introduced as a covariate adaptive method to balance the prognostic factors. The information of previous subjects is used to allocate newly recruited subjects.",
+        "image_prompt": "a digital scale balancing blocks of different colors representing patient covariates",
+        "highlight": "",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "How Allocation Works",
+        "body": "First, the total number of imbalances is calculated after virtually allocating a newly recruited subject to all groups. The subject will be allocated to the group with lowest total number of imbalances.",
+        "image_prompt": "a researcher comparing two folders with scoring tallies and pointing to the lower number",
+        "highlight": "",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "The Statistical Trade-off",
+        "body": "A concern from a statistical point of view is that minimization does not satisfy randomness, which is the basic assumption of statistical inference. Analysis of covariance or permutation tests are proposed.",
+        "image_prompt": "a question mark hovering over a random number sequence document next to a calculator",
+        "highlight": "does not satisfy randomness",
+        "source": "Lim & In, 2019"
+      }
+    ],
+    "takeaway": "Minimization dynamically balances covariates across study arms but sacrifices strict mathematical randomness.",
+    "takeaway_highlight": "sacrifices strict mathematical randomness",
+    "references": [
+      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
+    ],
+    "caption": "Minimization is a powerful covariate-adaptive technique that replaces rigid stratification by evaluating existing imbalances before assigning each new participant. While it achieves exceptional baseline balance, it compromises pure randomness, requiring specific analytical approaches like permutation tests. Have you used minimization in your clinical trials?",
+    "hashtags": [
+      "#ClinicalTrials",
+      "#Biostatistics",
+      "#Minimization",
+      "#ResearchMethods",
+      "#ClinicalResearch",
+      "#DataScience",
+      "#StudyDesign",
+      "#StatisticalAnalysis"
+    ],
+    "source_hint": "pages 4-6",
+    "id": "a33cce13",
+    "source": "Randomization.pdf"
+  },
+  {
+    "title": "Response-Adaptive Randomization: Promise and Pitfalls",
+    "title_highlight": "Response-Adaptive Randomization",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "Shifting Probabilities Mid-Trial",
+        "body": "Response-adaptive randomization allows changing the allocation probability during the study by using the data accruing as the study progresses based on patient responses.",
+        "image_prompt": "an arrow pointing dynamically upward on a probability gauge next to medical charts",
+        "highlight": "",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "The Play-the-Winner Rule",
+        "body": "An example of response-adaptive randomization is the randomized play-the-winner rule. If a patient response is success, the next patient will be allocated to the same treatment group.",
+        "image_prompt": "two pill bottles where one bottle receives more tokens based on previous success tokens",
+        "highlight": "randomized play-the-winner rule",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "Ethical Appeal vs Practical Limits",
+        "body": "This method is based on the ethics of allowing more patients to be allocated to treatments that benefit the patients. However, if clinical studies take a very long time to obtain results, this method cannot be recommended.",
+        "image_prompt": "a hourglass standing next to a clinical trial dossier and a row of patient figures",
+        "highlight": "",
+        "source": "Lim & In, 2019"
+      }
+    ],
+    "takeaway": "Response-adaptive designs allocate more patients to winning treatments but fail if outcome feedback is slow.",
+    "takeaway_highlight": "",
+    "references": [
+      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
+    ],
+    "caption": "Response-adaptive randomization aligns trial design with patient benefit by shifting allocation probabilities toward successful treatments as data accumulates. However, if your trial requires lengthy follow-ups to evaluate responses, this approach becomes impractical. What is your perspective on ethical adaptive designs versus traditional fixed allocation?",
+    "hashtags": [
+      "#ClinicalTrials",
+      "#AdaptiveDesign",
+      "#ResearchEthics",
+      "#Biostatistics",
+      "#ClinicalResearch",
+      "#ResearchMethods",
+      "#MedicalResearch",
+      "#TrialDesign"
+    ],
+    "source_hint": "page 6",
+    "id": "8ffbd1e0",
+    "source": "Randomization.pdf"
+  },
+  {
+    "title": "The Ethical Dilemma of Randomization in Research",
+    "title_highlight": "Ethical Dilemma",
+    "category": "Research ethics",
+    "slides": [
+      {
+        "heading": "Probability Versus Physician Choice",
+        "body": "An ethical debate needs to examine whether the treatment method for subjects should be determined by probability rather than by the physician.",
+        "image_prompt": "a doctor holding a coin over a patient chart while standing at a hospital desk",
+        "highlight": "",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "The Burden on Participants",
+        "body": "Furthermore, the subjects may be given a placebo, and not treatment. Some subjects have to undergo further treatment, representing the cost that society has to pay for the benefit of future subjects.",
+        "image_prompt": "a patient figure standing at a crossroads holding a document and a sealed envelope",
+        "highlight": "",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "Individual vs Collective Ethics",
+        "body": "This ethical dilemma on the balance between individual ethics and collective ethics is still spawning much controversy.",
+        "image_prompt": "two balance scales held by hands, with one side showing an individual and the other showing a crowd",
+        "highlight": "",
+        "source": "Lim & In, 2019"
+      }
+    ],
+    "takeaway": "Clinical trials force individual participants to accept risks and uncertainties so that future patients may benefit.",
+    "takeaway_highlight": "accept risks and uncertainties",
+    "references": [
+      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
+    ],
+    "caption": "Randomization is essential for scientific objectivity and causal inference, but it creates a deep ethical friction between individual care and collective medical progress. Patients may receive placebos or suboptimal treatments purely by chance, bearing a social cost for future generations. How do you address this fundamental tension during informed consent discussions?",
+    "hashtags": [
+      "#ResearchEthics",
+      "#ClinicalTrials",
+      "#InformedConsent",
+      "#ClinicalResearch",
+      "#Bioethics",
+      "#ResearchIntegrity",
+      "#StudyDesign",
+      "#PatientSafety"
+    ],
+    "source_hint": "page 7",
+    "id": "1d35242a",
+    "source": "Randomization.pdf"
   }
 ]
