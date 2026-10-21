@@ -391,22 +391,6 @@
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply."
   },
-  "GG-RFA-TS-27-018": {
-    "status": "ok",
-    "checked": "2026-10-21",
-    "official_source": "Grants.gov opportunity 363115",
-    "official_url": "https://www.grants.gov/search-results-detail/363115",
-    "is_open_call": "yes",
-    "title": "Identify and Evaluate Potential Risk Factors for Amyotrophic Lateral Sclerosis (ALS)",
-    "programme": "Centers for Disease Control and Prevention - ERA",
-    "programme_family": "Centers for Disease Control and Prevention - ERA",
-    "summary": "This funding call by the CDC and ATSDR invites research proposals to study potential risk factors for Amyotrophic Lateral Sclerosis. It supports four funding options ranging from research on known environmental or genetic risk factors, exploratory and innovative studies, investigation of ALS risk in specific populations such as military veterans, to the analysis of biological samples from the Guamanian ALS cluster. Eligible applicants include a wide variety of entities such as nonprofits, government bodies, and higher education institutions.",
-    "eligible_countries": "Coming soon: published with the full call",
-    "countries_evidence": "",
-    "italy": "unclear",
-    "italy_evidence": "",
-    "coming_soon": true
-  },
   "GG-RFA-DA-28-011": {
     "status": "ok",
     "checked": "2026-10-21",
@@ -437,22 +421,6 @@
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply."
-  },
-  "GG-PAR-27-065": {
-    "status": "ok",
-    "checked": "2026-10-21",
-    "official_source": "Grants.gov opportunity 360404",
-    "official_url": "https://www.grants.gov/search-results-detail/360404",
-    "is_open_call": "yes",
-    "title": "NINDS Efficacy and Exploratory Clinical Trials (UG3/UH3)",
-    "programme": "NIH – US National Institutes of Health",
-    "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity from the National Institute of Neurological Disorders and Stroke encourages investigator-initiated clinical trials addressing neurological diseases and care across the lifespan. It funds early- and middle-phase exploratory clinical trials, Phase 3 confirmatory trials, and comparative effectiveness studies involving small molecules, biologics, devices, surgical, behavioral, diet-based, or rehabilitation therapies. Eligible applicants include domestic and foreign organizations, though foreign subawards and subcontracts are restricted.",
-    "eligible_countries": "Coming soon: published with the full call",
-    "countries_evidence": "",
-    "italy": "unclear",
-    "italy_evidence": "",
-    "coming_soon": true
   },
   "GG-PD-26-369Y": {
     "status": "ok",

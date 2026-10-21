@@ -332,6 +332,10 @@ RX_STATEMENT = re.compile(r"\b(eligible|eligibility|may apply|can apply|allowed|
                           r"restricted|limited to|only|based in|established in)\b", re.I)
 
 
+def is_nih(g):
+    return "national institutes of health" in (g.get("ente") or "").lower() or (g.get("ente") or "").strip().upper() == "NIH"
+
+
 def _statement(ev):
     """Una prova vale solo se è una frase su chi può candidarsi, non un elenco di tipi di ente."""
     if not ev or RX_LIST_EVIDENCE.search(ev) or not RX_STATEMENT.search(ev) or ev.count(";") >= 3:
@@ -375,7 +379,7 @@ def check_eligibility(g, text, out):
     countries = (out.get("eligible_countries") or "").strip() if c_ev else ""
     i_ev = _statement(_quoted(out.get("italy_evidence"), text))
     italy = out.get("italy_eligible") if (i_ev and out.get("italy_eligible") in ("yes", "no")) else "unclear"
-    if NIH_NUMBER.search(g.get("programma") or "") and italy == "yes":
+    if is_nih(g) and italy == "yes":
         # per il NIH vale solo la frase ufficiale della call completa (sopra); la scheda Grants.gov non basta
         italy, i_ev = "unclear", ""
         if c_ev and re.search(r"non-?domestic|foreign", c_ev, re.I):
@@ -393,7 +397,7 @@ def verify(g, cfg):
     out = content.gemini_json([{"text": VERIFY_PROMPT.format(source=source, official=text[:60000], data=data)}],
                               VERIFY_SCHEMA, 0.1)
     elig = check_eligibility(g, text, out)
-    coming_soon = bool(NIH_NUMBER.search(g.get("programma") or "")) and not source.startswith("NIH Guide")
+    coming_soon = is_nih(g) and not source.startswith("NIH Guide") and not NIH_FOREIGN.search(text)
     if coming_soon:
         elig.update({"eligible_countries": "Coming soon: published with the full call", "countries_evidence": "",
                      "italy": "unclear", "italy_evidence": ""})
