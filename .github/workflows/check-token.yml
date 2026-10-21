@@ -7,6 +7,11 @@ on:
     - cron: "41 8 * * 1"
       timezone: "Europe/Rome"
   workflow_dispatch:
+    inputs:
+      test_facebook:
+        description: "Prova reale su Facebook (foto non pubblicata, cancellata subito)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -29,4 +34,5 @@ jobs:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FB_TEST: ${{ inputs.test_facebook || 'false' }}
         run: python bot.py --token

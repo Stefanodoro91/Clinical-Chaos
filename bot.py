@@ -361,6 +361,20 @@ def check_token():
     if os.environ.get("FB_PAGE_ID"):
         missing = [p for p in ("pages_manage_posts", "pages_read_engagement") if p not in data.get("scopes", [])]
         print(f"::notice title=Pagina Facebook::ID impostato; permessi mancanti: {', '.join(missing) or 'nessuno'}")
+        if os.environ.get("FB_TEST") == "true":
+            # prova reale: carica una slide già pubblicata come foto NON pubblicata e la cancella subito
+            page, fb_token = os.environ["FB_PAGE_ID"], os.environ.get("FB_PAGE_TOKEN") or token
+            sample = next(IMAGES_DIR.glob("*/slide-1.jpg"), None)
+            sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+            url = f"https://raw.githubusercontent.com/{os.environ['GITHUB_REPOSITORY']}/{sha}/{sample.relative_to(ROOT).as_posix()}"
+            r = requests.post(f"https://graph.facebook.com/{GRAPH_VERSION}/{page}/photos",
+                              data={"url": url, "published": "false", "access_token": fb_token}, timeout=90)
+            if r.ok:
+                pid = r.json()["id"]
+                d = requests.delete(f"https://graph.facebook.com/{GRAPH_VERSION}/{pid}", params={"access_token": fb_token}, timeout=30)
+                print(f"::notice title=Prova Facebook::foto caricata (non pubblicata) e {'cancellata' if d.ok else 'NON cancellata: ' + d.text[:120]}")
+            else:
+                print(f"::error title=Prova Facebook::caricamento rifiutato {r.status_code}: {r.text[:250]}")
     days = [(t - time.time()) / 86400 for t in (exp, access) if t]
     if not data.get("is_valid") or (days and min(days) < 14):
         notify("Il token Instagram sta per scadere",
