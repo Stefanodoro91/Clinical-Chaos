@@ -121,8 +121,9 @@ def ingest(drive, queue):
         print(f"Leggo il materiale: {f['name']}")
         try:
             part = content.material_part(drive, f)
+            published = [x["title"] for x in load(POSTED_FILE, [])] + [x["title"] for x in queue]
             posts = content.generate_posts(part, f["name"], CONFIG["brand_name"],
-                                           int(CONFIG.get("max_posts_per_file", 12)))
+                                           int(CONFIG.get("max_posts_per_file", 12)), published)
         except Exception as e:
             print(f"Non sono riuscito a elaborare {f['name']} (riprovo al prossimo giro): {e}")
             continue
@@ -162,8 +163,14 @@ def build_caption(post):
         if t.lower() not in seen:
             seen.add(t.lower())
             tags.append(t)
-    text = f"{post['title']}\n\n{post['caption']}\n\n{' '.join(tags[:MAX_HASHTAGS])}"
-    return text[:MAX_CAPTION_CHARS].strip()
+    refs = post.get("references") or []
+    ref_block = ("\n\nReferences:\n" + "\n".join(f"• {r}" for r in refs)) if refs else ""
+    tail = f"{ref_block}\n\n{' '.join(tags[:MAX_HASHTAGS])}"
+    head = f"{post['title']}\n\n{post['caption']}"
+    room = MAX_CAPTION_CHARS - len(tail)          # le reference e gli hashtag non vengono mai tagliati
+    if len(head) > room:
+        head = head[:max(0, room - 1)].rsplit(" ", 1)[0] + "…"
+    return (head + tail).strip()
 
 
 def ig(method, path, **params):
@@ -294,6 +301,38 @@ def main():
                f"Restano {len(queue)} post in coda. Aggiungi nuovo materiale nella cartella Drive.")
 
 
+def rebuild():
+    """Rigenera la coda rileggendo i file già elaborati (con evidenziazioni e reference),
+    senza ripetere gli argomenti già pubblicati. Non pubblica niente."""
+    drive = drive_service()
+    posted = load(POSTED_FILE, [])
+    published = [x["title"] for x in posted]
+    new_queue = []
+    for src in load(SOURCES_FILE, []):
+        if not src.get("posts"):
+            continue
+        try:
+            f = drive.files().get(fileId=src["drive_id"], fields="id, name, mimeType",
+                                  supportsAllDrives=True).execute()
+            part = content.material_part(drive, f)
+            posts = content.generate_posts(part, f["name"], CONFIG["brand_name"],
+                                           int(CONFIG.get("max_posts_per_file", 12)),
+                                           published + [x["title"] for x in new_queue])
+        except Exception as e:
+            print(f"::warning title=File non rigenerato::{src['name']}: {str(e)[:300]}")
+            continue
+        refs = sum(1 for p in posts if p.get("references"))
+        print(f"::notice title=Coda rigenerata::{src['name']}: {len(posts)} post, {refs} con reference")
+        for p in posts:
+            p.update({"id": uuid.uuid4().hex[:8], "source": f["name"]})
+        new_queue += posts
+    if not new_queue:
+        print("Nessun post rigenerato: la coda resta com'è.")
+        sys.exit(1)
+    save(QUEUE_FILE, new_queue)
+    commit_and_push([QUEUE_FILE.name], f"Coda rigenerata: {len(new_queue)} post con evidenziazioni e reference")
+
+
 def status():
     """Solo lettura: elenca i file in attesa e quelli già elaborati nelle cartelle Drive, e lo stato della coda."""
     drive = drive_service()
@@ -311,4 +350,9 @@ def status():
 
 
 if __name__ == "__main__":
-    status() if "--status" in sys.argv else main()
+    if "--status" in sys.argv:
+        status()
+    elif "--rebuild" in sys.argv:
+        rebuild()
+    else:
+        main()

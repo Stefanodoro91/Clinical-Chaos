@@ -4,6 +4,7 @@ import base64
 import io
 import json
 import os
+import re
 import time
 from pathlib import Path
 
@@ -58,12 +59,25 @@ POST DESIGN:
   "a crowd of simple figures split by a large coin into two equal groups, each walking toward a pill bottle";
   "a magnifying glass revealing a hidden crack in a perfect-looking bridge".
   No text, letters, numbers, labeled charts, logos or recognizable real people.
+- highlight (per slide): the key idea of that slide, 2-6 words copied EXACTLY from its body (same
+  words, same order); it is shown with a highlighter.
+- source (per slide): short citation "Surname, Year" or "Surname et al., Year" ONLY if the slide's
+  content comes from a study or paper cited in the material and listed in references; otherwise "".
+- title_highlight: 1-4 words copied EXACTLY from the title, the most important part of the hook.
 - takeaway: the single sentence to remember, max 130 characters.
+- takeaway_highlight: 2-5 words copied EXACTLY from the takeaway.
+- references: the papers, guidelines or books CITED IN THE MATERIAL that support this post, in APA 7
+  style (Author, A. A., & Author, B. B. (Year). Title in sentence case. Journal Name, volume(issue),
+  pages. https://doi.org/...). Copy authors, year, title and journal from the material; if an element
+  is missing in the material, leave it out: NEVER invent authors, years, titles, journals or DOIs.
+  Empty list if the material cites nothing relevant.
 - caption: 3-6 short lines that add context beyond the slides, end with a question that invites
   professionals to share their experience. Max 900 characters. No hashtags inside the caption.
 - hashtags: 8-12 specific hashtags (e.g. #ClinicalTrials #Biostatistics #ResearchEthics).
 - category: one of {categories}.
 - source_hint: where in the material this comes from (e.g. "slides 12-15"), for the owner's review.
+
+Already published posts (do not repeat these topics): {published}
 
 File name of the material: {filename}"""
 
@@ -82,16 +96,21 @@ SCHEMA = {
                         "items": {
                             "type": "OBJECT",
                             "properties": {"heading": {"type": "STRING"}, "body": {"type": "STRING"},
-                                           "image_prompt": {"type": "STRING"}},
-                            "required": ["heading", "body", "image_prompt"],
+                                           "image_prompt": {"type": "STRING"}, "highlight": {"type": "STRING"},
+                                           "source": {"type": "STRING"}},
+                            "required": ["heading", "body", "image_prompt", "highlight", "source"],
                         },
                     },
+                    "title_highlight": {"type": "STRING"},
                     "takeaway": {"type": "STRING"},
+                    "takeaway_highlight": {"type": "STRING"},
+                    "references": {"type": "ARRAY", "items": {"type": "STRING"}},
                     "caption": {"type": "STRING"},
                     "hashtags": {"type": "ARRAY", "items": {"type": "STRING"}},
                     "source_hint": {"type": "STRING"},
                 },
-                "required": ["title", "category", "slides", "takeaway", "caption", "hashtags"],
+                "required": ["title", "title_highlight", "category", "slides", "takeaway",
+                             "takeaway_highlight", "caption", "hashtags", "references"],
             },
         }
     },
@@ -144,6 +163,18 @@ def _docx_text(data):
     return "\n".join(parts)
 
 
+def material_text(part):
+    """Testo semplice del materiale, per controllare che autori e anni delle reference ci siano davvero."""
+    if "text" in part:
+        return part["text"]
+    try:
+        from pypdf import PdfReader
+        data = base64.b64decode(part["inline_data"]["data"])
+        return "\n".join((p.extract_text() or "") for p in PdfReader(io.BytesIO(data)).pages)
+    except Exception:
+        return ""
+
+
 def is_supported(f):
     return f["mimeType"] in SUPPORTED or Path(f["name"]).suffix.lower() in TEXT_EXT | {".pdf", ".pptx", ".docx"}
 
@@ -173,21 +204,79 @@ def _clip(text, n):
     return text if len(text) <= n else text[: n - 1].rsplit(" ", 1)[0] + "…"
 
 
-def _clean_post(p):
-    slides = [
-        {"heading": _clip(s.get("heading", ""), 70), "body": _clip(s.get("body", ""), 320),
-         "image_prompt": _clip(s.get("image_prompt", ""), 300)}
-        for s in p.get("slides", []) if s.get("heading") and s.get("body")
-    ][:5]
+def _words(x):
+    return [w for w in re.sub(r"[^\w]+", " ", str(x).lower()).split() if w]
+
+
+def exact_phrase(phrase, text, max_words=6):
+    """La frase da evidenziare, solo se compare parola per parola nel testo."""
+    pw, tw = _words(phrase), _words(text)
+    if not pw or len(pw) > max_words:
+        return ""
+    for i in range(len(tw) - len(pw) + 1):
+        if tw[i:i + len(pw)] == pw:
+            return " ".join(str(phrase).split())
+    return ""
+
+
+def _ref_key(ref):
+    """(primo cognome, anno) di una reference APA, per verificarla nel materiale."""
+    m = re.match(r"\s*([^\W\d_][\w'’\- ]*?),", ref)
+    y = re.search(r"\((\d{4})[a-z]?[,)]", ref) or re.search(r"\b(19|20)\d{2}\b", ref)
+    if not m or not y:
+        return None
+    year = y.group(1) if len(y.group(1)) == 4 else y.group(0)
+    return m.group(1).strip().split()[-1].lower(), year
+
+
+def verified_references(refs, material):
+    """Tiene solo le reference il cui primo autore e anno compaiono nel testo del materiale."""
+    if not material:
+        return []
+    low = material.lower()
+    out = []
+    for r in refs or []:
+        r = " ".join(str(r).split())
+        key = _ref_key(r)
+        if key and key[0] in low and key[1] in material and r not in out:
+            out.append(r[:400])
+    return out[:6]
+
+
+def _source_ok(source, refs):
+    """La citazione breve della slide deve corrispondere a una reference tenuta."""
+    m = re.match(r"\s*([^\W\d_][\w'’\-]*)", source or "")
+    y = re.search(r"(19|20)\d{2}", source or "")
+    if not m or not y:
+        return ""
+    return source.strip() if any(_ref_key(r) == (m.group(1).lower(), y.group(0)) for r in refs) else ""
+
+
+def _clean_post(p, material=""):
+    refs = verified_references(p.get("references"), material)
+    slides = []
+    for s in p.get("slides", []):
+        if not (s.get("heading") and s.get("body")):
+            continue
+        body = _clip(s.get("body", ""), 320)
+        slides.append({"heading": _clip(s.get("heading", ""), 70), "body": body,
+                       "image_prompt": _clip(s.get("image_prompt", ""), 300),
+                       "highlight": exact_phrase(s.get("highlight"), body),
+                       "source": _source_ok(s.get("source"), refs)})
+    slides = slides[:5]
     if len(slides) < 2 or not p.get("title") or not p.get("takeaway"):
         return None
     tags = ["#" + t.lstrip("#").replace(" ", "") for t in p.get("hashtags", []) if t.strip("# ")]
     category = p.get("category") if p.get("category") in CATEGORIES else "Research methods"
+    title, takeaway = _clip(p["title"], 90), _clip(p["takeaway"], 160)
     return {
-        "title": _clip(p["title"], 90),
+        "title": title,
+        "title_highlight": exact_phrase(p.get("title_highlight"), title, 4),
         "category": category,
         "slides": slides,
-        "takeaway": _clip(p["takeaway"], 160),
+        "takeaway": takeaway,
+        "takeaway_highlight": exact_phrase(p.get("takeaway_highlight"), takeaway, 5),
+        "references": refs,
         "caption": p.get("caption", "").strip()[:1200],
         "hashtags": tags[:15],
         "source_hint": p.get("source_hint", ""),
@@ -222,8 +311,10 @@ def gemini_json(parts, schema, temperature=0.5):
     raise RuntimeError(f"Gemini non disponibile: {last_error}")
 
 
-def generate_posts(part, filename, brand, max_posts=12):
+def generate_posts(part, filename, brand, max_posts=12, published=()):
     prompt = PROMPT.format(brand=brand, max_posts=max_posts, filename=filename,
-                           categories=", ".join(CATEGORIES))
+                           categories=", ".join(CATEGORIES),
+                           published="; ".join(published) if published else "none")
     posts = gemini_json([{"text": prompt}, part], SCHEMA).get("posts", [])
-    return [c for c in (_clean_post(p) for p in posts) if c][:max_posts]
+    material = material_text(part)
+    return [c for c in (_clean_post(p, material) for p in posts) if c][:max_posts]

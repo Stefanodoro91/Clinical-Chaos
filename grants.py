@@ -39,9 +39,12 @@ Then write IN ENGLISH:
   Slide 2 heading "Who it is for": applicants and teams it targets. Each body max 220 characters.
   Each slide also has image_prompt: 15-35 words describing ONE simple illustration of the slide's idea
   (concrete scene with 2-4 recognizable elements; no text, letters, numbers, logos or real people).
+  Each slide also has highlight: its key idea, 2-6 words copied EXACTLY from its body.
+- title_highlight: 1-4 words copied EXACTLY from the title (the research area or the key benefit).
 - eligibility: who can apply, max 120 characters.
 - coverage: funding coverage in a few words (e.g. "Fully funded"), or "" if not stated.
 - takeaway: one sentence on why this call is worth a look, max 120 characters.
+- takeaway_highlight: 2-5 words copied EXACTLY from the takeaway.
 - caption: 2-4 short lines with context; end with a question inviting researchers to share whether they
   plan to apply or know similar calls. Max 600 characters, no hashtags, no links.
 - hashtags: 6-10 specific hashtags (e.g. #ResearchFunding #GrantOpportunity #Neurorehabilitation).
@@ -64,10 +67,12 @@ SCHEMA = {
             "items": {
                 "type": "OBJECT",
                 "properties": {"heading": {"type": "STRING"}, "body": {"type": "STRING"},
-                               "image_prompt": {"type": "STRING"}},
-                "required": ["heading", "body", "image_prompt"],
+                               "image_prompt": {"type": "STRING"}, "highlight": {"type": "STRING"}},
+                "required": ["heading", "body", "image_prompt", "highlight"],
             },
         },
+        "title_highlight": {"type": "STRING"},
+        "takeaway_highlight": {"type": "STRING"},
         "eligibility": {"type": "STRING"},
         "coverage": {"type": "STRING"},
         "takeaway": {"type": "STRING"},
@@ -222,9 +227,14 @@ def build_post(g, cfg):
     if not ok:
         raise RuntimeError(f"Italia non confermata dal testo ufficiale ({source}): {evidence[:200] or 'nessuna frase'}")
     clip = content._clip
-    slides = [{"heading": clip(s.get("heading", ""), 70), "body": clip(s.get("body", ""), 320),
-               "image_prompt": clip(s.get("image_prompt", ""), 300)}
-              for s in out.get("slides", []) if s.get("heading") and s.get("body")][:2]
+    slides = []
+    for sl in out.get("slides", []):
+        if sl.get("heading") and sl.get("body"):
+            body = clip(sl["body"], 320)
+            slides.append({"heading": clip(sl["heading"], 70), "body": body,
+                           "image_prompt": clip(sl.get("image_prompt", ""), 300),
+                           "highlight": content.exact_phrase(sl.get("highlight"), body)})
+    slides = slides[:2]
     if len(slides) < 2 or not out.get("title"):
         raise RuntimeError(f"Testo del bando incompleto per {g['id']}")
 
@@ -255,6 +265,8 @@ def build_post(g, cfg):
         "kind": "grant",
         "grant_id": g["id"],
         "title": clip(out["title"], 90),
+        "title_highlight": content.exact_phrase(out.get("title_highlight"), clip(out["title"], 90), 4),
+        "takeaway_highlight": content.exact_phrase(out.get("takeaway_highlight"), clip(out.get("takeaway", ""), 160), 5),
         "category": "Funding opportunity",
         "funder": clip(funder_line(g), 60),
         "deadline": _fmt_date(deadline),

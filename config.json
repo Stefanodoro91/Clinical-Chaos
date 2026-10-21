@@ -24,5 +24,7 @@
   ],
   "grant_min_days_left": 14,
   "grantfinder_url": "https://raw.githubusercontent.com/Stefanodoro91/GrantFinder/main/dati/stato.json",
-  "grant_accent": "#FFB547"
+  "grant_accent": "#FFB547",
+  "tagline": "Methodology made practical",
+  "logo_path": "logo.png"
 }

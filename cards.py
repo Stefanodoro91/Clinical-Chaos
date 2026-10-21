@@ -54,6 +54,92 @@ def draw_lines(draw, lines, fnt, size, x, y, color, spacing):
     return y
 
 
+PAPER, INK_MUTED = "#F3F6F9", "#5B7186"          # copertina e chiusura «in negativo»
+DARK_ACCENT = {"#3DD9C1": "#1C8C7B", "#FFB547": "#A86A12"}   # accento leggibile su fondo chiaro
+
+
+def _norm_word(w):
+    return "".join(ch for ch in w.lower() if ch.isalnum())
+
+
+def _highlight_span(words, phrase):
+    """Indici delle parole di `words` che formano `phrase` (confronto senza punteggiatura e maiuscole)."""
+    target = [_norm_word(w) for w in (phrase or "").split() if _norm_word(w)]
+    if not target:
+        return set()
+    norm = [_norm_word(w) for w in words]
+    for i in range(len(norm) - len(target) + 1):
+        if norm[i:i + len(target)] == target:
+            return set(range(i, i + len(target)))
+    return set()
+
+
+def draw_rich(draw, text, phrase, fnt, size, x, y, max_w, color, spacing, mark, mark_text=None, half=False):
+    """Scrive il testo a capo come draw_lines ed evidenzia `phrase` con un rettangolo colore `mark`.
+    half=True: evidenziatore sulla metà bassa delle lettere (fondo chiaro); altrimenti a tutta altezza
+    con il testo evidenziato in `mark_text` (fondo scuro, per il contrasto)."""
+    words = text.split()
+    marked = _highlight_span(words, phrase)
+    lines, line = [], []
+    for i, w in enumerate(words):
+        test = " ".join(words[j] for j in line + [i])
+        if line and draw.textlength(test, font=fnt) > max_w:
+            lines.append(line)
+            line = [i]
+        else:
+            line.append(i)
+    if line:
+        lines.append(line)
+    space = draw.textlength(" ", font=fnt)
+    for line in lines:
+        xs, cx = {}, x
+        for i in line:
+            xs[i] = (cx, cx + draw.textlength(words[i], font=fnt))
+            cx = xs[i][1] + space
+        run = [i for i in line if i in marked]
+        if run:
+            x0, x1 = xs[run[0]][0] - 8, xs[run[-1]][1] + 8
+            top, bottom = (y + size * .55, y + size * 1.1) if half else (y + size * .08, y + size * 1.16)
+            draw.rectangle((x0, top, x1, bottom), fill=mark)
+        for i in line:
+            fill = mark_text if (i in marked and mark_text and not half) else color
+            draw.text((xs[i][0], y), words[i], font=fnt, fill=fill)
+        y += size * spacing
+    return y
+
+
+def source_line(draw, slide, cfg):
+    """Citazione breve (es. «Bang et al., 2004») sopra il piè di pagina."""
+    if slide.get("source"):
+        f = font("Regular", 26)
+        draw.text((MARGIN, H - 165), f"Source: {slide['source']}"[:80], font=f, fill=cfg["colors"]["muted"])
+
+
+def logo_mark(img, d, x, y, size, fg, bg, cfg):
+    """Logo in alto a sinistra: il file indicato in config «logo_path», altrimenti un monogramma provvisorio."""
+    path = Path(__file__).resolve().parent / (cfg.get("logo_path") or "logo.png")
+    if path.exists():
+        logo = Image.open(path).convert("RGBA")
+        logo.thumbnail((size, size), Image.LANCZOS)
+        img.paste(logo, (x, y), logo)
+        return
+    d.ellipse((x, y, x + size, y + size), fill=fg)
+    f = font("ExtraBold", int(size * 0.34))
+    d.text((x + (size - d.textlength("CRC", font=f)) / 2, y + size * 0.3), "CRC", font=f, fill=bg)
+
+
+def light_canvas(cfg, index, total):
+    c = cfg["colors"]
+    img = Image.new("RGB", (W, H), PAPER)
+    d = ImageDraw.Draw(img)
+    d.rectangle((0, 0, W, 14), fill=c["accent"])
+    foot = font("SemiBold", 30)
+    d.text((MARGIN, H - 110), cfg["handle"], font=foot, fill=INK_MUTED)
+    page = f"{index}/{total}"
+    d.text((W - MARGIN - d.textlength(page, font=foot), H - 110), page, font=foot, fill=INK_MUTED)
+    return img, d
+
+
 def canvas(cfg, index, total):
     c = cfg["colors"]
     img = Image.new("RGB", (W, H), c["background"])
@@ -68,38 +154,45 @@ def canvas(cfg, index, total):
 
 
 def cover(post, cfg, total):
+    """Copertina in negativo: fondo chiaro, logo, etichetta del tema, titolo con evidenziatore."""
     c = cfg["colors"]
-    img, d = canvas(cfg, 1, total)
+    navy = c["background"]
+    img, d = light_canvas(cfg, 1, total)
+    logo_mark(img, d, MARGIN, 120, 72, navy, PAPER, cfg)
+    pill_f = font("Bold", 30)
     label = post.get("category", "Research methods").upper()
-    d.text((MARGIN, 190), label, font=font("Bold", 34), fill=c["accent"])
-    fnt, lines, size = fit(d, post["title"], "ExtraBold", 96, 56, W - 2 * MARGIN, 700, 1.15)
-    y = draw_lines(d, lines, fnt, size, MARGIN, 270, c["text"], 1.15)
-    d.rectangle((MARGIN, y + 40, MARGIN + 140, y + 50), fill=c["accent"])
-    d.text((MARGIN, H - 240), "Swipe  →", font=font("SemiBold", 40), fill=c["text"])
+    pw = d.textlength(label, font=pill_f) + 56
+    d.rounded_rectangle((MARGIN, 236, MARGIN + pw, 296), radius=30, outline=navy, width=3)
+    d.text((MARGIN + 28, 247), label, font=pill_f, fill=navy)
+    fnt, lines, size = fit(d, post["title"], "ExtraBold", 104, 60, W - 2 * MARGIN, 640, 1.12)
+    phrase = post.get("title_highlight") or (lines[-1] if lines else "")
+    draw_rich(d, post["title"], phrase, fnt, size, MARGIN, 350, W - 2 * MARGIN, navy, 1.12, c["accent"], half=True)
+    d.text((MARGIN, H - 240), "Swipe  →", font=font("Bold", 40), fill=navy)
     return img
 
 
 def grant_cover(post, cfg, total):
-    """Copertina dei bandi: etichetta «OPEN CALL», ente, titolo e scadenza ben visibile."""
+    """Copertina dei bandi in negativo: «OPEN CALL», ente, titolo evidenziato e scadenza."""
     c = cfg["colors"]
-    img, d = canvas(cfg, 1, total)
+    navy = c["background"]
+    img, d = light_canvas(cfg, 1, total)
     badge_f = font("ExtraBold", 36)
-    label = "OPEN CALL"
-    bw = d.textlength(label, font=badge_f) + 64
+    bw = d.textlength("OPEN CALL", font=badge_f) + 64
     d.rounded_rectangle((MARGIN, 150, MARGIN + bw, 220), radius=35, fill=c["accent"])
-    d.text((MARGIN + 32, 162), label, font=badge_f, fill=c["background"])
+    d.text((MARGIN + 32, 162), "OPEN CALL", font=badge_f, fill=navy)
     y = 260
     if post.get("funder"):
         ff, fl, fs = fit(d, post["funder"], "SemiBold", 38, 28, W - 2 * MARGIN, 100, 1.25)
-        y = draw_lines(d, fl, ff, fs, MARGIN, y, c["muted_text"], 1.25) + 30
+        y = draw_lines(d, fl, ff, fs, MARGIN, y, INK_MUTED, 1.25) + 30
     box_top = H - 470
     fnt, lines, size = fit(d, post["title"], "ExtraBold", 88, 50, W - 2 * MARGIN, box_top - y - 60, 1.15)
-    draw_lines(d, lines, fnt, size, MARGIN, y, c["text"], 1.15)
+    phrase = post.get("title_highlight") or (lines[-1] if lines else "")
+    draw_rich(d, post["title"], phrase, fnt, size, MARGIN, y, W - 2 * MARGIN, navy, 1.15, c["accent"], half=True)
     if post.get("deadline"):
-        d.rounded_rectangle((MARGIN, box_top, W - MARGIN, box_top + 190), radius=28, outline=c["accent"], width=4)
+        d.rounded_rectangle((MARGIN, box_top, W - MARGIN, box_top + 190), radius=28, fill=navy)
         d.text((MARGIN + 50, box_top + 32), "DEADLINE", font=font("Bold", 30), fill=c["accent"])
-        d.text((MARGIN + 50, box_top + 80), post["deadline"], font=font("ExtraBold", 70), fill=c["text"])
-    d.text((MARGIN, H - 220), "Swipe  →", font=font("SemiBold", 40), fill=c["text"])
+        d.text((MARGIN + 50, box_top + 80), post["deadline"], font=font("ExtraBold", 70), fill="#FFFFFF")
+    d.text((MARGIN, H - 220), "Swipe  →", font=font("Bold", 40), fill=navy)
     return img
 
 
@@ -113,7 +206,9 @@ def content(slide, number, cfg, index, total):
     top = max(150, (H - block) / 2 - 50)   # blocco centrato in verticale
     d.text((MARGIN, top), f"{number:02d}", font=font("ExtraBold", 120), fill=c["accent"])
     y = draw_lines(d, hl, hf, hs, MARGIN, top + 180, c["text"], 1.2) + 40
-    draw_lines(d, bl, bf, bs, MARGIN, y, c["muted_text"], 1.45)
+    draw_rich(d, slide["body"], slide.get("highlight"), bf, bs, MARGIN, y, W - 2 * MARGIN,
+              c["muted_text"], 1.45, c["accent"], c["background"])
+    source_line(d, slide, cfg)
     return img
 
 
@@ -130,7 +225,7 @@ def illustrated(slide, number, cfg, index, total, picture):
     c = cfg["colors"]
     img, d = canvas(cfg, index, total)
     text_w = W - 2 * MARGIN
-    top, bottom = 90, H - 150          # spazio utile tra la barra in alto e il piè di pagina
+    top, bottom = 90, H - (190 if slide.get("source") else 150)   # spazio utile sopra il piè di pagina
 
     d.text((MARGIN, top), f"{number:02d}", font=font("ExtraBold", 72), fill=c["accent"])
     hf, hl, hs = fit(d, slide["heading"], "Bold", 54, 38, text_w, 140, 1.2)
@@ -145,7 +240,9 @@ def illustrated(slide, number, cfg, index, total, picture):
     img.paste(pic, (MARGIN, int(y)), mask)
     d.rounded_rectangle((MARGIN, int(y), W - MARGIN, int(y) + pic_h), radius=28, outline=c["accent"], width=3)
 
-    draw_lines(d, bl, bf, bs, MARGIN, y + pic_h + 40, c["muted_text"], 1.4)
+    draw_rich(d, slide["body"], slide.get("highlight"), bf, bs, MARGIN, y + pic_h + 40, text_w,
+              c["muted_text"], 1.4, c["accent"], c["background"])
+    source_line(d, slide, cfg)
     return img
 
 
@@ -171,19 +268,46 @@ def facts_slide(post, cfg, index, total):
     return img
 
 
+def _bookmark(d, x, y, c, s=46):
+    d.polygon([(x, y), (x + s * .7, y), (x + s * .7, y + s), (x + s * .35, y + s * .72), (x, y + s)], outline=c, width=5)
+
+
+def _plane(d, x, y, c, s=48):
+    d.polygon([(x, y + s * .45), (x + s, y), (x + s * .62, y + s), (x + s * .45, y + s * .58)], outline=c, width=5)
+    d.line([(x + s * .45, y + s * .58), (x + s, y)], fill=c, width=5)
+
+
+def _person_plus(d, x, y, c, s=48):
+    d.ellipse((x + s * .12, y, x + s * .52, y + s * .4), outline=c, width=5)
+    d.arc((x - s * .05, y + s * .45, x + s * .7, y + s * 1.15), 180, 360, fill=c, width=5)
+    d.line([(x + s * .78, y + s * .3), (x + s * 1.1, y + s * .3)], fill=c, width=5)
+    d.line([(x + s * .94, y + s * .14), (x + s * .94, y + s * .46)], fill=c, width=5)
+
+
 def closing(post, cfg, total):
+    """Chiusura in negativo: messaggio da ricordare evidenziato, scheda profilo con Follow / Save / Share."""
     c = cfg["colors"]
-    img, d = canvas(cfg, total, total)
-    d.text((MARGIN, 200), "KEY TAKEAWAY", font=font("Bold", 34), fill=c["accent"])
-    fnt, lines, size = fit(d, post["takeaway"], "Bold", 68, 44, W - 2 * MARGIN, 560, 1.25)
-    y = draw_lines(d, lines, fnt, size, MARGIN, 280, c["text"], 1.25)
-    box_top = max(y + 80, H - 420)
-    line1, line2 = post.get("closing_cta") or ("Save this for your next protocol", None)
-    line2 = line2 or f"Follow {cfg['handle']} for more"
-    d.rounded_rectangle((MARGIN, box_top, W - MARGIN, box_top + 200), radius=28, outline=c["accent"], width=4)
-    f1, l1, s1 = fit(d, line1, "SemiBold", 38, 28, W - 2 * MARGIN - 100, 50, 1.2)
-    d.text((MARGIN + 50, box_top + 45), l1[0], font=f1, fill=c["text"])
-    d.text((MARGIN + 50, box_top + 110), line2, font=font("Regular", 36), fill=c["muted_text"])
+    navy = c["background"]
+    img, d = light_canvas(cfg, total, total)
+    d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 34), fill=DARK_ACCENT.get(c["accent"], navy))
+    card_top = H - 580
+    fnt, lines, size = fit(d, post["takeaway"], "ExtraBold", 72, 44, W - 2 * MARGIN, card_top - 240 - 50, 1.2)
+    draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 240, W - 2 * MARGIN,
+              navy, 1.2, c["accent"], half=True)
+    d.rounded_rectangle((MARGIN, card_top, W - MARGIN, card_top + 420), radius=32, fill=navy)
+    logo_mark(img, d, MARGIN + 50, card_top + 46, 90, c["accent"], navy, cfg)
+    d.text((MARGIN + 165, card_top + 52), cfg["brand_name"], font=font("Bold", 38), fill="#FFFFFF")
+    d.text((MARGIN + 165, card_top + 102), cfg.get("tagline", "Methodology made practical"),
+           font=font("Regular", 30), fill=c["muted_text"])
+    x, ay = MARGIN + 50, card_top + 200
+    for icon, label in ((_person_plus, "Follow"), (_bookmark, "Save"), (_plane, "Share")):
+        icon(d, x, ay, c["accent"])
+        d.text((x, ay + 74), label, font=font("SemiBold", 30), fill="#FFFFFF")
+        x += 270
+    cta1, cta2 = post.get("closing_cta") or ("Save it for your next protocol", None)
+    cta = cta1 + (f" · {cta2}" if cta2 else "")
+    cf, cl, cs = fit(d, cta, "Regular", 28, 22, W - 2 * MARGIN - 100, 40, 1.2)
+    d.text((MARGIN + 50, card_top + 345), cl[0], font=cf, fill=c["muted_text"])
     return img
 
 
