@@ -4,34 +4,52 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Open calls · Clinical Research Chaos</title>
-<meta name="description" content="Open research funding calls shared by @clinicalresearchchaos, with links to the official calls.">
+<meta name="description" content="Open research funding calls checked against the official call text, grouped by funding programme.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root { --bg: #0E2233; --card: #15304A; --text: #FFFFFF; --muted: #7F96AB; --soft: #D3DEE8; --accent: #FFB547; --teal: #3DD9C1; }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }
   .bar { height: 6px; background: var(--accent); }
-  main { max-width: 640px; margin: 0 auto; padding: 28px 16px 48px; }
+  main { max-width: 680px; margin: 0 auto; padding: 28px 16px 48px; }
   .badge { display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
            letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; }
   h1 { font-size: 30px; font-weight: 800; margin: 14px 0 6px; line-height: 1.15; }
-  .intro { color: var(--soft); margin: 0 0 26px; font-size: 15px; }
-  .call { background: var(--card); border-radius: 18px; padding: 20px; margin-bottom: 16px; border-left: 4px solid var(--accent); }
+  .intro { color: var(--soft); margin: 0 0 18px; font-size: 15px; }
+  nav.jump { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 30px; }
+  nav.jump a { color: var(--text); text-decoration: none; border: 1px solid var(--muted); border-radius: 999px;
+               padding: 8px 14px; font-size: 14px; font-weight: 600; }
+  nav.jump a b { color: var(--accent); }
+  section.macro { margin-top: 34px; }
+  section.macro > h2 { font-size: 23px; font-weight: 800; margin: 0 0 4px; }
+  section.macro > p { color: var(--soft); font-size: 14px; margin: 0 0 18px; }
+  h3.prog { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: var(--accent);
+            margin: 28px 0 10px; display: flex; justify-content: space-between; gap: 10px; }
+  h3.prog span { color: var(--muted); font-weight: 600; }
+  .call { background: var(--card); border-radius: 18px; padding: 20px; margin-bottom: 14px; border-left: 4px solid var(--accent); }
+  .call.other { border-left-color: var(--teal); }
   .funder { color: var(--soft); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-  .call h2 { font-size: 19px; margin: 0 0 14px; line-height: 1.3; }
-  .summary { color: var(--soft); font-size: 15px; margin: -4px 0 12px; }
-  .evidence { font-size: 13px; color: var(--soft); border-left: 2px solid var(--muted); padding-left: 10px; margin: 0 0 16px; font-style: italic; }
-  .evidence span { display: block; font-style: normal; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-size: 11px; margin-bottom: 2px; }
+  .tag { display: inline-block; background: var(--teal); color: var(--bg); font-size: 11px; font-weight: 800;
+         letter-spacing: .05em; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }
+  .call h4 { font-size: 18px; margin: 0 0 10px; line-height: 1.3; }
+  .summary { color: var(--soft); font-size: 15px; margin: 0 0 12px; }
+  .countries { font-size: 14px; margin: 0 0 4px; }
+  .countries b { color: var(--soft); font-weight: 600; }
+  details { font-size: 13px; color: var(--soft); margin: 0 0 14px; }
+  details summary { cursor: pointer; color: var(--muted); }
+  details p { border-left: 2px solid var(--muted); padding-left: 10px; margin: 8px 0 0; font-style: italic; }
   .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
   .deadline { font-size: 14px; color: var(--soft); }
   .deadline b { color: var(--text); font-size: 16px; }
   .soon { color: var(--accent); font-weight: 800; font-size: 12px; margin-left: 6px; }
   a.btn { background: var(--accent); color: var(--bg); text-decoration: none; font-weight: 800; font-size: 15px;
            padding: 11px 18px; border-radius: 12px; }
-  a.btn:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+  .call.other a.btn { background: var(--teal); }
+  a.btn:focus-visible, nav.jump a:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
   .empty { color: var(--soft); background: var(--card); border-radius: 18px; padding: 22px; }
-  footer { color: var(--muted); font-size: 13px; margin-top: 30px; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 36px; }
   footer a { color: var(--teal); }
 </style>
 </head>
@@ -40,10 +58,111 @@
 <main>
   <span class="badge">OPEN CALLS</span>
   <h1>Research funding calls</h1>
-  <p class="intro">Calls featured on @clinicalresearchchaos, sorted by deadline. Closed calls are removed automatically.</p>
-  <p class="empty">No open calls right now. New calls are shared every Wednesday and Saturday.</p>
+  <p class="intro">Open calls for clinical and rehabilitation research, each checked against the official call text.
+  Grouped by funding programme and sorted by deadline. Closed calls are removed automatically.</p>
+  <nav class="jump"><a href="#italy">Open to Italian institutions <b>1</b></a><a href="#other">Other calls <b>7</b></a></nav>
+  <section class="macro" id="italy">
+    <h2>Open to Italian institutions</h2>
+    <p>The official call explicitly allows organisations based in Italy (directly, as EU Member State, or as any country).</p>
+    <h3 class="prog">NIH – US National Institutes of Health <span>1</span></h3>
+    <article class="call ">
+      <div class="funder">UG3/UH3 Exploratory/Developmental Phased Award</div>
+      <h4>Seamless Early-Stage Clinical Drug Development (Phase 1 to 2a) for Novel therapeutic Agents for AD/ADRD</h4>
+      <p class="summary">This funding opportunity supports the early-stage clinical drug development of novel, non-amyloid and non-tau therapeutic candidates for Alzheimer&#x27;s disease and related dementias. It funds phased projects that bundle phase 1 clinical trials (UG3) with phase 1b/2a trials (UH3) to evaluate safety, dosing, pharmacokinetics, and target engagement. Applications are open to higher education institutions, nonprofits, for-profit businesses, and foreign non-U.S. organizations.</p>
+      <p class="countries"><b>Eligible countries:</b> Any country (non-US organisations eligible)</p>
+      <details><summary>From the official call</summary><p>&ldquo;Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.&rdquo;</p></details>
+      <div class="row">
+        <div class="deadline">Deadline <b>19 Nov 2026</b></div>
+        <a class="btn" href="https://www.grants.gov/search-results-detail/357343" target="_blank" rel="noopener">Official call &rarr;</a>
+      </div>
+    </article>
+  </section>
+  <section class="macro" id="other">
+    <h2>Other calls</h2>
+    <p>Calls restricted to other countries, or where the official text does not state whether Italian organisations can apply.</p>
+    <h3 class="prog">Michael J. Fox Foundation <span>1</span></h3>
+    <article class="call other">
+      <div class="funder">Bridge Funding for Disrupted Neurodegenerative Research (BFDN) grant program</div>
+      <h4>Bridge Funding for Disrupted Neurodegenerative Research Grant Program (BFDN) Powering the Next Generation of Research</h4>
+      <p class="summary">This program supports early-career investigators whose research projects on Alzheimer&#x27;s, Parkinson&#x27;s, and related neurodegenerative disorders were disrupted by operational or priority changes in U.S. federal funding. Grants provide up to $250,000 for 3 to 12 months to cover salary and direct research costs, requiring up to 25% institutional cost-sharing. Eligible principal investigators must meet NIH Early Stage Investigator definitions (or be within seven years of designation) and have experienced specific disruptions to federal grants.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>30 Oct 2026</b><span class="soon">CLOSING SOON</span></div>
+        <a class="btn" href="https://www.michaeljfox.org/grant/bridge-funding-disrupted-neurodegenerative-research-grant-program-bfdn-powering-next" target="_blank" rel="noopener">Official call &rarr;</a>
+      </div>
+    </article>
+    <h3 class="prog">US Department of Defense – CDMRP <span>6</span></h3>
+    <article class="call other">
+      <div class="funder">Parkinson’s Research Program</div>
+      <h4>DoW Parkinson&#x27;s, Early Investigator Research Award</h4>
+      <p class="summary">The FY26 Parkinson’s Research Program Early Investigator Research Award supports Parkinson’s disease research by investigators in the early stages of their careers. Proposed research must address at least one of four program focus areas; clinical trials are not allowed. Two funding levels are offered: Funding Level 1 for fellows (requiring guidance from an experienced mentor) and Funding Level 2 for early-career independent investigators (requiring preliminary data). Applicant eligibility is unrestricted.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>6 Nov 2026</b><span class="soon">CLOSING SOON</span></div>
+        <a class="btn" href="https://www.grants.gov/search-results-detail/362866" target="_blank" rel="noopener">Official call &rarr;</a>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">Parkinson’s Research Program (PRP)</div>
+      <h4>DoW Parkinson&#x27;s, Investigator-Initiated Research Award</h4>
+      <p class="summary">The FY26 Parkinson’s Research Program Investigator-Initiated Research Award supports rigorous, multidisciplinary research projects with the potential to make significant contributions to Parkinson’s disease research. Projects must address at least one FY26 PRP focus area, with clinical trials allowed and preliminary data required. Eligibility is unrestricted by entity type, and applications may include a Partnering Principal Investigator option with one initiating PI and up to two partnering PIs.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>6 Nov 2026</b><span class="soon">CLOSING SOON</span></div>
+        <a class="btn" href="https://www.grants.gov/search-results-detail/362868" target="_blank" rel="noopener">Official call &rarr;</a>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">Spinal Cord Injury Research Program (SCIRP)</div>
+      <h4>DoW Spinal Cord Injury, Translational Research Award</h4>
+      <p class="summary">The FY26 Spinal Cord Injury Research Program Translational Research Award supports translational research aimed at moving promising ideas into clinical applications for spinal cord injury. Funding supports translational projects, including an Early-Career Partnership Option with two principal investigators. Applications must include at least one community partner with lived experience. Eligible applicant types are unrestricted, open to any type of entity subject to clarification in the full announcement.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>12 Nov 2026</b></div>
+        <a class="btn" href="https://www.grants.gov/search-results-detail/362222" target="_blank" rel="noopener">Official call &rarr;</a>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">Spinal Cord Injury Research Program (SCIRP)</div>
+      <h4>DoW Spinal Cord Injury, Clinical Trial Award</h4>
+      <p class="summary">The Spinal Cord Injury Research Program Clinical Trial Award supports the rapid implementation of clinical trials with the potential to significantly impact the treatment or management of spinal cord injury. Funding supports clinical trials, featuring an Early-Career Partnership Option that allows two Principal Investigators. Applications are open to unrestricted applicant types, but must include at least two spinal cord injury community partners who provide consultation and advice throughout the project.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>12 Nov 2026</b></div>
+        <a class="btn" href="https://www.grants.gov/search-results-detail/362224" target="_blank" rel="noopener">Official call &rarr;</a>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">Spinal Cord Injury Research Program (SCIRP)</div>
+      <h4>DoW Spinal Cord Injury, Clinical Translation Research Award</h4>
+      <p class="summary">The FY26 Spinal Cord Injury Research Program Clinical Translation Research Award supports high-impact, new, or emerging clinical research requiring preliminary studies—such as feasibility, pilot, or optimization—to prepare for future larger-scale clinical trials or implementation. It aims to accelerate translation of interventions into clinical use and improve diagnosis, treatment, and rehabilitation options. Applicant types are unrestricted, with mandatory inclusion of at least two spinal cord injury community partners.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>12 Nov 2026</b></div>
+        <a class="btn" href="https://www.grants.gov/search-results-detail/362225" target="_blank" rel="noopener">Official call &rarr;</a>
+      </div>
+    </article>
+    <article class="call other">
+      <div class="funder">Spinal Cord Injury Research Program (SCIRP)</div>
+      <h4>DoW Spinal Cord Injury, Investigator-Initiated Research Award</h4>
+      <p class="summary">The FY26 Spinal Cord Injury Research Program Investigator-Initiated Research Award supports studies that make significant contributions to spinal cord injury research, patient care, or quality of life. Funding covers projects across basic through translational science, while studies solely identifying intervention targets are discouraged. Eligible applicant types are unrestricted. Additionally, an Early-Career Partnership Option allows two Principal Investigators to submit applications, provided at least one is an early-career investigator.</p>
+      <p class="countries"><b>Eligible countries:</b> Not stated in the official text: check the call</p>
+      
+      <div class="row">
+        <div class="deadline">Deadline <b>12 Nov 2026</b></div>
+        <a class="btn" href="https://www.grants.gov/search-results-detail/362226" target="_blank" rel="noopener">Official call &rarr;</a>
+      </div>
+    </article>
+  </section>
   <footer>
-    Details are compiled automatically: always check eligibility, amounts and dates in the official call.<br>
+    Calls collected by our monitoring and checked automatically against the official text: always verify eligibility,
+    amounts and dates in the official call before applying.<br>
     Updated 21 Oct 2026 · <a href="https://www.instagram.com/clinicalresearchchaos/">@clinicalresearchchaos on Instagram</a>
   </footer>
 </main>
