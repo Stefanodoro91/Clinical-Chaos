@@ -2,6 +2,10 @@
 
 from datetime import date, datetime, timedelta
 
+import json
+import re
+from html import unescape
+
 import requests
 
 import content
@@ -10,35 +14,50 @@ DEFAULT_URL = "https://raw.githubusercontent.com/Stefanodoro91/GrantFinder/main/
 RELEVANCE_ORDER = {"Alta": 0, "Media": 1}
 
 PROMPT = """You write an Instagram carousel for "{brand}", a page for researchers and health professionals
-about clinical research and research methodology. The post informs followers about ONE open research
-funding call. Below are the data collected automatically about the call (some fields are in Italian).
+about clinical research and research methodology. The post informs followers about ONE research funding
+call. Below is the OFFICIAL TEXT of the call, followed by a few catalogue data.
 
 STRICT ACCURACY RULES:
-- Use ONLY the information in the data. Translate and rephrase, but never add facts, numbers, dates,
-  amounts, eligibility rules or requirements that are not in the data.
+- Use ONLY the official text. Translate and rephrase, but never add facts, numbers, dates, amounts,
+  eligibility rules or requirements that are not in it.
 - Do not write the deadline, amounts or the funder's name in the slides: they are added separately.
-- If a field is empty or says "not indicated", do not guess it.
 
-Write IN ENGLISH:
+FIRST check eligibility for an organisation based in Italy:
+- italy_eligible: "yes" only if the official text explicitly allows organisations from Italy, from any
+  country, from non-US/foreign countries, or from a group of countries that includes Italy (e.g. EU
+  Member States) to apply or receive funding as applicant/beneficiary. "no" if it excludes foreign or
+  non-domestic organisations or restricts applicants to other countries. "unclear" otherwise.
+  "Foreign components" of US organisations or a bare list of applicant types are NOT enough for "yes".
+- italy_evidence: the sentence from the official text, copied word for word, that justifies the answer
+  ("" if unclear).
+
+Then write IN ENGLISH:
+- summary: 50-80 words, factual and neutral: aim of the call, what is funded, who can apply. For a
+  public web page listing calls; no hype.
 - title: a clear hook for the cover, max 70 characters, mentioning the research area (no deadline).
-- slides: exactly 2 slides. Slide 1 heading "What it funds": the aim and the kind of projects funded.
-  Slide 2 heading "Who it is for": the applicants and teams it targets and why it matters for
-  clinical/rehabilitation research. Each body max 220 characters.
+- slides: exactly 2 slides. Slide 1 heading "What it funds": aim and kind of projects funded.
+  Slide 2 heading "Who it is for": applicants and teams it targets. Each body max 220 characters.
   Each slide also has image_prompt: 15-35 words describing ONE simple illustration of the slide's idea
   (concrete scene with 2-4 recognizable elements; no text, letters, numbers, logos or real people).
-- eligibility: who can apply, max 120 characters (from "chi_puo", "paesi", "partenariato").
-- coverage: funding coverage in a few words (e.g. "Fully funded"), or "" if not indicated.
+- eligibility: who can apply, max 120 characters.
+- coverage: funding coverage in a few words (e.g. "Fully funded"), or "" if not stated.
 - takeaway: one sentence on why this call is worth a look, max 120 characters.
 - caption: 2-4 short lines with context; end with a question inviting researchers to share whether they
   plan to apply or know similar calls. Max 600 characters, no hashtags, no links.
 - hashtags: 6-10 specific hashtags (e.g. #ResearchFunding #GrantOpportunity #Neurorehabilitation).
 
-Call data:
+OFFICIAL TEXT ({source}):
+{official}
+
+CATALOGUE DATA (may be in Italian, less reliable than the official text):
 {data}"""
 
 SCHEMA = {
     "type": "OBJECT",
     "properties": {
+        "italy_eligible": {"type": "STRING", "enum": ["yes", "no", "unclear"]},
+        "italy_evidence": {"type": "STRING"},
+        "summary": {"type": "STRING"},
         "title": {"type": "STRING"},
         "slides": {
             "type": "ARRAY",
@@ -55,7 +74,8 @@ SCHEMA = {
         "caption": {"type": "STRING"},
         "hashtags": {"type": "ARRAY", "items": {"type": "STRING"}},
     },
-    "required": ["title", "slides", "eligibility", "takeaway", "caption", "hashtags"],
+    "required": ["italy_eligible", "italy_evidence", "summary", "title", "slides", "eligibility",
+                 "takeaway", "caption", "hashtags"],
 }
 
 FIELDS = ["titolo", "titolo_it", "ente", "programma", "sommario", "macrogruppi", "tipo_bando", "tipo_ricerca",
@@ -124,10 +144,83 @@ def funder_line(g):
     return ente or prog
 
 
+# ---------------------------------------------------------------- testo ufficiale della call
+NIH_GUIDE = "https://grants.nih.gov/grants/guide/{folder}/{number}.html"
+NIH_NUMBER = re.compile(r"\b((?:RFA|PAR|PAS|PA|NOT|OTA)-(?:[A-Z]{2}-)?\d{2}-\d{3})\b", re.I)
+NIH_FOREIGN = re.compile(
+    r"non-?domestic\s*\(non-?u\.?s\.?\)\s*entities\s*\(foreign\s+(?:organi[sz]ations|institutions)\)\s*"
+    r"(?:are|is)\s+(not\s+)?(?:eligible|allowed|permitted)[^.]*\.", re.I)
+EU_SEARCH = "https://api.tech.ec.europa.eu/search-api/prod/rest/search"
+# programmi UE in cui gli enti con sede in uno Stato membro (quindi anche in Italia) sono ammessi per regola
+EU_MEMBER_STATE_PROGRAMMES = ("HORIZON-", "EU4H-", "DIGITAL-")
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; ClinicalResearchChaosBot/1.0)"}
+
+
+def html_to_text(h):
+    h = re.sub(r"(?is)<(script|style|noscript)[^>]*>.*?</\1>", " ", h or "")
+    h = re.sub(r"(?i)<br\s*/?>|</(p|div|li|h\d|tr)>", ". ", h)
+    return re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", h))).strip()
+
+
+def _get(url):
+    r = requests.get(url, headers=HEADERS, timeout=45)
+    r.raise_for_status()
+    return r.text
+
+
+def official_text(g):
+    """(testo ufficiale, descrizione della fonte). Solleva un'eccezione se non si riesce a leggerlo."""
+    gid = g.get("id", "")
+    m = NIH_NUMBER.search(g.get("programma") or "") or NIH_NUMBER.search(gid)
+    if m:
+        number = m.group(1).upper()
+        folder = {"RFA": "rfa-files", "NOT": "notice-files", "OTA": "notice-files"}.get(number.split("-")[0], "pa-files")
+        url = NIH_GUIDE.format(folder=folder, number=number)
+        return html_to_text(_get(url)), f"NIH Guide {number}", url
+    if gid.startswith("EU-") and "topic-details" in (g.get("url") or ""):
+        topic = gid[3:]
+        files = {"languages": (None, json.dumps(["en"]), "application/json")}
+        r = requests.post(EU_SEARCH, params={"apiKey": "SEDIA", "text": f'"{topic}"', "pageSize": 20},
+                          files=files, headers=HEADERS, timeout=60)
+        r.raise_for_status()
+        for v in r.json().get("results") or []:
+            meta = v.get("metadata") or {}
+            if topic in (meta.get("identifier") or []):
+                desc = (meta.get("descriptionByte") or [""])[0]
+                return html_to_text(desc), f"EU Funding & Tenders Portal, topic {topic}", g["url"]
+        raise RuntimeError(f"topic {topic} non trovato nel portale UE")
+    return html_to_text(_get(g["url"])), "official call page", g["url"]
+
+
+def _simple(x):
+    return re.sub(r"[^a-z0-9]+", " ", (x or "").lower()).strip()
+
+
+def check_italy(g, text, out):
+    """(True/False, frase di prova). Regole deterministiche prima, poi la frase citata da Gemini verificata nel testo."""
+    m = NIH_FOREIGN.search(text)
+    if m:                                    # la frase ufficiale NIH decide in ogni caso
+        return (not m.group(1)), m.group(0).strip()
+    gid = g.get("id", "")
+    if gid.startswith("EU-") and gid[3:].upper().startswith(EU_MEMBER_STATE_PROGRAMMES):
+        return True, "EU programme: legal entities established in EU Member States, including Italy, are eligible."
+    ev = (out.get("italy_evidence") or "").strip()
+    if out.get("italy_eligible") == "yes" and len(ev) >= 25 and _simple(ev) in _simple(text):
+        return True, ev
+    return False, ev
+
+
 def build_post(g, cfg):
     """Prepara il post (stesso formato dei post di metodologia, più i dati chiave) per un bando."""
+    text, source, source_url = official_text(g)
+    if len(text) < 400:
+        raise RuntimeError(f"testo ufficiale troppo breve ({len(text)} caratteri) da {source}")
     data = "\n".join(f"{k}: {g.get(k)}" for k in FIELDS if g.get(k))
-    out = content.gemini_json([{"text": PROMPT.format(brand=cfg["brand_name"], data=data)}], SCHEMA, 0.3)
+    prompt = PROMPT.format(brand=cfg["brand_name"], data=data, source=source, official=text[:60000])
+    out = content.gemini_json([{"text": prompt}], SCHEMA, 0.2)
+    ok, evidence = check_italy(g, text, out)
+    if not ok:
+        raise RuntimeError(f"Italia non confermata dal testo ufficiale ({source}): {evidence[:200] or 'nessuna frase'}")
     clip = content._clip
     slides = [{"heading": clip(s.get("heading", ""), 70), "body": clip(s.get("body", ""), 320),
                "image_prompt": clip(s.get("image_prompt", ""), 300)}
@@ -173,6 +266,9 @@ def build_post(g, cfg):
         "closing_cta": ("Check the official call before applying", "Clickable link in bio"),
         "caption": caption,
         "hashtags": ["#ResearchFunding", "#GrantOpportunity"] + tags[:10],
+        "summary": clip(out.get("summary", ""), 700),
+        "italy_evidence": clip(evidence, 300),
+        "official_source": source,
         "source": "GrantFinder",
         "source_hint": g.get("fonte", ""),
     }
@@ -192,12 +288,14 @@ def next_grant_post(posted, cfg):
     except Exception as e:
         print(f"GrantFinder non raggiungibile: {e}")
         return None
-    print(f"Bandi pubblicabili da GrantFinder: {len(pool)}")
-    for g in pool[:3]:   # se Gemini fallisce su un bando prova il successivo
+    print(f"Bandi candidati da GrantFinder: {len(pool)}")
+    for g in pool[:5]:   # se un bando non supera la verifica si passa al successivo
         try:
-            return build_post(g, cfg)
+            post = build_post(g, cfg)
+            print(f"::notice title=Bando verificato::{g['id']} - {post['official_source']} - {post['italy_evidence'][:200]}")
+            return post
         except Exception as e:
-            print(f"Post del bando {g['id']} non generato: {e}")
+            print(f"::warning title=Bando scartato::{g['id']} - {str(e)[:300]}")
     return None
 
 
@@ -224,6 +322,9 @@ PAGE = """<!doctype html>
   .call {{ background: var(--card); border-radius: 18px; padding: 20px; margin-bottom: 16px; border-left: 4px solid var(--accent); }}
   .funder {{ color: var(--soft); font-size: 13px; font-weight: 600; margin-bottom: 6px; }}
   .call h2 {{ font-size: 19px; margin: 0 0 14px; line-height: 1.3; }}
+  .summary {{ color: var(--soft); font-size: 15px; margin: -4px 0 12px; }}
+  .evidence {{ font-size: 13px; color: var(--soft); border-left: 2px solid var(--muted); padding-left: 10px; margin: 0 0 16px; font-style: italic; }}
+  .evidence span {{ display: block; font-style: normal; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-size: 11px; margin-bottom: 2px; }}
   .row {{ display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }}
   .deadline {{ font-size: 14px; color: var(--soft); }}
   .deadline b {{ color: var(--text); font-size: 16px; }}
@@ -260,7 +361,8 @@ def build_page(posted, cfg, today=None):
     calls, seen = [], set()
     for p in posted:
         d = _date(p.get("deadline"))
-        if p.get("kind") == "grant" and p.get("url") and d and d >= today and p["grant_id"] not in seen:
+        if (p.get("kind") == "grant" and p.get("url") and d and d >= today and p["grant_id"] not in seen
+                and not p.get("withdrawn")):
             seen.add(p["grant_id"])
             calls.append((d, p))
     calls.sort(key=lambda x: x[0])
@@ -270,6 +372,8 @@ def build_page(posted, cfg, today=None):
         items.append(f"""  <article class="call">
     <div class="funder">{escape(p.get("funder", ""))}</div>
     <h2>{escape(p["title"])}</h2>
+    {f'<p class="summary">{escape(p["summary"])}</p>' if p.get("summary") else ""}
+    {f'<p class="evidence"><span>Eligibility check</span> &ldquo;{escape(p["italy_evidence"])}&rdquo;</p>' if p.get("italy_evidence") else ""}
     <div class="row">
       <div class="deadline">Deadline <b>{_fmt_date(d)}</b>{soon}</div>
       <a class="btn" href="{escape(p["url"], quote=True)}" target="_blank" rel="noopener">Official call &rarr;</a>

@@ -34,7 +34,9 @@
     "grant_id": "GG-RFA-DA-28-011",
     "url": "https://www.grants.gov/search-results-detail/360048",
     "deadline": "2027-01-26",
-    "funder": "National Institutes of Health"
+    "funder": "National Institutes of Health",
+    "withdrawn": true,
+    "withdrawn_reason": "Foreign organizations not eligible according to the full NOFO (GrantFinder false positive)"
   },
   {
     "date": "2026-10-20",

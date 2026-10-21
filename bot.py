@@ -278,7 +278,9 @@ def main():
                    "id": post["id"], "title": post["title"],
                    "source": post["source"], "media_id": media_id,
                    **({"kind": "grant", "grant_id": post["grant_id"], "url": post["url"],
-                       "deadline": post["deadline_iso"], "funder": post.get("funder", "")}
+                       "deadline": post["deadline_iso"], "funder": post.get("funder", ""),
+                       "summary": post.get("summary", ""), "italy_evidence": post.get("italy_evidence", ""),
+                       "official_source": post.get("official_source", "")}
                       if post.get("kind") == "grant" else {})})
     save(QUEUE_FILE, queue)
     save(POSTED_FILE, posted)
