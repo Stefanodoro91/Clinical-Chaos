@@ -303,6 +303,28 @@ def main():
                f"Restano {len(queue)} post in coda. Aggiungi nuovo materiale nella cartella Drive.")
 
 
+def check_token():
+    """Scadenza e permessi del token Instagram (senza mostrarlo). Avvisa via issue se scade entro 14 giorni."""
+    token = os.environ["IG_ACCESS_TOKEN"]
+    r = requests.get(f"https://graph.facebook.com/{GRAPH_VERSION}/debug_token",
+                     params={"input_token": token, "access_token": token}, timeout=30)
+    data = r.json().get("data", {}) if r.ok else {}
+    if not data:
+        print(f"::error title=Token Instagram::Controllo non riuscito ({r.status_code}): {r.text[:200]}")
+        notify("Token Instagram non valido", "Il controllo del token non è riuscito: probabilmente è scaduto o revocato.")
+        sys.exit(1)
+    def when(ts):
+        return "mai" if not ts else datetime.fromtimestamp(ts, timezone.utc).strftime("%Y-%m-%d")
+    exp, access = data.get("expires_at", 0), data.get("data_access_expires_at", 0)
+    scopes = ", ".join(sorted(data.get("scopes", [])))
+    print(f"::notice title=Token Instagram::valido: {data.get('is_valid')} | tipo: {data.get('type')} | "
+          f"scade: {when(exp)} | accesso ai dati fino al: {when(access)} | permessi: {scopes}")
+    days = [(t - time.time()) / 86400 for t in (exp, access) if t]
+    if not data.get("is_valid") or (days and min(days) < 14):
+        notify("Il token Instagram sta per scadere",
+               f"Scadenza: {when(exp)}; accesso ai dati fino al {when(access)}. Genera un nuovo token e aggiorna il secret IG_ACCESS_TOKEN.")
+
+
 def update_grants(posted=None, verify_limit=None):
     """Verifica sul testo ufficiale i bandi nuovi di GrantFinder e rigenera la pagina «link in bio»."""
     posted = posted if posted is not None else load(POSTED_FILE, [])
@@ -403,6 +425,8 @@ if __name__ == "__main__":
         status()
     elif "--rebuild" in sys.argv:
         rebuild()
+    elif "--token" in sys.argv:
+        check_token()
     elif "--grants" in sys.argv:
         update_grants(verify_limit=int(os.environ.get("GRANT_VERIFY_LIMIT") or 0) or None)
     else:
