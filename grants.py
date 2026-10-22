@@ -700,6 +700,22 @@ PAGE = """<!doctype html>
   .call.other a.btn {{ background: var(--teal); }}
   a.btn:focus-visible, nav.jump a:focus-visible {{ outline: 3px solid var(--text); outline-offset: 2px; }}
   .empty {{ color: var(--soft); background: var(--card); border-radius: 18px; padding: 22px; }}
+  form.filters {{ background: var(--card); border-radius: 18px; padding: 16px; margin: 0 0 8px; display: grid; gap: 10px;
+                 grid-template-columns: 1fr 1fr; }}
+  form.filters label {{ display: grid; gap: 4px; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+                       color: var(--muted); }}
+  form.filters label.wide {{ grid-column: 1 / -1; }}
+  form.filters input, form.filters select {{ font: 500 15px Inter, system-ui, sans-serif; color: var(--text); background: var(--bg);
+                       border: 1px solid var(--muted); border-radius: 10px; padding: 10px 12px; width: 100%; }}
+  form.filters input:focus-visible, form.filters select:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 1px; }}
+  form.filters .status {{ grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+                         font-size: 14px; color: var(--soft); }}
+  form.filters button {{ background: transparent; color: var(--text); border: 1px solid var(--muted); border-radius: 999px;
+                        padding: 6px 12px; font: 600 13px Inter, system-ui, sans-serif; cursor: pointer; }}
+  form.filters button[hidden] {{ display: none; }}
+  @media (max-width: 520px) {{ form.filters {{ grid-template-columns: 1fr; }} }}
+  .nomatch {{ color: var(--soft); background: var(--card); border-radius: 18px; padding: 18px 20px; font-size: 15px; }}
+  [hidden] {{ display: none !important; }}
   footer {{ color: var(--muted); font-size: 13px; margin-top: 36px; }}
   footer a {{ color: var(--teal); }}
 </style>
@@ -715,6 +731,7 @@ PAGE = """<!doctype html>
   Each call is checked against its official text; grouped by region and funding programme, sorted by deadline.
   Closed calls are removed automatically.</p>
   <nav class="jump">{nav}</nav>
+{filters}
   <section class="macro" id="italy">
     <h2>Open to Italian institutions</h2>
     <p>The official call explicitly allows organisations based in Italy (directly, as EU Member State, or as any country).</p>
@@ -809,7 +826,11 @@ def build_page(grants_list, verified, posted, cfg, today=None):
         title = v.get("title") or g.get("titolo") or ""
         share = share_button(site_url(cfg, "calls#" + card_anchor(g["id"])),
                              f"Funding call: {title}" + (f" (deadline {_fmt_date(d)})" if d else ""))
-        return f"""    <article class="call {css}" id="{card_anchor(g["id"])}">
+        words = " ".join(x for x in (title, v.get("programme"), programme_detail(g), v.get("summary"),
+                                     v.get("eligible_countries"), g.get("ente"), g.get("titolo")) if x).lower()
+        attrs = (f'data-region="{escape(region(g, v, cfg), quote=True)}" data-italy="{"yes" if v.get("italy") == "yes" else "no"}" '
+                 f'data-deadline="{d.isoformat() if d else ""}" data-text="{escape(words, quote=True)}"')
+        return f"""    <article class="call {css}" id="{card_anchor(g["id"])}" {attrs}>
       <div class="funder">{escape(v.get("programme") or programme_detail(g))}{tag}</div>
       <h4>{escape(title)}</h4>
       {body}
@@ -823,8 +844,9 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     def programmes(items, css):
         parts = []
         for prog, group in _group(items):
-            parts.append(f'    <h3 class="prog">{escape(prog)} <span>{len(group)}</span></h3>')
+            parts.append(f'    <div class="grp">\n    <h3 class="prog">{escape(prog)} <span>{len(group)}</span></h3>')
             parts += [card(g, v, d, css) for g, v, d in group]
+            parts.append('    </div>')
         return "\n".join(parts)
 
     def slug(r):
@@ -834,8 +856,9 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     other_parts = []
     for r in REGIONS:
         if by_region[r]:
-            other_parts.append(f'    <h2 class="region" id="{slug(r)}">{escape(r)} <span>{len(by_region[r])}</span></h2>')
+            other_parts.append(f'    <div class="reg">\n    <h2 class="region" id="{slug(r)}">{escape(r)} <span>{len(by_region[r])}</span></h2>')
             other_parts.append(programmes(by_region[r], "other"))
+            other_parts.append('    </div>')
     other_html = "\n".join(other_parts) or '    <p class="empty">No other calls right now.</p>'
     nav = [f'<a href="#italy">Open to Italy <b>{len(italy)}</b></a>']
     nav += [f'<a href="#{slug(r)}">{escape(r)} <b>{len(by_region[r])}</b></a>' for r in REGIONS if by_region[r]]
@@ -843,7 +866,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
                        accent=cfg.get("grant_accent", "#FFB547"), nav="".join(nav),
-                       italy=italy_html, other=other_html, updated=_fmt_date(today),
+                       italy=italy_html, other=other_html, updated=_fmt_date(today), filters=filters_form(entries),
                        og=og_tags(cfg, f"Open research funding calls · {cfg['brand_name']}",
                                   "Open funding calls for clinical and rehabilitation research, checked on the official call text.",
                                   "calls"))
@@ -922,6 +945,74 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None):
                        calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
                                   "and rehabilitation research, checked on the official texts.", ""))
+
+
+def filters_form(entries):
+    """Riquadro dei filtri della pagina bandi (parola chiave, area, scadenza): gratis per tutti, funziona nel browser."""
+    from html import escape
+    regions = "".join(f'<option value="{escape(r, quote=True)}">{escape(r)}</option>' for r in REGIONS)
+    return f"""  <form class="filters" role="search" aria-label="Filter calls" onsubmit="return false">
+    <label class="wide">Search<input type="search" name="q" placeholder="Keyword, funder, programme or country (e.g. stroke, NIH, Germany)" autocomplete="off"></label>
+    <label>Applicants based in<select name="where"><option value="">Anywhere</option><option value="italy">Italy (open to Italian institutions)</option>{regions}</select></label>
+    <label>Deadline<select name="time"><option value="">Any deadline</option><option value="lt30">Closing within 30 days</option>
+      <option value="ge30">At least 30 days left</option><option value="ge60">At least 60 days left</option><option value="ge90">At least 90 days left</option></select></label>
+    <div class="status"><span class="count" aria-live="polite">{len(entries)} open calls</span><button type="reset" hidden>Clear filters</button></div>
+  </form>
+"""
+
+
+FILTER_SCRIPT = """
+<script>
+(function () {
+  var form = document.querySelector("form.filters");
+  if (!form) return;
+  var cards = Array.prototype.slice.call(document.querySelectorAll("article.call"));
+  var count = form.querySelector(".count"), reset = form.querySelector("button[type=reset]"), total = cards.length;
+  var DAY = 86400000, today = new Date(); today.setHours(0, 0, 0, 0);
+  function norm(t) { return (t || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, ""); }
+  cards.forEach(function (c) { c._text = norm(c.dataset.text); });
+  function apply(save) {
+    var q = norm(form.q.value).trim(), where = form.where.value, time = form.time.value, words = q ? q.split(/\\s+/) : [], shown = 0;
+    cards.forEach(function (c) {
+      var ok = words.every(function (w) { return c._text.indexOf(w) !== -1; });
+      if (ok && where === "italy") ok = c.dataset.italy === "yes";
+      else if (ok && where) ok = c.dataset.region === where || (where !== "International & intercontinental" && c.dataset.region === "International & intercontinental");
+      if (ok && time) {
+        var d = c.dataset.deadline ? (new Date(c.dataset.deadline + "T00:00:00") - today) / DAY : null;
+        ok = d !== null && (time === "lt30" ? d < 30 : d >= parseInt(time.slice(2), 10));
+      }
+      c.hidden = !ok; if (ok) shown++;
+    });
+    document.querySelectorAll(".grp").forEach(function (g) { g.hidden = !g.querySelector("article.call:not([hidden])"); });
+    document.querySelectorAll(".reg").forEach(function (g) { g.hidden = !g.querySelector("article.call:not([hidden])"); });
+    document.querySelectorAll("section.macro").forEach(function (s) {
+      var none = s.querySelector("article.call") && !s.querySelector("article.call:not([hidden])"), msg = s.querySelector(".nomatch");
+      if (none && !msg) { msg = document.createElement("p"); msg.className = "nomatch"; msg.textContent = "No calls in this section match your filters."; s.appendChild(msg); }
+      if (msg) msg.hidden = !none;
+    });
+    var active = !!(q || where || time);
+    count.textContent = active ? "Showing " + shown + " of " + total + " open calls" : total + " open calls";
+    reset.hidden = !active;
+    if (save) {
+      var p = new URLSearchParams();
+      if (form.q.value.trim()) p.set("q", form.q.value.trim()); if (where) p.set("where", where); if (time) p.set("time", time);
+      var qs = p.toString();
+      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
+    }
+  }
+  var p = new URLSearchParams(location.search);
+  if (p.get("q")) form.q.value = p.get("q");
+  if (p.get("where")) form.where.value = p.get("where");
+  if (p.get("time")) form.time.value = p.get("time");
+  var timer;
+  form.q.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { apply(true); }, 150); });
+  form.where.addEventListener("change", function () { apply(true); });
+  form.time.addEventListener("change", function () { apply(true); });
+  form.addEventListener("reset", function () { setTimeout(function () { apply(true); }, 0); });
+  apply(false);
+})();
+</script>
+"""
 
 
 # ---------------------------------------------------------------- pulsante «Share» (bandi e posizioni)
@@ -1095,4 +1186,6 @@ def add_decor(html):
         html = html.replace("</body>", DECOR + "</body>", 1)
     if 'class="share"' in html and "crc-share-menu" not in html:
         html = html.replace("</body>", SHARE + "</body>", 1)
+    if 'class="filters"' in html and "form.filters\")" not in html:
+        html = html.replace("</body>", FILTER_SCRIPT + "</body>", 1)
     return html
