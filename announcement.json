@@ -1,53 +1,33 @@
 {
-  "id": "announcement-2026-10-21-open-calls-page-v2",
+  "id": "explainer-2026-10-22-eu-partner-search",
   "kind": "announcement",
   "no_images": true,
-  "title": "33 open research funding calls, all in one place",
-  "title_highlight": "all in one place",
-  "category": "Big update",
+  "accent": "#FF7A59",
+  "title": "How to find partners for EU research calls",
+  "title_highlight": "find partners",
+  "category": "How to",
   "slides": [
-    {
-      "heading": "Every open call, checked",
-      "body": "Our link-in-bio page now lists all the open calls for clinical and rehabilitation research found by our monitoring: 33 today, each checked against the official call text.",
-      "highlight": "checked against the official call text",
-      "source": ""
-    },
-    {
-      "heading": "Organised the way you search",
-      "body": "Calls are grouped by region and funding programme and sorted by deadline, with a section for calls open to Italian institutions and Find partners links for EU calls.",
-      "highlight": "grouped by region and funding programme",
-      "source": ""
-    },
-    {
-      "heading": "Academic positions, too",
-      "body": "A new page lists PhD, post-doc, research and faculty positions in rehabilitation research, checked on the official ads and updated every day.",
-      "highlight": "checked on the official ads",
-      "source": ""
-    },
-    {
-      "heading": "How to use it",
-      "body": "Tap the link in our bio, choose your region or programme and open the official call. Always check eligibility and deadlines in the call before applying.",
-      "highlight": "Tap the link in our bio",
-      "source": ""
-    }
+    {"heading": "Why you need partners",
+     "body": "Many Horizon Europe calls require a consortium: research and innovation actions ask for at least three independent organisations from three different countries, one in an EU Member State.",
+     "highlight": "at least three independent organisations", "source": ""},
+    {"heading": "Use the official tool",
+     "body": "The EU Funding & Tenders Portal has a free Partner Search: filter by topic, keyword, country or type of organisation and see who is looking for partners.",
+     "highlight": "a free Partner Search", "source": ""},
+    {"heading": "Start from the topic ID",
+     "body": "Every EU call has a topic ID, such as HORIZON-HLTH-2027-01-DISEASE-10. Paste it in the Partner Search, or open the call page and check Partner search announcements.",
+     "highlight": "Paste it in the Partner Search", "source": ""},
+    {"heading": "Get in touch, or be found",
+     "body": "Contact organisations with the Contact organisation button in the portal. With an EU Login account you can also publish your own announcement, up to 500 characters.",
+     "highlight": "publish your own announcement", "source": ""},
+    {"heading": "Ready on our page",
+     "body": "In our link-in-bio page every EU call has a Find partners button and its topic ID ready to copy, next to the link to the official call.",
+     "highlight": "Find partners button", "source": ""}
   ],
-  "takeaway": "All open calls and academic positions, checked and updated every day: link in bio.",
-  "takeaway_highlight": "updated every day",
-  "closing_cta": [
-    "Save it and share it with your research team",
-    "All open calls: link in bio"
-  ],
-  "caption": "Big update to our link-in-bio page 🎉\n\n33 open funding calls for clinical and rehabilitation research, each checked against the official call text and grouped by region and funding programme, from Horizon Europe to NIH and private foundations. 12 of them are open to Italian institutions.\n\nNew: a page with PhD, post-doc, research and faculty positions in rehabilitation research, updated every day.\n\nOpen calls: https://clinical-chaos-dsv.pages.dev\nAcademic positions: https://clinical-chaos-dsv.pages.dev/positions.html\n\nWhich funders should we add next? Tell us in the comments.",
-  "hashtags": [
-    "#ResearchFunding",
-    "#GrantOpportunity",
-    "#AcademicJobs",
-    "#RehabilitationResearch",
-    "#ClinicalTrials",
-    "#HorizonEurope",
-    "#NIH"
-  ],
+  "takeaway": "Looking for a consortium? Start from the topic ID and the EU Partner Search.",
+  "takeaway_highlight": "the EU Partner Search",
+  "closing_cta": ["Save it for your next EU proposal", "Open calls and Find partners: link in bio"],
+  "caption": "Building a consortium is often the hardest part of an EU proposal. The European Commission offers a free tool to find partners for each call.\n\nHow it works:\n1. Copy the topic ID of the call (on our page it is next to every EU call).\n2. Open the EU Partner Search and paste it in the filter.\n3. Contact organisations through the portal, or publish your own announcement with an EU Login account.\n\nEU Partner Search: https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/partner-search\nOpen calls with Find partners buttons: https://clinical-chaos-dsv.pages.dev\n\nConsortium rules differ between calls: always check the eligibility conditions in the official call.\n\nHave you ever found a partner this way? Tell us how it went.",
+  "hashtags": ["#HorizonEurope", "#EU4Health", "#PartnerSearch", "#ResearchFunding", "#Consortium", "#EUFunding", "#ClinicalTrials"],
   "references": [],
-  "source": "Announcement",
-  "accent": "#FF7A59"
+  "source": "Announcement"
 }
