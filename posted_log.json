@@ -210,5 +210,15 @@
     "media_id": "18134982871753524",
     "facebook_id": "1277022912171972_122108373747432698",
     "kind": "announcement"
+  },
+  {
+    "date": "2026-10-22",
+    "time": "2026-10-22T05:06:00+00:00",
+    "id": "explainer-2026-10-22-eu-partner-search",
+    "title": "How to find partners for EU research calls",
+    "source": "Announcement",
+    "media_id": "18068632109519149",
+    "facebook_id": "1277022912171972_122108533737432698",
+    "kind": "announcement"
   }
 ]
