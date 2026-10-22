@@ -756,7 +756,11 @@ def refresh_verified(grants, verified, cfg, limit=None, today=None):
     todo = [g for g in grants if g.get("url") and (not _date(g.get("scadenza")) or _date(g["scadenza"]) >= today) and due(g)]
     todo.sort(key=lambda g: g.get("scadenza") or "9999")
     done = 0
+    start, budget = time.time(), float(cfg.get("grant_verify_minutes", 13)) * 60
     for g in todo[:limit]:
+        if time.time() - start > budget:     # resta nel tempo del job: il resto al prossimo run
+            print(f"::notice title=Verifica a metà::tempo esaurito dopo {done} bandi, si riprende al prossimo run")
+            break
         try:
             verified[g["id"]] = verify(g, cfg)
             v = verified[g["id"]]
