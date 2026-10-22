@@ -656,6 +656,12 @@ def find_deadlines(g, text, source, source_url, out, today=None):
                         deadline_type="two_stage" if two else ("several" if len(keep) > 1 else "single"),
                         deadline_evidence=f"EU Funding & Tenders Portal: {m.group(1).strip()}, deadline {', '.join(d.isoformat() for d in ds)}")
             return base
+    if is_nih(g):
+        # NIH: valgono solo le date del NIH Guide; la «closing date» di Grants.gov è la data di fine bando
+        if not source.startswith("NIH Guide"):
+            return base
+        if re.search(r"closing date", out.get("deadline_evidence") or "", re.I):
+            out = {**out, "deadline_evidence": ""}
     all_dates = set(dates_in(text))
     nd = _date(out.get("next_deadline"))
     ev = _quoted(out.get("deadline_evidence"), text, 12)

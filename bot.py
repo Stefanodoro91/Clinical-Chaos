@@ -58,7 +58,12 @@ def commit_and_push(paths, message):
     git("add", *paths)
     if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode != 0:
         git("commit", "-m", message)
-        git("push")
+        for attempt in range(3):         # se nel frattempo sono arrivati altri commit, li si integra e si riprova
+            if subprocess.run(["git", "push"], cwd=ROOT).returncode == 0:
+                break
+            git("pull", "--rebase", "-X", "theirs")
+        else:
+            git("push")
     return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
 
 
