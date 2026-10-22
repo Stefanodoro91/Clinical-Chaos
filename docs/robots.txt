@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://clinical-chaos-dsv.pages.dev/sitemap.xml

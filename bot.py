@@ -473,12 +473,40 @@ def update_positions(posted=None, verify_limit=None):
         save(ROOT / positions.ARCHIVE_FILE, archive)
     POSITIONS_PAGE.parent.mkdir(exist_ok=True)
     POSITIONS_PAGE.write_text(grants.add_decor(positions.build_page(archive, posted, CONFIG)), encoding="utf-8")
+    write_job_pages(archive)
     n = len(positions.active(archive))
     print(f"::notice title=Pagina posizioni::{n} posizioni aperte in pagina")
-    home = write_home()
-    commit_and_push([positions.ARCHIVE_FILE, positions.STATUS_FILE, POSITIONS_PAGE.relative_to(ROOT).as_posix(), home],
+    write_home()
+    commit_and_push([positions.ARCHIVE_FILE, positions.STATUS_FILE, "docs"],
                     "Posizioni accademiche verificate e pagina aggiornata")
     trigger_deploy()
+
+
+JOBS_DIR = ROOT / "docs" / "jobs"
+
+
+def write_job_pages(archive):
+    """Una pagina per ogni posizione aperta (con i dati per Google Jobs); le pagine delle posizioni chiuse si cancellano."""
+    pages = positions.job_pages(archive, CONFIG)
+    JOBS_DIR.mkdir(parents=True, exist_ok=True)
+    for f in JOBS_DIR.glob("*.html"):
+        if f.name not in pages:
+            f.unlink()
+    for name, html in pages.items():
+        (JOBS_DIR / name).write_text(grants.add_decor(html), encoding="utf-8")
+
+
+def write_sitemap():
+    """sitemap.xml e robots.txt, perché Google trovi tutte le pagine (anche quelle delle singole posizioni)."""
+    from xml.sax.saxutils import escape as xesc
+    today = datetime.now().date().isoformat()
+    paths = ["", "calls", "positions"] + sorted("jobs/" + f.stem for f in JOBS_DIR.glob("*.html"))
+    urls = "".join(f"  <url><loc>{xesc(grants.site_url(CONFIG, p))}</loc><lastmod>{today}</lastmod></url>\n" for p in paths)
+    (ROOT / "docs" / "sitemap.xml").write_text(
+        f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n',
+        encoding="utf-8")
+    (ROOT / "docs" / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {grants.site_url(CONFIG, 'sitemap.xml')}\n",
+                                              encoding="utf-8")
 
 
 def write_home():
@@ -491,6 +519,7 @@ def write_home():
     n_positions = jobs.count("Advertisement &rarr;")
     HOME_FILE.write_text(grants.add_decor(grants.build_home(n_calls, int(m.group(1)) if m else 0, n_positions, CONFIG)),
                          encoding="utf-8")
+    write_sitemap()
     return HOME_FILE.relative_to(ROOT).as_posix()
 
 
@@ -519,9 +548,8 @@ def update_grants(posted=None, verify_limit=None):
     entries = grants.page_entries(grants_list, verified)
     pending = sum(1 for g in grants_list if g["id"] not in verified)
     print(f"::notice title=Pagina bandi::{len(entries)} bandi in pagina, {pending} ancora da verificare")
-    home = write_home()
-    commit_and_push([grants.VERIFIED_FILE, PAGE_FILE.relative_to(ROOT).as_posix(), home, "docs/logo.png",
-                     "docs/logo-core-light.png", "docs/logo-wordmark-light.png"],
+    write_home()
+    commit_and_push([grants.VERIFIED_FILE, "docs"],
                     "Bandi verificati e pagina aggiornata")
     trigger_deploy()
 

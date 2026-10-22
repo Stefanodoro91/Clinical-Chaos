@@ -279,6 +279,7 @@ PAGE = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Academic positions · {brand}</title>
 <meta name="description" content="Open PhD, post-doc and faculty positions in clinical rehabilitation research, checked against the original advertisement.">
+{og}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -307,6 +308,9 @@ PAGE = """<!doctype html>
   .tag {{ display: inline-block; background: var(--teal); color: var(--bg); font-size: 11px; font-weight: 800;
          letter-spacing: .05em; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }}
   .job h4 {{ font-size: 17px; margin: 0 0 8px; line-height: 1.3; }}
+  .job h4 a {{ color: inherit; text-decoration: none; }}
+  .job h4 a:hover {{ text-decoration: underline; }}
+  .btns {{ display: flex; flex-wrap: wrap; gap: 8px; }}
   .summary {{ color: var(--soft); font-size: 14px; margin: 0 0 12px; }}
   .row {{ display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }}
   .deadline {{ font-size: 14px; color: var(--soft); }}
@@ -371,13 +375,17 @@ def build_page(archive, posted, cfg, today=None):
                     when = "Deadline <b>see advertisement</b>"
                 place = ", ".join(x for x in (v.get("institution"), v.get("city"), v.get("country")) if x)
                 tag = '<span class="tag">ON INSTAGRAM</span>' if k in featured else ""
-                parts.append(f"""    <article class="job">
+                page = job_slug(k, v)
+                share = grants.share_button(grants.site_url(cfg, "jobs/" + page),
+                                            f"{v['title']} – {v.get('institution') or 'academic position'}"
+                                            + (f" (deadline {_fmt(d)})" if d else ""))
+                parts.append(f"""    <article class="job" id="{k}">
       <div class="inst">{escape(place)}{tag}</div>
-      <h4>{escape(v["title"])}</h4>
+      <h4><a href="jobs/{page}.html">{escape(v["title"])}</a></h4>
       {f'<p class="summary">{escape(v["summary"])}</p>' if v.get("summary") else ""}
       <div class="row">
         <div class="deadline">{when}</div>
-        <a class="btn" href="{escape(v["url"], quote=True)}" target="_blank" rel="noopener">Advertisement &rarr;</a>
+        <div class="btns">{share}<a class="btn" href="{escape(v["url"], quote=True)}" target="_blank" rel="noopener">Advertisement &rarr;</a></div>
       </div>
     </article>""")
         parts.append("  </section>")
@@ -386,7 +394,141 @@ def build_page(archive, posted, cfg, today=None):
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
                        accent=cfg.get("positions_accent", "#A78BFA"), nav="".join(nav),
-                       sections="\n".join(sections), updated=_fmt(today))
+                       sections="\n".join(sections), updated=_fmt(today),
+                       og=grants.og_tags(cfg, f"Academic positions in clinical rehabilitation research · {cfg['brand_name']}",
+                                         "Open PhD, post-doc and faculty positions in clinical rehabilitation research, "
+                                         "checked against the original advertisement.", "positions"))
+
+
+# ---------------------------------------------------------------- una pagina per posizione (Google Jobs)
+JOB_PAGE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title} · {place_short} · {brand}</title>
+<meta name="description" content="{description}">
+{og}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+{jsonld}
+<style>
+  :root {{ --bg: {bg}; --card: #15304A; --text: #FFFFFF; --muted: {muted}; --soft: {soft}; --accent: {accent}; --teal: {teal}; }}
+  * {{ box-sizing: border-box; }}
+  body {{ margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.5; }}
+  .bar {{ height: 6px; background: var(--accent); }}
+  main {{ max-width: 680px; margin: 0 auto; padding: 28px 16px 48px; }}
+  .switch {{ display: inline-block; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
+            border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px; margin: 0 6px 18px 0; }}
+  .badge {{ display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
+           letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; text-transform: uppercase; }}
+  h1 {{ font-size: 28px; font-weight: 800; margin: 14px 0 8px; line-height: 1.2; }}
+  .inst {{ color: var(--soft); font-size: 15px; font-weight: 600; margin: 0 0 20px; }}
+  .job {{ background: var(--card); border-radius: 18px; padding: 20px; border-left: 4px solid var(--accent); }}
+  dl {{ display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0 0 16px; font-size: 15px; }}
+  dt {{ color: var(--muted); font-weight: 600; }}
+  dd {{ margin: 0; }}
+  .summary {{ color: var(--soft); font-size: 15px; margin: 0 0 18px; }}
+  .soon {{ color: var(--accent); font-weight: 800; font-size: 12px; margin-left: 6px; }}
+  .btns {{ display: flex; flex-wrap: wrap; gap: 8px; }}
+  a.btn {{ background: var(--accent); color: var(--bg); text-decoration: none; font-weight: 800; font-size: 15px;
+           padding: 11px 18px; border-radius: 12px; }}
+  a.btn:focus-visible, .switch:focus-visible {{ outline: 3px solid var(--text); outline-offset: 2px; }}
+  footer {{ color: var(--muted); font-size: 13px; margin-top: 30px; }}
+  footer a {{ color: var(--teal); }}
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<main>
+  <a class="switch" href="../positions.html">&larr; All academic positions</a><a class="switch" href="../calls.html">Funding calls &rarr;</a><br>
+  <span class="badge">{type_label}</span>
+  <h1>{title}</h1>
+  <p class="inst">{place}</p>
+  <article class="job">
+    <dl>
+      <dt>Position</dt><dd>{type_label}</dd>
+      <dt>Institution</dt><dd>{institution}</dd>
+      <dt>Location</dt><dd>{location}</dd>
+      <dt>Deadline</dt><dd>{deadline}</dd>
+    </dl>
+    {summary}
+    <div class="btns">{share}<a class="btn" href="{url}" target="_blank" rel="noopener">Read the advertisement and apply &rarr;</a></div>
+  </article>
+  <footer>
+    Found on {source} and checked automatically against the original advertisement on {checked}: always read the full
+    advertisement before applying; the employer's page is the only official source.<br>
+    <a href="../index.html">{brand}</a> · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a>
+  </footer>
+</main>
+</body>
+</html>
+"""
+
+
+def job_slug(k, v):
+    words = re.sub(r"[^a-z0-9]+", "-", unescape(v.get("title") or "position").lower()).strip("-")
+    return f"{words[:60].rstrip('-')}-{k.split('-')[-1][:8]}"
+
+
+def job_jsonld(k, v, d):
+    """Dati strutturati JobPosting (schema.org) letti da Google per Google Jobs; None se mancano i campi obbligatori."""
+    if not (v.get("title") and v.get("institution") and v.get("country") and v.get("summary")):
+        return None
+    address = {"@type": "PostalAddress", "addressCountry": v["country"]}
+    if v.get("city"):
+        address["addressLocality"] = v["city"]
+    data = {
+        "@context": "https://schema.org/",
+        "@type": "JobPosting",
+        "title": v["title"],
+        "description": f"<p>{escape(v['summary'])}</p><p>Position type: {escape(TYPES.get(v.get('type'), 'Academic position'))}.</p>"
+                       f"<p>Read the full advertisement and apply at: {escape(v['url'])}</p>",
+        "datePosted": v.get("first_seen") or v.get("checked"),
+        "employmentType": "OTHER" if v.get("type") == "phd" else "FULL_TIME",
+        "hiringOrganization": {"@type": "Organization", "name": v["institution"]},
+        "jobLocation": {"@type": "Place", "address": address},
+        "identifier": {"@type": "PropertyValue", "name": v["institution"], "value": k},
+        "directApply": False,
+    }
+    if d:
+        data["validThrough"] = f"{d.isoformat()}T23:59:59"
+    if v.get("type") == "phd":
+        data["educationRequirements"] = {"@type": "EducationalOccupationalCredential", "credentialCategory": "postgraduate degree"}
+    text = json.dumps(data, ensure_ascii=False, indent=1).replace("</", "<\\/")
+    return f'<script type="application/ld+json">\n{text}\n</script>'
+
+
+def job_pages(archive, cfg, today=None):
+    """{nome file: html} con una pagina per ogni posizione aperta in pagina."""
+    today = today or date.today()
+    c = cfg["colors"]
+    out = {}
+    for k, v, d in active(archive, today):
+        slug = job_slug(k, v)
+        title = v["title"]
+        loc = ", ".join(x for x in (v.get("city"), v.get("country")) if x) or "see advertisement"
+        place = ", ".join(x for x in (v.get("institution"), loc if loc != "see advertisement" else "") if x)
+        if d:
+            soon = '<span class="soon">CLOSING SOON</span>' if (d - today).days <= 14 else ""
+            deadline = f"{_fmt(d)}{soon}"
+        else:
+            deadline = "see advertisement"
+        summary = v.get("summary") or ""
+        desc = (summary[:150].rsplit(" ", 1)[0] + "…") if len(summary) > 155 else summary or f"{title} at {place}"
+        share_title = f"{title} – {v.get('institution') or 'academic position'}" + (f" (deadline {_fmt(d)})" if d else "")
+        out[slug + ".html"] = JOB_PAGE.format(
+            title=escape(title), place_short=escape(v.get("institution") or loc), brand=escape(cfg["brand_name"]),
+            description=escape(desc, quote=True),
+            og=grants.og_tags(cfg, f"{title} · {v.get('institution') or loc}", desc, "jobs/" + slug),
+            jsonld=job_jsonld(k, v, d) or "", bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
+            accent=cfg.get("positions_accent", "#A78BFA"), type_label=escape(TYPES.get(v.get("type"), "Academic position")),
+            place=escape(place), institution=escape(v.get("institution") or "see advertisement"), location=escape(loc),
+            deadline=deadline, summary=f'<p class="summary">{escape(summary)}</p>' if summary else "",
+            share=grants.share_button(grants.site_url(cfg, "jobs/" + slug), share_title),
+            url=escape(v["url"], quote=True), source=escape(re.sub(r"\s+[–-]\s+.*$", "", v.get("source") or "an academic job portal")),
+            checked=_fmt(_date(v.get("checked")) or today), ig=cfg["handle"].lstrip("@"), handle=escape(cfg["handle"]))
+    return out
 
 
 # ---------------------------------------------------------------- post settimanale

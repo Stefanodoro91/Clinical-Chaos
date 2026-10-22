@@ -641,6 +641,7 @@ PAGE = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Open calls · {brand}</title>
 <meta name="description" content="Open research funding calls checked against the official call text, grouped by funding programme.">
+{og}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -805,14 +806,17 @@ def build_page(grants_list, verified, posted, cfg, today=None):
             body = (f'{f"<p class=\"summary\">{escape(v["summary"])}</p>" if v.get("summary") else ""}\n'
                     f'      <p class="countries"><b>Eligible countries:</b> {escape(v.get("eligible_countries") or "check the call")}</p>\n'
                     f'      {proof}')
-        return f"""    <article class="call {css}">
+        title = v.get("title") or g.get("titolo") or ""
+        share = share_button(site_url(cfg, "calls#" + card_anchor(g["id"])),
+                             f"Funding call: {title}" + (f" (deadline {_fmt_date(d)})" if d else ""))
+        return f"""    <article class="call {css}" id="{card_anchor(g["id"])}">
       <div class="funder">{escape(v.get("programme") or programme_detail(g))}{tag}</div>
-      <h4>{escape(v.get("title") or g.get("titolo") or "")}</h4>
+      <h4>{escape(title)}</h4>
       {body}
       {partners}
       <div class="row">
         <div class="deadline">{when}</div>
-        <div class="btns">{find}<a class="btn" href="{escape(g["url"], quote=True)}" target="_blank" rel="noopener">Official call &rarr;</a></div>
+        <div class="btns">{share}{find}<a class="btn" href="{escape(g["url"], quote=True)}" target="_blank" rel="noopener">Official call &rarr;</a></div>
       </div>
     </article>"""
 
@@ -839,7 +843,10 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
                        accent=cfg.get("grant_accent", "#FFB547"), nav="".join(nav),
-                       italy=italy_html, other=other_html, updated=_fmt_date(today))
+                       italy=italy_html, other=other_html, updated=_fmt_date(today),
+                       og=og_tags(cfg, f"Open research funding calls · {cfg['brand_name']}",
+                                  "Open funding calls for clinical and rehabilitation research, checked on the official call text.",
+                                  "calls"))
 
 
 # ---------------------------------------------------------------- pagina iniziale (link in bio)
@@ -850,6 +857,7 @@ HOME = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{brand}</title>
 <meta name="description" content="Open research funding calls and academic positions in clinical and rehabilitation research, checked on the official texts.">
+{og}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -911,7 +919,106 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None):
     return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"],
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
                        amber=cfg.get("grant_accent", "#FFB547"), lilac=cfg.get("positions_accent", "#A78BFA"),
-                       calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today))
+                       calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
+                       og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
+                                  "and rehabilitation research, checked on the official texts.", ""))
+
+
+# ---------------------------------------------------------------- pulsante «Share» (bandi e posizioni)
+SHARE = """
+<div id="crc-share-menu" role="menu" hidden></div>
+<style>
+  button.share { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--text);
+                 border: 1px solid var(--muted); border-radius: 12px; padding: 9px 14px; font: 700 14px Inter, system-ui, sans-serif;
+                 cursor: pointer; }
+  button.share svg { width: 16px; height: 16px; }
+  button.share:hover { border-color: var(--text); }
+  button.share:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+  .call:target, .job:target { outline: 2px solid var(--accent); outline-offset: 3px; }
+  #crc-share-menu { position: absolute; z-index: 50; background: #FFFFFF; color: #0E2233; border-radius: 14px; padding: 6px;
+                    min-width: 190px; box-shadow: 0 12px 32px rgba(0,0,0,.35); font: 600 14px Inter, system-ui, sans-serif; }
+  #crc-share-menu a, #crc-share-menu button { display: block; width: 100%; text-align: left; background: none; border: 0;
+                    color: inherit; font: inherit; text-decoration: none; padding: 10px 12px; border-radius: 10px; cursor: pointer; }
+  #crc-share-menu a:hover, #crc-share-menu button:hover, #crc-share-menu a:focus-visible, #crc-share-menu button:focus-visible {
+                    background: #E7EEF4; outline: none; }
+</style>
+<script>
+(function () {
+  var menu = document.getElementById("crc-share-menu"), openFor = null;
+  var coarse = window.matchMedia("(pointer: coarse)").matches;
+  function close() { menu.hidden = true; openFor = null; }
+  function item(label, href) {
+    var a = document.createElement("a"); a.textContent = label; a.href = href; a.target = "_blank"; a.rel = "noopener";
+    a.setAttribute("role", "menuitem"); a.addEventListener("click", close); return a;
+  }
+  function show(btn) {
+    var url = btn.dataset.url, title = btn.dataset.title, text = title + " " + url, e = encodeURIComponent;
+    menu.innerHTML = "";
+    menu.appendChild(item("WhatsApp", "https://wa.me/?text=" + e(text)));
+    menu.appendChild(item("LinkedIn", "https://www.linkedin.com/sharing/share-offsite/?url=" + e(url)));
+    menu.appendChild(item("Facebook", "https://www.facebook.com/sharer/sharer.php?u=" + e(url)));
+    menu.appendChild(item("X", "https://x.com/intent/post?text=" + e(title) + "&url=" + e(url)));
+    menu.appendChild(item("Email", "mailto:?subject=" + e(title) + "&body=" + e(text)));
+    var copy = document.createElement("button"); copy.type = "button"; copy.textContent = "Copy link"; copy.setAttribute("role", "menuitem");
+    copy.addEventListener("click", function () {
+      var done = function () { copy.textContent = "Link copied"; setTimeout(close, 900); };
+      if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function () { window.prompt("Copy this link", url); close(); });
+      else { window.prompt("Copy this link", url); close(); }
+    });
+    menu.appendChild(copy);
+    var r = btn.getBoundingClientRect();
+    menu.hidden = false;
+    var left = Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - menu.offsetWidth - 12);
+    menu.style.left = Math.max(12, left) + "px";
+    menu.style.top = (window.scrollY + r.bottom + 6) + "px";
+    openFor = btn; menu.querySelector("a").focus();
+  }
+  document.addEventListener("click", function (ev) {
+    var btn = ev.target.closest && ev.target.closest("button.share");
+    if (btn) {
+      ev.preventDefault();
+      if (coarse && navigator.share) {
+        navigator.share({ title: btn.dataset.title, text: btn.dataset.title, url: btn.dataset.url }).catch(function () {});
+        return;
+      }
+      if (openFor === btn) close(); else show(btn);
+    } else if (!menu.contains(ev.target)) close();
+  });
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && openFor) { var b = openFor; close(); b.focus(); } });
+})();
+</script>
+"""
+
+SHARE_ICON = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+              'stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/>'
+              '<circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>')
+
+
+def share_button(url, title):
+    from html import escape
+    return (f'<button class="share" type="button" data-url="{escape(url, quote=True)}" data-title="{escape(title, quote=True)}" '
+            f'aria-haspopup="menu">{SHARE_ICON}Share</button>')
+
+
+def site_url(cfg, path=""):
+    """Indirizzo pubblico di una pagina del sito (Cloudflare Pages serve le pagine senza «.html»)."""
+    return cfg.get("links_page_url", "").rstrip("/") + "/" + path
+
+
+def og_tags(cfg, title, description, path):
+    from html import escape
+    return (f'<link rel="canonical" href="{escape(site_url(cfg, path), quote=True)}">\n'
+            f'<meta property="og:type" content="website">\n'
+            f'<meta property="og:site_name" content="{escape(cfg["brand_name"], quote=True)}">\n'
+            f'<meta property="og:title" content="{escape(title, quote=True)}">\n'
+            f'<meta property="og:description" content="{escape(description, quote=True)}">\n'
+            f'<meta property="og:url" content="{escape(site_url(cfg, path), quote=True)}">\n'
+            f'<meta property="og:image" content="{escape(site_url(cfg, "og.png"), quote=True)}">\n'
+            f'<meta name="twitter:card" content="summary_large_image">')
+
+
+def card_anchor(grant_id):
+    return "c-" + re.sub(r"[^A-Za-z0-9]+", "-", str(grant_id)).strip("-")
 
 
 # ---------------------------------------------------------------- decorazione animata ai lati (solo schermi larghi)
@@ -982,5 +1089,10 @@ DECOR = """
 
 
 def add_decor(html):
-    """Aggiunge la decorazione animata ai lati (cascata di quadratini a sinistra e a destra) prima di </body>."""
-    return html.replace("</body>", DECOR + "</body>", 1) if "crc-rain" not in html else html
+    """Aggiunge prima di </body> la decorazione animata ai lati (cascata di quadratini) e, se la pagina ha
+    pulsanti «Share», il menu di condivisione."""
+    if "crc-rain" not in html:
+        html = html.replace("</body>", DECOR + "</body>", 1)
+    if 'class="share"' in html and "crc-share-menu" not in html:
+        html = html.replace("</body>", SHARE + "</body>", 1)
+    return html
