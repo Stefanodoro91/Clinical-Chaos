@@ -562,8 +562,9 @@ def dates_in(s):
         out.append((int(m.group(3)), MONTHS.get(m.group(2).lower().rstrip(".")[:3] if m.group(2).lower()[:4] != "sept" else "sep"), int(m.group(1))))
     for m in RX_ISO.finditer(s or ""):
         out.append((int(m.group(1)), int(m.group(2)), int(m.group(3))))
-    for m in RX_NUM.finditer(s or ""):
+    for m in RX_NUM.finditer(s or ""):       # gg/mm/aaaa o mm/gg/aaaa (Grants.gov): se ambigua valgono entrambe
         out.append((int(m.group(3)), int(m.group(2)), int(m.group(1))))
+        out.append((int(m.group(3)), int(m.group(1)), int(m.group(2))))
     res = []
     for y, mo, d in out:
         try:
@@ -755,6 +756,7 @@ def verify(g, cfg):
         "programme": content._clip(programme, 120), "programme_family": programme_family(g),
         "summary": content._clip(out.get("summary", ""), 700), "coming_soon": coming_soon, **elig,
         "version": VERIFY_VERSION, **dl, "lead": lead, "lead_evidence": lead_ev,
+        "deadline_raw": f"{out.get('next_deadline', '')} | {(out.get('deadline_evidence') or '')[:200]}",
     }
 
 
@@ -775,7 +777,9 @@ def refresh_verified(grants, verified, cfg, limit=None, today=None):
         v = verified.get(g["id"])
         if not v:
             return True
-        if v.get("status") == "ok" and not checked(v):
+        if v.get("status") == "ok" and (not checked(v) or (
+                v.get("version", 1) < VERIFY_VERSION and v.get("deadline_source") == "none" and g.get("scadenza")
+                and not is_nih(g))):
             return True                     # verificato con le regole vecchie: si rilegge (scadenze, capofila)
         if v.get("coming_soon"):
             return (today - (_date(v.get("checked")) or today)).days >= 7
