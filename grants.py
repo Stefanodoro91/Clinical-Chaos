@@ -81,7 +81,13 @@ VERIFY_SCHEMA = {
                  "deadline_evidence", "later_deadlines", "loi_deadline", "loi_required", "lead_eligibility",
                  "lead_evidence"],
 }
-VERIFY_VERSION = 2          # 2 = scadenze lette dal testo ufficiale (non la data di fine bando) e requisiti del capofila
+VERIFY_VERSION = 3          # 2 = scadenze dal testo ufficiale e requisiti del capofila; 3 = date NIH lette riga per riga
+
+
+def checked(v):
+    """Scadenze della voce affidabili con le regole attuali (le date NIH della versione 2 vanno rilette)."""
+    ver = (v or {}).get("version", 1)
+    return ver >= VERIFY_VERSION or (ver == 2 and not str(v.get("official_source", "")).startswith("NIH Guide"))
 
 PROMPT = """You write an Instagram carousel for "{brand}", a page for researchers and health professionals
 about clinical research and research methodology. The post informs followers about ONE research funding
@@ -179,7 +185,7 @@ def candidates(grants, posted, verified, cfg, today=None):
             loi = _date(v.get("loi_deadline"))
             if loi and v.get("loi_required") == "yes" and loi < today + timedelta(days=14):
                 continue                     # pre-domanda obbligatoria già chiusa o troppo vicina
-            if (v.get("status") == "ok" and v.get("version", 1) >= VERIFY_VERSION
+            if (v.get("status") == "ok" and checked(v)
                     and v.get("is_open_call") != "no" and not v.get("coming_soon")
                     and g.get("rilevanza") in RELEVANCE_ORDER
                     and deadline and deadline >= today + timedelta(days=min_days)
@@ -587,26 +593,36 @@ def nih_due_dates(g, text, html, today):
     loi_m = re.search(r"Letter of Intent Due Date\(s\)\W{0,4}(.{0,160})", text, re.I)
     loi = [d for d in dates_in(loi_m.group(1)) if d >= today] if loi_m else []
     new, resub, evidence = [], [], ""
-    i = html.lower().find("application due date") if html else -1
-    region_html = html[i:i + 20000] if i >= 0 else ""
-    region_text = html_to_text(region_html)[:3000] if region_html else ""
-    if region_html and not re.search(r"standard dates apply", region_text[:1500], re.I):
-        table = re.search(r"(?is)<table.*?</table>", region_html)
-        rows = re.findall(r"(?is)<tr[^>]*>(.*?)</tr>", table.group(0)) if table else []
-        col_new, col_res = 0, 1
-        for row in rows:
-            cells = [html_to_text(c) for c in re.findall(r"(?is)<t[dh][^>]*>(.*?)</t[dh]>", row)]
-            low = [c.lower() for c in cells]
-            if any(c.strip().startswith("new") for c in low):
-                col_new = next(k for k, c in enumerate(low) if c.strip().startswith("new"))
-                col_res = next((k for k, c in enumerate(low) if "resubmission" in c or "renewal" in c), -1)
-                continue
-            if len(cells) > col_new:
-                new += dates_in(cells[col_new])
-            if 0 <= col_res < len(cells):
-                resub += dates_in(cells[col_res])
-        if not rows:   # date scritte nel testo, senza tabella
-            new = dates_in(region_text[:600])
+    src = html or text
+    i = src.lower().find("application due date")
+    region_text = (html_to_text(src[i:i + 30000]) if html else src[i:i + 6000]) if i >= 0 else ""
+    cut = re.search(r"All applications are due by|Expiration Date|Due Dates for E\.O\.", region_text[25:])
+    region_text = region_text[:cut.start() + 25] if cut else region_text[:4000]
+    if region_text and not re.search(r"standard dates apply", region_text, re.I):
+        # righe della tabella: date con il giorno (nuove, resubmission, AIDS) seguite da mesi senza giorno (revisione)
+        first = RX_MDY.search(region_text)
+        header = region_text[:first.start()] if first else region_text
+        two_cols = bool(re.search(r"\bNew\s*(?:\||\s)\s*Renewal", header, re.I))
+        tok = re.compile(r"(?P<d>" + RX_MDY.pattern + r")|(?P<m>" + _MON + r"\s+\d{4})|(?P<n>Not Applicable)", re.I)
+        rows, row = [], []
+        for m in tok.finditer(region_text[first.start():] if first else ""):
+            if m.group("m"):
+                if row:
+                    rows.append(row)
+                row = []
+            else:
+                row.append(dates_in(m.group("d"))[0] if m.group("d") else None)
+        if row:
+            rows.append(row)
+        if len(rows) == 1 and not two_cols:      # date in fila, senza tabella: tutte per le nuove domande
+            rows = [[d] for d in rows[0] if d]
+        for r in rows:
+            if r and r[0]:
+                new.append(r[0])
+            if two_cols and len(r) > 1 and r[1]:
+                resub.append(r[1])
+            elif not two_cols and r and r[0]:
+                resub.append(r[0])
         evidence = "NIH Guide, Key Dates: application due dates for new applications"
     elif region_text:
         code = _nih_activity(g, text)
@@ -687,9 +703,11 @@ def find_deadlines(g, text, source, source_url, out, today=None):
 def next_due(g, v, today=None):
     """Prossima data utile per una nuova domanda; per le voci non ancora ricontrollate, la data del catalogo."""
     today = today or date.today()
-    if (v or {}).get("version", 1) >= VERIFY_VERSION:
+    if checked(v):
         ds = [d for d in (_date(x) for x in v.get("due_dates") or []) if d and d >= today]
         return min(ds) if ds else None
+    if is_nih(g):
+        return None                          # per l'NIH la data del catalogo è la fine del bando: mai mostrarla
     return _date(g.get("scadenza"))
 
 
@@ -700,7 +718,7 @@ def later_dues(v, after):
 def closed_for_new(v, today=None):
     """Bando ricontrollato con date trovate, ma tutte passate: chiuso per le nuove domande."""
     today = today or date.today()
-    return ((v or {}).get("version", 1) >= VERIFY_VERSION and v.get("deadline_source") not in (None, "none")
+    return (checked(v) and v.get("deadline_source") not in (None, "none")
             and v.get("deadline_type") != "rolling" and next_due({}, v, today) is None)
 
 
@@ -757,7 +775,7 @@ def refresh_verified(grants, verified, cfg, limit=None, today=None):
         v = verified.get(g["id"])
         if not v:
             return True
-        if v.get("status") == "ok" and v.get("version", 1) < VERIFY_VERSION:
+        if v.get("status") == "ok" and not checked(v):
             return True                     # verificato con le regole vecchie: si rilegge (scadenze, capofila)
         if v.get("coming_soon"):
             return (today - (_date(v.get("checked")) or today)).days >= 7
@@ -1072,14 +1090,14 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     def card(g, v, d, css):
         if d:
             soon = '<span class="soon">CLOSING SOON</span>' if (d - today).days <= 21 else ""
-            label, note = deadline_text(v, d) if v.get("version", 1) >= VERIFY_VERSION else ("Deadline", "")
+            label, note = deadline_text(v, d) if checked(v) else ("Deadline", "")
             when = f"{label} <b>{_fmt_date(d)}</b>{soon}" + (f'<span class="dlnote">{escape(note)}</span>' if note else "")
         elif v.get("deadline_type") == "rolling":
             when = "Deadline <b>rolling, no fixed date</b>"
         else:
             when = "Deadline <b>see official call</b>"
         more = []
-        later = later_dues(v, d) if v.get("version", 1) >= VERIFY_VERSION else []
+        later = later_dues(v, d) if checked(v) else []
         if later:
             more.append("Later deadlines: " + ", ".join(_fmt_date(x) for x in later[:3]))
         resub = [x for x in (_date(y) for y in v.get("resubmission_dates") or []) if x and x >= today]
@@ -1101,7 +1119,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
                 if ps else "")
         if v.get("coming_soon"):
             tag += '<span class="tag soon-tag">COMING SOON</span>'
-        if v and v.get("version", 1) < VERIFY_VERSION:
+        if v and not checked(v):
             tag += '<span class="tag check-tag">DATES BEING CHECKED</span>'
         if not v:
             tag += '<span class="tag check-tag">BEING CHECKED</span>'
