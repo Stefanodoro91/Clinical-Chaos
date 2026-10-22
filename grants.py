@@ -419,6 +419,8 @@ def official_text(g):
         print(f"::notice title=Date Grants.gov::{g.get('id')} | {'synopsis' if data.get('synopsis') else 'forecast'} | {datey}")
         if data.get("forecast") and not data.get("synopsis"):
             parts.append("Note: this is a FORECAST on Grants.gov; dates are estimates, not deadlines.")
+            if syn.get("estApplicationResponseDate"):
+                parts.append(f"Grants.gov estimated application deadline (forecast): {syn['estApplicationResponseDate']}")
         types = [t.get("description", "") for t in (syn.get("applicantTypes") or []) if isinstance(t, dict)]
         if types:
             parts.append("Eligible applicant types: " + "; ".join(types))
@@ -709,6 +711,15 @@ def find_deadlines(g, text, source, source_url, out, today=None):
     return base
 
 
+def forecast_info(text):
+    """Previsione di Grants.gov: la scadenza è solo stimata (si mostra come tale, mai nei post)."""
+    if "this is a FORECAST on Grants.gov" not in text:
+        return {}
+    m = re.search(r"estimated application deadline \(forecast\): ([^.]{0,60})", text)
+    ds = dates_in(m.group(1)) if m else []
+    return {"forecast": True, "est_deadline": ds[0].isoformat() if ds else ""}
+
+
 def next_due(g, v, today=None):
     """Prossima data utile per una nuova domanda; per le voci non ancora ricontrollate, la data del catalogo."""
     today = today or date.today()
@@ -765,6 +776,7 @@ def verify(g, cfg):
         "summary": content._clip(out.get("summary", ""), 700), "coming_soon": coming_soon, **elig,
         "version": VERIFY_VERSION, **dl, "lead": lead, "lead_evidence": lead_ev,
         "deadline_raw": f"{out.get('next_deadline', '')} | {(out.get('deadline_evidence') or '')[:200]}",
+        **forecast_info(text),
     }
 
 
@@ -1109,6 +1121,8 @@ def build_page(grants_list, verified, posted, cfg, today=None):
             when = f"{label} <b>{_fmt_date(d)}</b>{soon}" + (f'<span class="dlnote">{escape(note)}</span>' if note else "")
         elif v.get("deadline_type") == "rolling":
             when = "Deadline <b>rolling, no fixed date</b>"
+        elif v.get("forecast") and _date(v.get("est_deadline")):
+            when = f"Expected deadline <b>~{_fmt_date(_date(v['est_deadline']))}</b><span class=\"dlnote\">estimate, call not yet published</span>"
         else:
             when = "Deadline <b>see official call</b>"
         more = []
@@ -1134,6 +1148,8 @@ def build_page(grants_list, verified, posted, cfg, today=None):
                 if ps else "")
         if v.get("coming_soon"):
             tag += '<span class="tag soon-tag">COMING SOON</span>'
+        if v.get("forecast"):
+            tag += '<span class="tag soon-tag">FORECAST</span>'
         if v and not checked(v):
             tag += '<span class="tag check-tag">DATES BEING CHECKED</span>'
         if not v:
