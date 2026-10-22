@@ -415,6 +415,8 @@ def official_text(g):
             if (re.search(r"response|close|deadline", k, re.I) and not re.search(r"^est|desc$|^responseDate(Str)?$", k, re.I)
                     and isinstance(val, (str, int)) and str(val).strip()):
                 parts.append(f"Grants.gov closing date for applications ({k}): {val}")
+        datey = {k: str(v)[:40] for k, v in syn.items() if re.search(r"date", k, re.I) and isinstance(v, (str, int))}
+        print(f"::notice title=Date Grants.gov::{g.get('id')} | {'synopsis' if data.get('synopsis') else 'forecast'} | {datey}")
         if data.get("forecast") and not data.get("synopsis"):
             parts.append("Note: this is a FORECAST on Grants.gov; dates are estimates, not deadlines.")
         types = [t.get("description", "") for t in (syn.get("applicantTypes") or []) if isinstance(t, dict)]
@@ -784,8 +786,8 @@ def refresh_verified(grants, verified, cfg, limit=None, today=None):
         if not v:
             return True
         if v.get("status") == "ok" and (not checked(v) or (
-                v.get("version", 1) < VERIFY_VERSION and v.get("deadline_source") == "none" and g.get("scadenza")
-                and not is_nih(g))):
+                v.get("deadline_source") == "none" and g.get("scadenza") and not is_nih(g)
+                and v.get("dl_tries", 0) < 2)):
             return True                     # verificato con le regole vecchie: si rilegge (scadenze, capofila)
         if v.get("coming_soon"):
             return (today - (_date(v.get("checked")) or today)).days >= 7
@@ -804,8 +806,11 @@ def refresh_verified(grants, verified, cfg, limit=None, today=None):
             print(f"::notice title=Verifica a metà::tempo esaurito dopo {done} bandi, si riprende al prossimo run")
             break
         try:
+            prev = verified.get(g["id"], {})
             verified[g["id"]] = verify(g, cfg)
             v = verified[g["id"]]
+            if v.get("deadline_source") == "none":
+                v["dl_tries"] = prev.get("dl_tries", 0) + 1
             print(f"::notice title=Bando verificato::{g['id']} | {v['programme']} | {v['eligible_countries']} | Italia: {v['italy']}"
                   f" | date: {','.join(v.get('due_dates') or []) or '-'} ({v.get('deadline_source')}) | catalogo: {g.get('scadenza')}"
                   f" | capofila: {(v.get('lead') or '-')[:60]}")
