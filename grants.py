@@ -754,7 +754,9 @@ def refresh_verified(grants, verified, cfg, limit=None, today=None):
             return v.get("attempts", 1) < 3 and (today - last).days >= 7
         return False
     todo = [g for g in grants if g.get("url") and (not _date(g.get("scadenza")) or _date(g["scadenza"]) >= today) and due(g)]
-    todo.sort(key=lambda g: g.get("scadenza") or "9999")
+    soon = (today + timedelta(days=int(cfg.get("grant_fallback_days_left", 30)))).isoformat()
+    # prima i bandi che potrebbero andare nei post (scadenza ad almeno 30 giorni), poi gli altri
+    todo.sort(key=lambda g: ((g.get("scadenza") or "9999") < soon, g.get("scadenza") or "9999"))
     done = 0
     start, budget = time.time(), float(cfg.get("grant_verify_minutes", 13)) * 60
     for g in todo[:limit]:
