@@ -637,9 +637,13 @@ def find_deadlines(g, text, source, source_url, out, today=None):
     today = today or date.today()
     gid = g.get("id", "")
     if source.startswith("NIH Guide"):
-        res = nih_due_dates(g, text, _RAW.get(source_url, ""), today)
+        raw = _RAW.get(source_url, "")
+        res = nih_due_dates(g, text, raw, today)
         if res["due_dates"] or res["deadline_source"] != "none":
             return res
+        i = raw.lower().find("application due date")
+        snippet = re.sub(r"\s+", " ", raw[i:i + 700]) if i >= 0 else "(sezione non trovata)"
+        print(f"::warning title=Date NIH non lette::{gid} | {snippet[:600]}")
     base = {"due_dates": [], "resubmission_dates": [], "expires": "", "loi_deadline": "", "loi_required": "no",
             "deadline_evidence": "", "deadline_type": out.get("deadline_type") or "not_stated", "deadline_source": "none"}
     if gid.startswith("EU-"):
@@ -655,6 +659,8 @@ def find_deadlines(g, text, source, source_url, out, today=None):
     all_dates = set(dates_in(text))
     nd = _date(out.get("next_deadline"))
     ev = _quoted(out.get("deadline_evidence"), text, 12)
+    if ev and re.search(r"expir|archive|earliest start|merit review|council", ev, re.I):
+        ev = ""                              # data di fine bando o di revisione: non è una scadenza per presentare
     if nd and nd >= today and ev and nd in dates_in(ev):
         later = sorted({d for d in (_date(x) for x in out.get("later_deadlines") or []) if d and d > nd and d in all_dates})
         base.update(due_dates=[nd.isoformat()] + [d.isoformat() for d in later[:4]], deadline_evidence=ev[:300],
