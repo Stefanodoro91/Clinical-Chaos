@@ -376,10 +376,20 @@ def main():
     sha = commit_and_push(rel_paths, f"Slide del {today}")
     base = f"https://raw.githubusercontent.com/{os.environ['GITHUB_REPOSITORY']}/{sha}/"
     urls = [base + p for p in rel_paths]
-    for u in urls:
-        wait_until_public(u)
+    try:
+        for u in urls:
+            wait_until_public(u)
+    except RuntimeError as e:
+        print(f"::error title=Slide non raggiungibili::{e}")
+        sys.exit(1)
 
-    media_id = publish_carousel(urls, caption)
+    try:
+        media_id = publish_carousel(urls, caption)
+    except Exception as e:
+        msg = str(e)[:400]
+        print(f"::error title=Instagram non pubblicato::{msg}")
+        notify("Post non pubblicato su Instagram", f"Il post «{post['title']}» non è uscito: {msg}")
+        sys.exit(1)
     print(f"Pubblicato su Instagram! id={media_id}")
 
     fb_id = None
