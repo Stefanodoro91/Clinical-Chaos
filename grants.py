@@ -35,6 +35,20 @@ Return:
   NOT enough for "yes".
 - italy_evidence: the sentence, copied word for word, that justifies "yes" or "no" ("" if unclear).
 - summary: 50-80 words in English, factual and neutral: aim of the call, what is funded, who can apply.
+- deadline_type: "single" (one submission deadline), "several" (several due dates or cut-offs),
+  "two_stage" (stage-1 proposal, then full proposal by invitation), "rolling" (applications accepted
+  at any time), "not_stated".
+- next_deadline: TODAY is {today}. The first date ON OR AFTER today by which a NEW application (for
+  two-stage calls: the stage-1 proposal) must be SUBMITTED, as YYYY-MM-DD. Never the date the
+  announcement EXPIRES (e.g. NIH "Expiration Date") nor a review or start date. "" if the text gives
+  no such date.
+- deadline_evidence: the sentence from the text, copied word for word, that contains that date ("" if none).
+- later_deadlines: further submission dates for new applications after next_deadline, YYYY-MM-DD (max 4).
+- loi_deadline: date of a letter of intent or pre-application, YYYY-MM-DD, "" if none.
+- loi_required: "yes" if that letter of intent or pre-application is mandatory to apply, else "no".
+- lead_eligibility: who can be the lead applicant / principal investigator (career stage, years since
+  the doctorate, position, nationality or residence), max 160 characters in English; "" if not stated.
+- lead_evidence: the sentence, copied word for word, that states it ("" if none).
 
 OFFICIAL TEXT ({source}):
 {official}
@@ -53,10 +67,21 @@ VERIFY_SCHEMA = {
         "italy_eligible": {"type": "STRING", "enum": ["yes", "no", "unclear"]},
         "italy_evidence": {"type": "STRING"},
         "summary": {"type": "STRING"},
+        "deadline_type": {"type": "STRING", "enum": ["single", "several", "two_stage", "rolling", "not_stated"]},
+        "next_deadline": {"type": "STRING"},
+        "deadline_evidence": {"type": "STRING"},
+        "later_deadlines": {"type": "ARRAY", "items": {"type": "STRING"}},
+        "loi_deadline": {"type": "STRING"},
+        "loi_required": {"type": "STRING", "enum": ["yes", "no"]},
+        "lead_eligibility": {"type": "STRING"},
+        "lead_evidence": {"type": "STRING"},
     },
     "required": ["is_open_call", "title", "programme", "eligible_countries", "countries_evidence",
-                 "italy_eligible", "italy_evidence", "summary"],
+                 "italy_eligible", "italy_evidence", "summary", "deadline_type", "next_deadline",
+                 "deadline_evidence", "later_deadlines", "loi_deadline", "loi_required", "lead_eligibility",
+                 "lead_evidence"],
 }
+VERIFY_VERSION = 2          # 2 = scadenze lette dal testo ufficiale (non la data di fine bando) e requisiti del capofila
 
 PROMPT = """You write an Instagram carousel for "{brand}", a page for researchers and health professionals
 about clinical research and research methodology. The post informs followers about ONE research funding
@@ -150,8 +175,12 @@ def candidates(grants, posted, verified, cfg, today=None):
         out = []
         for g in grants:
             v = verified.get(g.get("id"), {})
-            deadline = _date(g.get("scadenza"))
-            if (v.get("status") == "ok" and v.get("is_open_call") != "no" and not v.get("coming_soon")
+            deadline = next_due(g, v, today)
+            loi = _date(v.get("loi_deadline"))
+            if loi and v.get("loi_required") == "yes" and loi < today + timedelta(days=14):
+                continue                     # pre-domanda obbligatoria già chiusa o troppo vicina
+            if (v.get("status") == "ok" and v.get("version", 1) >= VERIFY_VERSION
+                    and v.get("is_open_call") != "no" and not v.get("coming_soon")
                     and g.get("rilevanza") in RELEVANCE_ORDER
                     and deadline and deadline >= today + timedelta(days=min_days)
                     and g.get("id") not in done and g.get("url")):
@@ -170,7 +199,7 @@ def candidates(grants, posted, verified, cfg, today=None):
         fresh = [g for g in out if fam(g) not in recent]
         out = fresh or out                           # possibilmente nessun programma degli ultimi 3 post
         if out:
-            return sorted(out, key=lambda g: (RELEVANCE_ORDER[g["rilevanza"]], g["scadenza"]))
+            return sorted(out, key=lambda g: (RELEVANCE_ORDER[g["rilevanza"]], next_due(g, verified[g["id"]], today)))
     return []
 
 
@@ -324,9 +353,13 @@ def html_to_text(h):
     return re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", h))).strip()
 
 
+_RAW = {}   # url -> html della pagina ufficiale (serve per leggere le tabelle delle date NIH)
+
+
 def _get(url):
     r = requests.get(url, headers=HEADERS, timeout=45)
     r.raise_for_status()
+    _RAW[url] = r.text
     return r.text
 
 
@@ -352,7 +385,11 @@ def official_text(g):
             meta = v.get("metadata") or {}
             if topic in (meta.get("identifier") or []):
                 desc = (meta.get("descriptionByte") or [""])[0]
-                return html_to_text(desc), f"EU Funding & Tenders Portal, topic {topic}", g["url"]
+                dates = sorted({str(x)[:10] for x in (meta.get("deadlineDate") or []) if re.match(r"\d{4}-\d\d-\d\d", str(x))})
+                model = " ".join(str(x) for x in (meta.get("deadlineModel") or []))
+                head = (f"Deadline model: {model or 'not stated'}. Deadline dates: {', '.join(dates) or 'not stated'}. "
+                        if dates or model else "")
+                return head + html_to_text(desc), f"EU Funding & Tenders Portal, topic {topic}", g["url"]
         raise RuntimeError(f"topic {topic} non trovato nel portale UE")
     m = re.search(r"grants\.gov/search-results-detail/(\d+)", g.get("url") or "")
     if m:   # bandi Grants.gov non NIH: scheda ufficiale dall'API di Grants.gov (la pagina web usa JavaScript)
@@ -361,10 +398,13 @@ def official_text(g):
         data = (r.json() or {}).get("data") or {}
         syn = data.get("synopsis") or data.get("forecast") or {}
         parts = [str(data.get("opportunityTitle") or "")]
-        for k in ("synopsisDesc", "forecastDesc", "applicantEligibilityDesc", "additionalEligibilityInfo",
-                  "agencyName", "fundingDescLinkDesc"):
+        for k in ("responseDate", "responseDateStr", "responseDateDesc", "synopsisDesc", "forecastDesc", "applicantEligibilityDesc",
+                  "additionalEligibilityInfo", "agencyName", "fundingDescLinkDesc"):
             if syn.get(k):
-                parts.append(f"{k}: {html_to_text(str(syn[k]))}")
+                label = {"responseDate": "Grants.gov closing date for applications",
+                         "responseDateStr": "Grants.gov closing date for applications",
+                         "responseDateDesc": "Grants.gov explanation of the closing date"}.get(k, k)
+                parts.append(f"{label}: {html_to_text(str(syn[k]))}")
         types = [t.get("description", "") for t in (syn.get("applicantTypes") or []) if isinstance(t, dict)]
         if types:
             parts.append("Eligible applicant types: " + "; ".join(types))
@@ -483,14 +523,192 @@ def check_eligibility(g, text, out):
             "countries_evidence": c_ev[:400], "italy": italy, "italy_evidence": i_ev[:400]}
 
 
+# ---------------------------------------------------------------- scadenze (date utili per presentare domanda)
+MONTHS = {m: i for i, ms in enumerate([("jan", "january"), ("feb", "february"), ("mar", "march"), ("apr", "april"),
+                                        ("may",), ("jun", "june"), ("jul", "july"), ("aug", "august"),
+                                        ("sep", "sept", "september"), ("oct", "october"), ("nov", "november"),
+                                        ("dec", "december")], start=1) for m in ms}
+_MON = r"(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sept?(?:ember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?"
+RX_MDY = re.compile(_MON + r"\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})", re.I)
+RX_DMY = re.compile(r"\b(\d{1,2})(?:st|nd|rd|th)?\s+" + _MON + r",?\s+(\d{4})", re.I)
+RX_ISO = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})\b")
+RX_NUM = re.compile(r"\b(\d{1,2})[./](\d{1,2})[./](\d{4})\b")
+
+# date standard NIH per codice di attività: (nuove domande, resubmission); fonte: grants.nih.gov, Standard Due Dates
+NIH_STANDARD = [
+    (r"R01|U01", ((2, 5), (6, 5), (10, 5)), ((3, 5), (7, 5), (11, 5))),
+    (r"K\d\d", ((2, 12), (6, 12), (10, 12)), ((3, 12), (7, 12), (11, 12))),
+    (r"R03|R21|R33|R34|R36|U34|UH2|UH3", ((2, 16), (6, 16), (10, 16)), ((3, 16), (7, 16), (11, 16))),
+    (r"R15", ((2, 25), (6, 25), (10, 25)), None),
+    (r"F\d\d", ((4, 8), (8, 8), (12, 8)), None),
+    (r"R13|U13", ((4, 12), (8, 12), (12, 12)), None),
+    (r"R4[1-4]|U4[34]|UT[12]|SB1|UB1", ((1, 5), (4, 5), (9, 5)), None),
+    (r"P\d\d|T\d\d|D\d\d|R18|U18|R25|R24|U19|U24|U2C|U54|UG1|U10", ((1, 25), (5, 25), (9, 25)), None),
+]
+
+
+def dates_in(s):
+    """Tutte le date scritte in un testo (mese in lettere in inglese, ISO, gg/mm/aaaa)."""
+    out = []
+    for m in RX_MDY.finditer(s or ""):
+        out.append((int(m.group(3)), MONTHS.get(m.group(1).lower().rstrip(".")[:3] if m.group(1).lower()[:4] != "sept" else "sep"), int(m.group(2))))
+    for m in RX_DMY.finditer(s or ""):
+        out.append((int(m.group(3)), MONTHS.get(m.group(2).lower().rstrip(".")[:3] if m.group(2).lower()[:4] != "sept" else "sep"), int(m.group(1))))
+    for m in RX_ISO.finditer(s or ""):
+        out.append((int(m.group(1)), int(m.group(2)), int(m.group(3))))
+    for m in RX_NUM.finditer(s or ""):
+        out.append((int(m.group(3)), int(m.group(2)), int(m.group(1))))
+    res = []
+    for y, mo, d in out:
+        try:
+            res.append(date(y, mo, d))
+        except (TypeError, ValueError):
+            pass
+    return res
+
+
+def _nih_activity(g, text):
+    for s in (g.get("titolo") or "", text[:3000]):
+        m = re.search(r"\(([A-Z]\d{2}[A-Z]?)(?:/[A-Z]\d{2})?\b", s) or re.search(r"Activity Code\W+([A-Z]\d{2})", s)
+        if m:
+            return m.group(1)
+    return ""
+
+
+def nih_due_dates(g, text, html, today):
+    """Date di presentazione dalle «Key Dates» del NIH Guide: tabella delle date, oppure «Standard dates apply»
+    con il calendario standard NIH del codice di attività, limitato tra apertura e scadenza del bando."""
+    def first(rx):
+        m = re.search(rx, text, re.I)
+        ds = dates_in(m.group(1)) if m else []
+        return ds[0] if ds else None
+    expires = first(r"Expiration Date\W{0,4}(.{0,40})")
+    opens = first(r"Open Date \(Earliest Submission Date\)\W{0,4}(.{0,40})")
+    loi_m = re.search(r"Letter of Intent Due Date\(s\)\W{0,4}(.{0,160})", text, re.I)
+    loi = [d for d in dates_in(loi_m.group(1)) if d >= today] if loi_m else []
+    new, resub, evidence = [], [], ""
+    i = html.lower().find("application due date") if html else -1
+    region_html = html[i:i + 20000] if i >= 0 else ""
+    region_text = html_to_text(region_html)[:3000] if region_html else ""
+    if region_html and not re.search(r"standard dates apply", region_text[:1500], re.I):
+        table = re.search(r"(?is)<table.*?</table>", region_html)
+        rows = re.findall(r"(?is)<tr[^>]*>(.*?)</tr>", table.group(0)) if table else []
+        col_new, col_res = 0, 1
+        for row in rows:
+            cells = [html_to_text(c) for c in re.findall(r"(?is)<t[dh][^>]*>(.*?)</t[dh]>", row)]
+            low = [c.lower() for c in cells]
+            if any(c.strip().startswith("new") for c in low):
+                col_new = next(k for k, c in enumerate(low) if c.strip().startswith("new"))
+                col_res = next((k for k, c in enumerate(low) if "resubmission" in c or "renewal" in c), -1)
+                continue
+            if len(cells) > col_new:
+                new += dates_in(cells[col_new])
+            if 0 <= col_res < len(cells):
+                resub += dates_in(cells[col_res])
+        if not rows:   # date scritte nel testo, senza tabella
+            new = dates_in(region_text[:600])
+        evidence = "NIH Guide, Key Dates: application due dates for new applications"
+    elif region_text:
+        code = _nih_activity(g, text)
+        for rx, n_dates, r_dates in NIH_STANDARD:
+            if code and re.fullmatch(rx, code):
+                start, end = (opens or today), (expires or today + timedelta(days=3 * 365))
+                for y in range(start.year, end.year + 1):
+                    new += [date(y, mo, d) for mo, d in n_dates]
+                    resub += [date(y, mo, d) for mo, d in (r_dates or n_dates)]
+                new = [d for d in new if start <= d <= end]
+                resub = [d for d in resub if start <= d <= end]
+                evidence = f"NIH Guide: standard due dates apply ({code}); NIH standard calendar until the expiration date"
+                break
+    if expires:
+        new = [d for d in new if d <= expires]
+        resub = [d for d in resub if d <= expires]
+    return {"due_dates": sorted({d.isoformat() for d in new}), "resubmission_dates": sorted({d.isoformat() for d in resub}),
+            "expires": expires.isoformat() if expires else "", "loi_deadline": loi[0].isoformat() if loi else "",
+            "loi_required": "no", "deadline_evidence": evidence,
+            "deadline_type": "several" if len(set(new)) > 1 else ("single" if new else "not_stated"),
+            "deadline_source": "nih_key_dates" if new else "none"}
+
+
+def find_deadlines(g, text, source, source_url, out, today=None):
+    """Date utili per presentare una nuova domanda, lette dal testo ufficiale (mai la data di fine bando).
+    NIH e UE con regole fisse; per le altre fonti la data indicata da Gemini vale solo se compare nella frase
+    citata e la frase compare nel testo ufficiale."""
+    today = today or date.today()
+    gid = g.get("id", "")
+    if source.startswith("NIH Guide"):
+        res = nih_due_dates(g, text, _RAW.get(source_url, ""), today)
+        if res["due_dates"] or res["deadline_source"] != "none":
+            return res
+    base = {"due_dates": [], "resubmission_dates": [], "expires": "", "loi_deadline": "", "loi_required": "no",
+            "deadline_evidence": "", "deadline_type": out.get("deadline_type") or "not_stated", "deadline_source": "none"}
+    if gid.startswith("EU-"):
+        m = re.search(r"Deadline model: ([^.]*)\. Deadline dates: ([^.]*)\.", text)
+        if m:
+            ds = sorted(d for d in dates_in(m.group(2)))
+            two = "two" in m.group(1).lower()
+            keep = ds[:1] if two else ds          # due fasi: conta la scadenza della fase 1
+            base.update(due_dates=[d.isoformat() for d in keep], deadline_source="eu_portal",
+                        deadline_type="two_stage" if two else ("several" if len(keep) > 1 else "single"),
+                        deadline_evidence=f"EU Funding & Tenders Portal: {m.group(1).strip()}, deadline {', '.join(d.isoformat() for d in ds)}")
+            return base
+    all_dates = set(dates_in(text))
+    nd = _date(out.get("next_deadline"))
+    ev = _quoted(out.get("deadline_evidence"), text, 12)
+    if nd and nd >= today and ev and nd in dates_in(ev):
+        later = sorted({d for d in (_date(x) for x in out.get("later_deadlines") or []) if d and d > nd and d in all_dates})
+        base.update(due_dates=[nd.isoformat()] + [d.isoformat() for d in later[:4]], deadline_evidence=ev[:300],
+                    deadline_source="official_text")
+    else:
+        cat = _date(g.get("scadenza"))      # data del catalogo: vale solo se compare nel testo ufficiale
+        if cat and cat >= today and cat in all_dates and not is_nih(g):
+            base.update(due_dates=[cat.isoformat()], deadline_source="catalogue_confirmed",
+                        deadline_evidence="Date from the catalogue, found in the official text")
+    loi = _date(out.get("loi_deadline"))
+    if loi and loi in all_dates:
+        base.update(loi_deadline=loi.isoformat(), loi_required=out.get("loi_required") or "no")
+    if out.get("deadline_type") == "rolling" and not base["due_dates"]:
+        base.update(deadline_type="rolling", deadline_source="official_text")
+    return base
+
+
+def next_due(g, v, today=None):
+    """Prossima data utile per una nuova domanda; per le voci non ancora ricontrollate, la data del catalogo."""
+    today = today or date.today()
+    if (v or {}).get("version", 1) >= VERIFY_VERSION:
+        ds = [d for d in (_date(x) for x in v.get("due_dates") or []) if d and d >= today]
+        return min(ds) if ds else None
+    return _date(g.get("scadenza"))
+
+
+def later_dues(v, after):
+    return [d for d in (_date(x) for x in (v or {}).get("due_dates") or []) if d and after and d > after]
+
+
+def closed_for_new(v, today=None):
+    """Bando ricontrollato con date trovate, ma tutte passate: chiuso per le nuove domande."""
+    today = today or date.today()
+    return ((v or {}).get("version", 1) >= VERIFY_VERSION and v.get("deadline_source") not in (None, "none")
+            and v.get("deadline_type") != "rolling" and next_due({}, v, today) is None)
+
+
+def lead_line(out, text):
+    ev = _quoted(out.get("lead_evidence"), text, 20)
+    lead = (out.get("lead_eligibility") or "").strip()
+    return (lead[:160], ev[:300]) if lead and ev else ("", "")
+
+
 def verify(g, cfg):
     """Legge la call ufficiale e restituisce i dati verificati del bando (per la pagina e per i post)."""
     text, source, source_url = official_text(g)
     if len(text) < 400:
         raise RuntimeError(f"testo ufficiale troppo breve ({len(text)} caratteri) da {source}")
     data = "\n".join(f"{k}: {g.get(k)}" for k in FIELDS if g.get(k))
-    out = content.gemini_json([{"text": VERIFY_PROMPT.format(source=source, official=text[:60000], data=data)}],
+    out = content.gemini_json([{"text": VERIFY_PROMPT.format(source=source, official=text[:60000], data=data,
+                                                              today=date.today().isoformat())}],
                               VERIFY_SCHEMA, 0.1)
+    dl = find_deadlines(g, text, source, source_url, out)
+    lead, lead_ev = lead_line(out, text)
     elig = check_eligibility(g, text, out)
     coming_soon = is_nih(g) and not source.startswith("NIH Guide") and not NIH_FOREIGN.search(text)
     if coming_soon:
@@ -506,6 +724,7 @@ def verify(g, cfg):
         "title": content._clip(out.get("title") or g.get("titolo") or "", 140),
         "programme": content._clip(programme, 120), "programme_family": programme_family(g),
         "summary": content._clip(out.get("summary", ""), 700), "coming_soon": coming_soon, **elig,
+        "version": VERIFY_VERSION, **dl, "lead": lead, "lead_evidence": lead_ev,
     }
 
 
@@ -526,6 +745,8 @@ def refresh_verified(grants, verified, cfg, limit=None, today=None):
         v = verified.get(g["id"])
         if not v:
             return True
+        if v.get("status") == "ok" and v.get("version", 1) < VERIFY_VERSION:
+            return True                     # verificato con le regole vecchie: si rilegge (scadenze, capofila)
         if v.get("coming_soon"):
             return (today - (_date(v.get("checked")) or today)).days >= 7
         if v.get("status") == "failed":
@@ -539,7 +760,9 @@ def refresh_verified(grants, verified, cfg, limit=None, today=None):
         try:
             verified[g["id"]] = verify(g, cfg)
             v = verified[g["id"]]
-            print(f"::notice title=Bando verificato::{g['id']} | {v['programme']} | {v['eligible_countries']} | Italia: {v['italy']}")
+            print(f"::notice title=Bando verificato::{g['id']} | {v['programme']} | {v['eligible_countries']} | Italia: {v['italy']}"
+                  f" | date: {','.join(v.get('due_dates') or []) or '-'} ({v.get('deadline_source')}) | catalogo: {g.get('scadenza')}"
+                  f" | capofila: {(v.get('lead') or '-')[:60]}")
         except Exception as e:
             if "Gemini non disponibile" in str(e) or "429" in str(e):
                 print(f"::warning title=Quota Gemini esaurita::verifica sospesa, riprende al prossimo run ({done} bandi verificati)")
@@ -551,6 +774,16 @@ def refresh_verified(grants, verified, cfg, limit=None, today=None):
         done += 1
         time.sleep(7)   # resta sotto il limite di richieste al minuto di Gemini
     return done
+
+
+def deadline_text(v, d):
+    """(etichetta, nota) della scadenza mostrata: prossima di più date, fase 1, data del catalogo confermata."""
+    t = (v or {}).get("deadline_type")
+    if t == "two_stage":
+        return "Stage 1 deadline", "two-stage call"
+    if later_dues(v, d) or len((v or {}).get("due_dates") or []) > 1:
+        return "Next deadline", "new applications"
+    return "Deadline", ""
 
 
 def build_post(g, v, cfg):
@@ -571,11 +804,20 @@ def build_post(g, v, cfg):
     if len(slides) < 2 or not out.get("title"):
         raise RuntimeError(f"Testo del bando incompleto per {g['id']}")
 
-    deadline = _date(g["scadenza"])
+    deadline = next_due(g, v)
+    if not deadline:
+        raise RuntimeError(f"Nessuna data utile verificata per {g['id']}")
     title = clip(out["title"], 90)
     takeaway = clip(out.get("takeaway", ""), 160) or "Worth a look if this is your research area."
+    dl_label, dl_note = deadline_text(v, deadline)
     facts = [("Programme", clip(v["programme"], 90)), ("Funder", clip(funder_line(g), 80)),
-             ("Deadline", _fmt_date(deadline))]
+             (dl_label, _fmt_date(deadline) + (f" ({dl_note})" if dl_note else ""))]
+    later = later_dues(v, deadline)
+    if later:
+        facts.append(("Later deadlines", ", ".join(_fmt_date(d) for d in later[:3])))
+    loi = _date(v.get("loi_deadline"))
+    if loi:
+        facts.append(("Letter of intent" + (" (required)" if v.get("loi_required") == "yes" else ""), _fmt_date(loi)))
     per_project = _money(g.get("budget_progetto"), g.get("valuta"))
     total = _money(g.get("budget_totale"), g.get("valuta"))
     if per_project:
@@ -585,6 +827,8 @@ def build_post(g, v, cfg):
     if (out.get("coverage") or "").strip():
         facts.append(("Coverage", clip(out["coverage"], 60)))
     facts.append(("Eligible countries", clip(v["eligible_countries"], 120)))
+    if v.get("lead"):
+        facts.append(("Who can lead", clip(v["lead"], 160)))
 
     countries_line = f"Eligible countries: {v['eligible_countries']}"
     if v.get("countries_evidence"):
@@ -592,7 +836,11 @@ def build_post(g, v, cfg):
     caption = (f"{out.get('caption', '').strip()[:500]}\n\n"
                f"Programme: {v['programme']}\n"
                f"{countries_line}\n"
-               f"Deadline: {_fmt_date(deadline)}\n"
+               + (f"Who can lead: {v['lead']}\n" if v.get("lead") else "")
+               + f"{dl_label}: {_fmt_date(deadline)}" + (f" ({dl_note})" if dl_note else "")
+               + (f"; later deadlines: {', '.join(_fmt_date(d) for d in later[:3])}" if later else "")
+               + (f"; letter of intent{' (required)' if v.get('loi_required') == 'yes' else ''}: {_fmt_date(loi)}" if loi else "")
+               + "\n"
                f"Official call: {g['url']}\n"
                + (f"Looking for consortium partners? EU partner search: {partner_search(g)[0]} (topic ID: {partner_search(g)[1]})\n"
                   if partner_search(g) else "")
@@ -695,6 +943,8 @@ PAGE = """<!doctype html>
   .deadline {{ font-size: 14px; color: var(--soft); }}
   .deadline b {{ color: var(--text); font-size: 16px; }}
   .soon {{ color: var(--accent); font-weight: 800; font-size: 12px; margin-left: 6px; }}
+  .dlnote {{ color: var(--muted); font-size: 12px; margin-left: 6px; }}
+  .dates {{ color: var(--soft); font-size: 13px; margin: 10px 0 0; }}
   a.btn {{ background: var(--accent); color: var(--bg); text-decoration: none; font-weight: 800; font-size: 15px;
            padding: 11px 18px; border-radius: 12px; }}
   .call.other a.btn {{ background: var(--teal); }}
@@ -761,9 +1011,11 @@ def page_entries(grants_list, verified, today=None):
     out = []
     for g in grants_list:
         v = verified.get(g.get("id"), {})
-        d = _date(g.get("scadenza"))
+        d = next_due(g, v, today) if v.get("status") == "ok" else _date(g.get("scadenza"))
         if not (g.get("_attivo", True) and g.get("url")) or (d is not None and d < today):
             continue
+        if v.get("status") == "ok" and closed_for_new(v, today):
+            continue                         # date di presentazione tutte passate: chiuso alle nuove domande
         if v.get("status") == "ok":
             if v.get("is_open_call") != "no":
                 out.append((g, v, d))
@@ -802,9 +1054,27 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     def card(g, v, d, css):
         if d:
             soon = '<span class="soon">CLOSING SOON</span>' if (d - today).days <= 21 else ""
-            when = f"Deadline <b>{_fmt_date(d)}</b>{soon}"
+            label, note = deadline_text(v, d) if v.get("version", 1) >= VERIFY_VERSION else ("Deadline", "")
+            when = f"{label} <b>{_fmt_date(d)}</b>{soon}" + (f'<span class="dlnote">{escape(note)}</span>' if note else "")
+        elif v.get("deadline_type") == "rolling":
+            when = "Deadline <b>rolling, no fixed date</b>"
         else:
             when = "Deadline <b>see official call</b>"
+        more = []
+        later = later_dues(v, d) if v.get("version", 1) >= VERIFY_VERSION else []
+        if later:
+            more.append("Later deadlines: " + ", ".join(_fmt_date(x) for x in later[:3]))
+        resub = [x for x in (_date(y) for y in v.get("resubmission_dates") or []) if x and x >= today]
+        if resub:
+            more.append(f"Resubmissions: next {_fmt_date(resub[0])}")
+        loi = _date(v.get("loi_deadline"))
+        if loi and loi >= today:
+            more.append(f"Letter of intent{' (required)' if v.get('loi_required') == 'yes' else ''}: {_fmt_date(loi)}")
+        exp = _date(v.get("expires"))
+        if exp and later:
+            more.append(f"Call expires {_fmt_date(exp)}")
+        dates_html = f'<p class="dates">{escape(" · ".join(more))}</p>' if more else ""
+        lead_html = (f'      <p class="countries"><b>Who can lead:</b> {escape(v["lead"])}</p>\n' if v.get("lead") else "")
         tag = '<span class="tag">ON INSTAGRAM</span>' if g["id"] in featured else ""
         ps = partner_search(g)
         partners = (f'<p class="partners">Looking for consortium partners? Search topic <code>{escape(ps[1])}</code> in the '
@@ -813,6 +1083,8 @@ def build_page(grants_list, verified, posted, cfg, today=None):
                 if ps else "")
         if v.get("coming_soon"):
             tag += '<span class="tag soon-tag">COMING SOON</span>'
+        if v and v.get("version", 1) < VERIFY_VERSION:
+            tag += '<span class="tag check-tag">DATES BEING CHECKED</span>'
         if not v:
             tag += '<span class="tag check-tag">BEING CHECKED</span>'
             body = '<p class="pending">Details are being checked against the official call.</p>'
@@ -822,6 +1094,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
                      if ev else "")
             body = (f'{f"<p class=\"summary\">{escape(v["summary"])}</p>" if v.get("summary") else ""}\n'
                     f'      <p class="countries"><b>Eligible countries:</b> {escape(v.get("eligible_countries") or "check the call")}</p>\n'
+                    f'{lead_html}'
                     f'      {proof}')
         title = v.get("title") or g.get("titolo") or ""
         share = share_button(site_url(cfg, "calls#" + card_anchor(g["id"])),
@@ -839,6 +1112,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
         <div class="deadline">{when}</div>
         <div class="btns">{share}{find}<a class="btn" href="{escape(g["url"], quote=True)}" target="_blank" rel="noopener">Official call &rarr;</a></div>
       </div>
+      {dates_html}
     </article>"""
 
     def programmes(items, css):
