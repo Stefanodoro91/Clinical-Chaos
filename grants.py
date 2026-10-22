@@ -411,6 +411,12 @@ def official_text(g):
                          "responseDateStr": "Grants.gov closing date for applications",
                          "responseDateDesc": "Grants.gov explanation of the closing date"}.get(k, k)
                 parts.append(f"{label}: {html_to_text(str(syn[k]))}")
+        for k, val in syn.items():            # altre date di chiusura della scheda (i nomi dei campi variano)
+            if (re.search(r"response|close|deadline", k, re.I) and not re.search(r"^est|desc$|^responseDate(Str)?$", k, re.I)
+                    and isinstance(val, (str, int)) and str(val).strip()):
+                parts.append(f"Grants.gov closing date for applications ({k}): {val}")
+        if data.get("forecast") and not data.get("synopsis"):
+            parts.append("Note: this is a FORECAST on Grants.gov; dates are estimates, not deadlines.")
         types = [t.get("description", "") for t in (syn.get("applicantTypes") or []) if isinstance(t, dict)]
         if types:
             parts.append("Eligible applicant types: " + "; ".join(types))
