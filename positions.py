@@ -36,7 +36,9 @@ RX_REHAB = re.compile(
     r"clinical (research|trials?|epidemiolog|science|academic|investigat)|trialist|biostatist|epidemiolog|"
     r"health (services|data|technolog|informatics)|digital health|implementation science|"
     r"biomedical engineer|bioengineer|clinical engineer|rehabilitation engineer|medical (devices?|imaging|physics|technolog)|"
-    r"ricerca clinica|ingegneria (biomedica|clinica)", re.I)
+    r"ricerca clinica|ingegneria (biomedica|clinica)|"
+    # settori scientifico-disciplinari italiani: scienze riabilitative, statistica medica, bioingegneria
+    r"MED/48|MEDS-26|MED/01|MEDS-24|ING-IND/34|IBIO-01|sperimentazion\w* clinic|scienze riabilitative", re.I)
 # per la pertinenza «media»: termini riabilitativi clinici; «rehabilitation» da solo non basta
 # (esclude riabilitazione di detenuti, animali, edifici)
 RX_CLINICAL_REHAB = re.compile(
