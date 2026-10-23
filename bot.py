@@ -835,6 +835,34 @@ def corrections():
         commit_and_push([CORRECTIONS_FILE.name], "Rettifiche dei post pubblicate")
 
 
+def weekly_digest():
+    """Lunedì: messaggio per il canale WhatsApp e resoconto settimanale, in una issue (email) chiusa subito."""
+    import weekly
+    posted, queue = load(POSTED_FILE, []), load(QUEUE_FILE, [])
+    grants_list, verified = grants.fetch(CONFIG), grants.load_verified()
+    archive = positions.load_archive()
+    msg, n_calls, n_jobs = weekly.whatsapp_message(grants_list, verified, archive, posted, CONFIG)
+    rep_md = weekly.report(grants_list, verified, archive, posted, queue, CONFIG)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    folder = ROOT / "weekly"
+    folder.mkdir(exist_ok=True)
+    (folder / f"whatsapp-{today}.txt").write_text(msg, encoding="utf-8")
+    (folder / f"report-{today}.md").write_text(rep_md, encoding="utf-8")
+    body = (f"### Messaggio per il canale WhatsApp\n\nCopia e incolla ({n_calls} bandi e {n_jobs} posizioni nuove):\n\n"
+            f"```\n{msg}\n```\n\n{rep_md}")
+    print(body)
+    if DRY_RUN:
+        return
+    commit_and_push(["weekly"], f"Resoconto settimanale {today}")
+    token, repo = os.environ.get("GITHUB_TOKEN"), os.environ.get("GITHUB_REPOSITORY")
+    if token and repo:
+        h = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
+        r = requests.post(f"https://api.github.com/repos/{repo}/issues", headers=h, timeout=30,
+                          json={"title": f"Settimana del {today}: messaggio WhatsApp e resoconto", "body": body[:60000]})
+        if r.ok:   # chiusa subito: l'email arriva comunque, la lista delle issue resta pulita
+            requests.patch(r.json()["url"], headers=h, json={"state": "closed"}, timeout=30)
+
+
 if __name__ == "__main__":
     if "--status" in sys.argv:
         status()
@@ -844,6 +872,8 @@ if __name__ == "__main__":
         rebuild()
     elif "--token" in sys.argv:
         check_token()
+    elif "--weekly" in sys.argv:
+        weekly_digest()
     elif "--corrections" in sys.argv:
         corrections()
     elif "--positions" in sys.argv:
