@@ -128,6 +128,7 @@ def build_page(data, cfg, today=None):
     today = today or date.today()
     THUMBS.mkdir(parents=True, exist_ok=True)
     cats = {}
+    data = {k: e for k, e in data.items() if not e.get("duplicate_of")}      # post ripetuti: una sola voce
     for e in sorted(data.values(), key=lambda e: e.get("date", ""), reverse=True):
         cats.setdefault(e.get("category") or "Research methods", []).append(e)
     sections = []

@@ -674,7 +674,8 @@ def write_home():
     methods = methodology.load()
     (ROOT / "docs" / "methodology.html").write_text(grants.add_decor(methodology.build_page(methods, CONFIG)), encoding="utf-8")
     HOME_FILE.write_text(grants.add_decor(grants.build_home(n_calls, int(m.group(1)) if m else 0, n_positions, CONFIG,
-                                                            n_methods=len(methods))), encoding="utf-8")
+                                                            n_methods=sum(1 for e in methods.values() if not e.get("duplicate_of")))),
+                         encoding="utf-8")
     write_sitemap()
     return HOME_FILE.relative_to(ROOT).as_posix()
 
