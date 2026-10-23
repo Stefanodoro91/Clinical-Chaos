@@ -520,10 +520,30 @@ def main():
             print(f"::warning title=Facebook non pubblicato::{str(e)[:300]}")
             notify("Post non pubblicato su Facebook", f"Il post «{post['title']}» è uscito su Instagram ma non su Facebook: {e}")
 
+    # stessi post su Bluesky e Threads, se i secret ci sono (un errore non blocca nulla)
+    import social
+    kind_link = {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",
+                 "research": f"methodology#m-{post['id']}"}.get(post.get("kind") or "research", "")
+    link = grants.site_url(CONFIG, kind_link)
+    bsky_uri = threads_id = None
+    if social.bluesky_enabled():
+        try:
+            bsky_uri = social.publish_bluesky([ROOT / p for p in rel_paths], {**post, "caption": caption}, link)
+            print(f"::notice title=Bluesky::pubblicato {bsky_uri}")
+        except Exception as e:
+            print(f"::warning title=Bluesky non pubblicato::{str(e)[:300]}")
+    if social.threads_enabled():
+        try:
+            threads_id = social.publish_threads(urls, {**post, "caption": caption}, link)
+            print(f"::notice title=Threads::pubblicato {threads_id}")
+        except Exception as e:
+            print(f"::warning title=Threads non pubblicato::{str(e)[:300]}")
+
     queue = [q for q in queue if q["id"] != post["id"]]
     posted.append({"date": today, "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                    "id": post["id"], "title": post["title"],
                    "source": post["source"], "media_id": media_id, "facebook_id": fb_id,
+                   **({"bluesky_uri": bsky_uri} if bsky_uri else {}), **({"threads_id": threads_id} if threads_id else {}),
                    **({"kind": "positions", "position_ids": post["position_ids"]} if post.get("kind") == "positions" else {}),
                    **({"kind": "announcement"} if post.get("kind") == "announcement" else {}),
                    **({"kind": "grant", "grant_id": post["grant_id"], "url": post["url"],
