@@ -577,54 +577,6 @@
     "source": "Parametric vs non parametric.pdf"
   },
   {
-    "title": "Why Nonparametric Tests Shine in Small Samples",
-    "title_highlight": "Shine in Small Samples",
-    "category": "Statistics",
-    "slides": [
-      {
-        "heading": "The Small Sample Reality",
-        "body": "Because of cost and potential risks to humans and animals, many sample sizes in the biomedical literature are far from infinite, often remaining under twenty-five per group.",
-        "image_prompt": "a small group of twenty five simple figures standing inside a fenced enclosure next to a large budget document marked with warning symbols",
-        "highlight": "",
-        "source": ""
-      },
-      {
-        "heading": "WRST in Small Samples",
-        "body": "Monte Carlo experiments found that for tests of location shift, the Wilcoxon Rank Sum Test was the best test in almost all cases, matching or exceeding t-test power.",
-        "image_prompt": "a researcher examining small sample containers through a magnifying glass while sorting them into two neat rows on a wooden workbench",
-        "highlight": "",
-        "source": ""
-      },
-      {
-        "heading": "Handling Non-Normality in Small Trials",
-        "body": "Under extreme asymmetry or point mass distributions, nonparametric tests demonstrated large power advantages over the t-test even with small sample sizes.",
-        "image_prompt": "a split group of simple figures stepping over uneven terrain toward two distinct markers, guided by bold directional arrows",
-        "highlight": "",
-        "source": ""
-      }
-    ],
-    "takeaway": "In small samples with non-normal data, nonparametric tests offer remarkable power advantages over parametric alternatives.",
-    "takeaway_highlight": "remarkable power advantages",
-    "references": [
-      "Tanizaki, H. (1997). Power comparison of nonparametric tests: small sample properties from Monte Carol experiments. J Appl Stat, 24, 603-632.",
-      "Bridge, P., & Sawilowsky, S. (1999). Increasing physicians’ awareness of the impact of statistics on research outcomes. J Clin Epidemiol, 52, 229-235."
-    ],
-    "caption": "Small sample sizes are a persistent challenge in clinical research, driven by ethical constraints and high costs. When data violate normality assumptions in these tight cohorts, standard parametric tests can mislead us. Fortunately, evidence from Monte Carlo studies shows nonparametric alternatives maintain robust performance. How do you handle small, skewed cohorts in your studies?",
-    "hashtags": [
-      "#ClinicalTrials",
-      "#Biostatistics",
-      "#ResearchMethods",
-      "#SmallSamples",
-      "#Statistics",
-      "#DataAnalysis",
-      "#ResearchEthics",
-      "#Methodology"
-    ],
-    "source_hint": "page 2",
-    "id": "6ceae2dd",
-    "source": "Parametric vs non parametric.pdf"
-  },
-  {
     "title": "Linear or Logistic Regression? Look at Your Outcome",
     "title_highlight": "Look at Your Outcome",
     "category": "Statistics",
