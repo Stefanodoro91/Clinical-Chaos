@@ -527,5 +527,148 @@
     "source_hint": "page 4",
     "id": "ef26ed8a",
     "source": "Stroke Outcomes"
+  },
+  {
+    "title": "Why Even One Outlier Destroys the Mean",
+    "title_highlight": "Destroys the Mean",
+    "category": "Statistics",
+    "slides": [
+      {
+        "heading": "The Mean Has Zero Breakdown",
+        "body": "The sample mean is defined as the sum of observations divided by n. If any single observation gets arbitrarily large, the mean becomes arbitrarily large. Thus the breakdown point for the mean is 0.",
+        "image_prompt": "a single towering bar chart column towering over smaller columns, pulling a heavy horizontal line upward with a tight rope, while simple figures watch in confusion",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "The Median Survives Extremes",
+        "body": "The median is the central value in a distribution where equal numbers of values lie above and below. If a minority of observations go to infinity, the median will not be arbitrarily bad. Its breakdown point is one half.",
+        "image_prompt": "a balance scale with multiple identical figures on one side and one giant figure on the other side, remaining perfectly level with a bright dividing line in the middle",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "When Is the Mean Actually Good?",
+        "body": "From the point of robustness and breakdown point, the mean is a good estimator only if the data have zero outliers, no skewness, and unimodality. The median is far more insensitive to these departures from normality.",
+        "image_prompt": "a magnifying glass inspecting a pristine bell shaped curve document, while three distorted bumpy documents are tossed aside into a waste bin",
+        "highlight": "",
+        "source": ""
+      }
+    ],
+    "takeaway": "Even a single outlier makes the sample mean completely arbitrary, giving it a breakdown point of zero.",
+    "takeaway_highlight": "breakdown point of zero",
+    "references": [
+      "Donoho, D., & Huber, P. (Eds.). (1983). The notion of breakdown point."
+    ],
+    "caption": "In biomedical datasets, outliers and skewness are extremely common. Yet we often default to the sample mean without checking if our data meet the strict assumptions of normality. When a single extreme value can drag our entire estimate off course, relying solely on parametric measures becomes a risky gamble. How often do you check for breakdown points before choosing your primary summary statistic?",
+    "hashtags": [
+      "#Biostatistics",
+      "#ClinicalResearch",
+      "#DataAnalysis",
+      "#Statistics",
+      "#ResearchMethods",
+      "#DataScience",
+      "#Methodology",
+      "#Biostat"
+    ],
+    "source_hint": "pages 1-2",
+    "id": "40cb2ae7",
+    "source": "Parametric vs non parametric.pdf"
+  },
+  {
+    "title": "Parametric vs Nonparametric: The Cost of Power",
+    "title_highlight": "The Cost of Power",
+    "category": "Statistics",
+    "slides": [
+      {
+        "heading": "Asymptotic Relative Efficiency",
+        "body": "Asymptotic Relative Efficiency defines how many more subjects are needed for a nonparametric test to have equivalent power as a parametric test for a fixed Type I error rate.",
+        "image_prompt": "two parallel lines of simple figures of different lengths, with a researcher holding a measuring tape and counting groups of people at a wooden table",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "The Price of Using Nonparametric Tests",
+        "body": "The ARE of the Wilcoxon Rank Sum Test versus the t-test when underlying assumptions are satisfied is zero point nine five five. There is minimal power loss when data are normal.",
+        "image_prompt": "a simple weighing scale holding two almost identical pill bottles, showing a minuscule difference between the two pans under a bright desk lamp",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Massive Gains When Normality Fails",
+        "body": "Nonparametric tests are much more powerful than their parametric counterparts when underlying distributions are heavy tailed or have extreme skewness. In some cases ARE became infinite.",
+        "image_prompt": "a crowded room of simple figures separating into two contrasting paths, guided by a large glowing arrow pointing toward a robust shielded container",
+        "highlight": "",
+        "source": ""
+      }
+    ],
+    "takeaway": "Using nonparametric tests when data are normal results in minimal power loss, but brings massive power gains when normality fails.",
+    "takeaway_highlight": "minimal power loss",
+    "references": [
+      "Hodges, J. L., & Lehmann, E. L. (1956). The Efficiency of Some Nonparametric Competitors of the $t$-Test. The Annals of Mathematical Statistics, 27(2), 324–335. https://doi.org/10.1214/aoms/1177728261",
+      "Chernoff, H., & Savage, I. (1958). Asymptotic normality and efficiency of certain nonparametric tests. Ann Math Stat, 29, 927-999."
+    ],
+    "caption": "Choosing between parametric and nonparametric tests often sparks heated debates among researchers. While t-tests are the gold standard for normal distributions, real-world biomedical data rarely cooperate. Knowing the Asymptotic Relative Efficiency helps us weigh the small cost of nonparametrics against their massive protection against skewed data. Have you ever swapped a t-test for a Wilcoxon test mid-analysis?",
+    "hashtags": [
+      "#Biostatistics",
+      "#ClinicalTrials",
+      "#DataAnalysis",
+      "#Statistics",
+      "#ResearchMethods",
+      "#SamplePower",
+      "#Methodology",
+      "#ClinicalResearch"
+    ],
+    "source_hint": "page 2",
+    "id": "af630a09",
+    "source": "Parametric vs non parametric.pdf"
+  },
+  {
+    "title": "Why Nonparametric Tests Shine in Small Samples",
+    "title_highlight": "Shine in Small Samples",
+    "category": "Statistics",
+    "slides": [
+      {
+        "heading": "The Small Sample Reality",
+        "body": "Because of cost and potential risks to humans and animals, many sample sizes in the biomedical literature are far from infinite, often remaining under twenty-five per group.",
+        "image_prompt": "a small group of twenty five simple figures standing inside a fenced enclosure next to a large budget document marked with warning symbols",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "WRST in Small Samples",
+        "body": "Monte Carlo experiments found that for tests of location shift, the Wilcoxon Rank Sum Test was the best test in almost all cases, matching or exceeding t-test power.",
+        "image_prompt": "a researcher examining small sample containers through a magnifying glass while sorting them into two neat rows on a wooden workbench",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Handling Non-Normality in Small Trials",
+        "body": "Under extreme asymmetry or point mass distributions, nonparametric tests demonstrated large power advantages over the t-test even with small sample sizes.",
+        "image_prompt": "a split group of simple figures stepping over uneven terrain toward two distinct markers, guided by bold directional arrows",
+        "highlight": "",
+        "source": ""
+      }
+    ],
+    "takeaway": "In small samples with non-normal data, nonparametric tests offer remarkable power advantages over parametric alternatives.",
+    "takeaway_highlight": "remarkable power advantages",
+    "references": [
+      "Tanizaki, H. (1997). Power comparison of nonparametric tests: small sample properties from Monte Carol experiments. J Appl Stat, 24, 603-632.",
+      "Bridge, P., & Sawilowsky, S. (1999). Increasing physicians’ awareness of the impact of statistics on research outcomes. J Clin Epidemiol, 52, 229-235."
+    ],
+    "caption": "Small sample sizes are a persistent challenge in clinical research, driven by ethical constraints and high costs. When data violate normality assumptions in these tight cohorts, standard parametric tests can mislead us. Fortunately, evidence from Monte Carlo studies shows nonparametric alternatives maintain robust performance. How do you handle small, skewed cohorts in your studies?",
+    "hashtags": [
+      "#ClinicalTrials",
+      "#Biostatistics",
+      "#ResearchMethods",
+      "#SmallSamples",
+      "#Statistics",
+      "#DataAnalysis",
+      "#ResearchEthics",
+      "#Methodology"
+    ],
+    "source_hint": "page 2",
+    "id": "6ceae2dd",
+    "source": "Parametric vs non parametric.pdf"
   }
 ]
