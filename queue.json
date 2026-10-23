@@ -623,5 +623,177 @@
     "source_hint": "page 2",
     "id": "6ceae2dd",
     "source": "Parametric vs non parametric.pdf"
+  },
+  {
+    "title": "Linear or Logistic Regression? Look at Your Outcome",
+    "title_highlight": "Look at Your Outcome",
+    "category": "Statistics",
+    "slides": [
+      {
+        "heading": "The outcome dictates the model",
+        "body": "Regression is used to determine the relationship between several factors and disease outcomes. The choice between linear and logistic regression hinges directly on how your dependent variable is measured.",
+        "image_prompt": "a researcher standing at a fork in a stone path, looking at two diverging roads leading toward two different symbolic gates",
+        "highlight": "dependent variable is measured",
+        "source": "Schneider et al., 2010"
+      },
+      {
+        "heading": "Linear models require continuous data",
+        "body": "In linear regression, the dependent variable must be continuous, such as intraocular pressure or visual acuity. Independent variables may be continuous, binary, or categorical.",
+        "image_prompt": "a researcher measuring the height of a smoothly growing green plant against an upright wooden ruler with evenly spaced notches",
+        "highlight": "dependent variable must be continuous",
+        "source": "Schneider et al., 2010"
+      },
+      {
+        "heading": "Logistic models need binary outcomes",
+        "body": "The distinguishing feature in logistic regression is that the dependent variable must be binary, meaning that the variable can only take two values, such as yes versus no.",
+        "image_prompt": "a hand placing spherical tokens into two distinct wooden boxes, one painted black and one painted white",
+        "highlight": "dependent variable must be binary",
+        "source": "Schober & Vetter, 2021"
+      },
+      {
+        "heading": "Comparing the effect metrics",
+        "body": "Linear regression reports coefficients showing unit changes in the outcome. Logistic regression expresses predictor effects using an odds ratio to compare relative odds of the event.",
+        "image_prompt": "a pair of mechanical balance scales comparing two distinct wooden blocks of different sizes suspended by thin metal chains",
+        "highlight": "using an odds ratio",
+        "source": "Bender, 2009"
+      }
+    ],
+    "takeaway": "Linear regression requires a continuous outcome, whereas logistic regression demands a binary dependent variable.",
+    "takeaway_highlight": "continuous outcome, whereas logistic regression",
+    "references": [
+      "Schneider, A., Hommel, G., & Blettner, M. (2010). Linear Regression. Anal Dtsch Ärztebl Int, 107, 776–782.",
+      "Bender, R. (2009). Introduction to the Use of Regression Models in Epidemiology. Methods in Molecular Biology, 179–195. https://doi.org/10.1007/978-1-59745-416-2_9",
+      "Schober, P., & Vetter, T. R. (2021). Logistic Regression in Medical Research. Anesthesia &amp; Analgesia, 132(2), 365–366. https://doi.org/10.1213/ane.0000000000005247"
+    ],
+    "caption": "Before running any regression, the first question is never about your predictors—it is about your outcome.\n\nChoosing linear regression means your dependent variable is continuous. Choosing logistic regression means it is strictly binary.\n\nMismatched models lead to uninterpretable coefficients and invalid statistical conclusions.\n\nWhen reviewing manuscripts, how often do you see authors force a continuous model onto dichotomous clinical outcomes?",
+    "hashtags": [
+      "#Biostatistics",
+      "#ClinicalResearch",
+      "#ResearchMethods",
+      "#LinearRegression",
+      "#LogisticRegression",
+      "#Epidemiology",
+      "#DataAnalysis",
+      "#MedicalStatistics",
+      "#EvidenceBasedMedicine"
+    ],
+    "source_hint": "page 1",
+    "id": "035742c6",
+    "source": "Regression.pdf"
+  },
+  {
+    "title": "How to Interpret a Linear Regression Coefficient",
+    "title_highlight": "Linear Regression Coefficient",
+    "category": "Statistics",
+    "slides": [
+      {
+        "heading": "Continuous predictors and unit change",
+        "body": "The estimated regression coefficient describes the change in the dependent variable for each one-unit change in the independent variable, indicating the direction and strength of association.",
+        "image_prompt": "a researcher pushing a small wooden block along a horizontal track, causing an attached vertical lever to rise steadily",
+        "highlight": "change in the dependent variable",
+        "source": "Schober & Vetter, 2021"
+      },
+      {
+        "heading": "Binary and categorical predictors",
+        "body": "For a binary or categorical independent variable, a one-unit change represents switching from one category to the reference category, reflecting the average group difference.",
+        "image_prompt": "a person stepping across a dividing line on the floor from a blue square into an adjacent yellow square",
+        "highlight": "switching from one category",
+        "source": "Schober & Vetter, 2021"
+      },
+      {
+        "heading": "The multivariable advantage",
+        "body": "When incorporating numerous independent variables, the model estimates the contribution of each independent variable while holding the values of all other independent variables constant.",
+        "image_prompt": "several hands holding multiple floating cords completely still while one single hand gently tugs a single central rope",
+        "highlight": "holding the values of all other",
+        "source": "Schober & Vetter, 2020"
+      },
+      {
+        "heading": "Confidence intervals and precision",
+        "body": "The 95% confidence interval measures precision of the coefficient estimate. A large confidence interval indicates low precision, whereas a small interval indicates higher precision.",
+        "image_prompt": "a pair of metal calipers tightening around a small silver sphere, holding it firmly between two narrow measuring tips",
+        "highlight": "small interval indicates higher precision",
+        "source": "Szumilas, 2010"
+      }
+    ],
+    "takeaway": "A linear regression coefficient quantifies outcome change per predictor unit while holding other variables constant.",
+    "takeaway_highlight": "holding other variables constant",
+    "references": [
+      "Schober, P., & Vetter, T. R. (2020). Confounding in observational research. Anesth Analg, 130, 635.",
+      "Schober, P., & Vetter, T. R. (2021). Logistic Regression in Medical Research. Anesthesia &amp; Analgesia, 132(2), 365–366. https://doi.org/10.1213/ane.0000000000005247",
+      "Szumilas, M. (2010). Explaining odds ratios. J Can Acad Child Adolesc Psychiatry, 19, 227–229."
+    ],
+    "caption": "Reading regression output is straightforward once you identify the reference frame.\n\nFor continuous predictors, the coefficient reveals the expected shift in your continuous outcome for each unit increase.\n\nFor categorical predictors, it represents the average shift when moving from your reference group to the comparison group—all while holding other model covariates mathematically constant.\n\nWhat is the most common mistake you see when researchers interpret adjusted linear regression models?",
+    "hashtags": [
+      "#Biostatistics",
+      "#LinearRegression",
+      "#ClinicalResearch",
+      "#ResearchMethodology",
+      "#DataInterpretation",
+      "#Epidemiology",
+      "#MultivariableAnalysis",
+      "#MedicalWriting",
+      "#StatisticsTips"
+    ],
+    "source_hint": "pages 1-2",
+    "id": "e36404e3",
+    "source": "Regression.pdf"
+  },
+  {
+    "title": "How to Read Odds Ratios in Logistic Regression",
+    "title_highlight": "Read Odds Ratios",
+    "category": "Statistics",
+    "slides": [
+      {
+        "heading": "The core metric of logistic regression",
+        "body": "In logistic regression, the effect size of predictor variables on the dependent variable is best explained using an odds ratio, comparing relative odds of event occurrence given exposure.",
+        "image_prompt": "two transparent hourglasses sitting side by side on a table, with sand falling at visibly different rates inside each",
+        "highlight": "comparing relative odds",
+        "source": "Bender, 2009"
+      },
+      {
+        "heading": "Decoding OR values around one",
+        "body": "An odds ratio equal to 1 means no difference between groups. An odds ratio greater than 1 implies higher odds of the event, whereas an odds ratio below 1 indicates lower odds.",
+        "image_prompt": "a wooden pointer on a dial pointing directly at a center line, flanked by upward and downward curved arrows",
+        "highlight": "higher odds of the event",
+        "source": "Zabor et al., 2022"
+      },
+      {
+        "heading": "Confidence intervals show precision",
+        "body": "The narrower the confidence interval, the more precise the estimate is, showing the plausible range for the true odds ratio around your point estimate.",
+        "image_prompt": "a magnifying glass focusing sharply on a thin illuminated band stretched horizontally between two dark wooden posts",
+        "highlight": "more precise the estimate",
+        "source": "Szumilas, 2010"
+      },
+      {
+        "heading": "Real clinical application",
+        "body": "In macular edema research, patients aged 75 or older had an odds ratio of 0.96 for high visual acuity compared to patients under 50, showing decreased odds of achieving the outcome.",
+        "image_prompt": "an eye specialist examining an illuminated eye chart displaying rows of symbols through a handheld circular lens",
+        "highlight": "decreased odds of achieving",
+        "source": "Sen et al., 2021"
+      }
+    ],
+    "takeaway": "An odds ratio above 1 means higher odds than the reference, below 1 means lower odds, and 1 means no difference.",
+    "takeaway_highlight": "above 1 means higher odds",
+    "references": [
+      "Bender, R. (2009). Introduction to the use of regression models in epidemiology. In M. Verma (Ed.), Cancer epidemiology. Methods in molecular biology (pp. 179–195). Humana Press.",
+      "Szumilas, M. (2010). Explaining odds ratios. J Can Acad Child Adolesc Psychiatry, 19, 227–229.",
+      "Zabor, E. C., Reddy, C. A., Tendulkar, R. D., & Patil, S. (2022). Logistic Regression in Clinical Studies. International Journal of Radiation Oncology*Biology*Physics, 112(2), 271–277. https://doi.org/10.1016/j.ijrobp.2021.08.007",
+      "Sen, P., Gurudas, S., Ramu, J., Patrao, N., Chandra, S., Rasheed, R., Nicholson, L., Peto, T., Sivaprasad, S., & Hykin, P. (2021). Predictors of Visual Acuity Outcomes after Anti–Vascular Endothelial Growth Factor Treatment for Macular Edema Secondary to Central Retinal Vein Occlusion. Ophthalmology Retina, 5(11), 1115–1124. https://doi.org/10.1016/j.oret.2021.02.008"
+    ],
+    "caption": "Odds ratios are ubiquitous in clinical papers, yet they remain one of the most frequently misunderstood effect estimates.\n\nAn odds ratio indicates how the odds of an outcome compare between an exposed group and an unexposed reference group.\n\nAn OR equal to 1 signifies identical odds. Above 1 signals higher odds, while below 1 signals lower odds.\n\nHow do you explain the subtle difference between odds and risk when presenting study results to clinical teams?",
+    "hashtags": [
+      "#Biostatistics",
+      "#LogisticRegression",
+      "#OddsRatio",
+      "#ClinicalResearch",
+      "#ResearchMethods",
+      "#MedicalStatistics",
+      "#Epidemiology",
+      "#DataLiteracy",
+      "#EvidenceBasedMedicine"
+    ],
+    "source_hint": "pages 1-2",
+    "id": "59993999",
+    "source": "Regression.pdf"
   }
 ]
