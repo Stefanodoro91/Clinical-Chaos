@@ -1,52 +1,5 @@
 [
   {
-    "title": "Response-Adaptive Randomization: Promise and Pitfalls",
-    "title_highlight": "Response-Adaptive Randomization",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "Shifting Probabilities Mid-Trial",
-        "body": "Response-adaptive randomization allows changing the allocation probability during the study by using the data accruing as the study progresses based on patient responses.",
-        "image_prompt": "an arrow pointing dynamically upward on a probability gauge next to medical charts",
-        "highlight": "",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "The Play-the-Winner Rule",
-        "body": "An example of response-adaptive randomization is the randomized play-the-winner rule. If a patient response is success, the next patient will be allocated to the same treatment group.",
-        "image_prompt": "two pill bottles where one bottle receives more tokens based on previous success tokens",
-        "highlight": "randomized play-the-winner rule",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "Ethical Appeal vs Practical Limits",
-        "body": "This method is based on the ethics of allowing more patients to be allocated to treatments that benefit the patients. However, if clinical studies take a very long time to obtain results, this method cannot be recommended.",
-        "image_prompt": "a hourglass standing next to a clinical trial dossier and a row of patient figures",
-        "highlight": "",
-        "source": "Lim & In, 2019"
-      }
-    ],
-    "takeaway": "Response-adaptive designs allocate more patients to winning treatments but fail if outcome feedback is slow.",
-    "takeaway_highlight": "",
-    "references": [
-      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
-    ],
-    "caption": "Response-adaptive randomization aligns trial design with patient benefit by shifting allocation probabilities toward successful treatments as data accumulates. However, if your trial requires lengthy follow-ups to evaluate responses, this approach becomes impractical. What is your perspective on ethical adaptive designs versus traditional fixed allocation?",
-    "hashtags": [
-      "#ClinicalTrials",
-      "#AdaptiveDesign",
-      "#ResearchEthics",
-      "#Biostatistics",
-      "#ClinicalResearch",
-      "#ResearchMethods",
-      "#MedicalResearch",
-      "#TrialDesign"
-    ],
-    "source_hint": "page 6",
-    "id": "8ffbd1e0",
-    "source": "Randomization.pdf"
-  },
-  {
     "title": "The Ethical Dilemma of Randomization in Research",
     "title_highlight": "Ethical Dilemma",
     "category": "Research ethics",

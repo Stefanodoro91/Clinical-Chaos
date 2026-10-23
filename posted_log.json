@@ -220,5 +220,14 @@
     "media_id": "18068632109519149",
     "facebook_id": "1277022912171972_122108533737432698",
     "kind": "announcement"
+  },
+  {
+    "date": "2026-10-23",
+    "time": "2026-10-23T00:08:36+00:00",
+    "id": "8ffbd1e0",
+    "title": "Response-Adaptive Randomization: Promise and Pitfalls",
+    "source": "Randomization.pdf",
+    "media_id": "18066858947510277",
+    "facebook_id": "1277022912171972_122109057915432698"
   }
 ]
