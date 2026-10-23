@@ -663,6 +663,56 @@ def status():
     print("::notice title=Stato Drive e coda::" + "%0A".join(l.replace("%", "%25") for l in lines))
 
 
+CORRECTIONS_FILE = ROOT / "corrections.json"
+
+
+def corrections():
+    """Rettifiche dei post già pubblicati (corrections.json): un commento sotto il post Instagram e una riga
+    di correzione in testa al post Facebook. Ogni rettifica si fa una volta sola (campo «done»)."""
+    items = load(CORRECTIONS_FILE, [])
+    posted = {p.get("id"): p for p in load(POSTED_FILE, [])}
+    token = os.environ["IG_ACCESS_TOKEN"]
+    fb_token = os.environ.get("FB_PAGE_TOKEN") or token
+    changed = False
+    for c in items:
+        if c.get("done"):
+            continue
+        post = posted.get(c["post_id"])
+        if not post:
+            print(f"::warning title=Rettifica::post {c['post_id']} non trovato nel registro")
+            continue
+        res = {}
+        if post.get("media_id") and not c.get("ig_comment_id"):
+            r = requests.post(f"https://graph.facebook.com/{GRAPH_VERSION}/{post['media_id']}/comments",
+                              data={"message": c["text"], "access_token": token}, timeout=60)
+            res["instagram"] = r.status_code
+            if r.ok:
+                c["ig_comment_id"] = r.json().get("id")
+            else:
+                print(f"::warning title=Rettifica Instagram non riuscita::{c['post_id']} {r.status_code}: {r.text[:250]}")
+        if post.get("facebook_id") and not c.get("fb_edited"):
+            g = requests.get(f"https://graph.facebook.com/{GRAPH_VERSION}/{post['facebook_id']}",
+                             params={"fields": "message", "access_token": fb_token}, timeout=60)
+            old = (g.json() or {}).get("message", "") if g.ok else ""
+            if old and not old.startswith("CORRECTION"):
+                r = requests.post(f"https://graph.facebook.com/{GRAPH_VERSION}/{post['facebook_id']}",
+                                  data={"message": f"CORRECTION: {c['text']}\n\n{old}", "access_token": fb_token}, timeout=60)
+                res["facebook"] = r.status_code
+                if r.ok:
+                    c["fb_edited"] = True
+                else:
+                    print(f"::warning title=Rettifica Facebook non riuscita::{c['post_id']} {r.status_code}: {r.text[:250]}")
+            elif not g.ok:
+                print(f"::warning title=Rettifica Facebook::post non letto {g.status_code}: {g.text[:200]}")
+        c["done"] = bool(c.get("ig_comment_id")) and (c.get("fb_edited") or not post.get("facebook_id"))
+        c["date"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        changed = True
+        print(f"::notice title=Rettifica::{c['post_id']} | {res} | completata: {c['done']}")
+    if changed:
+        save(CORRECTIONS_FILE, items)
+        commit_and_push([CORRECTIONS_FILE.name], "Rettifiche dei post pubblicate")
+
+
 if __name__ == "__main__":
     if "--status" in sys.argv:
         status()
@@ -672,6 +722,8 @@ if __name__ == "__main__":
         rebuild()
     elif "--token" in sys.argv:
         check_token()
+    elif "--corrections" in sys.argv:
+        corrections()
     elif "--positions" in sys.argv:
         update_positions(verify_limit=int(os.environ.get("POSITIONS_VERIFY_LIMIT") or 0) or None)
     elif "--grants" in sys.argv:
