@@ -438,7 +438,7 @@ def build_page(archive, posted, cfg, today=None):
       {f'<p class="summary">{escape(v["summary"])}</p>' if v.get("summary") else ""}
       <div class="row">
         <div class="deadline">{when}</div>
-        <div class="btns">{share}<a class="btn" href="{escape(v["url"], quote=True)}" target="_blank" rel="noopener">Advertisement &rarr;</a></div>
+        <div class="btns">{share}{grants.calendar_button(d, v["title"], v["url"], v.get("institution") or "")}<a class="btn" href="{escape(v["url"], quote=True)}" target="_blank" rel="noopener">Advertisement &rarr;</a></div>
       </div>
     </article>""")
             parts.append("    </div>")
@@ -507,7 +507,7 @@ JOB_PAGE = """<!doctype html>
       <dt>Deadline</dt><dd>{deadline}</dd>
     </dl>
     {summary}
-    <div class="btns">{share}<a class="btn" href="{url}" target="_blank" rel="noopener">Read the advertisement and apply &rarr;</a></div>
+    <div class="btns">{share}{cal}<a class="btn" href="{url}" target="_blank" rel="noopener">Read the advertisement and apply &rarr;</a></div>
   </article>
   <footer>
     Found on {source} and checked automatically against the original advertisement on {checked}: always read the full
@@ -580,6 +580,7 @@ def job_pages(archive, cfg, today=None):
             place=escape(place), institution=escape(v.get("institution") or "see advertisement"), location=escape(loc),
             deadline=deadline, summary=f'<p class="summary">{escape(summary)}</p>' if summary else "",
             share=grants.share_button(grants.site_url(cfg, "jobs/" + slug), share_title),
+            cal=grants.calendar_button(d, title, v["url"], v.get("institution") or ""),
             url=escape(v["url"], quote=True), source=escape(re.sub(r"\s+[–-]\s+.*$", "", v.get("source") or "an academic job portal")),
             checked=_fmt(_date(v.get("checked")) or today), ig=cfg["handle"].lstrip("@"), handle=escape(cfg["handle"]))
     return out

@@ -1178,7 +1178,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
       {partners}
       <div class="row">
         <div class="deadline">{when}</div>
-        <div class="btns">{share}{find}<a class="btn" href="{escape(g["url"], quote=True)}" target="_blank" rel="noopener">Official call &rarr;</a></div>
+        <div class="btns">{share}{calendar_button(d, title, g["url"], v.get("programme") or "")}{find}<a class="btn" href="{escape(g["url"], quote=True)}" target="_blank" rel="noopener">Official call &rarr;</a></div>
       </div>
       {dates_html}
     </article>"""
@@ -1479,6 +1479,83 @@ def card_anchor(grant_id):
     return "c-" + re.sub(r"[^A-Za-z0-9]+", "-", str(grant_id)).strip("-")
 
 
+# ---------------------------------------------------------------- «Add to calendar» (bandi e posizioni)
+CAL_ICON = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+            'stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/>'
+            '<path d="M16 3v4M8 3v4M3 10h18"/></svg>')
+
+
+def calendar_button(d, title, url, details=""):
+    """Pulsante che apre il menu calendario (Google Calendar o file .ics con promemoria 30 e 7 giorni prima)."""
+    from html import escape
+    if not d:
+        return ""
+    return (f'<button class="share cal" type="button" data-date="{d.isoformat()}" data-title="{escape(title, quote=True)}" '
+            f'data-url="{escape(url, quote=True)}" data-details="{escape(details, quote=True)}" aria-haspopup="menu">'
+            f'{CAL_ICON}Calendar</button>')
+
+
+CAL = """
+<div id="crc-cal-menu" role="menu" hidden></div>
+<style>
+  #crc-cal-menu { position: absolute; z-index: 50; background: #FFFFFF; color: #0E2233; border-radius: 14px; padding: 6px;
+                  min-width: 210px; box-shadow: 0 12px 32px rgba(0,0,0,.35); font: 600 14px Inter, system-ui, sans-serif; }
+  #crc-cal-menu a, #crc-cal-menu button { display: block; width: 100%; text-align: left; background: none; border: 0;
+                  color: inherit; font: inherit; text-decoration: none; padding: 10px 12px; border-radius: 10px; cursor: pointer; }
+  #crc-cal-menu a:hover, #crc-cal-menu button:hover, #crc-cal-menu a:focus-visible, #crc-cal-menu button:focus-visible {
+                  background: #E7EEF4; outline: none; }
+  #crc-cal-menu small { display: block; color: #5B7186; font-weight: 500; padding: 4px 12px 8px; }
+</style>
+<script>
+(function () {
+  var menu = document.getElementById("crc-cal-menu"), openFor = null;
+  function ymd(s) { return s.replace(/-/g, ""); }
+  function next(s) { var d = new Date(s + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); }
+  function esc(t) { return (t || "").replace(/[\\\\;,]/g, function (c) { return "\\\\" + c; }); }
+  function ics(b) {
+    var uid = "crc-" + ymd(b.dataset.date) + "-" + Math.abs(b.dataset.url.split("").reduce(function (h, c) { return (h * 31 + c.charCodeAt(0)) | 0; }, 7));
+    var stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+    var lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Clinical Research Chaos//Deadlines//EN", "BEGIN:VEVENT",
+      "UID:" + uid, "DTSTAMP:" + stamp, "DTSTART;VALUE=DATE:" + ymd(b.dataset.date), "DTEND;VALUE=DATE:" + ymd(next(b.dataset.date)),
+      "SUMMARY:" + esc("Deadline: " + b.dataset.title), "DESCRIPTION:" + esc(b.dataset.details + " " + b.dataset.url), "URL:" + b.dataset.url,
+      "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + esc("30 days to the deadline: " + b.dataset.title), "TRIGGER:-P30D", "END:VALARM",
+      "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + esc("7 days to the deadline: " + b.dataset.title), "TRIGGER:-P7D", "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR"];
+    return lines.join("\\r\\n");
+  }
+  function close() { menu.hidden = true; openFor = null; }
+  function show(b) {
+    var e = encodeURIComponent, d = ymd(b.dataset.date);
+    menu.innerHTML = "";
+    var g = document.createElement("a");
+    g.href = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + e("Deadline: " + b.dataset.title) +
+      "&dates=" + d + "/" + ymd(next(b.dataset.date)) + "&details=" + e((b.dataset.details ? b.dataset.details + "\\n" : "") + b.dataset.url);
+    g.target = "_blank"; g.rel = "noopener"; g.textContent = "Google Calendar"; g.setAttribute("role", "menuitem");
+    g.addEventListener("click", close); menu.appendChild(g);
+    var f = document.createElement("button"); f.type = "button"; f.textContent = "Apple / Outlook (.ics)"; f.setAttribute("role", "menuitem");
+    f.addEventListener("click", function () {
+      var url = URL.createObjectURL(new Blob([ics(b)], { type: "text/calendar" }));
+      var a = document.createElement("a"); a.href = url; a.download = "deadline-" + d + ".ics"; document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 500); close();
+    });
+    menu.appendChild(f);
+    var note = document.createElement("small"); note.textContent = "The .ics file reminds you 30 and 7 days before."; menu.appendChild(note);
+    var r = b.getBoundingClientRect(); menu.hidden = false;
+    var left = Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - menu.offsetWidth - 12);
+    menu.style.left = Math.max(12, left) + "px"; menu.style.top = (window.scrollY + r.bottom + 6) + "px";
+    openFor = b; g.focus();
+  }
+  document.addEventListener("click", function (ev) {
+    var b = ev.target.closest && ev.target.closest("button.cal");
+    if (b) { ev.preventDefault(); ev.stopImmediatePropagation(); if (openFor === b) close(); else show(b); }
+    else if (!menu.contains(ev.target)) close();
+  }, true);
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && openFor) { var b = openFor; close(); b.focus(); } });
+})();
+</script>
+"""
+
+
 # ---------------------------------------------------------------- decorazione animata ai lati (solo schermi larghi)
 DECOR = """
 <div id="crc-rain" class="crc-side" aria-hidden="true"></div>
@@ -1553,6 +1630,8 @@ def add_decor(html):
         html = html.replace("</body>", DECOR + "</body>", 1)
     if 'class="share"' in html and "crc-share-menu" not in html:
         html = html.replace("</body>", SHARE + "</body>", 1)
+    if 'class="share cal"' in html and "crc-cal-menu" not in html:
+        html = html.replace("</body>", CAL + "</body>", 1)
     if 'class="filters"' in html and "form.filters\")" not in html:
         html = html.replace("</body>", FILTER_SCRIPT + "</body>", 1)
     return html
