@@ -34,5 +34,7 @@
   "positions_per_post": 6,
   "positions_min_per_post": 3,
   "positions_min_days_left": 10,
-  "positions_verify_per_run": 25
+  "positions_verify_per_run": 25,
+  "reels_auto": false,
+  "announcement_accent": "#FF7A59"
 }

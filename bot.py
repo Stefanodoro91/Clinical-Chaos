@@ -329,6 +329,8 @@ def publish_reel(video_path, caption):
 def reel_run(posted):
     """Reel dal carosello di metodologia più recente non ancora trasformato in reel (pubblicato negli ultimi 21 giorni)."""
     import reels
+    if (os.environ.get("REEL_SOURCE") or "").strip().lower() == "announcement":
+        return reel_announcement_run(posted)
     done = {p.get("reel_of") for p in posted if p.get("kind") == "reel"}
     recent = datetime.now(timezone.utc).timestamp() - 21 * 86400
     source = None
@@ -374,9 +376,44 @@ def reel_run(posted):
     commit_and_push([POSTED_FILE.name], "Reel pubblicato")
 
 
+def reel_announcement_run(posted):
+    """Reel speciale scritto a mano in reel_announcement.json, pubblicato una sola volta."""
+    import reels
+    spec = load(ROOT / "reel_announcement.json", None)
+    if not spec or any(p.get("id") == spec.get("id") for p in posted):
+        print("::notice title=Reel::nessun reel speciale nuovo da pubblicare")
+        return
+    PREVIEW_DIR.mkdir(exist_ok=True)
+    video = PREVIEW_DIR / "reel.mp4"
+    seconds = reels.build_story_reel(spec, video, CONFIG)
+    caption = f"{spec['caption']}\n\n{' '.join(spec.get('hashtags', []))}".strip()
+    print(f"Reel speciale: {spec['id']} ({seconds} s)\n--- Didascalia ---\n{caption}")
+    if DRY_RUN:
+        (PREVIEW_DIR / "reel-caption.txt").write_text(caption, encoding="utf-8")
+        print("Modalità prova: reel non pubblicato. Anteprima nell'artifact 'preview'.")
+        return
+    try:
+        media_id = publish_reel(video, caption)
+    except Exception as e:
+        msg = str(e)[:400]
+        print(f"::error title=Reel non pubblicato::{msg}")
+        notify("Reel non pubblicato su Instagram", f"Il reel speciale {spec['id']} non è uscito: {msg}")
+        sys.exit(1)
+    print(f"::notice title=Reel pubblicato::{spec['id']} | id {media_id}")
+    posted.append({"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                   "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                   "id": spec["id"], "title": spec["slides"][0].get("title", ""), "source": "reel_announcement.json",
+                   "kind": "reel", "media_id": media_id, "seconds": seconds})
+    save(POSTED_FILE, posted)
+    commit_and_push([POSTED_FILE.name], "Reel speciale pubblicato")
+
+
 def main():
     posted = load(POSTED_FILE, [])
     if (os.environ.get("POST_TYPE") or "").strip().lower() == "reel":
+        if os.environ.get("GITHUB_EVENT_NAME") == "schedule" and not CONFIG.get("reels_auto", False):
+            print("Reel automatici disattivati (config: reels_auto = false): salto.")
+            return
         same = [p for p in posted if p.get("kind") == "reel" and p.get("time")]
         if os.environ.get("GITHUB_EVENT_NAME") == "schedule" and same and (
                 datetime.now(timezone.utc) - datetime.fromisoformat(same[-1]["time"])).total_seconds() < 48 * 3600:

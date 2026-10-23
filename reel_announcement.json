@@ -1,0 +1,26 @@
+{
+  "id": "reel-2026-10-platform-update",
+  "accent": "#FF7A59",
+  "caption": "Big update: Clinical Research Chaos now covers clinical research, clinical and biomedical engineering and rehabilitation, worldwide.\n\nWhat's new on our free page:\n• Funding calls from funders worldwide, including calls reserved for applicants in Asia, Latin America and every other region\n• Academic positions: PhD, post-doc, research, clinical fellowships and faculty\n• Dates checked on the official text: the next deadline to apply, who can lead, letters of intent\n• Filters by area, region and deadline, one-tap sharing and EU partner search\n\nAll open calls and positions: link in bio. Share it with a colleague who is looking for funding or a new position.",
+  "hashtags": ["#ClinicalResearch", "#ResearchFunding", "#AcademicJobs", "#BiomedicalEngineering", "#Rehabilitation", "#PhDPositions", "#Postdoc", "#GrantOpportunity"],
+  "slides": [
+    {"type": "cover", "kicker": "BIG UPDATE", "title": "More calls. More positions. Worldwide.", "highlight": "Worldwide.",
+     "body": "Clinical research, clinical engineering and rehabilitation: all in one free page."},
+    {"type": "point", "number": "01", "title": "Funding calls for every field",
+     "body": "Clinical research in any medical area, clinical and biomedical engineering, and rehabilitation, from funders worldwide.",
+     "highlight": "from funders worldwide"},
+    {"type": "point", "number": "02", "title": "Local calls too",
+     "body": "Calls reserved for applicants in Asia, Latin America and every other region. Pick where you are based with the filters.",
+     "highlight": "Pick where you are based"},
+    {"type": "point", "number": "03", "title": "Academic positions worldwide",
+     "body": "PhD, post-doc, research, clinical fellowships and faculty posts, checked against the original advertisement.",
+     "highlight": "checked against the original advertisement"},
+    {"type": "point", "number": "04", "title": "Dates you can trust",
+     "body": "The next deadline to apply, never the date a call expires. Plus who can lead, letters of intent and later deadlines.",
+     "highlight": "The next deadline to apply"},
+    {"type": "point", "number": "05", "title": "Built to save you time",
+     "body": "Filters by area, region and deadline, one-tap sharing, EU partner search and a methodology post every day.",
+     "highlight": "a methodology post every day"},
+    {"type": "closing", "title": "All open calls and positions", "body": "Link in bio"}
+  ]
+}
