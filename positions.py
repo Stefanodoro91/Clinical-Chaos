@@ -179,7 +179,7 @@ def collect(sources=None):
                 items = _html_items(text, src["url"])
             # se la fonte è già una ricerca per tema (es. «rehabilitation»), basta che sia una posizione:
             # la pertinenza la controlla poi Gemini sull'annuncio
-            topic_search = bool(RX_REHAB.search(unquote(src["url"])))
+            topic_search = bool(RX_REHAB.search(unquote(src["url"]).replace("+", " ")))
             kept = 0
             for it in items:
                 blob = f"{it['title']} {it['snippet']}"
