@@ -12,8 +12,8 @@
     "data": "2026-10-23"
   },
   "jobs.ac.uk – physiotherapy": {
-    "letti": 12,
-    "pertinenti": 12,
+    "letti": 11,
+    "pertinenti": 11,
     "errore": "",
     "data": "2026-10-23"
   },
@@ -183,6 +183,36 @@
     "letti": 19,
     "pertinenti": 19,
     "errore": "",
+    "data": "2026-10-23"
+  },
+  "MUR – Ricercatori a tempo determinato (RTT)": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "403 Client Error: Forbidden for url: https://bandi.mur.gov.it/jobs.php/public/cercaJobs",
+    "data": "2026-10-23"
+  },
+  "MUR – Contratti di ricerca": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "403 Client Error: Forbidden for url: https://bandi.mur.gov.it/contrattidiricerca.php/public/cercaFellowship",
+    "data": "2026-10-23"
+  },
+  "MUR – Incarichi post doc": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "403 Client Error: Forbidden for url: https://bandi.mur.gov.it/incarichipostdoc.php/public/cercaFellowship",
+    "data": "2026-10-23"
+  },
+  "MUR – Incarichi di ricerca": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "403 Client Error: Forbidden for url: https://bandi.mur.gov.it/incarichidiricerca.php/public/cercaFellowship",
+    "data": "2026-10-23"
+  },
+  "MUR – Chiamate dei professori": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "403 Client Error: Forbidden for url: https://bandi.mur.gov.it/profcalls.php/public/cercaJobs",
     "data": "2026-10-23"
   }
 }
