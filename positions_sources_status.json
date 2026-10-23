@@ -124,5 +124,65 @@
     "pertinenti": 0,
     "errore": "Exceeded 30 redirects.",
     "data": "2026-10-23"
+  },
+  "Times Higher Education – clinical research": {
+    "letti": 14,
+    "pertinenti": 0,
+    "errore": "",
+    "data": "2026-10-23"
+  },
+  "Times Higher Education – biomedical engineering": {
+    "letti": 20,
+    "pertinenti": 0,
+    "errore": "",
+    "data": "2026-10-23"
+  },
+  "Times Higher Education – physiotherapy": {
+    "letti": 2,
+    "pertinenti": 2,
+    "errore": "",
+    "data": "2026-10-23"
+  },
+  "Times Higher Education – clinical trials": {
+    "letti": 15,
+    "pertinenti": 1,
+    "errore": "",
+    "data": "2026-10-23"
+  },
+  "Times Higher Education – epidemiology": {
+    "letti": 18,
+    "pertinenti": 18,
+    "errore": "",
+    "data": "2026-10-23"
+  },
+  "jobs.ac.uk – clinical trials": {
+    "letti": 5,
+    "pertinenti": 4,
+    "errore": "",
+    "data": "2026-10-23"
+  },
+  "jobs.ac.uk – biomedical engineering": {
+    "letti": 21,
+    "pertinenti": 2,
+    "errore": "",
+    "data": "2026-10-23"
+  },
+  "jobs.ac.uk – clinical research": {
+    "letti": 12,
+    "pertinenti": 10,
+    "errore": "",
+    "data": "2026-10-23"
+  },
+  "Nature Careers – clinical research": {
+    "letti": 11,
+    "pertinenti": 0,
+    "errore": "",
+    "data": "2026-10-23"
+  },
+  "Nature Careers – bioengineering": {
+    "letti": 19,
+    "pertinenti": 19,
+    "errore": "",
+    "data": "2026-10-23"
   }
 }
