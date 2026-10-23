@@ -1040,7 +1040,7 @@ PAGE = """<!doctype html>
   <a class="home" href="index.html">&larr; Home</a>
   <span class="badge">OPEN CALLS</span>
   <h1>Research funding calls</h1>
-  <p class="intro">All open calls for clinical and rehabilitation research found by our monitoring, from funders worldwide.
+  <p class="intro">All open calls for clinical research, clinical and biomedical engineering and rehabilitation found by our monitoring, from funders worldwide, including calls reserved for applicants in a single country: use the filters.
   Each call is checked against its official text; grouped by region and funding programme, sorted by deadline.
   Closed calls are removed automatically.</p>
   <nav class="jump">{nav}</nav>
@@ -1169,7 +1169,8 @@ def build_page(grants_list, verified, posted, cfg, today=None):
         words = " ".join(x for x in (title, v.get("programme"), programme_detail(g), v.get("summary"),
                                      v.get("eligible_countries"), g.get("ente"), g.get("titolo")) if x).lower()
         attrs = (f'data-region="{escape(region(g, v, cfg), quote=True)}" data-italy="{"yes" if v.get("italy") == "yes" else "no"}" '
-                 f'data-deadline="{d.isoformat() if d else ""}" data-text="{escape(words, quote=True)}"')
+                 f'data-deadline="{d.isoformat() if d else ""}" data-area="{" ".join(areas(g))}" '
+                 f'data-text="{escape(words, quote=True)}"')
         return f"""    <article class="call {css}" id="{card_anchor(g["id"])}" {attrs}>
       <div class="funder">{escape(v.get("programme") or programme_detail(g))}{tag}</div>
       <h4>{escape(title)}</h4>
@@ -1209,7 +1210,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
                        accent=cfg.get("grant_accent", "#FFB547"), nav="".join(nav),
                        italy=italy_html, other=other_html, updated=_fmt_date(today), filters=filters_form(entries),
                        og=og_tags(cfg, f"Open research funding calls · {cfg['brand_name']}",
-                                  "Open funding calls for clinical and rehabilitation research, checked on the official call text.",
+                                  "Open funding calls for clinical research, clinical engineering and rehabilitation, checked on the official call text.",
                                   "calls"))
 
 
@@ -1221,7 +1222,7 @@ HOME = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{brand}</title>
 <meta name="google-site-verification" content="CmqA15pmnid3j9D4hdy5u6P45Dly32YcaeAil7P-6tM">
-<meta name="description" content="Open research funding calls and academic positions in clinical and rehabilitation research, checked on the official texts.">
+<meta name="description" content="Open research funding calls and academic positions in clinical research, clinical engineering and rehabilitation, checked on the official texts.">
 {og}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -1286,16 +1287,18 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None):
                        amber=cfg.get("grant_accent", "#FFB547"), lilac=cfg.get("positions_accent", "#A78BFA"),
                        calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
-                                  "and rehabilitation research, checked on the official texts.", ""))
+                                  "engineering and rehabilitation, checked on the official texts.", ""))
 
 
 def filters_form(entries):
     """Riquadro dei filtri della pagina bandi (parola chiave, area, scadenza): gratis per tutti, funziona nel browser."""
     from html import escape
     regions = "".join(f'<option value="{escape(r, quote=True)}">{escape(r)}</option>' for r in REGIONS)
+    area_opts = "".join(f'<option value="{k}">{escape(v)}</option>' for k, v in AREA_LABELS.items())
     return f"""  <form class="filters" role="search" aria-label="Filter calls" onsubmit="return false">
     <label class="wide">Search<input type="search" name="q" placeholder="Keyword, funder, programme or country (e.g. stroke, NIH, Germany)" autocomplete="off"></label>
     <label>Applicants based in<select name="where"><option value="">Anywhere</option><option value="italy">Italy (open to Italian institutions)</option>{regions}</select></label>
+    <label>Area<select name="area"><option value="">All areas</option>{area_opts}</select></label>
     <label>Deadline<select name="time"><option value="">Any deadline</option><option value="lt30">Closing within 30 days</option>
       <option value="ge30">At least 30 days left</option><option value="ge60">At least 60 days left</option><option value="ge90">At least 90 days left</option></select></label>
     <div class="status"><span class="count" aria-live="polite">{len(entries)} open calls</span><button type="reset" hidden>Clear filters</button></div>
@@ -1308,48 +1311,51 @@ FILTER_SCRIPT = """
 (function () {
   var form = document.querySelector("form.filters");
   if (!form) return;
-  var cards = Array.prototype.slice.call(document.querySelectorAll("article.call"));
+  var cards = Array.prototype.slice.call(document.querySelectorAll("article.call, article.job"));
+  var noun = form.dataset.noun || "open calls";
   var count = form.querySelector(".count"), reset = form.querySelector("button[type=reset]"), total = cards.length;
   var DAY = 86400000, today = new Date(); today.setHours(0, 0, 0, 0);
   function norm(t) { return (t || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, ""); }
   cards.forEach(function (c) { c._text = norm(c.dataset.text); });
   function apply(save) {
-    var q = norm(form.q.value).trim(), where = form.where.value, time = form.time.value, words = q ? q.split(/\\s+/) : [], shown = 0;
+    var val = function (n) { return form[n] ? form[n].value : ""; };
+    var q = norm(form.q.value).trim(), where = val("where"), time = val("time"), area = val("area"),
+        words = q ? q.split(/\\s+/) : [], shown = 0;
     cards.forEach(function (c) {
       var ok = words.every(function (w) { return c._text.indexOf(w) !== -1; });
       if (ok && where === "italy") ok = c.dataset.italy === "yes";
       else if (ok && where) ok = c.dataset.region === where || (where !== "International & intercontinental" && c.dataset.region === "International & intercontinental");
+      if (ok && area) ok = (" " + c.dataset.area + " ").indexOf(" " + area + " ") !== -1;
       if (ok && time) {
         var d = c.dataset.deadline ? (new Date(c.dataset.deadline + "T00:00:00") - today) / DAY : null;
         ok = d !== null && (time === "lt30" ? d < 30 : d >= parseInt(time.slice(2), 10));
       }
       c.hidden = !ok; if (ok) shown++;
     });
-    document.querySelectorAll(".grp").forEach(function (g) { g.hidden = !g.querySelector("article.call:not([hidden])"); });
-    document.querySelectorAll(".reg").forEach(function (g) { g.hidden = !g.querySelector("article.call:not([hidden])"); });
-    document.querySelectorAll("section.macro").forEach(function (s) {
-      var none = s.querySelector("article.call") && !s.querySelector("article.call:not([hidden])"), msg = s.querySelector(".nomatch");
-      if (none && !msg) { msg = document.createElement("p"); msg.className = "nomatch"; msg.textContent = "No calls in this section match your filters."; s.appendChild(msg); }
+    document.querySelectorAll(".grp").forEach(function (g) { g.hidden = !g.querySelector("article:not([hidden])"); });
+    document.querySelectorAll(".reg").forEach(function (g) { g.hidden = !g.querySelector("article:not([hidden])"); });
+    document.querySelectorAll("section").forEach(function (s) {
+      var none = s.querySelector("article") && !s.querySelector("article:not([hidden])"), msg = s.querySelector(".nomatch");
+      if (none && !msg) { msg = document.createElement("p"); msg.className = "nomatch"; msg.textContent = "Nothing in this section matches your filters."; s.appendChild(msg); }
       if (msg) msg.hidden = !none;
     });
-    var active = !!(q || where || time);
-    count.textContent = active ? "Showing " + shown + " of " + total + " open calls" : total + " open calls";
+    var active = !!(q || where || time || area);
+    count.textContent = active ? "Showing " + shown + " of " + total + " " + noun : total + " " + noun;
     reset.hidden = !active;
     if (save) {
       var p = new URLSearchParams();
       if (form.q.value.trim()) p.set("q", form.q.value.trim()); if (where) p.set("where", where); if (time) p.set("time", time);
+      if (area) p.set("area", area);
       var qs = p.toString();
       history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
     }
   }
   var p = new URLSearchParams(location.search);
   if (p.get("q")) form.q.value = p.get("q");
-  if (p.get("where")) form.where.value = p.get("where");
-  if (p.get("time")) form.time.value = p.get("time");
+  ["where", "time", "area"].forEach(function (n) { if (p.get(n) && form[n]) form[n].value = p.get(n); });
   var timer;
   form.q.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { apply(true); }, 150); });
-  form.where.addEventListener("change", function () { apply(true); });
-  form.time.addEventListener("change", function () { apply(true); });
+  ["where", "time", "area"].forEach(function (n) { if (form[n]) form[n].addEventListener("change", function () { apply(true); }); });
   form.addEventListener("reset", function () { setTimeout(function () { apply(true); }, 0); });
   apply(false);
 })();
@@ -1448,6 +1454,25 @@ def og_tags(cfg, title, description, path):
             f'<meta property="og:url" content="{escape(site_url(cfg, path), quote=True)}">\n'
             f'<meta property="og:image" content="{escape(site_url(cfg, "og.png"), quote=True)}">\n'
             f'<meta name="twitter:card" content="summary_large_image">')
+
+
+AREA_LABELS = {"rehab": "Rehabilitation", "clinical": "Clinical research", "engineering": "Clinical & biomedical engineering",
+               "open": "Open topic"}
+
+
+def areas(g):
+    """Aree del bando (per il filtro): dai macrogruppi assegnati da GrantFinder."""
+    mg = set(g.get("macrogruppi") or [])
+    out = []
+    if mg & {"Ictus", "Parkinson", "Invecchiamento", "Tecnologie riabilitazione", "Altre malattie e riabilitazione"}:
+        out.append("rehab")
+    if "Ricerca clinica" in mg:
+        out.append("clinical")
+    if mg & {"Ingegneria clinica", "Tecnologie riabilitazione"}:
+        out.append("engineering")
+    if "Ricerca sanitaria a tema libero" in mg:
+        out.append("open")
+    return out or ["rehab"]
 
 
 def card_anchor(grant_id):

@@ -31,10 +31,17 @@ RX_REHAB = re.compile(
     r"speech (and language )?therap|logoped|stroke|ictus|neurorehab|spinal cord injur|brain injur|"
     r"parkinson|multiple sclerosis|sclerosi multipla|cerebral palsy|amputee|prosthet|orthot|exoskeleton|"
     r"motor (control|recovery|learning)|gait|mobility|disabilit|chronic pain|musculoskeletal|"
-    r"sports? (medicine|physiotherapy)|cardiac rehab|pulmonary rehab|geriatric|frailty|falls? prevention", re.I)
+    r"sports? (medicine|physiotherapy)|cardiac rehab|pulmonary rehab|geriatric|frailty|falls? prevention|"
+    # ricerca clinica e ingegneria clinica/biomedica (focus esteso)
+    r"clinical (research|trials?|epidemiolog|science|academic|investigat)|trialist|biostatist|epidemiolog|"
+    r"health (services|data|technolog|informatics)|digital health|implementation science|"
+    r"biomedical engineer|bioengineer|clinical engineer|rehabilitation engineer|medical (devices?|imaging|physics|technolog)|"
+    r"ricerca clinica|ingegneria (biomedica|clinica)", re.I)
 # per la pertinenza «media»: termini riabilitativi clinici; «rehabilitation» da solo non basta
 # (esclude riabilitazione di detenuti, animali, edifici)
 RX_CLINICAL_REHAB = re.compile(
+    r"clinical (research|trials?|epidemiolog|investigat)|trialist|biostatist|health services|implementation science|"
+    r"biomedical engineer|bioengineer|clinical engineer|rehabilitation engineer|medical (devices?|imaging|physics)|"
     r"physiotherap|fisioterap|physical therap|occupational therap|terapia occupazionale|speech (and language )?therap|"
     r"logoped|neurorehab|neuroriabilit|stroke|ictus|spinal cord injur|brain injur|parkinson|multiple sclerosis|"
     r"sclerosi multipla|cerebral palsy|amputee|prosthet|orthot|exoskeleton|motor (control|recovery|learning)|"
@@ -50,7 +57,8 @@ TYPES = {"phd": "PhD", "postdoc": "Post-doc", "research": "Research assistant / 
          "clinical": "Clinical academic & fellowship", "faculty": "Faculty"}
 
 VERIFY_PROMPT = """You check ONE academic job advertisement for a public list of open positions in clinical
-rehabilitation research. Use ONLY the text of the advertisement below; never guess.
+research, clinical and biomedical engineering and rehabilitation. Use ONLY the text of the advertisement
+below; never guess.
 
 Return:
 - is_open_position: "yes" if it is an open academic position you can apply for, "no" if it is closed,
@@ -60,10 +68,16 @@ Return:
   scientist or officer, borsa di ricerca, tecnologo), "clinical" (clinical academic post, clinical research
   fellowship or training fellowship for clinicians and therapists), "faculty" (assistant/associate/full
   professor, lecturer, reader, tenure-track, RTD/RTT), or "other".
-- relevance: "high" if the position is about clinical rehabilitation research (rehabilitation,
-  physiotherapy, occupational or speech therapy, neurorehabilitation, stroke, spinal cord or brain injury,
-  Parkinson, MS, prosthetics, disability, motor recovery); "medium" if rehabilitation is one clearly stated
-  part of the role; "low" otherwise.
+- relevance: "high" if the position is about rehabilitation research (rehabilitation, physiotherapy,
+  occupational or speech therapy, neurorehabilitation, stroke, spinal cord or brain injury, Parkinson, MS,
+  prosthetics, rehabilitation engineering, disability, motor recovery); "medium" if it is clinical research
+  in any medical field (clinical trials, studies with patients, clinical epidemiology, biostatistics for
+  clinical studies, health services or implementation research) or clinical/biomedical engineering applied
+  to patients or health care (medical devices, imaging, digital health), or if rehabilitation is one
+  clearly stated part of the role; "low" for basic or preclinical science without patients and for
+  non-health roles.
+- area: "rehabilitation", "clinical" (clinical research in another medical field) or "engineering"
+  (clinical or biomedical engineering), the main one.
 - title: the official job title, in English (translate if needed), max 120 characters.
 - institution: the university or institute, as named in the text.
 - country: the country of the position, in English.
@@ -82,11 +96,12 @@ VERIFY_SCHEMA = {
         "is_open_position": {"type": "STRING", "enum": ["yes", "no", "unclear"]},
         "position_type": {"type": "STRING", "enum": ["phd", "postdoc", "research", "clinical", "faculty", "other"]},
         "relevance": {"type": "STRING", "enum": ["high", "medium", "low"]},
+        "area": {"type": "STRING", "enum": ["rehabilitation", "clinical", "engineering"]},
         "title": {"type": "STRING"}, "institution": {"type": "STRING"}, "country": {"type": "STRING"},
         "city": {"type": "STRING"}, "deadline": {"type": "STRING"}, "deadline_evidence": {"type": "STRING"},
         "summary": {"type": "STRING"},
     },
-    "required": ["is_open_position", "position_type", "relevance", "title", "institution", "country", "city",
+    "required": ["is_open_position", "position_type", "relevance", "area", "title", "institution", "country", "city",
                  "deadline", "deadline_evidence", "summary"],
 }
 
@@ -190,7 +205,7 @@ def verify(item):
         "status": "ok", "checked": date.today().isoformat(), "first_seen": date.today().isoformat(),
         "url": item["url"], "source": item.get("source", ""),
         "is_open": out.get("is_open_position", "unclear"), "type": out.get("position_type", "other"),
-        "relevance": out.get("relevance", "low"),
+        "relevance": out.get("relevance", "low"), "area": out.get("area", "rehabilitation"),
         "title": content._clip(out.get("title") or item["title"], 140),
         "institution": content._clip(out.get("institution", ""), 120),
         "country": content._clip(out.get("country", ""), 60), "city": content._clip(out.get("city", ""), 60),
@@ -242,7 +257,8 @@ def active(archive, today=None):
                 or v.get("type") not in TYPES:
             continue
         # pertinenza «media» solo se un termine riabilitativo compare davvero nel titolo o nella descrizione
-        if v.get("relevance") == "medium" and not RX_CLINICAL_REHAB.search(f"{v.get('title', '')} {v.get('summary', '')}"):
+        if (v.get("relevance") == "medium" and v.get("area") not in ("clinical", "engineering")
+                and not RX_CLINICAL_REHAB.search(f"{v.get('title', '')} {v.get('summary', '')}")):
             continue
         d = _date(v.get("deadline"))
         seen = _date(v.get("first_seen")) or today
@@ -278,7 +294,7 @@ PAGE = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Academic positions · {brand}</title>
-<meta name="description" content="Open PhD, post-doc and faculty positions in clinical rehabilitation research, checked against the original advertisement.">
+<meta name="description" content="Open PhD, post-doc and faculty positions in clinical research, clinical engineering and rehabilitation worldwide, checked against the original advertisement.">
 {og}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -320,6 +336,20 @@ PAGE = """<!doctype html>
            padding: 10px 16px; border-radius: 12px; }}
   a.btn:focus-visible, nav.jump a:focus-visible, .switch:focus-visible {{ outline: 3px solid var(--text); outline-offset: 2px; }}
   .empty {{ color: var(--soft); background: var(--card); border-radius: 18px; padding: 22px; }}
+  form.filters {{ background: var(--card); border-radius: 18px; padding: 16px; margin: 0 0 8px; display: grid; gap: 10px;
+                 grid-template-columns: 1fr 1fr 1fr; }}
+  form.filters label {{ display: grid; gap: 4px; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+                       color: var(--muted); }}
+  form.filters label.wide {{ grid-column: 1 / -1; }}
+  form.filters input, form.filters select {{ font: 500 15px Inter, system-ui, sans-serif; color: var(--text); background: var(--bg);
+                       border: 1px solid var(--muted); border-radius: 10px; padding: 10px 12px; width: 100%; }}
+  form.filters .status {{ grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+                         font-size: 14px; color: var(--soft); }}
+  form.filters button {{ background: transparent; color: var(--text); border: 1px solid var(--muted); border-radius: 999px;
+                        padding: 6px 12px; font: 600 13px Inter, system-ui, sans-serif; cursor: pointer; }}
+  @media (max-width: 560px) {{ form.filters {{ grid-template-columns: 1fr; }} }}
+  .nomatch {{ color: var(--soft); background: var(--card); border-radius: 18px; padding: 18px 20px; font-size: 15px; }}
+  [hidden] {{ display: none !important; }}
   footer {{ color: var(--muted); font-size: 13px; margin-top: 36px; }}
   footer a {{ color: var(--teal); }}
 </style>
@@ -329,10 +359,12 @@ PAGE = """<!doctype html>
 <main>
   <a class="switch" href="index.html">&larr; Home</a> &nbsp; <a class="switch" href="calls.html">Research funding calls &rarr;</a><br>
   <span class="badge">ACADEMIC POSITIONS</span>
-  <h1>Positions in clinical rehabilitation research</h1>
-  <p class="intro">Open PhD, post-doc and faculty positions from universities and research institutes worldwide,
-  checked against the original advertisement. Grouped by position and region, sorted by deadline.</p>
+  <h1>Positions in clinical research, engineering and rehabilitation</h1>
+  <p class="intro">Open PhD, post-doc and faculty positions in clinical research, clinical and biomedical engineering and
+  rehabilitation, from universities and research institutes worldwide, checked against the original advertisement.
+  Grouped by position and region, sorted by deadline: use the filters.</p>
   <nav class="jump">{nav}</nav>
+{filters}
 {sections}
   <footer>
     Positions collected from academic job portals and checked automatically: always read the full advertisement
@@ -347,6 +379,23 @@ PAGE = """<!doctype html>
 
 def _fmt(d):
     return f"{d.day} {d.strftime('%b %Y')}"
+
+
+def filters_form(n):
+    """Filtri della pagina posizioni (parola chiave, dove, area, scadenza): stesso script della pagina bandi."""
+    regions = "".join(f'<option value="{escape(r, quote=True)}">{escape(r)}</option>'
+                      for r in grants.REGIONS[1:] + ["Other countries"])
+    areas = "".join(f'<option value="{k}">{v}</option>' for k, v in
+                    (("rehabilitation", "Rehabilitation"), ("clinical", "Clinical research"),
+                     ("engineering", "Clinical &amp; biomedical engineering")))
+    return f"""  <form class="filters" role="search" aria-label="Filter positions" data-noun="open positions" onsubmit="return false">
+    <label class="wide">Search<input type="search" name="q" placeholder="Keyword, institution, city or country (e.g. stroke, trials, Japan)" autocomplete="off"></label>
+    <label>Location<select name="where"><option value="">Anywhere</option><option value="italy">Italy</option>{regions}</select></label>
+    <label>Area<select name="area"><option value="">All areas</option>{areas}</select></label>
+    <label>Deadline<select name="time"><option value="">Any deadline</option><option value="lt30">Closing within 30 days</option>
+      <option value="ge30">At least 30 days left</option></select></label>
+    <div class="status"><span class="count" aria-live="polite">{n} open positions</span><button type="reset" hidden>Clear filters</button></div>
+  </form>"""
 
 
 def build_page(archive, posted, cfg, today=None):
@@ -366,7 +415,7 @@ def build_page(archive, posted, cfg, today=None):
             regions.setdefault(region_of(e[1]), []).append(e)
         order = grants.REGIONS + ["Other countries"]
         for r in sorted(regions, key=lambda r: order.index(r) if r in order else 99):
-            parts.append(f'    <h3 class="region">{escape(r)} <span>{len(regions[r])}</span></h3>')
+            parts.append(f'    <div class="grp">\n    <h3 class="region">{escape(r)} <span>{len(regions[r])}</span></h3>')
             for k, v, d in regions[r]:
                 if d:
                     soon = '<span class="soon">CLOSING SOON</span>' if (d - today).days <= 14 else ""
@@ -379,7 +428,11 @@ def build_page(archive, posted, cfg, today=None):
                 share = grants.share_button(grants.site_url(cfg, "jobs/" + page),
                                             f"{v['title']} – {v.get('institution') or 'academic position'}"
                                             + (f" (deadline {_fmt(d)})" if d else ""))
-                parts.append(f"""    <article class="job" id="{k}">
+                words = " ".join(x for x in (v.get("title"), place, v.get("summary"), TYPES.get(v.get("type"))) if x).lower()
+                attrs = (f'data-region="{escape(r, quote=True)}" data-italy="{"yes" if (v.get("country") or "").lower() == "italy" else "no"}" '
+                         f'data-area="{escape(v.get("area") or "rehabilitation", quote=True)}" data-deadline="{d.isoformat() if d else ""}" '
+                         f'data-text="{escape(words, quote=True)}"')
+                parts.append(f"""    <article class="job" id="{k}" {attrs}>
       <div class="inst">{escape(place)}{tag}</div>
       <h4><a href="jobs/{page}.html">{escape(v["title"])}</a></h4>
       {f'<p class="summary">{escape(v["summary"])}</p>' if v.get("summary") else ""}
@@ -388,15 +441,16 @@ def build_page(archive, posted, cfg, today=None):
         <div class="btns">{share}<a class="btn" href="{escape(v["url"], quote=True)}" target="_blank" rel="noopener">Advertisement &rarr;</a></div>
       </div>
     </article>""")
+            parts.append("    </div>")
         parts.append("  </section>")
         sections.append("\n".join(parts))
     c = cfg["colors"]
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
                        accent=cfg.get("positions_accent", "#A78BFA"), nav="".join(nav),
-                       sections="\n".join(sections), updated=_fmt(today),
-                       og=grants.og_tags(cfg, f"Academic positions in clinical rehabilitation research · {cfg['brand_name']}",
-                                         "Open PhD, post-doc and faculty positions in clinical rehabilitation research, "
+                       sections="\n".join(sections), updated=_fmt(today), filters=filters_form(len(entries)),
+                       og=grants.og_tags(cfg, f"Academic positions in clinical research, engineering and rehabilitation · {cfg['brand_name']}",
+                                         "Open PhD, post-doc and faculty positions in clinical research, clinical engineering and rehabilitation, "
                                          "checked against the original advertisement.", "positions"))
 
 
@@ -561,16 +615,16 @@ def weekly_post(archive, posted, cfg, today=None):
             for k, v, d in picked]
     lines = "\n".join(f"• {j['type']} – {j['title']} ({j['institution']}{', ' + j['place'] if j['place'] else ''}). "
                       f"Deadline: {j['deadline']}. {j['url']}" for j in jobs)
-    caption = (f"New academic positions in clinical rehabilitation research – week of {week}.\n\n{lines}\n\n"
+    caption = (f"New academic positions in clinical research, engineering and rehabilitation – week of {week}.\n\n{lines}\n\n"
                "All open positions, by type and region: link in bio.\n"
                "Positions are collected and checked automatically: always read the full advertisement before applying.\n"
                "Know someone who should apply? Share this post with them.")
     return {
         "id": f"positions-{today.isoformat()}", "kind": "positions",
         "position_ids": [k for k, v, d in picked],
-        "title": (f"{len(jobs)} open positions in rehabilitation research" if len(jobs) > 1
-                  else "Open position in rehabilitation research"),
-        "title_highlight": "rehabilitation research",
+        "title": (f"{len(jobs)} open academic positions this week" if len(jobs) > 1
+                  else "Open academic position this week"),
+        "title_highlight": "academic positions" if len(jobs) > 1 else "academic position",
         "category": "Academic positions", "week": week, "jobs": jobs, "slides": [],
         "takeaway": "New PhD, post-doc and faculty positions every week.",
         "takeaway_highlight": "every week",

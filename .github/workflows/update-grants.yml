@@ -8,6 +8,10 @@ on:
       timezone: "Europe/Rome"
     - cron: "17 17 * * *"
       timezone: "Europe/Rome"
+    - cron: "17 11 * * *"
+      timezone: "Europe/Rome"
+    - cron: "17 21 * * *"
+      timezone: "Europe/Rome"
   workflow_dispatch:
     inputs:
       limit:
