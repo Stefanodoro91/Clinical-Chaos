@@ -304,10 +304,87 @@ def wait_until_public(url):
     raise RuntimeError(f"Immagine non raggiungibile: {url}")
 
 
+def publish_reel(video_path, caption):
+    """Reel su Instagram con caricamento diretto del video (upload «resumable»): nessun hosting esterno."""
+    user, token = os.environ["IG_USER_ID"], os.environ["IG_ACCESS_TOKEN"]
+    c = ig("POST", f"{user}/media", media_type="REELS", upload_type="resumable", caption=caption, share_to_feed="true")
+    data = Path(video_path).read_bytes()
+    r = requests.post(c.get("uri") or f"https://rupload.facebook.com/ig-api-upload/{GRAPH_VERSION}/{c['id']}",
+                      headers={"Authorization": f"OAuth {token}", "offset": "0", "file_size": str(len(data))},
+                      data=data, timeout=300)
+    if not r.ok:
+        raise RuntimeError(f"Caricamento del video rifiutato {r.status_code}: {r.text[:300]}")
+    for _ in range(60):                        # l'elaborazione dei video può richiedere qualche minuto
+        status = ig("GET", c["id"], fields="status_code").get("status_code")
+        if status == "FINISHED":
+            break
+        if status in ("ERROR", "EXPIRED"):
+            raise RuntimeError(f"Instagram ha rifiutato il video (stato {status})")
+        time.sleep(10)
+    else:
+        raise RuntimeError("Instagram non ha elaborato il video in tempo")
+    return ig("POST", f"{user}/media_publish", creation_id=c["id"])["id"]
+
+
+def reel_run(posted):
+    """Reel dal carosello di metodologia più recente non ancora trasformato in reel (pubblicato negli ultimi 21 giorni)."""
+    import reels
+    done = {p.get("reel_of") for p in posted if p.get("kind") == "reel"}
+    recent = datetime.now(timezone.utc).timestamp() - 21 * 86400
+    source = None
+    for p in reversed(posted):
+        if (p.get("kind") or "research") != "research" or p.get("id") in done or not p.get("time"):
+            continue
+        if datetime.fromisoformat(p["time"]).timestamp() < recent:
+            break
+        safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in p["id"])
+        folder = IMAGES_DIR / f"{p['date']}-{safe}"
+        slides = sorted(folder.glob("slide-*.jpg"), key=lambda x: int(x.stem.split("-")[1]))
+        if len(slides) >= 3:
+            source = (p, slides)
+            break
+    if not source:
+        print("::notice title=Reel::nessun carosello recente da trasformare in reel")
+        return
+    p, slides = source
+    PREVIEW_DIR.mkdir(exist_ok=True)
+    video = PREVIEW_DIR / "reel.mp4"
+    seconds = reels.build_reel(slides, video, CONFIG, accent=CONFIG["colors"]["accent"])
+    caption = (f"{p['title']}\n\nThe key points in about {round(seconds)} seconds. The full carousel, with references, "
+               f"is on our profile: save it for your next protocol.\n\n"
+               + " ".join(CONFIG.get("fixed_hashtags", []) + ["#Reels", "#ResearchTips", "#EvidenceBasedPractice"]))
+    print(f"Reel da: {p['title']} ({len(slides)} slide, {seconds} s)\n--- Didascalia ---\n{caption}")
+    if DRY_RUN:
+        (PREVIEW_DIR / "reel-caption.txt").write_text(caption, encoding="utf-8")
+        print("Modalità prova: reel non pubblicato. Anteprima nell'artifact 'preview'.")
+        return
+    try:
+        media_id = publish_reel(video, caption)
+    except Exception as e:
+        msg = str(e)[:400]
+        print(f"::error title=Reel non pubblicato::{msg}")
+        notify("Reel non pubblicato su Instagram", f"Il reel di «{p['title']}» non è uscito: {msg}")
+        sys.exit(1)
+    print(f"::notice title=Reel pubblicato::{p['title']} | id {media_id}")
+    posted.append({"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                   "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                   "id": f"reel-{p['id']}"[:60], "title": p["title"], "source": p.get("source", ""),
+                   "kind": "reel", "reel_of": p["id"], "media_id": media_id, "seconds": seconds})
+    save(POSTED_FILE, posted)
+    commit_and_push([POSTED_FILE.name], "Reel pubblicato")
+
+
 def main():
+    posted = load(POSTED_FILE, [])
+    if (os.environ.get("POST_TYPE") or "").strip().lower() == "reel":
+        same = [p for p in posted if p.get("kind") == "reel" and p.get("time")]
+        if os.environ.get("GITHUB_EVENT_NAME") == "schedule" and same and (
+                datetime.now(timezone.utc) - datetime.fromisoformat(same[-1]["time"])).total_seconds() < 48 * 3600:
+            print("Ultimo reel pubblicato da meno di 48 ore: salto.")
+            return
+        return reel_run(posted)
     drive = drive_service()
     queue = load(QUEUE_FILE, [])
-    posted = load(POSTED_FILE, [])
 
     # Due post al giorno, in due run separati: un bando (POST_TYPE=grant) e un post di metodologia (research).
     post_type = (os.environ.get("POST_TYPE") or "research").strip().lower()

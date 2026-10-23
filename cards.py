@@ -42,7 +42,8 @@ def fit(draw, text, weight, start, minimum, max_w, max_h, spacing):
     while True:
         fnt = font(weight, size)
         lines = wrap(draw, text, fnt, max_w)
-        if len(lines) * size * spacing <= max_h or size <= minimum:
+        too_wide = any(draw.textlength(l, font=fnt) > max_w for l in lines)   # una parola lunga non deve uscire dal margine
+        if (len(lines) * size * spacing <= max_h and not too_wide) or size <= minimum:
             return fnt, lines, size
         size -= 2
 

@@ -2,7 +2,8 @@ name: Post giornaliero ricerca clinica
 
 on:
   # Due post al giorno, ora italiana (GitHub può partire con qualche minuto di ritardo):
-  # alle 12:30 un bando, alle 23:30 un post di metodologia; il lunedì alle 18:30 la raccolta di posizioni accademiche.
+  # alle 12:30 un bando, alle 23:30 un post di metodologia; il lunedì alle 18:30 la raccolta di posizioni accademiche;
+  # mercoledì e sabato alle 19:00 un reel ricavato dal carosello di metodologia più recente.
   # Il fuso Europe/Rome gestisce da solo il cambio tra ora legale e ora solare.
   schedule:
     - cron: "30 12 * * *"
@@ -10,6 +11,8 @@ on:
     - cron: "30 23 * * *"
       timezone: "Europe/Rome"
     - cron: "30 18 * * 1"
+      timezone: "Europe/Rome"
+    - cron: "0 19 * * 3,6"
       timezone: "Europe/Rome"
   workflow_dispatch:
     inputs:
@@ -20,7 +23,7 @@ on:
       post_type:
         description: "Tipo di post: research = metodologia, grant = bando, positions = posizioni accademiche"
         type: choice
-        options: [research, grant, positions, announcement]
+        options: [research, grant, positions, announcement, reel]
         default: research
       positions_count:
         description: "Solo per positions: quante posizioni nel post (vuoto = raccolta settimanale normale)"
@@ -47,7 +50,9 @@ jobs:
           cache: pip
 
       - name: Installa dipendenze
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          which ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
 
       - name: Configura git
         run: |
@@ -70,7 +75,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
           POSITIONS_PER_POST: ${{ inputs.positions_count }}
-          POST_TYPE: ${{ github.event_name == 'schedule' && (github.event.schedule == '30 12 * * *' && 'grant' || (github.event.schedule == '30 18 * * 1' && 'positions' || 'research')) || inputs.post_type || 'research' }}
+          POST_TYPE: ${{ github.event_name == 'schedule' && (github.event.schedule == '30 12 * * *' && 'grant' || (github.event.schedule == '30 18 * * 1' && 'positions' || (github.event.schedule == '0 19 * * 3,6' && 'reel' || 'research'))) || inputs.post_type || 'research' }}
         run: python bot.py
 
       - name: Salva anteprima (solo in modalità prova)
