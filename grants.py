@@ -1242,6 +1242,7 @@ HOME = """<!doctype html>
   a.big {{ display: block; text-decoration: none; color: var(--bg); border-radius: 22px; padding: 22px 22px 20px; }}
   a.big.calls {{ background: var(--amber); }}
   a.big.jobs {{ background: var(--lilac); }}
+  a.big.method {{ background: var(--teal); }}
   a.big .label {{ font-size: 13px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; opacity: .8; }}
   a.big .name {{ display: flex; justify-content: space-between; align-items: center; font-size: 27px; font-weight: 800; margin: 4px 0 6px; }}
   a.big .count {{ font-size: 15px; font-weight: 600; }}
@@ -1269,6 +1270,11 @@ HOME = """<!doctype html>
     <span class="name">Academic positions <span aria-hidden="true">&rarr;</span></span>
     <span class="count">{jobs_line}</span>
   </a>
+  <a class="big method" href="methodology.html">
+    <span class="label">Methodology library</span>
+    <span class="name">Methodology <span aria-hidden="true">&rarr;</span></span>
+    <span class="count">{method_line}</span>
+  </a>
   <div class="social">
     <a href="https://www.instagram.com/{ig}/">Instagram</a>
     <a href="https://www.facebook.com/{ig}">Facebook</a>
@@ -1280,7 +1286,7 @@ HOME = """<!doctype html>
 """
 
 
-def build_home(n_calls, n_italy, n_positions, cfg, today=None):
+def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
     from html import escape
     today = today or date.today()
     c = cfg["colors"]
@@ -1290,6 +1296,8 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None):
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
                        amber=cfg.get("grant_accent", "#FFB547"), lilac=cfg.get("positions_accent", "#A78BFA"),
                        calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
+                       method_line=escape(f"{n_methods} practical topics with key points and references" if n_methods
+                                          else "Practical topics with key points and references"),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
                                   "engineering and rehabilitation, checked on the official texts.", ""))
 
@@ -1315,7 +1323,7 @@ FILTER_SCRIPT = """
 (function () {
   var form = document.querySelector("form.filters");
   if (!form) return;
-  var cards = Array.prototype.slice.call(document.querySelectorAll("article.call, article.job"));
+  var cards = Array.prototype.slice.call(document.querySelectorAll("article.call, article.job, article.method"));
   var noun = form.dataset.noun || "open calls";
   var count = form.querySelector(".count"), reset = form.querySelector("button[type=reset]"), total = cards.length;
   var DAY = 86400000, today = new Date(); today.setHours(0, 0, 0, 0);

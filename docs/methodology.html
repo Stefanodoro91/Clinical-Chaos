@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methodology library · Clinical Research Chaos</title>
+<meta name="description" content="Practical clinical research methodology in short carousels: key points and references for every topic we have covered.">
+<link rel="canonical" href="https://clinical-chaos-dsv.pages.dev/methodology">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Clinical Research Chaos">
+<meta property="og:title" content="Methodology library · Clinical Research Chaos">
+<meta property="og:description" content="Practical clinical research methodology: key points and references.">
+<meta property="og:url" content="https://clinical-chaos-dsv.pages.dev/methodology">
+<meta property="og:image" content="https://clinical-chaos-dsv.pages.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #0E2233; --card: #15304A; --text: #FFFFFF; --muted: #7F96AB; --soft: #D3DEE8; --accent: #3DD9C1; --teal: #3DD9C1; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.5; }
+  .bar { height: 6px; background: var(--accent); }
+  main { max-width: 760px; margin: 0 auto; padding: 28px 16px 48px; }
+  .switch { display: inline-block; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
+            border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px; margin: 0 6px 18px 0; }
+  .badge { display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
+           letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; }
+  h1 { font-size: 30px; font-weight: 800; margin: 14px 0 6px; line-height: 1.15; }
+  .intro { color: var(--soft); margin: 0 0 18px; font-size: 15px; }
+  section > h2 { font-size: 21px; font-weight: 800; margin: 30px 0 12px; color: var(--accent); }
+  .method { background: var(--card); border-radius: 18px; padding: 16px; margin-bottom: 14px; display: grid;
+            grid-template-columns: 132px 1fr; gap: 16px; }
+  .method img { width: 132px; height: 165px; object-fit: cover; border-radius: 10px; display: block; }
+  .method h3 { font-size: 18px; margin: 0 0 6px; line-height: 1.3; }
+  .date { color: var(--muted); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .take { color: var(--soft); font-size: 15px; margin: 0 0 10px; }
+  details { font-size: 14px; color: var(--soft); }
+  details summary { cursor: pointer; color: var(--accent); font-weight: 700; }
+  details h4 { color: var(--text); font-size: 15px; margin: 12px 0 2px; }
+  details p { margin: 0 0 6px; }
+  .refs { border-top: 1px solid #2A4058; margin-top: 12px; padding-top: 8px; font-size: 13px; }
+  @media (max-width: 520px) { .method { grid-template-columns: 1fr; } .method img { width: 100%; height: auto; aspect-ratio: 4/5; } }
+  form.filters { background: var(--card); border-radius: 18px; padding: 16px; margin: 0 0 8px; display: grid; gap: 10px;
+                 grid-template-columns: 2fr 1fr; }
+  form.filters label { display: grid; gap: 4px; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+                       color: var(--muted); }
+  form.filters input, form.filters select { font: 500 15px Inter, system-ui, sans-serif; color: var(--text); background: var(--bg);
+                       border: 1px solid var(--muted); border-radius: 10px; padding: 10px 12px; width: 100%; }
+  form.filters .status { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+                         font-size: 14px; color: var(--soft); }
+  form.filters button { background: transparent; color: var(--text); border: 1px solid var(--muted); border-radius: 999px;
+                        padding: 6px 12px; font: 600 13px Inter, system-ui, sans-serif; cursor: pointer; }
+  @media (max-width: 520px) { form.filters { grid-template-columns: 1fr; } }
+  .nomatch { color: var(--soft); background: var(--card); border-radius: 18px; padding: 18px 20px; font-size: 15px; }
+  [hidden] { display: none !important; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 36px; }
+  footer a { color: var(--teal); }
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<main>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><br>
+  <span class="badge">METHODOLOGY LIBRARY</span>
+  <h1>Clinical research methodology, made practical</h1>
+  <p class="intro">Every methodology carousel we have published, with its key points and the references it is based on.
+  New topics every day on Instagram.</p>
+  <form class="filters" role="search" aria-label="Filter topics" data-noun="topics" onsubmit="return false">
+    <label>Search<input type="search" name="q" placeholder="Keyword (e.g. blinding, p-value, regression)" autocomplete="off"></label>
+    <label>Topic<select name="area"><option value="">All topics</option><option value="randomization-blinding">Randomization &amp; blinding</option><option value="research-methods">Research methods</option></select></label>
+    <div class="status"><span class="count" aria-live="polite">12 topics</span><button type="reset" hidden>Clear filters</button></div>
+  </form>
+  <section id="randomization-blinding">
+    <h2>Randomization &amp; blinding</h2>
+    <div class="grp">
+    <article class="method" id="m-8ffbd1e0" data-area="randomization-blinding" data-text="response-adaptive randomization: promise and pitfalls response-adaptive designs allocate more patients to winning treatments but fail if outcome feedback is slow. randomization &amp; blinding shifting probabilities mid-trial response-adaptive randomization allows changing the allocation probability during the study by using the data accruing as the study progresses based on patient responses. the play-the-winner rule an example of response-adaptive randomization is the randomized play-the-winner rule. if a patient response is success, the next patient will be allocated to the same treatment group. ethical appeal vs practical limits this method is based on the ethics of allowing more patients to be allocated to treatments that benefit the patients. however, if clinical studies take a very long time to obtain results, this method cannot be recommended.">
+      <img src="methodology/8ffbd1e0.jpg" alt="" width="132" height="165" loading="lazy">
+      <div>
+        <div class="date">23 Oct 2026</div>
+        <h3>Response-Adaptive Randomization: Promise and Pitfalls</h3>
+        <p class="take">Response-adaptive designs allocate more patients to winning treatments but fail if outcome feedback is slow.</p>
+        <details><summary>Key points and references</summary><h4>Shifting Probabilities Mid-Trial</h4><p>Response-adaptive randomization allows changing the allocation probability during the study by using the data accruing as the study progresses based on patient responses.</p><h4>The Play-the-Winner Rule</h4><p>An example of response-adaptive randomization is the randomized play-the-winner rule. If a patient response is success, the next patient will be allocated to the same treatment group.</p><h4>Ethical Appeal vs Practical Limits</h4><p>This method is based on the ethics of allowing more patients to be allocated to treatments that benefit the patients. However, if clinical studies take a very long time to obtain results, this method cannot be recommended.</p><div class="refs"><b>References</b><p>Lim, C.-Y., &amp; In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232.</p></div></details>
+      </div>
+    </article>
+    <article class="method" id="m-28731450" data-area="randomization-blinding" data-text="why simple randomization fails small trials simple randomization works well for large trials but creates dangerous sample size imbalances in small studies. randomization &amp; blinding the power of simple randomization in simple randomization, a coin or a die roll may be used to allocate subjects to a group. the best part of simple randomization is that it minimizes any bias by eliminating predictability. the sample size trap simple randomization cannot prevent the imbalances in the sample size or prognostic factors that are likely to occur as the number of subjects participating in the study decreases. power loss in small groups if the ratio of number of subjects shows an imbalance, that is, it is not 1 : 1, even with the same number of subjects participating, the power of mobility and study will fall. when to use simple randomization this is the randomization method recommended for large-scale clinical trials, because the likelihood of imbalance in trials with a small number of subjects is high.">
+      <img src="methodology/28731450.jpg" alt="" width="132" height="165" loading="lazy">
+      <div>
+        <div class="date">21 Oct 2026</div>
+        <h3>Why Simple Randomization Fails Small Trials</h3>
+        <p class="take">Simple randomization works well for large trials but creates dangerous sample size imbalances in small studies.</p>
+        <details><summary>Key points and references</summary><h4>The Power of Simple Randomization</h4><p>In simple randomization, a coin or a die roll may be used to allocate subjects to a group. The best part of simple randomization is that it minimizes any bias by eliminating predictability.</p><h4>The Sample Size Trap</h4><p>Simple randomization cannot prevent the imbalances in the sample size or prognostic factors that are likely to occur as the number of subjects participating in the study decreases.</p><h4>Power Loss in Small Groups</h4><p>If the ratio of number of subjects shows an imbalance, that is, it is not 1 : 1, even with the same number of subjects participating, the power of mobility and study will fall.</p><h4>When to Use Simple Randomization</h4><p>This is the randomization method recommended for large-scale clinical trials, because the likelihood of imbalance in trials with a small number of subjects is high.</p><div class="refs"><b>References</b><p>Lim, C. Y., &amp; In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221–232. https://doi.org/10.4097/kja.19049</p></div></details>
+      </div>
+    </article>
+    <article class="method" id="m-24cb1895" data-area="randomization-blinding" data-text="do researchers ever test if blinding actually worked? despite the prevalence of double-blind trials, evaluating the actual success of blinding is rarely performed. randomization &amp; blinding the forgotten assessment although thousands of ostensibly double-blind trials are conducted annually, attempts to measure the effectiveness of blinding are rarely discussed. hidden clues lead to unblinding even with technical efforts, beneficial therapeutic efficacy, side effects or internal conversation are frequently cited as clues to treatment identity. the lack of standard methods although several methods to assess blinding in clinical trials have been published, none of these are widely used or considered standard.">
+      <img src="methodology/24cb1895.jpg" alt="" width="132" height="165" loading="lazy">
+      <div>
+        <div class="date">21 Oct 2026</div>
+        <h3>Do Researchers Ever Test If Blinding Actually Worked?</h3>
+        <p class="take">Despite the prevalence of double-blind trials, evaluating the actual success of blinding is rarely performed.</p>
+        <details><summary>Key points and references</summary><h4>The Forgotten Assessment</h4><p>Although thousands of ostensibly double-blind trials are conducted annually, attempts to measure the effectiveness of blinding are rarely discussed.</p><h4>Hidden Clues Lead to Unblinding</h4><p>Even with technical efforts, beneficial therapeutic efficacy, side effects or internal conversation are frequently cited as clues to treatment identity.</p><h4>The Lack of Standard Methods</h4><p>Although several methods to assess blinding in clinical trials have been published, none of these are widely used or considered standard.</p><div class="refs"><b>References</b><p>Bang, H., Ni, L., &amp; Davis, C. E. (2004). Assessment of blinding in clinical trials. Controlled Clinical Trials, 25(2), 143–156. https://doi.org/10.1016/j.cct.2003.10.016</p></div></details>
+      </div>
+    </article>
+    <article class="method" id="m-c917f598" data-area="randomization-blinding" data-text="block randomization: fixing group imbalances use block sizes of 4 or more to maintain equal group sizes without triggering severe selection bias. randomization &amp; blinding why use block randomization to avoid sample size imbalances in small trials, we set blocks for randomization and balance the number of subjects in each block. the danger of small block sizes if the block size is 2, the allocation result of the second subject in the block can be easily predicted with a high risk of observation bias. protecting against selection bias therefore, the block size used should preferably be 4 or more. to reduce the risk of predictability from the use of one block size, the size may be varied.">
+      <img src="methodology/c917f598.jpg" alt="" width="132" height="165" loading="lazy">
+      <div>
+        <div class="date">21 Oct 2026</div>
+        <h3>Block Randomization: Fixing Group Imbalances</h3>
+        <p class="take">Use block sizes of 4 or more to maintain equal group sizes without triggering severe selection bias.</p>
+        <details><summary>Key points and references</summary><h4>Why Use Block Randomization</h4><p>To avoid sample size imbalances in small trials, we set blocks for randomization and balance the number of subjects in each block.</p><h4>The Danger of Small Block Sizes</h4><p>If the block size is 2, the allocation result of the second subject in the block can be easily predicted with a high risk of observation bias.</p><h4>Protecting Against Selection Bias</h4><p>Therefore, the block size used should preferably be 4 or more. To reduce the risk of predictability from the use of one block size, the size may be varied.</p><div class="refs"><b>References</b><p>Lim, C.-Y., &amp; In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232.</p></div></details>
+      </div>
+    </article>
+    <article class="method" id="m-7f24c08a" data-area="randomization-blinding" data-text="why james&#x27; blinding index falls short single-index blinding measures can mask arm-specific differences and overemphasize uncertain responses. randomization &amp; blinding a single index value james et al. proposed a blinding index that incorporates nonrespondents, but it combines all arms into a single index value for the entire trial. the danger of arm cancellation because james&#x27; bi combines all treatment arms, some cancelling or mixing effects may result in wrong conclusions when arms differ significantly. dominated by uncertain responses james&#x27; method is critically dominated by don&#x27;t know responses, and when their proportion is high, the method almost always concludes successful blinding.">
+      <img src="methodology/7f24c08a.jpg" alt="" width="132" height="165" loading="lazy">
+      <div>
+        <div class="date">21 Oct 2026</div>
+        <h3>Why James&#x27; Blinding Index Falls Short</h3>
+        <p class="take">Single-index blinding measures can mask arm-specific differences and overemphasize uncertain responses.</p>
+        <details><summary>Key points and references</summary><h4>A Single Index Value</h4><p>James et al. proposed a blinding index that incorporates nonrespondents, but it combines all arms into a single index value for the entire trial.</p><h4>The Danger of Arm Cancellation</h4><p>Because James&#x27; BI combines all treatment arms, some cancelling or mixing effects may result in wrong conclusions when arms differ significantly.</p><h4>Dominated by Uncertain Responses</h4><p>James&#x27; method is critically dominated by Don&#x27;t Know responses, and when their proportion is high, the method almost always concludes successful blinding.</p><div class="refs"><b>References</b><p>Bang, H., Ni, L., &amp; Davis, C. E. (2004). Assessment of blinding in clinical trials. Controlled Clinical Trials, 25(2), 143–156. https://doi.org/10.1016/j.cct.2003.10.016</p><p>JAMES, K. E., BLOCH, D. A., LEE, K. K., KRAEMER, H. C., &amp; FULLER, R. K. (1996). AN INDEX FOR ASSESSING BLINDNESS IN A MULTI‐CENTRE CLINICAL TRIAL: DISULFIRAM FOR ALCOHOL CESSATION—A VA COOPERATIVE STUDY. Statistics in Medicine, 15(13), 1421–1434. https://doi.org/10.1002/(sici)1097-0258(19960715)15:13&lt;1421::aid-sim266&gt;3.3.co;2-8</p></div></details>
+      </div>
+    </article>
+    <article class="method" id="m-ed888e90" data-area="randomization-blinding" data-text="stratified randomization and the sparse strata trap too many strata in a trial will leave your subgroups empty and ruin your randomization balance. randomization &amp; blinding balancing prognostic factors stratified randomization refers to the situation where the strata are based on level of prognostic factors or covariates, and randomization is applied to each stratum. the risk of too many strata if several important prognostic factors affect the outcome, the number of strata would increase. in case of several strata in relation to the target sample size, strata may be empty or sparse. careful selection is crucial to reduce this risk, the prognostic factors should be carefully selected. these prognostic factors should be considered again during the statistical analysis and at the end of the study.">
+      <img src="methodology/ed888e90.jpg" alt="" width="132" height="165" loading="lazy">
+      <div>
+        <div class="date">21 Oct 2026</div>
+        <h3>Stratified Randomization and the Sparse Strata Trap</h3>
+        <p class="take">Too many strata in a trial will leave your subgroups empty and ruin your randomization balance.</p>
+        <details><summary>Key points and references</summary><h4>Balancing Prognostic Factors</h4><p>Stratified randomization refers to the situation where the strata are based on level of prognostic factors or covariates, and randomization is applied to each stratum.</p><h4>The Risk of Too Many Strata</h4><p>If several important prognostic factors affect the outcome, the number of strata would increase. In case of several strata in relation to the target sample size, strata may be empty or sparse.</p><h4>Careful Selection is Crucial</h4><p>To reduce this risk, the prognostic factors should be carefully selected. These prognostic factors should be considered again during the statistical analysis and at the end of the study.</p><div class="refs"><b>References</b><p>Lim, C.-Y., &amp; In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232.</p></div></details>
+      </div>
+    </article>
+    <article class="method" id="m-a33cce13" data-area="randomization-blinding" data-text="minimization: balancing covariates dynamically minimization dynamically balances covariates across study arms but sacrifices strict mathematical randomness. randomization &amp; blinding what is minimization minimization was first introduced as a covariate adaptive method to balance the prognostic factors. the information of previous subjects is used to allocate newly recruited subjects. how allocation works first, the total number of imbalances is calculated after virtually allocating a newly recruited subject to all groups. the subject will be allocated to the group with lowest total number of imbalances. the statistical trade-off a concern from a statistical point of view is that minimization does not satisfy randomness, which is the basic assumption of statistical inference. analysis of covariance or permutation tests are proposed.">
+      <img src="methodology/a33cce13.jpg" alt="" width="132" height="165" loading="lazy">
+      <div>
+        <div class="date">21 Oct 2026</div>
+        <h3>Minimization: Balancing Covariates Dynamically</h3>
+        <p class="take">Minimization dynamically balances covariates across study arms but sacrifices strict mathematical randomness.</p>
+        <details><summary>Key points and references</summary><h4>What is Minimization</h4><p>Minimization was first introduced as a covariate adaptive method to balance the prognostic factors. The information of previous subjects is used to allocate newly recruited subjects.</p><h4>How Allocation Works</h4><p>First, the total number of imbalances is calculated after virtually allocating a newly recruited subject to all groups. The subject will be allocated to the group with lowest total number of imbalances.</p><h4>The Statistical Trade-off</h4><p>A concern from a statistical point of view is that minimization does not satisfy randomness, which is the basic assumption of statistical inference. Analysis of covariance or permutation tests are proposed.</p><div class="refs"><b>References</b><p>Lim, C.-Y., &amp; In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232.</p></div></details>
+      </div>
+    </article>
+    <article class="method" id="m-11f743d0" data-area="randomization-blinding" data-text="did blinding actually work in your trial? blinding cannot simply be assumed; side effects and perceived efficacy can easily unmask trials if not measured. randomization &amp; blinding an assumption rarely tested thousands of trials claim double-blinding, but few evaluate if it succeeded. a meta-analysis showed only 45% of double-blind trials described regimen similarity, and only 26% reported allocation protection. how the blind breaks down technical masking of appearance, smell, and taste is not enough. side effects, perceived therapeutic efficacy, or informal conversations often provide clues that unmask participants and clinicians beyond chance. eliciting participant guesses the degree of blinding is assessed by asking participants at the end to guess their assignment: active drug, placebo, or do not know. this creates a simple two-by-three contingency table for statistical testing. why unblinding threatens validity unblinding can introduce ascertainment bias, alter participant compliance, and even affect ancillary care and attention, potentially compromising trial validity even when measuring objective outcomes.">
+      <img src="methodology/11f743d0.jpg" alt="" width="132" height="165" loading="lazy">
+      <div>
+        <div class="date">20 Oct 2026</div>
+        <h3>Did Blinding Actually Work in Your Trial?</h3>
+        <p class="take">Blinding cannot simply be assumed; side effects and perceived efficacy can easily unmask trials if not measured.</p>
+        <details><summary>Key points and references</summary><h4>An assumption rarely tested</h4><p>Thousands of trials claim double-blinding, but few evaluate if it succeeded. A meta-analysis showed only 45% of double-blind trials described regimen similarity, and only 26% reported allocation protection.</p><h4>How the blind breaks down</h4><p>Technical masking of appearance, smell, and taste is not enough. Side effects, perceived therapeutic efficacy, or informal conversations often provide clues that unmask participants and clinicians beyond chance.</p><h4>Eliciting participant guesses</h4><p>The degree of blinding is assessed by asking participants at the end to guess their assignment: active drug, placebo, or do not know. This creates a simple two-by-three contingency table for statistical testing.</p><h4>Why unblinding threatens validity</h4><p>Unblinding can introduce ascertainment bias, alter participant compliance, and even affect ancillary care and attention, potentially compromising trial validity even when measuring objective outcomes.</p></details>
+      </div>
+    </article>
+    <article class="method" id="m-3ee9d35d" data-area="randomization-blinding" data-text="why simple randomization fails in small trials in small trials, simple randomization risks severe group size imbalances that degrade statistical power. randomization &amp; blinding complete randomness has a catch simple randomization allocates subjects independently, like tossing a coin. while it eliminates predictability, it rarely produces equal group numbers in trials with small sample sizes. imbalance destroys statistical power in a 40-patient trial, equal allocation gives 80% power. a split of 25 to 15 drops power to 77%, and a 30 to 10 split slashes it to 67%, despite enrolling the exact same total sample size. chance of imbalance drops with size for a 45% to 55% ratio, a trial of 40 subjects has a 52.7% chance of imbalance. that risk drops to 15.7% at 200 subjects and to only 4.6% at 400 subjects. when to use simple randomization simple randomization is recommended primarily for large-scale trials where high enrollment naturally protects against imbalance. smaller studies require restricted or adaptive designs.">
+      <img src="methodology/3ee9d35d.jpg" alt="" width="132" height="165" loading="lazy">
+      <div>
+        <div class="date">20 Oct 2026</div>
+        <h3>Why Simple Randomization Fails in Small Trials</h3>
+        <p class="take">In small trials, simple randomization risks severe group size imbalances that degrade statistical power.</p>
+        <details><summary>Key points and references</summary><h4>Complete Randomness Has a Catch</h4><p>Simple randomization allocates subjects independently, like tossing a coin. While it eliminates predictability, it rarely produces equal group numbers in trials with small sample sizes.</p><h4>Imbalance Destroys Statistical Power</h4><p>In a 40-patient trial, equal allocation gives 80% power. A split of 25 to 15 drops power to 77%, and a 30 to 10 split slashes it to 67%, despite enrolling the exact same total sample size.</p><h4>Chance of Imbalance Drops with Size</h4><p>For a 45% to 55% ratio, a trial of 40 subjects has a 52.7% chance of imbalance. That risk drops to 15.7% at 200 subjects and to only 4.6% at 400 subjects.</p><h4>When to Use Simple Randomization</h4><p>Simple randomization is recommended primarily for large-scale trials where high enrollment naturally protects against imbalance. Smaller studies require restricted or adaptive designs.</p></details>
+      </div>
+    </article>
+    <article class="method" id="m-43d41637" data-area="randomization-blinding" data-text="the major blind spot of james&#x27; blinding index a single overall blinding index can conceal unblinding when high proportions of &#x27;don&#x27;t know&#x27; or opposing arm biases cancel out. randomization &amp; blinding the traditional approach james&#x27; blinding index adapts kappa to measure disagreement. it scores between 0 (total unblinding) and 1 (complete blinding), with 0.5 representing random guessing, placing the highest weight on &#x27;do not know&#x27; responses. dominated by &#x27;don&#x27;t know&#x27; when 30% to 70% of participants answer &#x27;do not know&#x27;, james&#x27; index almost never rejects the null hypothesis of successful blinding, even when all participants who ventured a guess were completely unblinded. the fatal cancelling effect james&#x27; index pools all arms into one score. if the drug arm correctly guesses drug, but the placebo arm also guesses drug due to optimism, the opposing patterns cancel out into a false appearance of perfect blinding. the need for arm-specific analysis because blinding mechanisms and expectations differ between active and control arms, evaluating blinding must be done separately for each arm rather than collapsing everything into a single overall metric.">
+      <img src="methodology/43d41637.jpg" alt="" width="132" height="165" loading="lazy">
+      <div>
+        <div class="date">20 Oct 2026</div>
+        <h3>The Major Blind Spot of James&#x27; Blinding Index</h3>
+        <p class="take">A single overall blinding index can conceal unblinding when high proportions of &#x27;don&#x27;t know&#x27; or opposing arm biases cancel out.</p>
+        <details><summary>Key points and references</summary><h4>The traditional approach</h4><p>James&#x27; blinding index adapts kappa to measure disagreement. It scores between 0 (total unblinding) and 1 (complete blinding), with 0.5 representing random guessing, placing the highest weight on &#x27;do not know&#x27; responses.</p><h4>Dominated by &#x27;Don&#x27;t Know&#x27;</h4><p>When 30% to 70% of participants answer &#x27;do not know&#x27;, James&#x27; index almost never rejects the null hypothesis of successful blinding, even when all participants who ventured a guess were completely unblinded.</p><h4>The fatal cancelling effect</h4><p>James&#x27; index pools all arms into one score. If the drug arm correctly guesses drug, but the placebo arm also guesses drug due to optimism, the opposing patterns cancel out into a false appearance of perfect blinding.</p><h4>The need for arm-specific analysis</h4><p>Because blinding mechanisms and expectations differ between active and control arms, evaluating blinding must be done separately for each arm rather than collapsing everything into a single overall metric.</p></details>
+      </div>
+    </article>
+    <article class="method" id="m-90bc6cd4" data-area="randomization-blinding" data-text="bang&#x27;s blinding index: a better way to measure bang&#x27;s index evaluates arms separately, giving a clear proportion of participants unblinded beyond chance between -1 and +1. randomization &amp; blinding arm-specific evaluation bang and colleagues proposed calculating a separate blinding index for each arm using a multinomial model. this answers two distinct questions: was the treatment arm blinded, and was the placebo arm blinded? understanding the -1 to +1 scale the index ranges from -1 to 1. zero represents random balance under perfect blinding. positive values mean excess correct guesses beyond chance, while negative values indicate participants mostly guessed the other arm. direct proportion interpretation the index value directly estimates the proportion of unblinded patients beyond chance. an index of 0.20 in the active arm means exactly 20% of participants correctly identified their treatment beyond random chance. when to flag a blinding issue authors suggest reporting potential unblinding if the index exceeds 0.20, if statistical testing rejects the null hypothesis of random guessing, or if bang&#x27;s and james&#x27; indices yield conflicting conclusions.">
+      <img src="methodology/90bc6cd4.jpg" alt="" width="132" height="165" loading="lazy">
+      <div>
+        <div class="date">20 Oct 2026</div>
+        <h3>Bang&#x27;s Blinding Index: A Better Way to Measure</h3>
+        <p class="take">Bang&#x27;s index evaluates arms separately, giving a clear proportion of participants unblinded beyond chance between -1 and +1.</p>
+        <details><summary>Key points and references</summary><h4>Arm-specific evaluation</h4><p>Bang and colleagues proposed calculating a separate blinding index for each arm using a multinomial model. This answers two distinct questions: Was the treatment arm blinded, and was the placebo arm blinded?</p><h4>Understanding the -1 to +1 scale</h4><p>The index ranges from -1 to 1. Zero represents random balance under perfect blinding. Positive values mean excess correct guesses beyond chance, while negative values indicate participants mostly guessed the other arm.</p><h4>Direct proportion interpretation</h4><p>The index value directly estimates the proportion of unblinded patients beyond chance. An index of 0.20 in the active arm means exactly 20% of participants correctly identified their treatment beyond random chance.</p><h4>When to flag a blinding issue</h4><p>Authors suggest reporting potential unblinding if the index exceeds 0.20, if statistical testing rejects the null hypothesis of random guessing, or if Bang&#x27;s and James&#x27; indices yield conflicting conclusions.</p></details>
+      </div>
+    </article>
+    </div>
+  </section>
+  <section id="research-methods">
+    <h2>Research methods</h2>
+    <div class="grp">
+    <article class="method" id="m-0f97d51d" data-area="research-methods" data-text="does pico actually improve literature search quality? evidence supporting the overall effectiveness of pico as a literature search tool is lacking. research methods the search for evidence on pico few studies have been performed to evaluate the effectiveness of pico or its variations in identifying relevant research articles in evidence-based practice. pilot trials and precision a pilot randomized trial found that searches using pico resulted in higher percentages of relevant citations, but the findings did not reach statistical significance. quick searches in pubmed researchers investigated the pico format usefulness for quick searches in pubmed and found that using pico did not improve the results for quick searching. what systematic reviews show a systematic review aimed to determine if pico improved search quality, but could only include three articles and concluded that evidence was lacking.">
+      <img src="methodology/0f97d51d.jpg" alt="" width="132" height="165" loading="lazy">
+      <div>
+        <div class="date">21 Oct 2026</div>
+        <h3>Does PICO Actually Improve Literature Search Quality?</h3>
+        <p class="take">Evidence supporting the overall effectiveness of PICO as a literature search tool is lacking.</p>
+        <details><summary>Key points and references</summary><h4>The Search for Evidence on PICO</h4><p>Few studies have been performed to evaluate the effectiveness of PICO or its variations in identifying relevant research articles in evidence-based practice.</p><h4>Pilot Trials and Precision</h4><p>A pilot randomized trial found that searches using PICO resulted in higher percentages of relevant citations, but the findings did not reach statistical significance.</p><h4>Quick Searches in PubMed</h4><p>Researchers investigated the PICO format usefulness for quick searches in PubMed and found that using PICO did not improve the results for quick searching.</p><h4>What Systematic Reviews Show</h4><p>A systematic review aimed to determine if PICO improved search quality, but could only include three articles and concluded that evidence was lacking.</p><div class="refs"><b>References</b><p>Kloda, L. A., Boruff, J. T., &amp; Soares Cavalcante, A. (2020). A comparison of patient, intervention, comparison, outcome (PICO) to a new, alternative clinical question framework for search skills, search results, and self-efficacy: a randomized controlled trial. Journal of the Medical Library Association, 108(2). https://doi.org/10.5195/jmla.2020.739</p><p>Schardt, C., Adams, M. B., Owens, T., Keitz, S., &amp; Fontelo, P. (2007). Utilization of the PICO framework to improve searching PubMed for clinical questions. BMC Medical Informatics and Decision Making, 7(1). https://doi.org/10.1186/1472-6947-7-16</p><p>Hoogendam, A., de Vries Robbé, P. F., &amp; Overbeke, A. J. P. (2012). Comparing patient characteristics, type of intervention, control, and outcome (PICO) queries with unguided searching: a randomized controlled crossover trial. Journal of the Medical Library Association : JMLA, 100(2), 121–126. https://doi.org/10.3163/1536-5050.100.2.010</p><p>Eriksen, M. B., &amp; Frandsen, T. F. (2018). The impact of patient, intervention, comparison, outcome (PICO) as a search strategy tool on literature search quality: a systematic review. Journal of the Medical Library Association, 106(4). https://doi.org/10.5195/jmla.2018.345</p></div></details>
+      </div>
+    </article>
+    </div>
+  </section>
+  <footer>
+    Educational content for researchers and health professionals; always refer to the original references.<br>
+    Updated 23 Oct 2026 · <a href="https://www.instagram.com/clinicalresearchchaos/">@clinicalresearchchaos on Instagram</a>
+  </footer>
+</main>
+
+<div id="crc-rain" class="crc-side" aria-hidden="true"></div>
+<div id="crc-rain-r" class="crc-side" aria-hidden="true"></div>
+<style>
+  .crc-side { position: fixed; top: 0; bottom: 0; width: calc((100vw - 740px) / 2); pointer-events: none; z-index: 0; display: none; }
+  #crc-rain { left: 0; }
+  #crc-rain-r { right: 0; }
+  .crc-side canvas { display: block; width: 100%; height: 100%; }
+  @media (min-width: 1180px) { .crc-side { display: block; } }
+  main, header, footer, .bar { position: relative; z-index: 1; }
+</style>
+<script>
+(function () {
+  var wide = window.matchMedia("(min-width: 1180px)");
+  var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var started = false;
+  function start() {
+    if (started || !wide.matches) return;
+    started = true;
+    var COLORS = ["#3DD9C1", "#14A085", "#FFFFFF", "#7F96AB"];
+    var SIZES = [4, 6, 8, 10, 12], SHAPES = [[], [], [[1, 0]], [[0, 1]], [[1, 0], [0, 1]], [[1, 0], [1, 1]]];
+    function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+    /* cascata lenta di quadratini ai due lati, singoli o a piccoli gruppi come nel logo */
+    function side(id) {
+      var el = document.getElementById(id), c = document.createElement("canvas"), ctx = c.getContext("2d");
+      el.appendChild(c);
+      var L = { ctx: ctx, drops: [], R: null };
+      function drop(y) {
+        return { x: Math.random() * L.R.width, y: (y === undefined ? -40 : y), s: pick(SIZES), v: 7 + Math.random() * 20,
+                 c: pick(COLORS), a: 0.12 + Math.random() * 0.5, shape: pick(SHAPES) };
+      }
+      L.fit = function () {
+        var r = el.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+        c.width = r.width * d; c.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); L.R = r;
+        L.drops = []; var n = Math.round(r.width * r.height / 7500);
+        for (var i = 0; i < n; i++) L.drops.push(drop(Math.random() * r.height));
+      };
+      L.step = function (dt) {
+        ctx.clearRect(0, 0, L.R.width, L.R.height);
+        L.drops.forEach(function (d) {
+          d.y += d.v * dt;
+          if (d.y > L.R.height + 40) { var n = drop(); for (var k in n) d[k] = n[k]; }
+          ctx.globalAlpha = d.a; ctx.fillStyle = d.c; ctx.fillRect(d.x, d.y, d.s, d.s);
+          d.shape.forEach(function (o) { ctx.fillRect(d.x + o[0] * (d.s + 2), d.y + o[1] * (d.s + 2), d.s, d.s); });
+        });
+      };
+      L.fit();
+      return L;
+    }
+    var sides = [side("crc-rain"), side("crc-rain-r")];
+    var last = performance.now();
+    function frame(t) {
+      var dt = Math.min(0.05, (t - last) / 1000); last = t;
+      sides.forEach(function (L) { L.step(dt); });
+      if (!still) requestAnimationFrame(frame);
+    }
+    window.addEventListener("resize", function () { sides.forEach(function (L) { L.fit(); }); if (still) frame(performance.now()); });
+    requestAnimationFrame(frame);
+  }
+  start();
+  if (wide.addEventListener) wide.addEventListener("change", start);
+})();
+</script>
+
+<script>
+(function () {
+  var form = document.querySelector("form.filters");
+  if (!form) return;
+  var cards = Array.prototype.slice.call(document.querySelectorAll("article.call, article.job, article.method"));
+  var noun = form.dataset.noun || "open calls";
+  var count = form.querySelector(".count"), reset = form.querySelector("button[type=reset]"), total = cards.length;
+  var DAY = 86400000, today = new Date(); today.setHours(0, 0, 0, 0);
+  function norm(t) { return (t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+  cards.forEach(function (c) { c._text = norm(c.dataset.text); });
+  function apply(save) {
+    var val = function (n) { return form[n] ? form[n].value : ""; };
+    var q = norm(form.q.value).trim(), where = val("where"), time = val("time"), area = val("area"),
+        words = q ? q.split(/\s+/) : [], shown = 0;
+    cards.forEach(function (c) {
+      var ok = words.every(function (w) { return c._text.indexOf(w) !== -1; });
+      if (ok && where === "italy") ok = c.dataset.italy === "yes";
+      else if (ok && where) ok = c.dataset.region === where || (where !== "International & intercontinental" && c.dataset.region === "International & intercontinental");
+      if (ok && area) ok = (" " + c.dataset.area + " ").indexOf(" " + area + " ") !== -1;
+      if (ok && time) {
+        var d = c.dataset.deadline ? (new Date(c.dataset.deadline + "T00:00:00") - today) / DAY : null;
+        ok = d !== null && (time === "lt30" ? d < 30 : d >= parseInt(time.slice(2), 10));
+      }
+      c.hidden = !ok; if (ok) shown++;
+    });
+    document.querySelectorAll(".grp").forEach(function (g) { g.hidden = !g.querySelector("article:not([hidden])"); });
+    document.querySelectorAll(".reg").forEach(function (g) { g.hidden = !g.querySelector("article:not([hidden])"); });
+    document.querySelectorAll("section").forEach(function (s) {
+      var none = s.querySelector("article") && !s.querySelector("article:not([hidden])"), msg = s.querySelector(".nomatch");
+      if (none && !msg) { msg = document.createElement("p"); msg.className = "nomatch"; msg.textContent = "Nothing in this section matches your filters."; s.appendChild(msg); }
+      if (msg) msg.hidden = !none;
+    });
+    var active = !!(q || where || time || area);
+    count.textContent = active ? "Showing " + shown + " of " + total + " " + noun : total + " " + noun;
+    reset.hidden = !active;
+    if (save) {
+      var p = new URLSearchParams();
+      if (form.q.value.trim()) p.set("q", form.q.value.trim()); if (where) p.set("where", where); if (time) p.set("time", time);
+      if (area) p.set("area", area);
+      var qs = p.toString();
+      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
+    }
+  }
+  var p = new URLSearchParams(location.search);
+  if (p.get("q")) form.q.value = p.get("q");
+  ["where", "time", "area"].forEach(function (n) { if (p.get(n) && form[n]) form[n].value = p.get(n); });
+  var timer;
+  form.q.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { apply(true); }, 150); });
+  ["where", "time", "area"].forEach(function (n) { if (form[n]) form[n].addEventListener("change", function () { apply(true); }); });
+  form.addEventListener("reset", function () { setTimeout(function () { apply(true); }, 0); });
+  apply(false);
+})();
+</script>
+</body>
+</html>

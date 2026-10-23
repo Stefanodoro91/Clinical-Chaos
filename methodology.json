@@ -1,0 +1,364 @@
+{
+  "11f743d0": {
+    "id": "11f743d0",
+    "date": "2026-10-20",
+    "title": "Did Blinding Actually Work in Your Trial?",
+    "category": "Randomization & blinding",
+    "takeaway": "Blinding cannot simply be assumed; side effects and perceived efficacy can easily unmask trials if not measured.",
+    "points": [
+      {
+        "heading": "An assumption rarely tested",
+        "body": "Thousands of trials claim double-blinding, but few evaluate if it succeeded. A meta-analysis showed only 45% of double-blind trials described regimen similarity, and only 26% reported allocation protection.",
+        "source": ""
+      },
+      {
+        "heading": "How the blind breaks down",
+        "body": "Technical masking of appearance, smell, and taste is not enough. Side effects, perceived therapeutic efficacy, or informal conversations often provide clues that unmask participants and clinicians beyond chance.",
+        "source": ""
+      },
+      {
+        "heading": "Eliciting participant guesses",
+        "body": "The degree of blinding is assessed by asking participants at the end to guess their assignment: active drug, placebo, or do not know. This creates a simple two-by-three contingency table for statistical testing.",
+        "source": ""
+      },
+      {
+        "heading": "Why unblinding threatens validity",
+        "body": "Unblinding can introduce ascertainment bias, alter participant compliance, and even affect ancillary care and attention, potentially compromising trial validity even when measuring objective outcomes.",
+        "source": ""
+      }
+    ],
+    "references": [],
+    "cover": "published_images/2026-10-20-11f743d0/slide-1.jpg"
+  },
+  "3ee9d35d": {
+    "id": "3ee9d35d",
+    "date": "2026-10-20",
+    "title": "Why Simple Randomization Fails in Small Trials",
+    "category": "Randomization & blinding",
+    "takeaway": "In small trials, simple randomization risks severe group size imbalances that degrade statistical power.",
+    "points": [
+      {
+        "heading": "Complete Randomness Has a Catch",
+        "body": "Simple randomization allocates subjects independently, like tossing a coin. While it eliminates predictability, it rarely produces equal group numbers in trials with small sample sizes.",
+        "source": ""
+      },
+      {
+        "heading": "Imbalance Destroys Statistical Power",
+        "body": "In a 40-patient trial, equal allocation gives 80% power. A split of 25 to 15 drops power to 77%, and a 30 to 10 split slashes it to 67%, despite enrolling the exact same total sample size.",
+        "source": ""
+      },
+      {
+        "heading": "Chance of Imbalance Drops with Size",
+        "body": "For a 45% to 55% ratio, a trial of 40 subjects has a 52.7% chance of imbalance. That risk drops to 15.7% at 200 subjects and to only 4.6% at 400 subjects.",
+        "source": ""
+      },
+      {
+        "heading": "When to Use Simple Randomization",
+        "body": "Simple randomization is recommended primarily for large-scale trials where high enrollment naturally protects against imbalance. Smaller studies require restricted or adaptive designs.",
+        "source": ""
+      }
+    ],
+    "references": [],
+    "cover": "published_images/2026-10-20-3ee9d35d/slide-1.jpg"
+  },
+  "43d41637": {
+    "id": "43d41637",
+    "date": "2026-10-20",
+    "title": "The Major Blind Spot of James' Blinding Index",
+    "category": "Randomization & blinding",
+    "takeaway": "A single overall blinding index can conceal unblinding when high proportions of 'don't know' or opposing arm biases cancel out.",
+    "points": [
+      {
+        "heading": "The traditional approach",
+        "body": "James' blinding index adapts kappa to measure disagreement. It scores between 0 (total unblinding) and 1 (complete blinding), with 0.5 representing random guessing, placing the highest weight on 'do not know' responses.",
+        "source": ""
+      },
+      {
+        "heading": "Dominated by 'Don't Know'",
+        "body": "When 30% to 70% of participants answer 'do not know', James' index almost never rejects the null hypothesis of successful blinding, even when all participants who ventured a guess were completely unblinded.",
+        "source": ""
+      },
+      {
+        "heading": "The fatal cancelling effect",
+        "body": "James' index pools all arms into one score. If the drug arm correctly guesses drug, but the placebo arm also guesses drug due to optimism, the opposing patterns cancel out into a false appearance of perfect blinding.",
+        "source": ""
+      },
+      {
+        "heading": "The need for arm-specific analysis",
+        "body": "Because blinding mechanisms and expectations differ between active and control arms, evaluating blinding must be done separately for each arm rather than collapsing everything into a single overall metric.",
+        "source": ""
+      }
+    ],
+    "references": [],
+    "cover": "published_images/2026-10-20-43d41637/slide-1.jpg"
+  },
+  "90bc6cd4": {
+    "id": "90bc6cd4",
+    "date": "2026-10-20",
+    "title": "Bang's Blinding Index: A Better Way to Measure",
+    "category": "Randomization & blinding",
+    "takeaway": "Bang's index evaluates arms separately, giving a clear proportion of participants unblinded beyond chance between -1 and +1.",
+    "points": [
+      {
+        "heading": "Arm-specific evaluation",
+        "body": "Bang and colleagues proposed calculating a separate blinding index for each arm using a multinomial model. This answers two distinct questions: Was the treatment arm blinded, and was the placebo arm blinded?",
+        "source": ""
+      },
+      {
+        "heading": "Understanding the -1 to +1 scale",
+        "body": "The index ranges from -1 to 1. Zero represents random balance under perfect blinding. Positive values mean excess correct guesses beyond chance, while negative values indicate participants mostly guessed the other arm.",
+        "source": ""
+      },
+      {
+        "heading": "Direct proportion interpretation",
+        "body": "The index value directly estimates the proportion of unblinded patients beyond chance. An index of 0.20 in the active arm means exactly 20% of participants correctly identified their treatment beyond random chance.",
+        "source": ""
+      },
+      {
+        "heading": "When to flag a blinding issue",
+        "body": "Authors suggest reporting potential unblinding if the index exceeds 0.20, if statistical testing rejects the null hypothesis of random guessing, or if Bang's and James' indices yield conflicting conclusions.",
+        "source": ""
+      }
+    ],
+    "references": [],
+    "cover": "published_images/2026-10-20-90bc6cd4/slide-1.jpg"
+  },
+  "28731450": {
+    "id": "28731450",
+    "date": "2026-10-21",
+    "title": "Why Simple Randomization Fails Small Trials",
+    "category": "Randomization & blinding",
+    "takeaway": "Simple randomization works well for large trials but creates dangerous sample size imbalances in small studies.",
+    "points": [
+      {
+        "heading": "The Power of Simple Randomization",
+        "body": "In simple randomization, a coin or a die roll may be used to allocate subjects to a group. The best part of simple randomization is that it minimizes any bias by eliminating predictability.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "The Sample Size Trap",
+        "body": "Simple randomization cannot prevent the imbalances in the sample size or prognostic factors that are likely to occur as the number of subjects participating in the study decreases.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "Power Loss in Small Groups",
+        "body": "If the ratio of number of subjects shows an imbalance, that is, it is not 1 : 1, even with the same number of subjects participating, the power of mobility and study will fall.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "When to Use Simple Randomization",
+        "body": "This is the randomization method recommended for large-scale clinical trials, because the likelihood of imbalance in trials with a small number of subjects is high.",
+        "source": "Lim & In, 2019"
+      }
+    ],
+    "references": [
+      "Lim, C. Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221–232. https://doi.org/10.4097/kja.19049"
+    ],
+    "cover": "published_images/2026-10-21-28731450/slide-1.jpg"
+  },
+  "24cb1895": {
+    "id": "24cb1895",
+    "date": "2026-10-21",
+    "title": "Do Researchers Ever Test If Blinding Actually Worked?",
+    "category": "Randomization & blinding",
+    "takeaway": "Despite the prevalence of double-blind trials, evaluating the actual success of blinding is rarely performed.",
+    "points": [
+      {
+        "heading": "The Forgotten Assessment",
+        "body": "Although thousands of ostensibly double-blind trials are conducted annually, attempts to measure the effectiveness of blinding are rarely discussed.",
+        "source": "Bang et al., 2004"
+      },
+      {
+        "heading": "Hidden Clues Lead to Unblinding",
+        "body": "Even with technical efforts, beneficial therapeutic efficacy, side effects or internal conversation are frequently cited as clues to treatment identity.",
+        "source": "Bang et al., 2004"
+      },
+      {
+        "heading": "The Lack of Standard Methods",
+        "body": "Although several methods to assess blinding in clinical trials have been published, none of these are widely used or considered standard.",
+        "source": "Bang et al., 2004"
+      }
+    ],
+    "references": [
+      "Bang, H., Ni, L., & Davis, C. E. (2004). Assessment of blinding in clinical trials. Controlled Clinical Trials, 25(2), 143–156. https://doi.org/10.1016/j.cct.2003.10.016"
+    ],
+    "cover": "published_images/2026-10-21-24cb1895/slide-1.jpg"
+  },
+  "c917f598": {
+    "id": "c917f598",
+    "date": "2026-10-21",
+    "title": "Block Randomization: Fixing Group Imbalances",
+    "category": "Randomization & blinding",
+    "takeaway": "Use block sizes of 4 or more to maintain equal group sizes without triggering severe selection bias.",
+    "points": [
+      {
+        "heading": "Why Use Block Randomization",
+        "body": "To avoid sample size imbalances in small trials, we set blocks for randomization and balance the number of subjects in each block.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "The Danger of Small Block Sizes",
+        "body": "If the block size is 2, the allocation result of the second subject in the block can be easily predicted with a high risk of observation bias.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "Protecting Against Selection Bias",
+        "body": "Therefore, the block size used should preferably be 4 or more. To reduce the risk of predictability from the use of one block size, the size may be varied.",
+        "source": "Lim & In, 2019"
+      }
+    ],
+    "references": [
+      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
+    ],
+    "cover": "published_images/2026-10-21-c917f598/slide-1.jpg"
+  },
+  "7f24c08a": {
+    "id": "7f24c08a",
+    "date": "2026-10-21",
+    "title": "Why James' Blinding Index Falls Short",
+    "category": "Randomization & blinding",
+    "takeaway": "Single-index blinding measures can mask arm-specific differences and overemphasize uncertain responses.",
+    "points": [
+      {
+        "heading": "A Single Index Value",
+        "body": "James et al. proposed a blinding index that incorporates nonrespondents, but it combines all arms into a single index value for the entire trial.",
+        "source": "Bang et al., 2004"
+      },
+      {
+        "heading": "The Danger of Arm Cancellation",
+        "body": "Because James' BI combines all treatment arms, some cancelling or mixing effects may result in wrong conclusions when arms differ significantly.",
+        "source": "Bang et al., 2004"
+      },
+      {
+        "heading": "Dominated by Uncertain Responses",
+        "body": "James' method is critically dominated by Don't Know responses, and when their proportion is high, the method almost always concludes successful blinding.",
+        "source": "Bang et al., 2004"
+      }
+    ],
+    "references": [
+      "Bang, H., Ni, L., & Davis, C. E. (2004). Assessment of blinding in clinical trials. Controlled Clinical Trials, 25(2), 143–156. https://doi.org/10.1016/j.cct.2003.10.016",
+      "JAMES, K. E., BLOCH, D. A., LEE, K. K., KRAEMER, H. C., & FULLER, R. K. (1996). AN INDEX FOR ASSESSING BLINDNESS IN A MULTI‐CENTRE CLINICAL TRIAL: DISULFIRAM FOR ALCOHOL CESSATION—A VA COOPERATIVE STUDY. Statistics in Medicine, 15(13), 1421–1434. https://doi.org/10.1002/(sici)1097-0258(19960715)15:13<1421::aid-sim266>3.3.co;2-8"
+    ],
+    "cover": "published_images/2026-10-21-7f24c08a/slide-1.jpg"
+  },
+  "ed888e90": {
+    "id": "ed888e90",
+    "date": "2026-10-21",
+    "title": "Stratified Randomization and the Sparse Strata Trap",
+    "category": "Randomization & blinding",
+    "takeaway": "Too many strata in a trial will leave your subgroups empty and ruin your randomization balance.",
+    "points": [
+      {
+        "heading": "Balancing Prognostic Factors",
+        "body": "Stratified randomization refers to the situation where the strata are based on level of prognostic factors or covariates, and randomization is applied to each stratum.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "The Risk of Too Many Strata",
+        "body": "If several important prognostic factors affect the outcome, the number of strata would increase. In case of several strata in relation to the target sample size, strata may be empty or sparse.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "Careful Selection is Crucial",
+        "body": "To reduce this risk, the prognostic factors should be carefully selected. These prognostic factors should be considered again during the statistical analysis and at the end of the study.",
+        "source": "Lim & In, 2019"
+      }
+    ],
+    "references": [
+      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
+    ],
+    "cover": "published_images/2026-10-21-ed888e90/slide-1.jpg"
+  },
+  "a33cce13": {
+    "id": "a33cce13",
+    "date": "2026-10-21",
+    "title": "Minimization: Balancing Covariates Dynamically",
+    "category": "Randomization & blinding",
+    "takeaway": "Minimization dynamically balances covariates across study arms but sacrifices strict mathematical randomness.",
+    "points": [
+      {
+        "heading": "What is Minimization",
+        "body": "Minimization was first introduced as a covariate adaptive method to balance the prognostic factors. The information of previous subjects is used to allocate newly recruited subjects.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "How Allocation Works",
+        "body": "First, the total number of imbalances is calculated after virtually allocating a newly recruited subject to all groups. The subject will be allocated to the group with lowest total number of imbalances.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "The Statistical Trade-off",
+        "body": "A concern from a statistical point of view is that minimization does not satisfy randomness, which is the basic assumption of statistical inference. Analysis of covariance or permutation tests are proposed.",
+        "source": "Lim & In, 2019"
+      }
+    ],
+    "references": [
+      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
+    ],
+    "cover": "published_images/2026-10-21-a33cce13/slide-1.jpg"
+  },
+  "0f97d51d": {
+    "id": "0f97d51d",
+    "date": "2026-10-21",
+    "title": "Does PICO Actually Improve Literature Search Quality?",
+    "category": "Research methods",
+    "takeaway": "Evidence supporting the overall effectiveness of PICO as a literature search tool is lacking.",
+    "points": [
+      {
+        "heading": "The Search for Evidence on PICO",
+        "body": "Few studies have been performed to evaluate the effectiveness of PICO or its variations in identifying relevant research articles in evidence-based practice.",
+        "source": "Kloda et al., 2020"
+      },
+      {
+        "heading": "Pilot Trials and Precision",
+        "body": "A pilot randomized trial found that searches using PICO resulted in higher percentages of relevant citations, but the findings did not reach statistical significance.",
+        "source": "Schardt et al., 2007"
+      },
+      {
+        "heading": "Quick Searches in PubMed",
+        "body": "Researchers investigated the PICO format usefulness for quick searches in PubMed and found that using PICO did not improve the results for quick searching.",
+        "source": "Hoogendam et al., 2012"
+      },
+      {
+        "heading": "What Systematic Reviews Show",
+        "body": "A systematic review aimed to determine if PICO improved search quality, but could only include three articles and concluded that evidence was lacking.",
+        "source": "Eriksen and Frandsen, 2018"
+      }
+    ],
+    "references": [
+      "Kloda, L. A., Boruff, J. T., & Soares Cavalcante, A. (2020). A comparison of patient, intervention, comparison, outcome (PICO) to a new, alternative clinical question framework for search skills, search results, and self-efficacy: a randomized controlled trial. Journal of the Medical Library Association, 108(2). https://doi.org/10.5195/jmla.2020.739",
+      "Schardt, C., Adams, M. B., Owens, T., Keitz, S., & Fontelo, P. (2007). Utilization of the PICO framework to improve searching PubMed for clinical questions. BMC Medical Informatics and Decision Making, 7(1). https://doi.org/10.1186/1472-6947-7-16",
+      "Hoogendam, A., de Vries Robbé, P. F., & Overbeke, A. J. P. (2012). Comparing patient characteristics, type of intervention, control, and outcome (PICO) queries with unguided searching: a randomized controlled crossover trial. Journal of the Medical Library Association : JMLA, 100(2), 121–126. https://doi.org/10.3163/1536-5050.100.2.010",
+      "Eriksen, M. B., & Frandsen, T. F. (2018). The impact of patient, intervention, comparison, outcome (PICO) as a search strategy tool on literature search quality: a systematic review. Journal of the Medical Library Association, 106(4). https://doi.org/10.5195/jmla.2018.345"
+    ],
+    "cover": "published_images/2026-10-21-0f97d51d/slide-1.jpg"
+  },
+  "8ffbd1e0": {
+    "id": "8ffbd1e0",
+    "date": "2026-10-23",
+    "title": "Response-Adaptive Randomization: Promise and Pitfalls",
+    "category": "Randomization & blinding",
+    "takeaway": "Response-adaptive designs allocate more patients to winning treatments but fail if outcome feedback is slow.",
+    "points": [
+      {
+        "heading": "Shifting Probabilities Mid-Trial",
+        "body": "Response-adaptive randomization allows changing the allocation probability during the study by using the data accruing as the study progresses based on patient responses.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "The Play-the-Winner Rule",
+        "body": "An example of response-adaptive randomization is the randomized play-the-winner rule. If a patient response is success, the next patient will be allocated to the same treatment group.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "Ethical Appeal vs Practical Limits",
+        "body": "This method is based on the ethics of allowing more patients to be allocated to treatments that benefit the patients. However, if clinical studies take a very long time to obtain results, this method cannot be recommended.",
+        "source": "Lim & In, 2019"
+      }
+    ],
+    "references": [
+      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
+    ],
+    "cover": "published_images/2026-10-23-8ffbd1e0/slide-1.jpg"
+  }
+}
