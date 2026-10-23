@@ -3,126 +3,126 @@
     "letti": 0,
     "pertinenti": 0,
     "errore": "500 Server Error: Internal Server Error for url: https://www.jobs.ac.uk/jobs/health-and-medical?format=rss",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "jobs.ac.uk – rehabilitation": {
     "letti": 20,
     "pertinenti": 20,
     "errore": "",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "jobs.ac.uk – physiotherapy": {
-    "letti": 11,
-    "pertinenti": 11,
+    "letti": 12,
+    "pertinenti": 12,
     "errore": "",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "jobs.ac.uk – occupational therapy": {
     "letti": 11,
-    "pertinenti": 9,
+    "pertinenti": 10,
     "errore": "",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "jobs.ac.uk – stroke": {
-    "letti": 5,
-    "pertinenti": 5,
+    "letti": 6,
+    "pertinenti": 6,
     "errore": "",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "EURAXESS – rehabilitation": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=rehabilitation",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "EURAXESS – physiotherapy": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=physiotherapy",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "EURAXESS – stroke": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=stroke",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "EURAXESS – riabilitazione": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=riabilitazione",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "Nature Careers – rehabilitation": {
     "letti": 10,
     "pertinenti": 10,
     "errore": "",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "Times Higher Education – rehabilitation": {
     "letti": 10,
     "pertinenti": 10,
     "errore": "",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "University Affairs – rehabilitation": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "403 Client Error: Forbidden for url: https://www.universityaffairs.ca/search-job/?keywords=rehabilitation",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "ACRM Career Center": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "AcademicTransfer – rehabilitation": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "EURAXESS – fisioterapia": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=fisioterapia",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "EURAXESS – neuroriabilitazione": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=neuroriabilitazione",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "EURAXESS – MED/48 scienze riabilitative": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=MED%2F48",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "EURAXESS – occupational therapy": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=occupational%20therapy",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "EURAXESS – neurorehabilitation": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=neurorehabilitation",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "Nature Careers – physiotherapy": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "Exceeded 30 redirects.",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   },
   "Nature Careers – stroke": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "Exceeded 30 redirects.",
-    "data": "2026-10-22"
+    "data": "2026-10-23"
   }
 }

@@ -1069,5 +1069,70 @@
     "deadline": "2026-10-30",
     "deadline_evidence": "The closing date for applications is 30 October 2026",
     "summary": "Nanyang Technological University seeks a tenure-track Assistant Professor in Psychology specializing in community health, forensic, clinical psychology, or criminal justice. Responsibilities include teaching in the MSc in Psychology programme, coordinating practicum placements, and pursuing high-quality research. Candidates must hold a relevant doctorate and possess clinical or professional training experience."
+  },
+  "POS-51385602d60b": {
+    "status": "ok",
+    "checked": "2026-10-23",
+    "first_seen": "2026-10-23",
+    "url": "https://www.jobs.ac.uk/job/DTJ480/senior-lecturer",
+    "source": "jobs.ac.uk – rehabilitation",
+    "is_open": "yes",
+    "type": "faculty",
+    "relevance": "low",
+    "title": "Senior Lecturer",
+    "institution": "University of Lancashire",
+    "country": "United Kingdom",
+    "city": "Burnley",
+    "deadline": "2026-11-04",
+    "deadline_evidence": "Closes: 4th November 2026",
+    "summary": "The Senior Lecturer will join the MBBS teaching team to assist with delivering and assessing student selected components (SSCs) in Years 3 and 4. Key duties include managing placement opportunities, providing training, and assessment. Candidates must possess NHS experience, expertise in research methodologies, audit, or service evaluation, and a relevant PhD."
+  },
+  "POS-7353abef05d2": {
+    "status": "failed",
+    "checked": "2026-10-23",
+    "url": "https://www.jobs.ac.uk/job/DTJ440/lecturer-veterinary-physiotherapy-equine-08fte-maternity-cover-up-to-10-months-duration-reduced-fractional-fte-also-considered",
+    "source": "jobs.ac.uk – physiotherapy",
+    "error": "HTTPSConnectionPool(host='generativelanguage.googleapis.com', port=443): Read timed out. (read timeout=300)"
+  },
+  "POS-4646776b220b": {
+    "status": "ok",
+    "checked": "2026-10-23",
+    "first_seen": "2026-10-23",
+    "url": "https://www.jobs.ac.uk/job/DTJ309/lecturer-in-sport-and-or-exercise-psychology",
+    "source": "jobs.ac.uk – physiotherapy",
+    "is_open": "yes",
+    "type": "faculty",
+    "relevance": "low",
+    "title": "Lecturer in Sport and/or Exercise Psychology",
+    "institution": "Loughborough University",
+    "country": "United Kingdom",
+    "city": "Loughborough",
+    "deadline": "2026-11-15",
+    "deadline_evidence": "Closes: 15th November 2026",
+    "summary": "Loughborough University seeks a Lecturer in Sport and/or Exercise Psychology to contribute to research, innovation, and teaching on BPS-accredited BSc and MSc programmes. Key requirements include a PhD in a relevant field, a growing research and publication profile, and experience in teaching or applied practice."
+  },
+  "POS-2267a43b03d4": {
+    "status": "ok",
+    "checked": "2026-10-23",
+    "first_seen": "2026-10-23",
+    "url": "https://www.jobs.ac.uk/job/DTJ424/lecturer-senior-lecturer-in-occupational-therapy",
+    "source": "jobs.ac.uk – occupational therapy",
+    "is_open": "yes",
+    "type": "faculty",
+    "relevance": "high",
+    "title": "Lecturer/Senior Lecturer in Occupational Therapy",
+    "institution": "Canterbury Christ Church University",
+    "country": "United Kingdom",
+    "city": "Canterbury",
+    "deadline": "2026-11-11",
+    "deadline_evidence": "Closing date for applications: 11/11/2026.",
+    "summary": "The position involves delivering undergraduate and postgraduate occupational therapy programmes, engaging in curriculum innovation, and conducting research on professional practice, workforce development, and social justice. Candidates must possess expertise in occupational therapy and contribute to interprofessional education. Skilled Worker visa sponsorship is not available for this role."
+  },
+  "POS-b18ec6d53c58": {
+    "status": "failed",
+    "checked": "2026-10-23",
+    "url": "https://www.jobs.ac.uk/job/DTJ413/phd-studentship-unlocking-healthy-ageing-harnessing-proteostasis-pathways-to-promote-extracellular-matrix-function",
+    "source": "jobs.ac.uk – stroke",
+    "error": "annuncio troppo breve (0 caratteri)"
   }
 }
