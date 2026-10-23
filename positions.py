@@ -296,6 +296,7 @@ PAGE = """<!doctype html>
 <title>Academic positions · {brand}</title>
 <meta name="description" content="Open PhD, post-doc and faculty positions in clinical research, clinical engineering and rehabilitation worldwide, checked against the original advertisement.">
 {og}
+<link rel="alternate" type="application/rss+xml" title="Academic positions" href="feed-positions.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -369,7 +370,7 @@ PAGE = """<!doctype html>
   <footer>
     Positions collected from academic job portals and checked automatically: always read the full advertisement
     before applying.<br>
-    Updated {updated} · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a>
+    Updated {updated} · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a> · <a href="feed-positions.xml">RSS feed</a>
   </footer>
 </main>
 </body>
@@ -584,6 +585,22 @@ def job_pages(archive, cfg, today=None):
             url=escape(v["url"], quote=True), source=escape(re.sub(r"\s+[–-]\s+.*$", "", v.get("source") or "an academic job portal")),
             checked=_fmt(_date(v.get("checked")) or today), ig=cfg["handle"].lstrip("@"), handle=escape(cfg["handle"]))
     return out
+
+
+def positions_feed(archive, cfg, today=None):
+    """Feed delle posizioni aperte in pagina, dalle più recenti."""
+    today = today or date.today()
+    items = []
+    for k, v, d in active(archive, today):
+        place = ", ".join(x for x in (v.get("institution"), v.get("city"), v.get("country")) if x)
+        desc = " ".join(x for x in (f"{TYPES.get(v.get('type'), 'Academic position')} – {place}.", v.get("summary"),
+                                     f"Deadline: {_fmt(d)}." if d else "Deadline: see the advertisement.",
+                                     f"Advertisement: {v['url']}") if x)
+        items.append((v["title"], grants.site_url(cfg, "jobs/" + job_slug(k, v)), desc, _date(v.get("first_seen")), k))
+    items.sort(key=lambda it: it[3] or date.min, reverse=True)
+    return grants.rss(cfg, f"{cfg['brand_name']} – academic positions",
+                      "Open PhD, post-doc and faculty positions in clinical research, clinical engineering and rehabilitation.",
+                      "feed-positions.xml", items[:100])
 
 
 # ---------------------------------------------------------------- post settimanale

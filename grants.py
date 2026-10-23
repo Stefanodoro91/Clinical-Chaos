@@ -953,6 +953,8 @@ PAGE = """<!doctype html>
 <title>Open calls · {brand}</title>
 <meta name="description" content="Open research funding calls checked against the official call text, grouped by funding programme.">
 {og}
+<link rel="alternate" type="application/rss+xml" title="Open funding calls" href="feed-calls.xml">
+<link rel="alternate" type="application/rss+xml" title="Academic positions" href="feed-positions.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -1059,7 +1061,7 @@ PAGE = """<!doctype html>
   <footer>
     Calls collected by our monitoring and checked automatically against the official text: always verify eligibility,
     amounts and dates in the official call before applying.<br>
-    Updated {updated} · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a>
+    Updated {updated} · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a> · <a href="feed-calls.xml">RSS feed</a>
   </footer>
 </main>
 </body>
@@ -1224,6 +1226,8 @@ HOME = """<!doctype html>
 <meta name="google-site-verification" content="CmqA15pmnid3j9D4hdy5u6P45Dly32YcaeAil7P-6tM">
 <meta name="description" content="Open research funding calls and academic positions in clinical research, clinical engineering and rehabilitation, checked on the official texts.">
 {og}
+<link rel="alternate" type="application/rss+xml" title="Open funding calls" href="feed-calls.xml">
+<link rel="alternate" type="application/rss+xml" title="Academic positions" href="feed-positions.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -1361,6 +1365,50 @@ FILTER_SCRIPT = """
 })();
 </script>
 """
+
+
+# ---------------------------------------------------------------- feed RSS (bandi e posizioni)
+FEED_LINKS = ('<link rel="alternate" type="application/rss+xml" title="Open funding calls" href="feed-calls.xml">\n'
+              '<link rel="alternate" type="application/rss+xml" title="Academic positions" href="feed-positions.xml">')
+
+
+def rss(cfg, title, description, path, items):
+    """Feed RSS 2.0; items = [(titolo, link, descrizione, data, guid)], dai più recenti."""
+    from xml.sax.saxutils import escape as x
+    from email.utils import format_datetime
+    def when(d):
+        d = d or date.today()
+        return format_datetime(datetime(d.year, d.month, d.day, 8, 0, tzinfo=__import__("datetime").timezone.utc))
+    body = "".join(
+        f"  <item>\n    <title>{x(t)}</title>\n    <link>{x(l)}</link>\n    <guid isPermaLink=\"false\">{x(g)}</guid>\n"
+        f"    <pubDate>{when(d)}</pubDate>\n    <description>{x(desc)}</description>\n  </item>\n"
+        for t, l, desc, d, g in items)
+    return (f'<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n<channel>\n'
+            f'  <title>{x(title)}</title>\n  <link>{x(site_url(cfg, ""))}</link>\n  <description>{x(description)}</description>\n'
+            f'  <language>en</language>\n  <atom:link href="{x(site_url(cfg, path))}" rel="self" type="application/rss+xml"/>\n'
+            f'{body}</channel>\n</rss>\n')
+
+
+def calls_feed(grants_list, verified, cfg, today=None):
+    """Feed dei bandi verificati in pagina, dai controllati più di recente."""
+    today = today or date.today()
+    items = []
+    for g, v, d in page_entries(grants_list, verified, today):
+        if not v:
+            continue
+        title = v.get("title") or g.get("titolo") or ""
+        label, note = deadline_text(v, d) if d else ("Deadline", "")
+        desc = " ".join(x for x in (
+            v.get("summary"), f"Programme: {v.get('programme')}." if v.get("programme") else "",
+            f"Eligible countries: {v.get('eligible_countries')}." if v.get("eligible_countries") else "",
+            f"Who can lead: {v.get('lead')}." if v.get("lead") else "",
+            f"{label}: {_fmt_date(d)}" + (f" ({note})." if note else ".") if d else "Deadline: see the official call.",
+            f"Official call: {g['url']}") if x)
+        items.append((title, site_url(cfg, "calls#" + card_anchor(g["id"])), desc, _date(v.get("checked")), g["id"]))
+    items.sort(key=lambda it: it[3] or date.min, reverse=True)
+    return rss(cfg, f"{cfg['brand_name']} – open funding calls",
+               "Open funding calls in clinical research, clinical engineering and rehabilitation, checked on the official text.",
+               "feed-calls.xml", items[:100])
 
 
 # ---------------------------------------------------------------- pulsante «Share» (bandi e posizioni)
