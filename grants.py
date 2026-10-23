@@ -1220,6 +1220,7 @@ HOME = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{brand}</title>
+<meta name="google-site-verification" content="CmqA15pmnid3j9D4hdy5u6P45Dly32YcaeAil7P-6tM">
 <meta name="description" content="Open research funding calls and academic positions in clinical and rehabilitation research, checked on the official texts.">
 {og}
 <link rel="preconnect" href="https://fonts.googleapis.com">
