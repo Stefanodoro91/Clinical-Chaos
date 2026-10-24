@@ -1,3 +1,0 @@
-GET https://www.inpa.gov.it/bandi-e-avvisi/dettaglio-bando-avviso/?concorso_id=7b5fc160528645da86262eb224334083
-GET https://portale.inpa.gov.it/concorsi-smart/api/concorso-public-area/7b5fc160528645da86262eb224334083
-POST https://portale.inpa.gov.it/concorsi-smart/api/concorso-public-area/search-better?page=0&size=50 {"text":"riabilitazione","status":["OPEN"]}
