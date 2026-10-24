@@ -257,8 +257,10 @@ REGION_WORDS = {
     "Europe": r"\beu\b|europe|european|united kingdom|\buk\b|england|scotland|wales|ireland|germany|france|"
               r"netherlands|switzerland|austria|belgium|norway|sweden|denmark|finland|spain|portugal|poland|italy",
     "North America": r"united states|\bu\.?s\.?\b|\busa\b|canada|north america",
-    "Latin America": r"brazil|argentina|chile|colombia|mexico|peru|latin america",
-    "Asia": r"japan|china|india|singapore|korea|taiwan|hong kong|asia",
+    "Latin America": r"brazil|argentina|chile|colombia|mexico|peru|uruguay|ecuador|bolivia|paraguay|venezuela|"
+                     r"costa rica|panama|guatemala|cuba|latin america|ibero-?america",
+    "Asia": r"japan|china|india|singapore|korea|taiwan|hong kong|thailand|vietnam|malaysia|philippines|indonesia|"
+            r"pakistan|bangladesh|sri lanka|nepal|saudi|emirates|\buae\b|qatar|israel|turkey|t[uü]rkiye|iran|jordan|asia",
     "Africa": r"africa|nigeria|kenya|ghana|uganda|tanzania|ethiopia",
     "Oceania": r"australia|new zealand|oceania",
 }
@@ -282,6 +284,11 @@ def funder_continents(cfg):
     return _sources_cache["map"]
 
 
+GUIDED_SEARCH = {"Latin America": "Latin America", "Brazil": "Latin America", "Japan": "Asia", "South Korea": "Asia",
+                 "China, Taiwan and Hong Kong": "Asia", "India": "Asia", "Southeast Asia": "Asia", "Middle East": "Asia",
+                 "Australia and New Zealand": "Oceania", "Global South and international": REGIONS[0]}
+
+
 def region(g, v, cfg):
     """Continente della call: dai Paesi ammessi verificati; se non indicati, dalla sede del finanziatore."""
     ec = (v or {}).get("eligible_countries") or ""
@@ -300,7 +307,10 @@ def region(g, v, cfg):
         return "Europe"
     if gid.startswith("GG-") or g.get("fonte") == "Grants.gov":
         return "North America"
-    return funder_continents(cfg).get(g.get("fonte") or "") or REGIONS[0]
+    fonte = g.get("fonte") or ""
+    if fonte.startswith("Ricerca web – "):                 # ricerca guidata di GrantFinder: zona della ricerca
+        return GUIDED_SEARCH.get(fonte.split("– ", 1)[1], REGIONS[0])
+    return funder_continents(cfg).get(fonte) or REGIONS[0]
 
 
 EU_PARTNER_SEARCH = "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/partner-search"
