@@ -176,8 +176,12 @@ def _inpa_items(query):
     body = {"text": query, "categoriaId": None, "regioneId": None, "status": ["OPEN"], "settoreId": None,
             "provinciaCodice": None, "dateFrom": None, "dateTo": None, "livelliAnzianitaIds": None,
             "tipoImpiegoId": None, "salaryMin": None, "salaryMax": None, "enteRiferimentoName": ""}
-    r = requests.post(INPA_API, json=body, headers={**HEADERS, "Content-Type": "application/json"}, timeout=45)
+    r = requests.post(INPA_API, json=body, timeout=45,
+                      headers={"User-Agent": "Mozilla/5.0 (compatible; ClinicalResearchChaosBot/1.0; +https://clinical-chaos-dsv.pages.dev)",
+                               "Accept": "application/json", "Content-Type": "application/json"})
     r.raise_for_status()
+    if "json" not in r.headers.get("content-type", ""):
+        raise RuntimeError(f"inPA ha risposto senza JSON ({r.headers.get('content-type', '')[:40]})")
     out = []
     for c in r.json().get("content", []):
         if c.get("calculatedStatus") not in (None, "OPEN") or not c.get("id"):
