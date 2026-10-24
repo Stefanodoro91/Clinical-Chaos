@@ -36,9 +36,9 @@ RX_REHAB = re.compile(
     r"clinical (research|trials?|epidemiolog|science|academic|investigat)|trialist|biostatist|epidemiolog|"
     r"health (services|data|technolog|informatics)|digital health|implementation science|"
     r"biomedical engineer|bioengineer|clinical engineer|rehabilitation engineer|medical (devices?|imaging|physics|technolog)|"
-    r"ricerca clinica|ingegneria (biomedica|clinica)|"
+    r"ricerca clinica|ingegneria (biomedica|clinica)|bioingegneria|medicina fisica|neuroriabilit|studi clinici|"
     # settori scientifico-disciplinari italiani: scienze riabilitative, statistica medica, bioingegneria
-    r"MED/48|MEDS-26|MED/01|MEDS-24|ING-IND/34|IBIO-01|sperimentazion\w* clinic|scienze riabilitative", re.I)
+    r"MED/48|MEDS-26|MED/34|MEDS-19|06/F4|MED/01|MEDS-24|ING-IND/34|IBIO-01|sperimentazion\w* clinic|scienze riabilitative", re.I)
 # per la pertinenza «media»: termini riabilitativi clinici; «rehabilitation» da solo non basta
 # (esclude riabilitazione di detenuti, animali, edifici)
 RX_CLINICAL_REHAB = re.compile(
@@ -54,7 +54,9 @@ RX_POSITION = re.compile(
     r"post-?doc|postdoctoral|research fellow|assegn\w* di ricerca|"
     r"professor|lecturer|faculty|tenure|\brtd\b|\brtt\b|ricercat\w* a tempo determinato|professore|"
     r"assistant prof|associate prof|reader in|chair in|research (assistant|associate|scientist|officer)|"
-    r"clinical academic|clinical research fellow|clinical fellowship|fellowship|borsa di ricerca|tecnologo", re.I)
+    r"clinical academic|clinical research fellow|clinical fellowship|fellowship|borsa di ricerca|tecnologo|"
+    r"ricercatore sanitario|ricerca sanitaria|contratt\w* di ricerca|incaric\w* (post-?doc|di ricerca)|"
+    r"ricercat\w* \w* ?tenure|ricercat\w*.{0,40}\b(iii|terzo) livello", re.I)
 TYPES = {"phd": "PhD", "postdoc": "Post-doc", "research": "Research assistant / associate",
          "clinical": "Clinical academic & fellowship", "faculty": "Faculty"}
 
@@ -162,6 +164,41 @@ def _html_items(html, base):
     return out[:80]
 
 
+INPA_API = "https://portale.inpa.gov.it/concorsi-smart/api/concorso-public-area/search-better?page=0&size=50"
+INPA_PAGE = "https://www.inpa.gov.it/bandi-e-avvisi/dettaglio-bando-avviso/?concorso_id={id}"
+
+
+def _inpa_items(query):
+    """Bandi aperti dal portale nazionale del reclutamento (inPA, API pubblica di ricerca): testo, ente,
+    sede e scadenza sono i campi ufficiali pubblicati dall'amministrazione."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    body = {"text": query, "categoriaId": None, "regioneId": None, "status": ["OPEN"], "settoreId": None,
+            "provinciaCodice": None, "dateFrom": None, "dateTo": None, "livelliAnzianitaIds": None,
+            "tipoImpiegoId": None, "salaryMin": None, "salaryMax": None, "enteRiferimentoName": ""}
+    r = requests.post(INPA_API, json=body, headers={**HEADERS, "Content-Type": "application/json"}, timeout=45)
+    r.raise_for_status()
+    out = []
+    for c in r.json().get("content", []):
+        if c.get("calculatedStatus") not in (None, "OPEN") or not c.get("id"):
+            continue
+        dl = ""
+        try:
+            dl = datetime.fromisoformat(c["dataScadenza"].replace("Z", "+00:00")).astimezone(ZoneInfo("Europe/Rome")).date().isoformat()
+        except (KeyError, TypeError, ValueError, AttributeError):
+            pass
+        ente = ", ".join(c.get("entiRiferimento") or [])
+        text = grants.html_to_text(c.get("descrizione") or "")
+        out.append({"title": grants.html_to_text(c.get("titolo") or "")[:220], "url": INPA_PAGE.format(id=c["id"]),
+                    "snippet": text[:600], "inpa": {
+                        "text": f"{c.get('titolo', '')}\n\n{text}\n\nEnte: {ente}\nSede: {', '.join(c.get('sedi') or [])}\n"
+                                f"Figura ricercata: {c.get('figuraRicercata') or ''}\nPosti: {c.get('numPosti') or ''}\n"
+                                f"Scadenza (inPA): {dl}\nLink dell'ente: {c.get('linkReindirizzamento') or ''}",
+                        "deadline": dl, "institution": ente, "city": ", ".join((c.get("sedi") or [])[1:2]),
+                        "published": (c.get("dataPubblicazione") or "")[:10]}})
+    return out
+
+
 def collect(sources=None):
     """Annunci candidati da tutte le fonti: titolo con un tipo di posizione e un tema di riabilitazione
     (nel titolo o nell'estratto). Restituisce (candidati, diagnostica per fonte)."""
@@ -169,14 +206,17 @@ def collect(sources=None):
     found, report = {}, []
     for src in sources or read_sources():
         try:
-            r = requests.get(src["url"], headers=HEADERS, timeout=45)
-            r.raise_for_status()
-            text = r.text
-            head = text.lstrip()[:500].lower()
-            if head.startswith("<?xml") or "<rss" in head or "<feed" in head:
-                items = _rss_items(text)
-            else:   # anche le fonti «rss» che rispondono con una pagina HTML
-                items = _html_items(text, src["url"])
+            if (src.get("tipo") or "").strip() == "inpa":      # API inPA: la ricerca è dopo il #
+                items = _inpa_items(unquote(urlparse(src["url"]).fragment).replace("+", " "))
+            else:
+                r = requests.get(src["url"], headers=HEADERS, timeout=45)
+                r.raise_for_status()
+                text = r.text
+                head = text.lstrip()[:500].lower()
+                if head.startswith("<?xml") or "<rss" in head or "<feed" in head:
+                    items = _rss_items(text)
+                else:   # anche le fonti «rss» che rispondono con una pagina HTML
+                    items = _html_items(text, src["url"])
             # se la fonte è già una ricerca per tema (es. «rehabilitation»), basta che sia una posizione:
             # la pertinenza la controlla poi Gemini sull'annuncio
             topic_search = bool(RX_REHAB.search(unquote(src["url"]).replace("+", " ")))
@@ -195,22 +235,29 @@ def collect(sources=None):
 
 # ---------------------------------------------------------------- verifica
 def verify(item):
-    r = requests.get(item["url"], headers=HEADERS, timeout=45)
-    r.raise_for_status()
-    text = grants.html_to_text(r.text)
-    if len(text) < 300:
+    inpa = item.get("inpa")
+    if inpa:            # inPA: il testo ufficiale arriva già dall'API (la pagina pubblica si costruisce via JavaScript)
+        text = inpa["text"]
+    else:
+        r = requests.get(item["url"], headers=HEADERS, timeout=45)
+        r.raise_for_status()
+        text = grants.html_to_text(r.text)
+    if len(text) < (120 if inpa else 300):
         raise RuntimeError(f"annuncio troppo breve ({len(text)} caratteri)")
     out = content.gemini_json([{"text": VERIFY_PROMPT.format(url=item["url"], text=text[:40000])}], VERIFY_SCHEMA, 0.1)
     ev = (out.get("deadline_evidence") or "").strip()
     deadline = out.get("deadline") if (_date(out.get("deadline")) and ev and grants._simple(ev) in grants._simple(text)) else ""
+    if inpa and _date(inpa.get("deadline")):           # la scadenza strutturata di inPA è quella ufficiale
+        deadline, ev = inpa["deadline"], f"Scadenza su inPA: {inpa['deadline']}"
     return {
         "status": "ok", "checked": date.today().isoformat(), "first_seen": date.today().isoformat(),
         "url": item["url"], "source": item.get("source", ""),
         "is_open": out.get("is_open_position", "unclear"), "type": out.get("position_type", "other"),
         "relevance": out.get("relevance", "low"), "area": out.get("area", "rehabilitation"),
         "title": content._clip(out.get("title") or item["title"], 140),
-        "institution": content._clip(out.get("institution", ""), 120),
-        "country": content._clip(out.get("country", ""), 60), "city": content._clip(out.get("city", ""), 60),
+        "institution": content._clip(out.get("institution") or (inpa or {}).get("institution", ""), 120),
+        "country": content._clip(out.get("country") or ("Italy" if inpa else ""), 60),
+        "city": content._clip(out.get("city") or (inpa or {}).get("city", ""), 60),
         "deadline": deadline, "deadline_evidence": content._clip(ev, 200) if deadline else "",
         "summary": content._clip(out.get("summary", ""), 500),
     }
