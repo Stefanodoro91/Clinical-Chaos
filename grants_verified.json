@@ -5564,10 +5564,10 @@
     "official_source": "official call page",
     "official_url": "https://www.icmr.gov.in/icmrobject/uploads/Call/1791972453_mdms_special_call_v2.pdf",
     "is_open_call": "no",
-    "title": "Special Call for Advanced Research Centres for Priority Medical Devices",
+    "title": "mdms special call v2",
     "programme": "ICMR – Indian Council of Medical Research",
     "programme_family": "ICMR – Indian Council of Medical Research",
-    "summary": "The Indian Council of Medical Research promotes a special call to create Advanced Research Centres dedicated to the rapid development of priority medical devices and diagnostic technologies. The initiative aims to deliver accessible healthcare technologies for unmet clinical needs by selecting priority items from an ICMR list. Participation is strictly reserved for faculty and researchers from the top 25 Indian academic and engineering institutions according to the NIRF 2025 ranking.",
+    "summary": "The Indian Council of Medical Research promotes a special call for the creation of Advanced Research Centers dedicated to the rapid development of medical devices and diagnostic technologies. The initiative aims to develop accessible health technologies to meet unmet clinical needs. Participation is strictly reserved for faculty and researchers from the top 25 Indian university and engineering institutions according to the NIRF 2025 ranking.",
     "coming_soon": false,
     "eligible_countries": "Not stated in the official text: check the call",
     "countries_evidence": "",
@@ -5585,7 +5585,7 @@
     "lead": "",
     "lead_evidence": "",
     "deadline_raw": " | ",
-    "dl_tries": 1
+    "dl_tries": 2
   },
   "GG-PAR-26-144": {
     "status": "ok",
