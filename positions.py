@@ -203,7 +203,115 @@ def _inpa_items(query):
     return out
 
 
-def collect(sources=None):
+# ---------------------------------------------------------------- ricerca guidata per Paese
+# Molti portali di annunci bloccano i programmi (EURAXESS, AcademicPositions) e ogni Paese pubblica altrove:
+# Gemini con Google Search cerca, Paese per Paese e nella lingua locale, gli annunci aperti sui siti delle
+# università e degli enti. Restituisce solo indirizzi: ogni annuncio si legge e si verifica come gli altri.
+# Ogni giorno tocca a un gruppo di Paesi (rotazione): tutti i Paesi in circa quattro giorni.
+GUIDED_COUNTRIES = [
+    ("Italy", "Italy (universities, IRCCS research hospitals, CNR)", "Italian: ricercatore RTT, assegno/contratto di ricerca, dottorato, riabilitazione, fisioterapia, ingegneria biomedica"),
+    ("Spain", "Spain", "Spanish: contrato postdoctoral, investigador, profesor, rehabilitación, fisioterapia"),
+    ("Portugal", "Portugal", "Portuguese: investigador, bolsa de investigação, reabilitação, fisioterapia"),
+    ("France", "France and Belgium", "French: post-doctorat, chercheur, maître de conférences, rééducation, kinésithérapie"),
+    ("Germany", "Germany, Austria and Switzerland", "German: Postdoc, wissenschaftliche Mitarbeiter, Professur, Rehabilitation, Physiotherapie"),
+    ("Netherlands", "Netherlands", "Dutch and English"),
+    ("Nordics", "Sweden, Norway, Denmark, Finland, Iceland", "English and local languages"),
+    ("United Kingdom", "United Kingdom and Ireland", "English"),
+    ("United States", "United States", "English"),
+    ("Canada", "Canada", "English and French"),
+    ("Brazil", "Brazil", "Portuguese: pós-doutorado, bolsa, professor, reabilitação, fisioterapia, engenharia biomédica"),
+    ("Latin America", "Mexico, Colombia, Chile, Argentina, Peru, Uruguay", "Spanish: posdoctorado, investigador, profesor, rehabilitación, kinesiología, fisioterapia"),
+    ("Japan", "Japan", "Japanese: 公募, 助教, 講師, 特任研究員, リハビリテーション, 理学療法 (and English)"),
+    ("South Korea", "South Korea", "Korean: 채용, 박사후연구원, 교수, 재활, 물리치료 (and English)"),
+    ("China", "China, Hong Kong, Taiwan, Macau", "Chinese: 招聘, 博士后, 教授, 康复, 物理治疗 (and English)"),
+    ("Singapore and Southeast Asia", "Singapore, Malaysia, Thailand, Vietnam, Philippines, Indonesia", "English and local languages"),
+    ("India", "India", "English"),
+    ("Middle East", "Saudi Arabia, United Arab Emirates, Qatar, Kuwait, Oman, Jordan, Israel, Turkey", "English, Arabic, Hebrew, Turkish"),
+    ("Australia", "Australia", "English"),
+    ("New Zealand", "New Zealand", "English"),
+    ("Africa", "South Africa, Nigeria, Kenya, Ghana, Egypt, Morocco", "English, French, Arabic"),
+    ("Eastern Europe", "Poland, Czechia, Slovenia, Croatia, Hungary, Romania, Greece, Baltic states", "English and local languages"),
+]
+GUIDED_PROMPT = """Search the web for OPEN academic job advertisements (application deadline after {today}, or no deadline
+and published in the last 6 weeks) in: {zone}. Search also in {lang}.
+Positions: PhD studentships, post-doc, research fellow or research associate, assistant/associate/full professor,
+lecturer, tenure-track or fixed-term researcher, clinical academic posts.
+Fields: clinical research or clinical trials in any medical area, rehabilitation, physiotherapy/physical therapy,
+occupational therapy, speech therapy, neurorehabilitation, sports medicine, disability and assistive technology,
+clinical or biomedical engineering, medical devices, biostatistics or epidemiology for clinical research.
+Give the page of each advertisement itself (on the university, hospital or institute website, or on an official
+national job portal), not news, not lists of many jobs, not social media.
+Answer ONLY with a JSON array, at most 15 items: [{{"title": "...", "institution": "...", "country": "...", "url": "https://..."}}]"""
+SKIP_HOSTS = re.compile(r"linkedin|facebook|twitter|x\.com|youtube|wikipedia|indeed|glassdoor|instagram|reddit", re.I)
+
+
+def guided_groups(today=None, per_day=6):
+    today = today or date.today()
+    n = len(GUIDED_COUNTRIES)
+    start = (today.toordinal() * per_day) % n
+    return [GUIDED_COUNTRIES[(start + i) % n] for i in range(min(per_day, n))]
+
+
+def _grounded(prompt):
+    """Gemini con Google Search: testo della risposta e indirizzi delle fonti consultate."""
+    import os
+    key = os.environ.get("GEMINI_API_KEY")
+    if not key:
+        raise RuntimeError("GEMINI_API_KEY mancante")
+    body = {"contents": [{"parts": [{"text": prompt}]}], "tools": [{"google_search": {}}],
+            "generationConfig": {"temperature": 0.2}}
+    last = ""
+    for model in dict.fromkeys([content.GEMINI_MODEL, content.GEMINI_FALLBACK]):
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+        for attempt in range(3):
+            r = requests.post(url, headers={"x-goog-api-key": key}, json=body, timeout=180)
+            if r.status_code == 429 or r.status_code >= 500:
+                last = f"{model} {r.status_code}"
+                if r.status_code == 429 and ("PerDay" in r.text or "per day" in r.text.lower()):
+                    break
+                time.sleep(30 * (attempt + 1))
+                continue
+            if not r.ok:
+                raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:300]}")
+            cand = (r.json().get("candidates") or [{}])[0]
+            text = "".join(x.get("text", "") for x in (cand.get("content") or {}).get("parts") or [] if not x.get("thought"))
+            chunks = [(c.get("web") or {}).get("uri", "") for c in (cand.get("groundingMetadata") or {}).get("groundingChunks") or []]
+            return text, chunks
+    raise RuntimeError(f"Gemini non disponibile: {last}")
+
+
+def _resolve(url):
+    if "grounding-api-redirect" not in url:
+        return url
+    try:
+        return requests.get(url, allow_redirects=False, timeout=20).headers.get("location") or url
+    except requests.RequestException:
+        return url
+
+
+def guided_items(label, zone, lang, today=None):
+    today = today or date.today()
+    text, chunks = _grounded(GUIDED_PROMPT.format(today=today.isoformat(), zone=zone, lang=lang))
+    rows = []
+    m = re.search(r"\[.*\]", text, re.S)
+    if m:
+        try:
+            rows = [x for x in json.loads(m.group(0)) if isinstance(x, dict)]
+        except ValueError:
+            rows = []
+    out, seen = [], set()
+    for x in rows + [{"url": u} for u in chunks]:
+        u = _resolve(str(x.get("url") or "").strip())
+        if not u.startswith("http") or u in seen or SKIP_HOSTS.search(urlparse(u).netloc):
+            continue
+        seen.add(u)
+        title = str(x.get("title") or "").strip()
+        out.append({"title": title or u, "url": u, "snippet": f"{x.get('institution', '')} {x.get('country', '')}".strip(),
+                    "guided": True})
+    return out[:20]
+
+
+def collect(sources=None, guided=True):
     """Annunci candidati da tutte le fonti: titolo con un tipo di posizione e un tema di riabilitazione
     (nel titolo o nell'estratto). Restituisce (candidati, diagnostica per fonte)."""
     from urllib.parse import unquote
@@ -234,6 +342,20 @@ def collect(sources=None):
         except Exception as e:
             report.append((src["nome"], 0, 0, str(e)[:120]))
         time.sleep(1)
+    if guided:
+        for label, zone, lang in guided_groups():
+            name = f"Ricerca web – {label}"
+            try:
+                items = guided_items(label, zone, lang)
+                kept = 0
+                for it in items:                      # la ricerca è già mirata: la pertinenza la decide la verifica
+                    if _id(it["url"]) not in found:
+                        found[_id(it["url"])] = dict(it, source=name)
+                        kept += 1
+                report.append((name, len(items), kept, ""))
+            except Exception as e:
+                report.append((name, 0, 0, str(e)[:120]))
+            time.sleep(8)
     return found, report
 
 
@@ -276,6 +398,7 @@ def refresh(archive, limit=25, today=None):
     ok = sum(1 for x in status.values() if not x["errore"])
     print(f"::notice title=Fonti posizioni::{ok} fonti su {len(status)} rispondono; {len(found)} annunci candidati (dettagli in {STATUS_FILE})")
     todo = [(k, v) for k, v in found.items() if k not in archive]
+    todo.sort(key=lambda kv: not kv[1].get("guided"))      # prima gli annunci della ricerca per Paese, già mirati
     done = 0
     for k, item in todo[:limit]:
         try:
