@@ -1,52 +1,5 @@
 [
   {
-    "title": "The Ethical Dilemma of Randomization in Research",
-    "title_highlight": "Ethical Dilemma",
-    "category": "Research ethics",
-    "slides": [
-      {
-        "heading": "Probability Versus Physician Choice",
-        "body": "An ethical debate needs to examine whether the treatment method for subjects should be determined by probability rather than by the physician.",
-        "image_prompt": "a doctor holding a coin over a patient chart while standing at a hospital desk",
-        "highlight": "",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "The Burden on Participants",
-        "body": "Furthermore, the subjects may be given a placebo, and not treatment. Some subjects have to undergo further treatment, representing the cost that society has to pay for the benefit of future subjects.",
-        "image_prompt": "a patient figure standing at a crossroads holding a document and a sealed envelope",
-        "highlight": "",
-        "source": "Lim & In, 2019"
-      },
-      {
-        "heading": "Individual vs Collective Ethics",
-        "body": "This ethical dilemma on the balance between individual ethics and collective ethics is still spawning much controversy.",
-        "image_prompt": "two balance scales held by hands, with one side showing an individual and the other showing a crowd",
-        "highlight": "",
-        "source": "Lim & In, 2019"
-      }
-    ],
-    "takeaway": "Clinical trials force individual participants to accept risks and uncertainties so that future patients may benefit.",
-    "takeaway_highlight": "accept risks and uncertainties",
-    "references": [
-      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
-    ],
-    "caption": "Randomization is essential for scientific objectivity and causal inference, but it creates a deep ethical friction between individual care and collective medical progress. Patients may receive placebos or suboptimal treatments purely by chance, bearing a social cost for future generations. How do you address this fundamental tension during informed consent discussions?",
-    "hashtags": [
-      "#ResearchEthics",
-      "#ClinicalTrials",
-      "#InformedConsent",
-      "#ClinicalResearch",
-      "#Bioethics",
-      "#ResearchIntegrity",
-      "#StudyDesign",
-      "#PatientSafety"
-    ],
-    "source_hint": "page 7",
-    "id": "1d35242a",
-    "source": "Randomization.pdf"
-  },
-  {
     "title": "Why PICO Fails Non-Intervention Questions",
     "title_highlight": "Fails Non-Intervention Questions",
     "category": "Study design",

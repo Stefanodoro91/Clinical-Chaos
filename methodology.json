@@ -363,5 +363,33 @@
       "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
     ],
     "cover": "published_images/2026-10-23-8ffbd1e0/slide-1.jpg"
+  },
+  "1d35242a": {
+    "id": "1d35242a",
+    "date": "2026-10-24",
+    "title": "The Ethical Dilemma of Randomization in Research",
+    "category": "Research ethics",
+    "takeaway": "Clinical trials force individual participants to accept risks and uncertainties so that future patients may benefit.",
+    "points": [
+      {
+        "heading": "Probability Versus Physician Choice",
+        "body": "An ethical debate needs to examine whether the treatment method for subjects should be determined by probability rather than by the physician.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "The Burden on Participants",
+        "body": "Furthermore, the subjects may be given a placebo, and not treatment. Some subjects have to undergo further treatment, representing the cost that society has to pay for the benefit of future subjects.",
+        "source": "Lim & In, 2019"
+      },
+      {
+        "heading": "Individual vs Collective Ethics",
+        "body": "This ethical dilemma on the balance between individual ethics and collective ethics is still spawning much controversy.",
+        "source": "Lim & In, 2019"
+      }
+    ],
+    "references": [
+      "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
+    ],
+    "cover": "published_images/2026-10-24-1d35242a/slide-1.jpg"
   }
 }
