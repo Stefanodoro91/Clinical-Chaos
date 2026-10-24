@@ -391,5 +391,41 @@
       "Lim, C.-Y., & In, J. (2019). Randomization in clinical studies. Korean Journal of Anesthesiology, 72(3), 221-232."
     ],
     "cover": "published_images/2026-10-24-1d35242a/slide-1.jpg"
+  },
+  "68352541": {
+    "id": "68352541",
+    "date": "2026-10-24",
+    "title": "Why PICO Fails Non-Intervention Questions",
+    "category": "Study design",
+    "takeaway": "PICO is tailored for intervention comparisons and struggles with qualitative, diagnostic, or descriptive inquiries.",
+    "points": [
+      {
+        "heading": "Origins in Epidemiology",
+        "body": "The PICO mnemonic was originally developed from an epidemiological perspective for medical intervention or exposure questions comparing one treatment over another.",
+        "source": "Booth et al., 2000"
+      },
+      {
+        "heading": "Built for Which Questions",
+        "body": "PICO is most suitable for which type questions that compare one treatment, therapy, or intervention over another, but lacks usefulness for diagnosis and prognosis.",
+        "source": "Huang et al., 2006"
+      },
+      {
+        "heading": "Beyond the Medical Model",
+        "body": "Nursing practice is routinely concerned with questions of what, when, how, and why, which often lie outside a strict medical model of cure or therapy.",
+        "source": "Ou et al., 2017"
+      },
+      {
+        "heading": "The Qualitative Blind Spot",
+        "body": "Despite adaptations like removing the comparator, PICO remains ill-suited for identifying qualitative research articles focused on process and meaning.",
+        "source": "Cooke et al., 2012"
+      }
+    ],
+    "references": [
+      "Booth, A., O’Rourke, A. J., & Ford, N. J. (2000). Structuring the pre-search reference interview: a useful technique for handling clinical questions.",
+      "Huang, X., Lin, J., & Demner-Fushman, D. (2006). Evaluation of PICO as a knowledge representation for clinical questions.",
+      "Ou, C. H. K., Hall, W. A., & Thorne, S. E. (2017). Can nursing epistemology embrace <i>p</i>‐values?. Nursing Philosophy, 18(4). https://doi.org/10.1111/nup.12173",
+      "Cooke, A., Smith, D., & Booth, A. (2012). Beyond PICO. Qualitative Health Research, 22(10), 1435–1443. https://doi.org/10.1177/1049732312452938"
+    ],
+    "cover": "published_images/2026-10-24-68352541/slide-1.jpg"
   }
 }
