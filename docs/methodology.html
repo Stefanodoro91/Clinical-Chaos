@@ -29,8 +29,16 @@
   .intro { color: var(--soft); margin: 0 0 18px; font-size: 15px; }
   section > h2 { font-size: 21px; font-weight: 800; margin: 30px 0 12px; color: var(--accent); }
   .method { background: var(--card); border-radius: 18px; padding: 16px; margin-bottom: 14px; display: grid;
-            grid-template-columns: 132px 1fr; gap: 16px; }
-  .method img { width: 132px; height: 165px; object-fit: cover; border-radius: 10px; display: block; }
+            grid-template-columns: 264px 1fr; gap: 18px; }
+  .slides { position: relative; }
+  .strip { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+           border-radius: 10px; scrollbar-width: none; background: var(--bg); }
+  .strip::-webkit-scrollbar { display: none; }
+  .strip img { flex: 0 0 100%; width: 100%; height: auto; aspect-ratio: 4/5; object-fit: cover; scroll-snap-align: start; display: block; }
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 13px; color: var(--muted); font-weight: 600; }
+  .nav button { background: transparent; color: var(--text); border: 1px solid var(--muted); border-radius: 999px; width: 34px; height: 34px;
+                font: 700 16px Inter, system-ui, sans-serif; cursor: pointer; }
+  .nav button:disabled { opacity: .35; cursor: default; }
   .method h3 { font-size: 18px; margin: 0 0 6px; line-height: 1.3; }
   .date { color: var(--muted); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
   .take { color: var(--soft); font-size: 15px; margin: 0 0 10px; }
@@ -39,7 +47,7 @@
   details h4 { color: var(--text); font-size: 15px; margin: 12px 0 2px; }
   details p { margin: 0 0 6px; }
   .refs { border-top: 1px solid #2A4058; margin-top: 12px; padding-top: 8px; font-size: 13px; }
-  @media (max-width: 520px) { .method { grid-template-columns: 1fr; } .method img { width: 100%; height: auto; aspect-ratio: 4/5; } }
+  @media (max-width: 520px) { .method { grid-template-columns: 1fr; } .slides { max-width: 420px; } }
   form.filters { background: var(--card); border-radius: 18px; padding: 16px; margin: 0 0 8px; display: grid; gap: 10px;
                  grid-template-columns: 2fr 1fr; }
   form.filters label { display: grid; gap: 4px; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
@@ -63,8 +71,8 @@
   <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><br>
   <span class="badge">METHODOLOGY LIBRARY</span>
   <h1>Clinical research methodology, made practical</h1>
-  <p class="intro">Every methodology carousel we have published, with its key points and the references it is based on.
-  New topics every day on Instagram.</p>
+  <p class="intro">Every methodology carousel we have published: swipe through the slides here, no Instagram account needed.
+  Key points and references under each one. New topics every day.</p>
   <form class="filters" role="search" aria-label="Filter topics" data-noun="topics" onsubmit="return false">
     <label>Search<input type="search" name="q" placeholder="Keyword (e.g. blinding, p-value, regression)" autocomplete="off"></label>
     <label>Topic<select name="area"><option value="">All topics</option><option value="randomization-blinding">Randomization &amp; blinding</option><option value="research-ethics">Research ethics</option><option value="research-methods">Research methods</option></select></label>
@@ -74,7 +82,7 @@
     <h2>Randomization &amp; blinding</h2>
     <div class="grp">
     <article class="method" id="m-8ffbd1e0" data-area="randomization-blinding" data-text="response-adaptive randomization: promise and pitfalls response-adaptive designs allocate more patients to winning treatments but fail if outcome feedback is slow. randomization &amp; blinding shifting probabilities mid-trial response-adaptive randomization allows changing the allocation probability during the study by using the data accruing as the study progresses based on patient responses. the play-the-winner rule an example of response-adaptive randomization is the randomized play-the-winner rule. if a patient response is success, the next patient will be allocated to the same treatment group. ethical appeal vs practical limits this method is based on the ethics of allowing more patients to be allocated to treatments that benefit the patients. however, if clinical studies take a very long time to obtain results, this method cannot be recommended.">
-      <img src="methodology/8ffbd1e0.jpg" alt="" width="132" height="165" loading="lazy">
+      <div class="slides"><div class="strip"><img src="methodology/8ffbd1e0/1.jpg" alt="Response-Adaptive Randomization: Promise and Pitfalls – slide 1 of 5" width="720" height="900"><img src="methodology/8ffbd1e0/2.jpg" alt="Response-Adaptive Randomization: Promise and Pitfalls – slide 2 of 5" width="720" height="900" loading="lazy"><img src="methodology/8ffbd1e0/3.jpg" alt="Response-Adaptive Randomization: Promise and Pitfalls – slide 3 of 5" width="720" height="900" loading="lazy"><img src="methodology/8ffbd1e0/4.jpg" alt="Response-Adaptive Randomization: Promise and Pitfalls – slide 4 of 5" width="720" height="900" loading="lazy"><img src="methodology/8ffbd1e0/5.jpg" alt="Response-Adaptive Randomization: Promise and Pitfalls – slide 5 of 5" width="720" height="900" loading="lazy"></div><div class="nav"><button class="prev" type="button" aria-label="Previous slide">&lsaquo;</button><span class="pos">5 slides · swipe</span><button class="next" type="button" aria-label="Next slide">&rsaquo;</button></div></div>
       <div>
         <div class="date">23 Oct 2026</div>
         <h3>Response-Adaptive Randomization: Promise and Pitfalls</h3>
@@ -83,7 +91,7 @@
       </div>
     </article>
     <article class="method" id="m-c917f598" data-area="randomization-blinding" data-text="block randomization: fixing group imbalances use block sizes of 4 or more to maintain equal group sizes without triggering severe selection bias. randomization &amp; blinding why use block randomization to avoid sample size imbalances in small trials, we set blocks for randomization and balance the number of subjects in each block. the danger of small block sizes if the block size is 2, the allocation result of the second subject in the block can be easily predicted with a high risk of observation bias. protecting against selection bias therefore, the block size used should preferably be 4 or more. to reduce the risk of predictability from the use of one block size, the size may be varied.">
-      <img src="methodology/c917f598.jpg" alt="" width="132" height="165" loading="lazy">
+      <div class="slides"><div class="strip"><img src="methodology/c917f598/1.jpg" alt="Block Randomization: Fixing Group Imbalances – slide 1 of 5" width="720" height="900"><img src="methodology/c917f598/2.jpg" alt="Block Randomization: Fixing Group Imbalances – slide 2 of 5" width="720" height="900" loading="lazy"><img src="methodology/c917f598/3.jpg" alt="Block Randomization: Fixing Group Imbalances – slide 3 of 5" width="720" height="900" loading="lazy"><img src="methodology/c917f598/4.jpg" alt="Block Randomization: Fixing Group Imbalances – slide 4 of 5" width="720" height="900" loading="lazy"><img src="methodology/c917f598/5.jpg" alt="Block Randomization: Fixing Group Imbalances – slide 5 of 5" width="720" height="900" loading="lazy"></div><div class="nav"><button class="prev" type="button" aria-label="Previous slide">&lsaquo;</button><span class="pos">5 slides · swipe</span><button class="next" type="button" aria-label="Next slide">&rsaquo;</button></div></div>
       <div>
         <div class="date">21 Oct 2026</div>
         <h3>Block Randomization: Fixing Group Imbalances</h3>
@@ -92,7 +100,7 @@
       </div>
     </article>
     <article class="method" id="m-ed888e90" data-area="randomization-blinding" data-text="stratified randomization and the sparse strata trap too many strata in a trial will leave your subgroups empty and ruin your randomization balance. randomization &amp; blinding balancing prognostic factors stratified randomization refers to the situation where the strata are based on level of prognostic factors or covariates, and randomization is applied to each stratum. the risk of too many strata if several important prognostic factors affect the outcome, the number of strata would increase. in case of several strata in relation to the target sample size, strata may be empty or sparse. careful selection is crucial to reduce this risk, the prognostic factors should be carefully selected. these prognostic factors should be considered again during the statistical analysis and at the end of the study.">
-      <img src="methodology/ed888e90.jpg" alt="" width="132" height="165" loading="lazy">
+      <div class="slides"><div class="strip"><img src="methodology/ed888e90/1.jpg" alt="Stratified Randomization and the Sparse Strata Trap – slide 1 of 5" width="720" height="900"><img src="methodology/ed888e90/2.jpg" alt="Stratified Randomization and the Sparse Strata Trap – slide 2 of 5" width="720" height="900" loading="lazy"><img src="methodology/ed888e90/3.jpg" alt="Stratified Randomization and the Sparse Strata Trap – slide 3 of 5" width="720" height="900" loading="lazy"><img src="methodology/ed888e90/4.jpg" alt="Stratified Randomization and the Sparse Strata Trap – slide 4 of 5" width="720" height="900" loading="lazy"><img src="methodology/ed888e90/5.jpg" alt="Stratified Randomization and the Sparse Strata Trap – slide 5 of 5" width="720" height="900" loading="lazy"></div><div class="nav"><button class="prev" type="button" aria-label="Previous slide">&lsaquo;</button><span class="pos">5 slides · swipe</span><button class="next" type="button" aria-label="Next slide">&rsaquo;</button></div></div>
       <div>
         <div class="date">21 Oct 2026</div>
         <h3>Stratified Randomization and the Sparse Strata Trap</h3>
@@ -101,7 +109,7 @@
       </div>
     </article>
     <article class="method" id="m-a33cce13" data-area="randomization-blinding" data-text="minimization: balancing covariates dynamically minimization dynamically balances covariates across study arms but sacrifices strict mathematical randomness. randomization &amp; blinding what is minimization minimization was first introduced as a covariate adaptive method to balance the prognostic factors. the information of previous subjects is used to allocate newly recruited subjects. how allocation works first, the total number of imbalances is calculated after virtually allocating a newly recruited subject to all groups. the subject will be allocated to the group with lowest total number of imbalances. the statistical trade-off a concern from a statistical point of view is that minimization does not satisfy randomness, which is the basic assumption of statistical inference. analysis of covariance or permutation tests are proposed.">
-      <img src="methodology/a33cce13.jpg" alt="" width="132" height="165" loading="lazy">
+      <div class="slides"><div class="strip"><img src="methodology/a33cce13/1.jpg" alt="Minimization: Balancing Covariates Dynamically – slide 1 of 5" width="720" height="900"><img src="methodology/a33cce13/2.jpg" alt="Minimization: Balancing Covariates Dynamically – slide 2 of 5" width="720" height="900" loading="lazy"><img src="methodology/a33cce13/3.jpg" alt="Minimization: Balancing Covariates Dynamically – slide 3 of 5" width="720" height="900" loading="lazy"><img src="methodology/a33cce13/4.jpg" alt="Minimization: Balancing Covariates Dynamically – slide 4 of 5" width="720" height="900" loading="lazy"><img src="methodology/a33cce13/5.jpg" alt="Minimization: Balancing Covariates Dynamically – slide 5 of 5" width="720" height="900" loading="lazy"></div><div class="nav"><button class="prev" type="button" aria-label="Previous slide">&lsaquo;</button><span class="pos">5 slides · swipe</span><button class="next" type="button" aria-label="Next slide">&rsaquo;</button></div></div>
       <div>
         <div class="date">21 Oct 2026</div>
         <h3>Minimization: Balancing Covariates Dynamically</h3>
@@ -110,7 +118,7 @@
       </div>
     </article>
     <article class="method" id="m-11f743d0" data-area="randomization-blinding" data-text="did blinding actually work in your trial? blinding cannot simply be assumed; side effects and perceived efficacy can easily unmask trials if not measured. randomization &amp; blinding an assumption rarely tested thousands of trials claim double-blinding, but few evaluate if it succeeded. a meta-analysis showed only 45% of double-blind trials described regimen similarity, and only 26% reported allocation protection. how the blind breaks down technical masking of appearance, smell, and taste is not enough. side effects, perceived therapeutic efficacy, or informal conversations often provide clues that unmask participants and clinicians beyond chance. eliciting participant guesses the degree of blinding is assessed by asking participants at the end to guess their assignment: active drug, placebo, or do not know. this creates a simple two-by-three contingency table for statistical testing. why unblinding threatens validity unblinding can introduce ascertainment bias, alter participant compliance, and even affect ancillary care and attention, potentially compromising trial validity even when measuring objective outcomes.">
-      <img src="methodology/11f743d0.jpg" alt="" width="132" height="165" loading="lazy">
+      <div class="slides"><div class="strip"><img src="methodology/11f743d0/1.jpg" alt="Did Blinding Actually Work in Your Trial? – slide 1 of 6" width="720" height="900"><img src="methodology/11f743d0/2.jpg" alt="Did Blinding Actually Work in Your Trial? – slide 2 of 6" width="720" height="900" loading="lazy"><img src="methodology/11f743d0/3.jpg" alt="Did Blinding Actually Work in Your Trial? – slide 3 of 6" width="720" height="900" loading="lazy"><img src="methodology/11f743d0/4.jpg" alt="Did Blinding Actually Work in Your Trial? – slide 4 of 6" width="720" height="900" loading="lazy"><img src="methodology/11f743d0/5.jpg" alt="Did Blinding Actually Work in Your Trial? – slide 5 of 6" width="720" height="900" loading="lazy"><img src="methodology/11f743d0/6.jpg" alt="Did Blinding Actually Work in Your Trial? – slide 6 of 6" width="720" height="900" loading="lazy"></div><div class="nav"><button class="prev" type="button" aria-label="Previous slide">&lsaquo;</button><span class="pos">6 slides · swipe</span><button class="next" type="button" aria-label="Next slide">&rsaquo;</button></div></div>
       <div>
         <div class="date">20 Oct 2026</div>
         <h3>Did Blinding Actually Work in Your Trial?</h3>
@@ -119,7 +127,7 @@
       </div>
     </article>
     <article class="method" id="m-3ee9d35d" data-area="randomization-blinding" data-text="why simple randomization fails in small trials in small trials, simple randomization risks severe group size imbalances that degrade statistical power. randomization &amp; blinding complete randomness has a catch simple randomization allocates subjects independently, like tossing a coin. while it eliminates predictability, it rarely produces equal group numbers in trials with small sample sizes. imbalance destroys statistical power in a 40-patient trial, equal allocation gives 80% power. a split of 25 to 15 drops power to 77%, and a 30 to 10 split slashes it to 67%, despite enrolling the exact same total sample size. chance of imbalance drops with size for a 45% to 55% ratio, a trial of 40 subjects has a 52.7% chance of imbalance. that risk drops to 15.7% at 200 subjects and to only 4.6% at 400 subjects. when to use simple randomization simple randomization is recommended primarily for large-scale trials where high enrollment naturally protects against imbalance. smaller studies require restricted or adaptive designs.">
-      <img src="methodology/3ee9d35d.jpg" alt="" width="132" height="165" loading="lazy">
+      <div class="slides"><div class="strip"><img src="methodology/3ee9d35d/1.jpg" alt="Why Simple Randomization Fails in Small Trials – slide 1 of 6" width="720" height="900"><img src="methodology/3ee9d35d/2.jpg" alt="Why Simple Randomization Fails in Small Trials – slide 2 of 6" width="720" height="900" loading="lazy"><img src="methodology/3ee9d35d/3.jpg" alt="Why Simple Randomization Fails in Small Trials – slide 3 of 6" width="720" height="900" loading="lazy"><img src="methodology/3ee9d35d/4.jpg" alt="Why Simple Randomization Fails in Small Trials – slide 4 of 6" width="720" height="900" loading="lazy"><img src="methodology/3ee9d35d/5.jpg" alt="Why Simple Randomization Fails in Small Trials – slide 5 of 6" width="720" height="900" loading="lazy"><img src="methodology/3ee9d35d/6.jpg" alt="Why Simple Randomization Fails in Small Trials – slide 6 of 6" width="720" height="900" loading="lazy"></div><div class="nav"><button class="prev" type="button" aria-label="Previous slide">&lsaquo;</button><span class="pos">6 slides · swipe</span><button class="next" type="button" aria-label="Next slide">&rsaquo;</button></div></div>
       <div>
         <div class="date">20 Oct 2026</div>
         <h3>Why Simple Randomization Fails in Small Trials</h3>
@@ -128,7 +136,7 @@
       </div>
     </article>
     <article class="method" id="m-43d41637" data-area="randomization-blinding" data-text="the major blind spot of james&#x27; blinding index a single overall blinding index can conceal unblinding when high proportions of &#x27;don&#x27;t know&#x27; or opposing arm biases cancel out. randomization &amp; blinding the traditional approach james&#x27; blinding index adapts kappa to measure disagreement. it scores between 0 (total unblinding) and 1 (complete blinding), with 0.5 representing random guessing, placing the highest weight on &#x27;do not know&#x27; responses. dominated by &#x27;don&#x27;t know&#x27; when 30% to 70% of participants answer &#x27;do not know&#x27;, james&#x27; index almost never rejects the null hypothesis of successful blinding, even when all participants who ventured a guess were completely unblinded. the fatal cancelling effect james&#x27; index pools all arms into one score. if the drug arm correctly guesses drug, but the placebo arm also guesses drug due to optimism, the opposing patterns cancel out into a false appearance of perfect blinding. the need for arm-specific analysis because blinding mechanisms and expectations differ between active and control arms, evaluating blinding must be done separately for each arm rather than collapsing everything into a single overall metric.">
-      <img src="methodology/43d41637.jpg" alt="" width="132" height="165" loading="lazy">
+      <div class="slides"><div class="strip"><img src="methodology/43d41637/1.jpg" alt="The Major Blind Spot of James&#x27; Blinding Index – slide 1 of 6" width="720" height="900"><img src="methodology/43d41637/2.jpg" alt="The Major Blind Spot of James&#x27; Blinding Index – slide 2 of 6" width="720" height="900" loading="lazy"><img src="methodology/43d41637/3.jpg" alt="The Major Blind Spot of James&#x27; Blinding Index – slide 3 of 6" width="720" height="900" loading="lazy"><img src="methodology/43d41637/4.jpg" alt="The Major Blind Spot of James&#x27; Blinding Index – slide 4 of 6" width="720" height="900" loading="lazy"><img src="methodology/43d41637/5.jpg" alt="The Major Blind Spot of James&#x27; Blinding Index – slide 5 of 6" width="720" height="900" loading="lazy"><img src="methodology/43d41637/6.jpg" alt="The Major Blind Spot of James&#x27; Blinding Index – slide 6 of 6" width="720" height="900" loading="lazy"></div><div class="nav"><button class="prev" type="button" aria-label="Previous slide">&lsaquo;</button><span class="pos">6 slides · swipe</span><button class="next" type="button" aria-label="Next slide">&rsaquo;</button></div></div>
       <div>
         <div class="date">20 Oct 2026</div>
         <h3>The Major Blind Spot of James&#x27; Blinding Index</h3>
@@ -137,7 +145,7 @@
       </div>
     </article>
     <article class="method" id="m-90bc6cd4" data-area="randomization-blinding" data-text="bang&#x27;s blinding index: a better way to measure bang&#x27;s index evaluates arms separately, giving a clear proportion of participants unblinded beyond chance between -1 and +1. randomization &amp; blinding arm-specific evaluation bang and colleagues proposed calculating a separate blinding index for each arm using a multinomial model. this answers two distinct questions: was the treatment arm blinded, and was the placebo arm blinded? understanding the -1 to +1 scale the index ranges from -1 to 1. zero represents random balance under perfect blinding. positive values mean excess correct guesses beyond chance, while negative values indicate participants mostly guessed the other arm. direct proportion interpretation the index value directly estimates the proportion of unblinded patients beyond chance. an index of 0.20 in the active arm means exactly 20% of participants correctly identified their treatment beyond random chance. when to flag a blinding issue authors suggest reporting potential unblinding if the index exceeds 0.20, if statistical testing rejects the null hypothesis of random guessing, or if bang&#x27;s and james&#x27; indices yield conflicting conclusions.">
-      <img src="methodology/90bc6cd4.jpg" alt="" width="132" height="165" loading="lazy">
+      <div class="slides"><div class="strip"><img src="methodology/90bc6cd4/1.jpg" alt="Bang&#x27;s Blinding Index: A Better Way to Measure – slide 1 of 6" width="720" height="900"><img src="methodology/90bc6cd4/2.jpg" alt="Bang&#x27;s Blinding Index: A Better Way to Measure – slide 2 of 6" width="720" height="900" loading="lazy"><img src="methodology/90bc6cd4/3.jpg" alt="Bang&#x27;s Blinding Index: A Better Way to Measure – slide 3 of 6" width="720" height="900" loading="lazy"><img src="methodology/90bc6cd4/4.jpg" alt="Bang&#x27;s Blinding Index: A Better Way to Measure – slide 4 of 6" width="720" height="900" loading="lazy"><img src="methodology/90bc6cd4/5.jpg" alt="Bang&#x27;s Blinding Index: A Better Way to Measure – slide 5 of 6" width="720" height="900" loading="lazy"><img src="methodology/90bc6cd4/6.jpg" alt="Bang&#x27;s Blinding Index: A Better Way to Measure – slide 6 of 6" width="720" height="900" loading="lazy"></div><div class="nav"><button class="prev" type="button" aria-label="Previous slide">&lsaquo;</button><span class="pos">6 slides · swipe</span><button class="next" type="button" aria-label="Next slide">&rsaquo;</button></div></div>
       <div>
         <div class="date">20 Oct 2026</div>
         <h3>Bang&#x27;s Blinding Index: A Better Way to Measure</h3>
@@ -151,7 +159,7 @@
     <h2>Research ethics</h2>
     <div class="grp">
     <article class="method" id="m-1d35242a" data-area="research-ethics" data-text="the ethical dilemma of randomization in research clinical trials force individual participants to accept risks and uncertainties so that future patients may benefit. research ethics probability versus physician choice an ethical debate needs to examine whether the treatment method for subjects should be determined by probability rather than by the physician. the burden on participants furthermore, the subjects may be given a placebo, and not treatment. some subjects have to undergo further treatment, representing the cost that society has to pay for the benefit of future subjects. individual vs collective ethics this ethical dilemma on the balance between individual ethics and collective ethics is still spawning much controversy.">
-      <img src="methodology/1d35242a.jpg" alt="" width="132" height="165" loading="lazy">
+      <div class="slides"><div class="strip"><img src="methodology/1d35242a/1.jpg" alt="The Ethical Dilemma of Randomization in Research – slide 1 of 5" width="720" height="900"><img src="methodology/1d35242a/2.jpg" alt="The Ethical Dilemma of Randomization in Research – slide 2 of 5" width="720" height="900" loading="lazy"><img src="methodology/1d35242a/3.jpg" alt="The Ethical Dilemma of Randomization in Research – slide 3 of 5" width="720" height="900" loading="lazy"><img src="methodology/1d35242a/4.jpg" alt="The Ethical Dilemma of Randomization in Research – slide 4 of 5" width="720" height="900" loading="lazy"><img src="methodology/1d35242a/5.jpg" alt="The Ethical Dilemma of Randomization in Research – slide 5 of 5" width="720" height="900" loading="lazy"></div><div class="nav"><button class="prev" type="button" aria-label="Previous slide">&lsaquo;</button><span class="pos">5 slides · swipe</span><button class="next" type="button" aria-label="Next slide">&rsaquo;</button></div></div>
       <div>
         <div class="date">24 Oct 2026</div>
         <h3>The Ethical Dilemma of Randomization in Research</h3>
@@ -165,7 +173,7 @@
     <h2>Research methods</h2>
     <div class="grp">
     <article class="method" id="m-0f97d51d" data-area="research-methods" data-text="does pico actually improve literature search quality? evidence supporting the overall effectiveness of pico as a literature search tool is lacking. research methods the search for evidence on pico few studies have been performed to evaluate the effectiveness of pico or its variations in identifying relevant research articles in evidence-based practice. pilot trials and precision a pilot randomized trial found that searches using pico resulted in higher percentages of relevant citations, but the findings did not reach statistical significance. quick searches in pubmed researchers investigated the pico format usefulness for quick searches in pubmed and found that using pico did not improve the results for quick searching. what systematic reviews show a systematic review aimed to determine if pico improved search quality, but could only include three articles and concluded that evidence was lacking.">
-      <img src="methodology/0f97d51d.jpg" alt="" width="132" height="165" loading="lazy">
+      <div class="slides"><div class="strip"><img src="methodology/0f97d51d/1.jpg" alt="Does PICO Actually Improve Literature Search Quality? – slide 1 of 6" width="720" height="900"><img src="methodology/0f97d51d/2.jpg" alt="Does PICO Actually Improve Literature Search Quality? – slide 2 of 6" width="720" height="900" loading="lazy"><img src="methodology/0f97d51d/3.jpg" alt="Does PICO Actually Improve Literature Search Quality? – slide 3 of 6" width="720" height="900" loading="lazy"><img src="methodology/0f97d51d/4.jpg" alt="Does PICO Actually Improve Literature Search Quality? – slide 4 of 6" width="720" height="900" loading="lazy"><img src="methodology/0f97d51d/5.jpg" alt="Does PICO Actually Improve Literature Search Quality? – slide 5 of 6" width="720" height="900" loading="lazy"><img src="methodology/0f97d51d/6.jpg" alt="Does PICO Actually Improve Literature Search Quality? – slide 6 of 6" width="720" height="900" loading="lazy"></div><div class="nav"><button class="prev" type="button" aria-label="Previous slide">&lsaquo;</button><span class="pos">6 slides · swipe</span><button class="next" type="button" aria-label="Next slide">&rsaquo;</button></div></div>
       <div>
         <div class="date">21 Oct 2026</div>
         <h3>Does PICO Actually Improve Literature Search Quality?</h3>
@@ -180,6 +188,22 @@
     Updated 24 Oct 2026 · <a href="https://www.instagram.com/clinicalresearchchaos/">@clinicalresearchchaos on Instagram</a>
   </footer>
 </main>
+<script>
+(function () {
+  var all = document.querySelectorAll(".slides");
+  for (var i = 0; i < all.length; i++) (function (box) {
+    var strip = box.querySelector(".strip"), n = strip.children.length;
+    var prev = box.querySelector(".prev"), next = box.querySelector(".next"), pos = box.querySelector(".pos");
+    if (!prev || !next || !pos) return;
+    function cur() { return Math.round(strip.scrollLeft / Math.max(1, strip.clientWidth)); }
+    function show() { var k = cur(); pos.textContent = (k + 1) + " / " + n; prev.disabled = k <= 0; next.disabled = k >= n - 1; }
+    function go(d) { strip.scrollTo ? strip.scrollTo({ left: (cur() + d) * strip.clientWidth, behavior: "smooth" }) : (strip.scrollLeft = (cur() + d) * strip.clientWidth); }
+    prev.onclick = function () { go(-1); }; next.onclick = function () { go(1); };
+    strip.addEventListener("scroll", function () { window.requestAnimationFrame(show); });
+    show();
+  })(all[i]);
+})();
+</script>
 
 <div id="crc-rain" class="crc-side" aria-hidden="true"></div>
 <div id="crc-rain-r" class="crc-side" aria-hidden="true"></div>

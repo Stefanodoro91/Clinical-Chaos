@@ -72,8 +72,16 @@ PAGE = """<!doctype html>
   .intro {{ color: var(--soft); margin: 0 0 18px; font-size: 15px; }}
   section > h2 {{ font-size: 21px; font-weight: 800; margin: 30px 0 12px; color: var(--accent); }}
   .method {{ background: var(--card); border-radius: 18px; padding: 16px; margin-bottom: 14px; display: grid;
-            grid-template-columns: 132px 1fr; gap: 16px; }}
-  .method img {{ width: 132px; height: 165px; object-fit: cover; border-radius: 10px; display: block; }}
+            grid-template-columns: 264px 1fr; gap: 18px; }}
+  .slides {{ position: relative; }}
+  .strip {{ display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+           border-radius: 10px; scrollbar-width: none; background: var(--bg); }}
+  .strip::-webkit-scrollbar {{ display: none; }}
+  .strip img {{ flex: 0 0 100%; width: 100%; height: auto; aspect-ratio: 4/5; object-fit: cover; scroll-snap-align: start; display: block; }}
+  .nav {{ display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 13px; color: var(--muted); font-weight: 600; }}
+  .nav button {{ background: transparent; color: var(--text); border: 1px solid var(--muted); border-radius: 999px; width: 34px; height: 34px;
+                font: 700 16px Inter, system-ui, sans-serif; cursor: pointer; }}
+  .nav button:disabled {{ opacity: .35; cursor: default; }}
   .method h3 {{ font-size: 18px; margin: 0 0 6px; line-height: 1.3; }}
   .date {{ color: var(--muted); font-size: 13px; font-weight: 600; margin-bottom: 6px; }}
   .take {{ color: var(--soft); font-size: 15px; margin: 0 0 10px; }}
@@ -82,7 +90,7 @@ PAGE = """<!doctype html>
   details h4 {{ color: var(--text); font-size: 15px; margin: 12px 0 2px; }}
   details p {{ margin: 0 0 6px; }}
   .refs {{ border-top: 1px solid #2A4058; margin-top: 12px; padding-top: 8px; font-size: 13px; }}
-  @media (max-width: 520px) {{ .method {{ grid-template-columns: 1fr; }} .method img {{ width: 100%; height: auto; aspect-ratio: 4/5; }} }}
+  @media (max-width: 520px) {{ .method {{ grid-template-columns: 1fr; }} .slides {{ max-width: 420px; }} }}
   form.filters {{ background: var(--card); border-radius: 18px; padding: 16px; margin: 0 0 8px; display: grid; gap: 10px;
                  grid-template-columns: 2fr 1fr; }}
   form.filters label {{ display: grid; gap: 4px; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
@@ -106,8 +114,8 @@ PAGE = """<!doctype html>
   <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><br>
   <span class="badge">METHODOLOGY LIBRARY</span>
   <h1>Clinical research methodology, made practical</h1>
-  <p class="intro">Every methodology carousel we have published, with its key points and the references it is based on.
-  New topics every day on Instagram.</p>
+  <p class="intro">Every methodology carousel we have published: swipe through the slides here, no Instagram account needed.
+  Key points and references under each one. New topics every day.</p>
   <form class="filters" role="search" aria-label="Filter topics" data-noun="topics" onsubmit="return false">
     <label>Search<input type="search" name="q" placeholder="Keyword (e.g. blinding, p-value, regression)" autocomplete="off"></label>
     <label>Topic<select name="area"><option value="">All topics</option>{cat_opts}</select></label>
@@ -119,6 +127,22 @@ PAGE = """<!doctype html>
     Updated {updated} · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a>
   </footer>
 </main>
+<script>
+(function () {{
+  var all = document.querySelectorAll(".slides");
+  for (var i = 0; i < all.length; i++) (function (box) {{
+    var strip = box.querySelector(".strip"), n = strip.children.length;
+    var prev = box.querySelector(".prev"), next = box.querySelector(".next"), pos = box.querySelector(".pos");
+    if (!prev || !next || !pos) return;
+    function cur() {{ return Math.round(strip.scrollLeft / Math.max(1, strip.clientWidth)); }}
+    function show() {{ var k = cur(); pos.textContent = (k + 1) + " / " + n; prev.disabled = k <= 0; next.disabled = k >= n - 1; }}
+    function go(d) {{ strip.scrollTo ? strip.scrollTo({{ left: (cur() + d) * strip.clientWidth, behavior: "smooth" }}) : (strip.scrollLeft = (cur() + d) * strip.clientWidth); }}
+    prev.onclick = function () {{ go(-1); }}; next.onclick = function () {{ go(1); }};
+    strip.addEventListener("scroll", function () {{ window.requestAnimationFrame(show); }});
+    show();
+  }})(all[i]);
+}})();
+</script>
 </body>
 </html>
 """
@@ -137,12 +161,24 @@ def build_page(data, cfg, today=None):
         for e in cats[cat]:
             thumb = ""
             if e.get("cover") and (ROOT / e["cover"]).exists():
-                out = THUMBS / f"{e['id']}.jpg"
-                if not out.exists():
-                    im = Image.open(ROOT / e["cover"]).convert("RGB")
-                    im.thumbnail((360, 450))
-                    im.save(out, quality=82)
-                thumb = f'<img src="methodology/{e["id"]}.jpg" alt="" width="132" height="165" loading="lazy">'
+                src_dir = (ROOT / e["cover"]).parent
+                slides = sorted(src_dir.glob("slide-*.jpg"), key=lambda q: int(re.sub(r"\D", "", q.stem) or 0))
+                out_dir = THUMBS / e["id"]
+                out_dir.mkdir(parents=True, exist_ok=True)
+                imgs = []
+                for k, src in enumerate(slides, 1):
+                    out = out_dir / f"{k}.jpg"
+                    if not out.exists():
+                        im = Image.open(src).convert("RGB")
+                        im.thumbnail((720, 900))
+                        im.save(out, quality=80, optimize=True, progressive=True)
+                    alt = escape(e.get("title", "")) + f" – slide {k} of {len(slides)}"
+                    imgs.append(f'<img src="methodology/{e["id"]}/{k}.jpg" alt="{alt}" width="720" height="900"'
+                                + (' loading="lazy"' if k > 1 else "") + ">")
+                nav = (f'<div class="nav"><button class="prev" type="button" aria-label="Previous slide">&lsaquo;</button>'
+                       f'<span class="pos">{len(slides)} slides · swipe</span>'
+                       f'<button class="next" type="button" aria-label="Next slide">&rsaquo;</button></div>') if len(slides) > 1 else ""
+                thumb = f'<div class="slides"><div class="strip">{"".join(imgs)}</div>{nav}</div>'
             points = "".join(f'<h4>{escape(p["heading"])}</h4><p>{escape(p["body"])}</p>' for p in e.get("points", []))
             refs = "".join(f"<p>{escape(r)}</p>" for r in e.get("references", []))
             words = " ".join([e.get("title", ""), e.get("takeaway", ""), cat] + [p["heading"] + " " + p["body"] for p in e.get("points", [])]).lower()

@@ -1248,7 +1248,8 @@ HOME = """<!doctype html>
   a.big .count {{ font-size: 15px; font-weight: 600; }}
   a.big:focus-visible {{ outline: 3px solid var(--text); outline-offset: 3px; }}
   a.big:hover {{ filter: brightness(1.05); }}
-  .social {{ display: flex; justify-content: center; gap: 18px; margin-top: 8px; }}
+  .social {{ display: flex; justify-content: center; gap: 18px; margin-top: 8px; flex-wrap: wrap; }}
+  .noig {{ color: var(--soft); font-size: 14px; text-align: center; max-width: 440px; margin: 16px auto 0; line-height: 1.5; }}
   .social a {{ color: var(--soft); text-decoration: none; font-weight: 600; font-size: 14px; border: 1px solid var(--muted);
               border-radius: 999px; padding: 8px 14px; }}
   footer {{ color: var(--muted); font-size: 12px; text-align: center; padding: 0 16px 30px; max-width: 520px; margin: 0 auto; }}
@@ -1278,7 +1279,10 @@ HOME = """<!doctype html>
   <div class="social">
     <a href="https://www.instagram.com/{ig}/">Instagram</a>
     <a href="https://www.facebook.com/{ig}">Facebook</a>
+    <a href="feed-calls.xml">RSS</a>
   </div>
+  <p class="noig">No Instagram account? You don't need one: every call, position and methodology carousel is on this site.
+  Bookmark it or add it to your home screen, and share any card with the Share button.</p>
 </main>
 <footer>Educational content for researchers and health professionals; not medical advice. Always check eligibility and deadlines in the official call or advertisement. Updated {updated}.</footer>
 </body>
@@ -1296,7 +1300,7 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
                        amber=cfg.get("grant_accent", "#FFB547"), lilac=cfg.get("positions_accent", "#A78BFA"),
                        calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
-                       method_line=escape(f"{n_methods} practical topics with key points and references" if n_methods
+                       method_line=escape(f"{n_methods} carousels to swipe, with key points and references" if n_methods
                                           else "Practical topics with key points and references"),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
                                   "engineering and rehabilitation, checked on the official texts.", ""))
