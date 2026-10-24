@@ -766,7 +766,7 @@ def verify(g, cfg):
     data = "\n".join(f"{k}: {g.get(k)}" for k in FIELDS if g.get(k))
     out = content.gemini_json([{"text": VERIFY_PROMPT.format(source=source, official=text[:60000], data=data,
                                                               today=date.today().isoformat())}],
-                              VERIFY_SCHEMA, 0.1)
+                              VERIFY_SCHEMA, 0.1, task="verifica bandi")
     dl = find_deadlines(g, text, source, source_url, out)
     lead, lead_ev = lead_line(out, text)
     elig = check_eligibility(g, text, out)
@@ -864,7 +864,7 @@ def build_post(g, v, cfg):
     text, source, _ = official_text(g)
     prompt = PROMPT.format(brand=cfg["brand_name"], programme=v["programme"], countries=v["eligible_countries"],
                            source=source, official=text[:60000])
-    out = content.gemini_json([{"text": prompt}], SCHEMA, 0.2)
+    out = content.gemini_json([{"text": prompt}], SCHEMA, 0.2, task="post bando")
     clip = content._clip
     slides = []
     for sl in out.get("slides", []):

@@ -117,7 +117,7 @@ def choose_best(slide, pictures, cfg):
         parts += [{"text": f"Image {i}:"},
                   {"inline_data": {"mime_type": "image/jpeg", "data": base64.b64encode(buf.getvalue()).decode()}}]
     try:
-        scores = content.gemini_json(parts, JUDGE_SCHEMA, 0.0).get("images", [])
+        scores = content.gemini_json(parts, JUDGE_SCHEMA, 0.0, task="scelta immagini").get("images", [])
     except Exception as e:
         print(f"  Valutazione delle immagini non riuscita ({e}): uso la prima candidata.")
         return pictures[0]

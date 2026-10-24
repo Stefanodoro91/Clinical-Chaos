@@ -277,12 +277,14 @@ def _grounded(prompt):
             r = requests.post(url, headers={"x-goog-api-key": key}, json=body, timeout=180)
             if r.status_code == 429 or r.status_code >= 500:
                 last = f"{model} {r.status_code}"
-                if r.status_code == 429 and ("PerDay" in r.text or "per day" in r.text.lower()):
+                content.record_usage("ricerca per Paese", model, status="respinta")
+                if content.quota_exhausted(r):
                     break
                 time.sleep(20)
                 continue
             if not r.ok:
                 raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:300]}")
+            content.record_usage("ricerca per Paese", model, r.json())
             cand = (r.json().get("candidates") or [{}])[0]
             text = "".join(x.get("text", "") for x in (cand.get("content") or {}).get("parts") or [] if not x.get("thought"))
             chunks = [(c.get("web") or {}).get("uri", "") for c in (cand.get("groundingMetadata") or {}).get("groundingChunks") or []]
@@ -386,7 +388,7 @@ def verify(item):
         text = grants.html_to_text(r.text)
     if len(text) < (120 if inpa else 300):
         raise RuntimeError(f"annuncio troppo breve ({len(text)} caratteri)")
-    out = content.gemini_json([{"text": VERIFY_PROMPT.format(url=item["url"], text=text[:40000])}], VERIFY_SCHEMA, 0.1)
+    out = content.gemini_json([{"text": VERIFY_PROMPT.format(url=item["url"], text=text[:40000])}], VERIFY_SCHEMA, 0.1, task="verifica posizioni")
     ev = (out.get("deadline_evidence") or "").strip()
     deadline = out.get("deadline") if (_date(out.get("deadline")) and ev and grants._simple(ev) in grants._simple(text)) else ""
     if inpa and _date(inpa.get("deadline")):           # la scadenza strutturata di inPA è quella ufficiale

@@ -375,34 +375,73 @@ def _clean_post(p, material=""):
     }
 
 
-def gemini_json(parts, schema, temperature=0.5):
-    """Chiede a Gemini una risposta JSON conforme allo schema e la restituisce già decodificata."""
+USAGE = {}            # consumo di Gemini in questo giro: {(attività, modello): contatori}
+_EXHAUSTED = set()    # modelli con la quota giornaliera finita: in questo giro non si riprovano
+
+
+def record_usage(task, model, data=None, status="ok"):
+    u = USAGE.setdefault(f"{task}|{model}", {"richieste": 0, "ingresso": 0, "uscita": 0, "ragionamento": 0, "respinte": 0})
+    if status != "ok":
+        u["respinte"] += 1
+        return
+    meta = (data or {}).get("usageMetadata") or {}
+    u["richieste"] += 1
+    u["ingresso"] += int(meta.get("promptTokenCount") or 0)
+    u["uscita"] += int(meta.get("candidatesTokenCount") or 0)
+    u["ragionamento"] += int(meta.get("thoughtsTokenCount") or 0)
+
+
+def save_usage(folder):
+    """Scrive il consumo del giro in usage/AAAA-MM-GG-<giro>.json (un file per giro: nessun conflitto tra giri)."""
+    if not USAGE:
+        return None
+    from datetime import datetime, timezone
+    folder = Path(folder)
+    folder.mkdir(exist_ok=True)
+    run = os.environ.get("GITHUB_RUN_ID") or "locale"
+    out = folder / f"{datetime.now(timezone.utc):%Y-%m-%d}-{run}.json"
+    out.write_text(json.dumps({"workflow": os.environ.get("GITHUB_WORKFLOW", ""), "consumo": USAGE},
+                              indent=1, ensure_ascii=False), encoding="utf-8")
+    return out
+
+
+def quota_exhausted(r):
+    """429 per quota finita (non un semplice picco di richieste al minuto)."""
+    t = r.text.lower()
+    return r.status_code == 429 and ("perday" in t or "per day" in t or "exceeded your current quota" in t)
+
+
+def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
+    """Chiede a Gemini una risposta JSON conforme allo schema e la restituisce già decodificata.
+    `thinking` ("minimal", "low", "medium", "high") limita il ragionamento interno dei modelli Gemini 3."""
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         raise RuntimeError("GEMINI_API_KEY mancante")
-    body = {
-        "contents": [{"parts": parts}],
-        "generationConfig": {
-            "temperature": temperature,
-            "responseMimeType": "application/json",
-            "responseSchema": schema,
-        },
-    }
+    config = {"temperature": temperature, "responseMimeType": "application/json", "responseSchema": schema}
+    if thinking:
+        config["thinkingConfig"] = {"thinkingLevel": thinking}
+    body = {"contents": [{"parts": parts}], "generationConfig": config}
     last_error = None
     # quando la quota del modello principale finisce si passa a quello più leggero (quota separata)
     for model in dict.fromkeys([GEMINI_MODEL, GEMINI_FALLBACK]):
+        if model in _EXHAUSTED:
+            continue
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         for attempt in range(3):
             r = requests.post(url, headers={"x-goog-api-key": key}, json=body, timeout=300)
             if r.status_code == 429 or r.status_code >= 500:
                 last_error = f"{model} {r.status_code}: {r.text[:300]}"
-                if r.status_code == 429 and ("PerDay" in r.text or "per day" in r.text.lower()):
-                    break                     # quota giornaliera finita: inutile riprovare questo modello
+                record_usage(task, model, status="respinta")
+                if quota_exhausted(r):
+                    _EXHAUSTED.add(model)     # quota giornaliera finita: inutile riprovare questo modello
+                    break
                 time.sleep(30 * (attempt + 1))
                 continue
             if not r.ok:
                 raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:500]}")
-            text = "".join(p.get("text", "") for p in r.json()["candidates"][0]["content"]["parts"])
+            data = r.json()
+            record_usage(task, model, data)
+            text = "".join(p.get("text", "") for p in data["candidates"][0]["content"]["parts"] if not p.get("thought"))
             return json.loads(text)
         print(f"  Gemini {model} non disponibile, provo il modello di riserva.")
     raise RuntimeError(f"Gemini non disponibile: {last_error}")
@@ -412,6 +451,6 @@ def generate_posts(part, filename, brand, max_posts=12, published=()):
     prompt = PROMPT.format(brand=brand, max_posts=max_posts, filename=filename,
                            categories=", ".join(CATEGORIES),
                            published="; ".join(published) if published else "none")
-    posts = gemini_json([{"text": prompt}, part], SCHEMA).get("posts", [])
+    posts = gemini_json([{"text": prompt}, part], SCHEMA, task="nuovi post da Drive").get("posts", [])
     material = material_text(part)
     return [c for c in (_clean_post(p, material) for p in posts) if c][:max_posts]

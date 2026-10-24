@@ -101,4 +101,32 @@ def report(grants_list, verified, archive, posted, queue, cfg, today=None):
             out += ["<details><summary>Fonti posizioni con errori</summary>", ""] + [f"- {n}: {e}" for n, e in bad] + ["", "</details>"]
     except (OSError, ValueError):
         pass
+    out += ["", usage_section(today)]
     return "\n".join(out)
+
+
+def usage_section(today=None, days=7):
+    """Consumo di Gemini degli ultimi giorni, dai file usage/ scritti da ogni giro."""
+    today = today or date.today()
+    tot, per_day = collections.defaultdict(lambda: collections.Counter()), collections.Counter()
+    for f in sorted((ROOT / "usage").glob("*.json")):
+        d = grants._date(f.name[:10])
+        if not d or (today - d).days >= days:
+            continue
+        try:
+            data = json.load(open(f, encoding="utf-8")).get("consumo", {})
+        except (OSError, ValueError):
+            continue
+        for key, c in data.items():
+            tot[key].update(c)
+            per_day[d] += c.get("richieste", 0)
+    if not tot:
+        return "**Consumo Gemini:** nessun dato ancora (il registro è attivo dal 25/10)."
+    lines = [f"**Consumo Gemini negli ultimi {days} giorni** (richieste riuscite; token in migliaia)", "",
+             "| Attività | Modello | Richieste | Respinte | Ingresso | Uscita | Ragionamento |", "| --- | --- | --- | --- | --- | --- | --- |"]
+    for key, c in sorted(tot.items(), key=lambda kv: -kv[1]["ingresso"]):
+        task, model = key.split("|", 1)
+        lines.append(f"| {task} | {model} | {c['richieste']} | {c['respinte']} | {c['ingresso'] // 1000} | "
+                     f"{c['uscita'] // 1000} | {c['ragionamento'] // 1000} |")
+    lines += ["", "Richieste per giorno: " + ", ".join(f"{grants._fmt_date(d)} {n}" for d, n in sorted(per_day.items()))]
+    return "\n".join(lines)

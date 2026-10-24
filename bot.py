@@ -62,7 +62,8 @@ def _head():
 def commit_and_push(paths, message):
     if DRY_RUN:
         return None
-    git("add", *paths)
+    usage = content.save_usage(ROOT / "usage")      # consumo di Gemini del giro, nello stesso commit
+    git("add", *paths, *([str(usage.relative_to(ROOT))] if usage else []))
     if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode != 0:
         git("commit", "-m", message)
         for attempt in range(3):         # se nel frattempo sono arrivati altri commit, li si integra e si riprova
@@ -196,7 +197,7 @@ def drop_repeats(queue, posted, threshold=0.72):
               "Different aspects of the same broad topic are NOT duplicates.\n\nPublished:\n- "
               + "\n- ".join(published) + f"\n\nCandidates:\n{lines}")
     try:
-        dups = content.gemini_json([{"text": prompt}], DUP_SCHEMA, 0.0).get("duplicates", [])
+        dups = content.gemini_json([{"text": prompt}], DUP_SCHEMA, 0.0, task="controllo doppioni").get("duplicates", [])
     except Exception as e:
         print(f"Controllo doppioni non riuscito ({e}): la coda resta com'è.")
         return kept
@@ -882,7 +883,11 @@ def weekly_digest():
     print(body)
     if DRY_RUN:
         return
-    commit_and_push(["weekly"], f"Resoconto settimanale {today}")
+    for f in (ROOT / "usage").glob("*.json"):             # registro dei consumi: si tengono 35 giorni
+        d = grants._date(f.name[:10])
+        if d and (datetime.now(timezone.utc).date() - d).days > 35:
+            f.unlink()
+    commit_and_push(["weekly", "usage"] if (ROOT / "usage").exists() else ["weekly"], f"Resoconto settimanale {today}")
     token, repo = os.environ.get("GITHUB_TOKEN"), os.environ.get("GITHUB_REPOSITORY")
     if token and repo:
         h = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
