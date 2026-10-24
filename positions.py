@@ -38,6 +38,8 @@ RX_REHAB = re.compile(
     r"biomedical engineer|bioengineer|clinical engineer|rehabilitation engineer|medical (devices?|imaging|physics|technolog)|"
     r"ricerca clinica|ingegneria (biomedica|clinica)|bioingegneria|medicina fisica|neuroriabilit|studi clinici|"
     # settori scientifico-disciplinari italiani: scienze riabilitative, statistica medica, bioingegneria
+    r"physiatr|fisiatri|physical medicine|orthop(a)?edic|ortoped|musculoskeletal|rheumatolog|reumatolog|"
+    r"neurolog|epilep|oncolog|haematolog|hematolog|ematolog|rare diseases?|malattie rare|clinical genetic|genetica medica|"
     r"MED/48|MEDS-26|MED/34|MEDS-19|06/F4|MED/01|MEDS-24|ING-IND/34|IBIO-01|sperimentazion\w* clinic|scienze riabilitative", re.I)
 # per la pertinenza «media»: termini riabilitativi clinici; «rehabilitation» da solo non basta
 # (esclude riabilitazione di detenuti, animali, edifici)
@@ -74,12 +76,15 @@ Return:
   professor, lecturer, reader, tenure-track, RTD/RTT), or "other".
 - relevance: "high" if the position is about rehabilitation research (rehabilitation, physiotherapy,
   occupational or speech therapy, neurorehabilitation, stroke, spinal cord or brain injury, Parkinson, MS,
-  prosthetics, rehabilitation engineering, disability, motor recovery); "medium" if it is clinical research
-  in any medical field (clinical trials, studies with patients, clinical epidemiology, biostatistics for
-  clinical studies, health services or implementation research) or clinical/biomedical engineering applied
+  prosthetics, rehabilitation engineering, disability, motor recovery, physical and rehabilitation medicine,
+  orthopaedic or musculoskeletal rehabilitation, sports medicine, cancer rehabilitation, healthy ageing
+  interventions); "medium" if it is clinical research in any medical field, especially neurology, orthopaedics,
+  rheumatology, geriatrics, oncology, haematology, clinical genetics and rare diseases (clinical trials,
+  studies with patients, clinical epidemiology, biostatistics for clinical studies, health services or
+  implementation research) or clinical/biomedical engineering applied
   to patients or health care (medical devices, imaging, digital health), or if rehabilitation is one
-  clearly stated part of the role; "low" for basic or preclinical science without patients and for
-  non-health roles.
+  clearly stated part of the role; "low" for basic or preclinical science without patients (molecular or
+  cell biology, basic genetics or genomics, animal models, drug discovery) and for non-health roles.
 - area: "rehabilitation", "clinical" (clinical research in another medical field) or "engineering"
   (clinical or biomedical engineering), the main one.
 - title: the official job title, in English (translate if needed), max 120 characters.
@@ -230,13 +235,17 @@ GUIDED_COUNTRIES = [
     ("Australia", "Australia", "English"),
     ("New Zealand", "New Zealand", "English"),
     ("Africa", "South Africa, Nigeria, Kenya, Ghana, Egypt, Morocco", "English, French, Arabic"),
+    ("South Asia", "Pakistan, Bangladesh, Sri Lanka, Nepal", "English"),
+    ("Central America and Caribbean", "Costa Rica, Panama, Guatemala, Dominican Republic, Puerto Rico, Cuba, Jamaica", "Spanish and English"),
     ("Eastern Europe", "Poland, Czechia, Slovenia, Croatia, Hungary, Romania, Greece, Baltic states", "English and local languages"),
 ]
 GUIDED_PROMPT = """Search the web for OPEN academic job advertisements (application deadline after {today}, or no deadline
 and published in the last 6 weeks) in: {zone}. Search also in {lang}.
 Positions: PhD studentships, post-doc, research fellow or research associate, assistant/associate/full professor,
 lecturer, tenure-track or fixed-term researcher, clinical academic posts.
-Fields: clinical research or clinical trials in any medical area, rehabilitation, physiotherapy/physical therapy,
+Fields: clinical research or clinical trials in any medical area (especially neurology, orthopaedics, physical and
+rehabilitation medicine, geriatrics, oncology and haematology, clinical genetics and rare diseases; not basic
+or preclinical science), rehabilitation, physiotherapy/physical therapy,
 occupational therapy, speech therapy, neurorehabilitation, sports medicine, disability and assistive technology,
 clinical or biomedical engineering, medical devices, biostatistics or epidemiology for clinical research.
 Give the page of each advertisement itself (on the university, hospital or institute website, or on an official

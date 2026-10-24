@@ -284,7 +284,7 @@ def funder_continents(cfg):
     return _sources_cache["map"]
 
 
-GUIDED_SEARCH = {"Latin America": "Latin America", "Brazil": "Latin America", "Japan": "Asia", "South Korea": "Asia",
+GUIDED_SEARCH = {"European national funders": "Europe", "Africa": "Africa", "Latin America": "Latin America", "Brazil": "Latin America", "Japan": "Asia", "South Korea": "Asia",
                  "China, Taiwan and Hong Kong": "Asia", "India": "Asia", "Southeast Asia": "Asia", "Middle East": "Asia",
                  "Australia and New Zealand": "Oceania", "Global South and international": REGIONS[0]}
 
@@ -1527,7 +1527,8 @@ def og_tags(cfg, title, description, path):
 
 
 AREA_LABELS = {"rehab": "Rehabilitation", "clinical": "Clinical research", "engineering": "Clinical & biomedical engineering",
-               "open": "Open topic"}
+               "neuro": "Neurology", "msk": "Physiatry & orthopaedics", "ageing": "Ageing & geriatrics",
+               "onco": "Oncology & haematology", "genetics": "Clinical genetics & rare diseases", "open": "Open topic"}
 
 
 def areas(g):
@@ -1538,6 +1539,11 @@ def areas(g):
         out.append("rehab")
     if "Ricerca clinica" in mg:
         out.append("clinical")
+    for group, key in (("Neurologia", "neuro"), ("Ictus", "neuro"), ("Parkinson", "neuro"), ("Fisiatria e ortopedia", "msk"),
+                       ("Invecchiamento", "ageing"), ("Oncologia ed ematologia", "onco"),
+                       ("Genetica clinica e malattie rare", "genetics")):
+        if group in mg and key not in out:
+            out.append(key)
     if mg & {"Ingegneria clinica", "Tecnologie riabilitazione"}:
         out.append("engineering")
     if "Ricerca sanitaria a tema libero" in mg:
