@@ -700,5 +700,175 @@
     "source_hint": "pages 1-2",
     "id": "59993999",
     "source": "Regression.pdf"
+  },
+  {
+    "title": "Why P-Values Do Not Belong in Table 1",
+    "title_highlight": "",
+    "category": "Reporting & publication",
+    "slides": [
+      {
+        "heading": "The Real Purpose of Table 1",
+        "body": "Table 1 is meant to describe patients, not to display the results of formal hypothesis testing. Its real function is to summarize baseline characteristics so readers can gauge clinical comparability.",
+        "image_prompt": "a researcher examining patient profile folders with a magnifying glass while two clinicians discuss medical binders beside an open document cabinet",
+        "highlight": "describe patients",
+        "source": "Cole et al., 2026"
+      },
+      {
+        "heading": "The Table 1 Fallacy in Randomized Trials",
+        "body": "In randomized trials, a P-value tests whether treatment allocation occurred at random. Randomization guarantees this by definition, making significance testing of baseline balance completely illogical.",
+        "image_prompt": "a doctor flipping a coin above two balanced trays holding identical white medicine bottles on a wooden desk",
+        "highlight": "testing of baseline balance",
+        "source": ""
+      },
+      {
+        "heading": "Sample Size Distorts the Results",
+        "body": "P-values are sensitive to sample size. In huge cohorts, trivial differences produce significant P-values, while in small samples, true clinically meaningful imbalances remain hidden behind high P-values.",
+        "image_prompt": "two balance scales side by side one carrying a tiny pebble tipping downward and the other balancing two large stones evenly",
+        "highlight": "clinically meaningful imbalances",
+        "source": "Cole et al., 2026"
+      },
+      {
+        "heading": "Guidelines Explicitly Oppose Them",
+        "body": "Major guidelines like CONSORT for randomized trials and STROBE for observational studies advise against reporting P-values in baseline tables, urging researchers to avoid confusing description with inference.",
+        "image_prompt": "an open checklist document on a desk with green checkmarks beside descriptive summaries and a red strike mark across a statistical symbol",
+        "highlight": "advise against reporting",
+        "source": "Vandenbroucke et al., 2007"
+      }
+    ],
+    "takeaway": "Table 1 exists to describe patients, not test hypotheses; drop the P-values and evaluate clinical relevance.",
+    "takeaway_highlight": "drop the P-values",
+    "references": [
+      "Cole, J. B., Knack, S. K., & Driver, B. E. (2026). The value of P-values in “Table 1”. The American Journal of Emergency Medicine, 100, 182–186. https://doi.org/10.1016/j.ajem.2025.12.003",
+      "Vandenbroucke, J. P., von Elm, E., Altman, D. G., Gøtzsche, P. C., Mulrow, C. D., Pocock, S. J., et al. (2007). Strengthening the reporting of observational studies in epidemiology (STROBE): explanation and elaboration.",
+      "Moher, D., Hopewell, S., Schulz, K. F., Montori, V., Gøtzsche, P. C., Devereaux, P., Elbourne, D., Egger, M., & Altman, D. G. (2010). CONSORT 2010 Explanation and Elaboration: updated guidelines for reporting parallel group randomised trials. Journal of Clinical Epidemiology, 63(8), e1–e37. https://doi.org/10.1016/j.jclinepi.2010.03.004"
+    ],
+    "caption": "Few practices in medical publishing are as persistent as reporting P-values in Table 1.\nIn randomized trials, testing whether baseline differences arose by chance is illogical because randomization is known by design.\nIn observational cohorts, P-values confound sample size with clinical importance, overemphasizing trivial age differences while missing major confounders.\nMethodologists and reporting guidelines like CONSORT and STROBE have advised against this practice for decades.\nHave you ever had a peer reviewer demand that you add P-values into your Table 1?",
+    "hashtags": [
+      "#ClinicalResearch",
+      "#Biostatistics",
+      "#Table1",
+      "#Epidemiology",
+      "#CONSORT",
+      "#STROBE",
+      "#ResearchMethods",
+      "#ClinicalTrials",
+      "#MedicalPublishing"
+    ],
+    "source_hint": "pages 1-3, sections 1-3",
+    "id": "144c4de0",
+    "source": "P-value.pdf"
+  },
+  {
+    "title": "Never Use Table 1 P-Values to Build Multivariable Models",
+    "title_highlight": "Never Use Table 1",
+    "category": "Statistics",
+    "slides": [
+      {
+        "heading": "The Univariate Screening Trap",
+        "body": "Selecting variables for multivariable models based on univariate tests or P-values is a flawed shortcut. Statistical significance in isolation fails to capture how covariates behave when adjusted together.",
+        "image_prompt": "a researcher sorting through paper files with a mechanical sieve that lets important documents fall through into a waste bin",
+        "highlight": "flawed shortcut",
+        "source": "Sun et al., 1996"
+      },
+      {
+        "heading": "Non-Significant Variables Can Confound",
+        "body": "Variables that fail to reach statistical significance in Table 1 can still be crucial confounders or strong independent predictors once placed in a multivariable model that controls for other factors.",
+        "image_prompt": "a group of silhouettes standing in shadow while an investigator points a flashlight toward a quiet figure behind the main group",
+        "highlight": "crucial confounders",
+        "source": "Steyerberg, 2009"
+      },
+      {
+        "heading": "Identical Averages Can Hide Severe Imbalance",
+        "body": "Two cohorts can share identical median values while having completely different distributions. For non-linear relationships, like mortality peaking at extreme high and low pressures, simple tests miss the bias.",
+        "image_prompt": "two bell-shaped curved ropes on a table with their peaks aligned at the center mark while their tails spread in opposite directions",
+        "highlight": "completely different distributions",
+        "source": "Knack et al., 2025"
+      },
+      {
+        "heading": "Select Covariates by Clinical Rationale",
+        "body": "Model selection must be guided by clinical rationale and subject-matter knowledge. If a variable is known to exert strong influence on the clinical outcome, it warrants adjustment regardless of its P-value.",
+        "image_prompt": "a clinician and an epidemiologist reviewing a patient pathway diagram on a board with connecting arrows leading to a target outcome",
+        "highlight": "guided by clinical rationale",
+        "source": "Cole et al., 2026"
+      }
+    ],
+    "takeaway": "Build multivariable models using clinical rationale and causal knowledge, never univariate P-value cutoffs.",
+    "takeaway_highlight": "clinical rationale",
+    "references": [
+      "Cole, J. B., Knack, S. K., & Driver, B. E. (2026). The value of P-values in “Table 1”. The American Journal of Emergency Medicine, 100, 182–186. https://doi.org/10.1016/j.ajem.2025.12.003",
+      "Sun, G. W., Shook, T. L., & Kay, G. L. (1996). Inappropriate use of bivariable analysis to screen risk factors for use in multivariable analysis. Journal of Clinical Epidemiology, 49(8), 907-916.",
+      "Steyerberg, E. W. (2009). Clinical prediction models: A practical approach to development, validation, and updating.",
+      "Knack, S. K. S., Robinson, A. E., Beilman, G. J., Bhardwaj, A., & Puskarich, M. A. (2025). The association of lowest prehospital blood pressure with mortality in severe traumatic brain injury from a nationwide emergency medical services database. Prehospital Emergency Care, 1-10."
+    ],
+    "caption": "Screening Table 1 variables with bivariate significance tests to decide what enters a multivariable regression is widespread, but methodologically unsound.\nA variable with P > 0.05 can easily be an essential confounder once other covariates are included.\nIdentical medians between groups can also hide severe non-linear imbalances that bias your findings if ignored.\nCausal theory and clinical relevance must determine which variables are adjusted for, not arbitrary statistical cutoffs.\nHow do you select baseline covariates for multivariable adjustment in your own research?",
+    "hashtags": [
+      "#Biostatistics",
+      "#MultivariableAnalysis",
+      "#Epidemiology",
+      "#Confounding",
+      "#RegressionAnalysis",
+      "#ClinicalResearch",
+      "#ResearchMethods",
+      "#EvidenceBasedMedicine"
+    ],
+    "source_hint": "pages 3-4, section 5",
+    "id": "fc429114",
+    "source": "P-value.pdf"
+  },
+  {
+    "title": "What to Report in Table 1 Instead of P-Values",
+    "title_highlight": "Instead of P-Values",
+    "category": "Reporting & publication",
+    "slides": [
+      {
+        "heading": "Report Both Central Tendency and Spread",
+        "body": "Continuous variables should always be reported with both center and spread: medians with interquartile ranges for skewed data, and means with standard deviations for normally distributed variables.",
+        "image_prompt": "a researcher holding a ruler measuring a horizontal bar that extends symmetrically outward from a marked center point",
+        "highlight": "both center and spread",
+        "source": "Mohan & Su, 2022"
+      },
+      {
+        "heading": "Add an Absolute Difference Column",
+        "body": "Instead of P-values, report absolute differences with 95% confidence intervals. Present percentage differences for categorical data and Hodges-Lehmann median differences for non-normal continuous metrics.",
+        "image_prompt": "two vertical measuring sticks standing side by side with a transparent bracket showing the exact distance between their tops",
+        "highlight": "absolute differences with 95% confidence intervals",
+        "source": "Cole et al., 2026"
+      },
+      {
+        "heading": "Use Standardized Mean Differences",
+        "body": "The standardized mean difference expresses imbalance without being distorted by sample size. Widely applied in propensity matching, values above 0.1 or 0.2 indicate potential imbalance needing scrutiny.",
+        "image_prompt": "a balance scale comparing two weight blocks while an arrow points to a standardized gauge showing zero deviation",
+        "highlight": "standardized mean difference",
+        "source": "Austin, 2009"
+      },
+      {
+        "heading": "Stratify by Exposure, Not Outcome",
+        "body": "Always split Table 1 by exposure or intervention group. Stratifying by outcome turns a descriptive table into multiple unadjusted univariate analyses, risking P-hacking and false causal inferences.",
+        "image_prompt": "two diverging pathways labeled with treatment symbols leading cohorts forward while a barrier blocks a path split by final clinical outcomes",
+        "highlight": "split Table 1 by exposure",
+        "source": "Cole et al., 2026"
+      }
+    ],
+    "takeaway": "Replace Table 1 P-values with absolute differences, confidence intervals, and thoughtful clinical context.",
+    "takeaway_highlight": "Replace Table 1 P-values",
+    "references": [
+      "Cole, J. B., Knack, S. K., & Driver, B. E. (2026). The value of P-values in “Table 1”. The American Journal of Emergency Medicine, 100, 182–186. https://doi.org/10.1016/j.ajem.2025.12.003",
+      "Austin, P. C. (2009). Balance diagnostics for comparing the distribution of baseline covariates between treatment groups in propensity‐score matched samples. Statistics in Medicine, 28(25), 3083–3107. https://doi.org/10.1002/sim.3697",
+      "Mohan, S., & Su, M. K. (2022). Biostatistics and epidemiology for the toxicologist: measures of central tendency and variability-where is the “middle?” and what is the “spread?”. Journal of Medical Toxicology, 18(3), 235-238."
+    ],
+    "caption": "If journals and consensus guidelines tell us to eliminate P-values from Table 1, what should we present instead?\nThe goal of Table 1 is clinical comparability, which is best evaluated through magnitude and distribution, not statistical significance.\nReporting medians with IQRs, proportions, and explicit difference columns with 95% confidence intervals provides meaningful insight.\nIn propensity-matched cohorts, standardized mean differences offer a consistent imbalance measure independent of sample size.\nWhat alternative metrics does your team include when presenting baseline patient comparability?",
+    "hashtags": [
+      "#Biostatistics",
+      "#ClinicalResearch",
+      "#Table1",
+      "#Epidemiology",
+      "#ResearchMethods",
+      "#DataVisualization",
+      "#ScientificWriting",
+      "#PropensityScore"
+    ],
+    "source_hint": "pages 3-4, sections 6-8 and Fig. 1",
+    "id": "fe15d7fc",
+    "source": "P-value.pdf"
   }
 ]

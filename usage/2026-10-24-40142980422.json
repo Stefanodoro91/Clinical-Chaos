@@ -1,0 +1,12 @@
+{
+ "workflow": "Post giornaliero ricerca clinica",
+ "consumo": {
+  "nuovi post da Drive|gemini-flash-latest": {
+   "richieste": 1,
+   "ingresso": 4032,
+   "uscita": 3263,
+   "ragionamento": 3554,
+   "respinte": 0
+  }
+ }
+}
