@@ -330,6 +330,19 @@ def _facebook_glyph(d, x, y, c, bg, s=44):
     d.text((x + s * .5 - d.textlength("f", font=f) / 2 + 2, y + s * .2), "f", font=f, fill=bg)
 
 
+def _bluesky_glyph(d, x, y, c, s=44):
+    """Farfalla/fiocco Bluesky disegnata come poligono stilizzato."""
+    cx, cy = x + s / 2, y + s / 2
+    # ala sinistra superiore
+    d.polygon([(cx, cy), (x + s * .1, y + s * .15), (x + s * .42, y + s * .42)], fill=c)
+    # ala destra superiore
+    d.polygon([(cx, cy), (x + s * .9, y + s * .15), (x + s * .58, y + s * .42)], fill=c)
+    # ala sinistra inferiore
+    d.polygon([(cx, cy), (x + s * .05, y + s * .72), (x + s * .42, y + s * .58)], fill=c)
+    # ala destra inferiore
+    d.polygon([(cx, cy), (x + s * .95, y + s * .72), (x + s * .58, y + s * .58)], fill=c)
+
+
 def closing(post, cfg, total):
     """Chiusura in negativo: messaggio da ricordare evidenziato, scheda profilo con Follow / Save / Share."""
     c = cfg["colors"]
@@ -364,7 +377,8 @@ def closing(post, cfg, total):
     sy = card_top + 425
     _instagram_glyph(d, MARGIN + 50, sy, "#FFFFFF")
     _facebook_glyph(d, MARGIN + 116, sy, "#FFFFFF", navy)
-    d.text((MARGIN + 186, sy + 4), cfg["handle"], font=font("SemiBold", 32), fill="#FFFFFF")
+    _bluesky_glyph(d, MARGIN + 182, sy, "#FFFFFF")
+    d.text((MARGIN + 246, sy + 4), cfg["handle"], font=font("SemiBold", 32), fill="#FFFFFF")
     return img
 
 
