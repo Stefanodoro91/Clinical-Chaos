@@ -10,7 +10,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: instagram-post
+  group: instagram-publish   # i post hanno una coda loro: un aggiornamento non può annullarli
   cancel-in-progress: false
 
 jobs:

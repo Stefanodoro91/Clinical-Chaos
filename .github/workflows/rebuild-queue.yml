@@ -15,7 +15,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: instagram-post
+  group: instagram-publish   # modifica la coda dei post: stessa coda dei post
   cancel-in-progress: false
 
 jobs:
