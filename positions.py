@@ -272,13 +272,13 @@ def _grounded(prompt):
     last = ""
     for model in dict.fromkeys([content.GEMINI_MODEL, content.GEMINI_FALLBACK]):
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-        for attempt in range(3):
+        for attempt in range(2):
             r = requests.post(url, headers={"x-goog-api-key": key}, json=body, timeout=180)
             if r.status_code == 429 or r.status_code >= 500:
                 last = f"{model} {r.status_code}"
                 if r.status_code == 429 and ("PerDay" in r.text or "per day" in r.text.lower()):
                     break
-                time.sleep(30 * (attempt + 1))
+                time.sleep(20)
                 continue
             if not r.ok:
                 raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:300]}")
@@ -364,6 +364,9 @@ def collect(sources=None, guided=True):
                 report.append((name, len(items), kept, ""))
             except Exception as e:
                 report.append((name, 0, 0, str(e)[:120]))
+                if "Gemini non disponibile" in str(e):       # quota finita: inutile provare gli altri Paesi oggi
+                    print("::warning title=Ricerca per Paese sospesa::quota Gemini esaurita, si riprende domani")
+                    break
             time.sleep(8)
     return found, report
 
