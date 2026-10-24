@@ -46,3 +46,24 @@ GET https://www.wellcome.org/research-funding/schemes
 GET https://www.ida.org.ar/
 GET https://www.conicet.gov.ar/convocatorias/
 GET https://anid.cl/concursos/
+# altre fonti Asia / Oceania / LatAm
+GET https://www.nmrc.gov.sg/grants/competitive-research-grants
+GET https://www.a-star.edu.sg/Research/funding-opportunities
+GET https://rfs1.healthbureau.gov.hk/
+GET https://www.nhri.edu.tw/eng/
+GET https://www.qnrf.org/en-us/
+GET https://www.isf.org.il/
+GET https://www.tubitak.gov.tr/en/funds
+GET https://www.arc.gov.au/funding-research/funding-schemes
+GET https://www.mndresearch.org.au/research/grants
+GET https://arthritisaustralia.com.au/research/research-funding/
+GET https://www.diabetesaustralia.com.au/research/
+GET https://www.health.nsw.gov.au/ohmr/Pages/default.aspx
+GET https://www.health.vic.gov.au/research-and-reports/medical-research
+GET https://www.faperj.br/?id=28.5.7
+GET https://fapemig.br/pt/chamadas_abertas_fapemig/
+GET https://www.concytec.gob.pe/
+GET https://www.senacyt.gob.pa/convocatorias/
+GET https://www.fondecyt.gob.pe/
+GET https://www.cnpq.br/web/guest/chamadas-publicas
+GET https://www.gov.br/cnpq/pt-br/chamadas/abertas-para-submissao
