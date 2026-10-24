@@ -216,9 +216,117 @@
     "data": "2026-10-24"
   },
   "JREC-IN Portal (Giappone)": {
-    "letti": 23,
+    "letti": 21,
     "pertinenti": 0,
     "errore": "",
+    "data": "2026-10-24"
+  },
+  "inPA – riabilitazione": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – fisioterapia": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – neuroriabilitazione": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – logopedia": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – terapia occupazionale": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – ricerca clinica": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – sperimentazione clinica": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – studi clinici": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – biostatistica": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – ingegneria biomedica": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – bioingegneria": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – ingegneria clinica": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – ricercatore sanitario": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – ricercatore a tempo determinato": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – assegno di ricerca": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – dottorato di ricerca": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – MED/48": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
+    "data": "2026-10-24"
+  },
+  "inPA – MED/34": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Expecting value: line 1 column 1 (char 0)",
     "data": "2026-10-24"
   }
 }
