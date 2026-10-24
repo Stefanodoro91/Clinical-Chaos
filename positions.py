@@ -264,9 +264,10 @@ def guided_groups(today=None, per_day=6):
 def _grounded(prompt):
     """Gemini con Google Search: testo della risposta e indirizzi delle fonti consultate."""
     import os
-    key = os.environ.get("GEMINI_API_KEY")
+    # la ricerca con Google non è nel piano gratuito di Gemini: serve una chiave di un progetto con fatturazione
+    key = os.environ.get("GEMINI_SEARCH_API_KEY")
     if not key:
-        raise RuntimeError("GEMINI_API_KEY mancante")
+        raise RuntimeError("GEMINI_SEARCH_API_KEY mancante")
     body = {"contents": [{"parts": [{"text": prompt}]}], "tools": [{"google_search": {}}],
             "generationConfig": {"temperature": 0.2}}
     last = ""
@@ -351,7 +352,10 @@ def collect(sources=None, guided=True):
         except Exception as e:
             report.append((src["nome"], 0, 0, str(e)[:120]))
         time.sleep(1)
-    if guided:
+    import os
+    if guided and not os.environ.get("GEMINI_SEARCH_API_KEY"):
+        print("::notice title=Ricerca per Paese::non attiva (serve il secret GEMINI_SEARCH_API_KEY di un progetto con fatturazione)")
+    elif guided:
         for label, zone, lang in guided_groups():
             name = f"Ricerca web – {label}"
             try:
