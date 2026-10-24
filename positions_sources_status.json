@@ -217,7 +217,7 @@
   },
   "JREC-IN Portal (Giappone)": {
     "letti": 23,
-    "pertinenti": 1,
+    "pertinenti": 0,
     "errore": "",
     "data": "2026-10-24"
   },
@@ -327,6 +327,42 @@
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
+    "data": "2026-10-24"
+  },
+  "Ricerca web – Brazil": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Gemini non disponibile: gemini-flash-lite-latest 429",
+    "data": "2026-10-24"
+  },
+  "Ricerca web – Latin America": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Gemini non disponibile: gemini-flash-lite-latest 429",
+    "data": "2026-10-24"
+  },
+  "Ricerca web – Japan": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Gemini non disponibile: gemini-flash-lite-latest 429",
+    "data": "2026-10-24"
+  },
+  "Ricerca web – South Korea": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Gemini non disponibile: gemini-flash-lite-latest 429",
+    "data": "2026-10-24"
+  },
+  "Ricerca web – China": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Gemini non disponibile: gemini-flash-lite-latest 429",
+    "data": "2026-10-24"
+  },
+  "Ricerca web – Singapore and Southeast Asia": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "Gemini non disponibile: gemini-flash-lite-latest 429",
     "data": "2026-10-24"
   }
 }
