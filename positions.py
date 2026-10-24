@@ -59,6 +59,11 @@ RX_POSITION = re.compile(
     r"clinical academic|clinical research fellow|clinical fellowship|fellowship|borsa di ricerca|tecnologo|"
     r"ricercatore sanitario|ricerca sanitaria|contratt\w* di ricerca|incaric\w* (post-?doc|di ricerca)|"
     r"ricercat\w* \w* ?tenure|ricercat\w*.{0,40}\b(iii|terzo) livello", re.I)
+RX_CLOSED = re.compile(
+    r"(this (position|vacancy|job|posting|advert(isement)?) (has been|is now|is) (closed|filled|expired)|"
+    r"(position|vacancy|job) (has been )?filled|no longer (accepting applications|available|open)|"
+    r"applications? (are|is) (now )?closed|this job has expired|posizione (chiusa|coperta)|bando scaduto|"
+    r"candidature (chiuse|scadute))", re.I)
 TYPES = {"phd": "PhD", "postdoc": "Post-doc", "research": "Research assistant / associate",
          "clinical": "Clinical academic & fellowship", "faculty": "Faculty"}
 
@@ -386,6 +391,11 @@ def verify(item):
         r = requests.get(item["url"], headers=HEADERS, timeout=45)
         r.raise_for_status()
         text = grants.html_to_text(r.text)
+    if not inpa:        # filtro prima di Gemini: pagine che non sono annunci aperti non consumano quota
+        if not RX_POSITION.search(text[:30000]):
+            raise RuntimeError("la pagina non contiene un tipo di posizione")
+        if RX_CLOSED.search(text[:6000]):
+            raise RuntimeError("annuncio chiuso o scaduto")
     if len(text) < (120 if inpa else 300):
         raise RuntimeError(f"annuncio troppo breve ({len(text)} caratteri)")
     out = content.gemini_json([{"text": VERIFY_PROMPT.format(url=item["url"], text=text[:40000])}], VERIFY_SCHEMA, 0.1, task="verifica posizioni")
@@ -410,9 +420,25 @@ def verify(item):
 def refresh(archive, limit=25, today=None):
     """Raccoglie gli annunci nuovi e ne verifica fino a `limit`. Restituisce la diagnostica delle fonti."""
     today = today or date.today()
-    found, report = collect()
-    status = {name: {"letti": n, "pertinenti": kept, "errore": err, "data": today.isoformat()} for name, n, kept, err in report}
+    # fonti in pausa: dopo 3 errori di fila si saltano per 14 giorni, poi si riprova
+    try:
+        prev = json.load(open(ROOT / STATUS_FILE, encoding="utf-8"))
+    except (OSError, ValueError):
+        prev = {}
+    sources = read_sources()
+    paused = {n for n, st in prev.items() if (_date(st.get("pausa_fino")) or date.min) > today}
+    found, report = collect([src for src in sources if src["nome"] not in paused])
+    status = {}
+    for name, n, kept, err in report:
+        streak = (prev.get(name, {}).get("errori_di_fila", 0) + 1) if err else 0
+        status[name] = {"letti": n, "pertinenti": kept, "errore": err, "data": today.isoformat(), "errori_di_fila": streak}
+        if streak >= 3:
+            status[name]["pausa_fino"] = (today + timedelta(days=14)).isoformat()
+    for name in paused:
+        status[name] = dict(prev[name], errore=prev[name].get("errore") or "in pausa")
     json.dump(status, open(ROOT / STATUS_FILE, "w", encoding="utf-8"), indent=2, ensure_ascii=False)
+    if paused:
+        print(f"::notice title=Fonti in pausa::{len(paused)} fonti saltate dopo 3 errori di fila: {', '.join(sorted(paused))[:300]}")
     ok = sum(1 for x in status.values() if not x["errore"])
     print(f"::notice title=Fonti posizioni::{ok} fonti su {len(status)} rispondono; {len(found)} annunci candidati (dettagli in {STATUS_FILE})")
     todo = [(k, v) for k, v in found.items() if k not in archive]
