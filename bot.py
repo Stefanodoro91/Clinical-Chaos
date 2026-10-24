@@ -52,6 +52,13 @@ def git(*args):
     subprocess.run(["git", *args], cwd=ROOT, check=True)
 
 
+def _head():
+    try:
+        return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+
 def commit_and_push(paths, message):
     if DRY_RUN:
         return None
@@ -630,9 +637,10 @@ def update_positions(posted=None, verify_limit=None):
     n = len(positions.active(archive))
     print(f"::notice title=Pagina posizioni::{n} posizioni aperte in pagina")
     write_home()
-    commit_and_push([positions.ARCHIVE_FILE, positions.STATUS_FILE, "docs"],
-                    "Posizioni accademiche verificate e pagina aggiornata")
-    trigger_deploy()
+    before = _head()
+    if commit_and_push([positions.ARCHIVE_FILE, positions.STATUS_FILE, "docs"],
+                       "Posizioni accademiche verificate e pagina aggiornata") != before:
+        trigger_deploy()                 # solo se qualcosa è cambiato: le build di Cloudflare sono limitate
 
 
 JOBS_DIR = ROOT / "docs" / "jobs"
@@ -707,9 +715,9 @@ def update_grants(posted=None, verify_limit=None):
     pending = sum(1 for g in grants_list if g["id"] not in verified)
     print(f"::notice title=Pagina bandi::{len(entries)} bandi in pagina, {pending} ancora da verificare")
     write_home()
-    commit_and_push([grants.VERIFIED_FILE, "docs"],
-                    "Bandi verificati e pagina aggiornata")
-    trigger_deploy()
+    before = _head()
+    if commit_and_push([grants.VERIFIED_FILE, "docs"], "Bandi verificati e pagina aggiornata") != before:
+        trigger_deploy()                 # solo se qualcosa è cambiato: le build di Cloudflare sono limitate
 
 
 def recheck_references(drive, queue, skip=()):
