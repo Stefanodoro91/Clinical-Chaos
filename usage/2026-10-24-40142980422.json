@@ -7,6 +7,27 @@
    "uscita": 3263,
    "ragionamento": 3554,
    "respinte": 0
+  },
+  "controllo doppioni|gemini-flash-latest": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 1
+  },
+  "controllo doppioni|gemini-flash-lite-latest": {
+   "richieste": 1,
+   "ingresso": 763,
+   "uscita": 9,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "scelta immagini|gemini-flash-lite-latest": {
+   "richieste": 2,
+   "ingresso": 4808,
+   "uscita": 199,
+   "ragionamento": 0,
+   "respinte": 0
   }
  }
 }
