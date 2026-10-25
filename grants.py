@@ -87,6 +87,8 @@ VERIFY_VERSION = 3          # 2 = scadenze dal testo ufficiale e requisiti del c
 def checked(v):
     """Scadenze della voce affidabili con le regole attuali (le date NIH della versione 2 vanno rilette)."""
     ver = (v or {}).get("version", 1)
+    if str((v or {}).get("model", "")).startswith("groq"):
+        return False                 # verificato con il ripiego (Gemini esaurito): si rifà con Gemini prima dei post
     return ver >= VERIFY_VERSION or (ver == 2 and not str(v.get("official_source", "")).startswith("NIH Guide"))
 
 PROMPT = """You write an Instagram carousel for "{brand}", a page for researchers and health professionals
@@ -788,7 +790,7 @@ def verify(g, cfg):
         "title": content._clip(out.get("title") or g.get("titolo") or "", 140),
         "programme": content._clip(programme, 120), "programme_family": programme_family(g),
         "summary": content._clip(out.get("summary", ""), 700), "coming_soon": coming_soon, **elig,
-        "version": VERIFY_VERSION, **dl, "lead": lead, "lead_evidence": lead_ev,
+        "version": VERIFY_VERSION, "model": content.LAST_MODEL, **dl, "lead": lead, "lead_evidence": lead_ev,
         "deadline_raw": f"{out.get('next_deadline', '')} | {(out.get('deadline_evidence') or '')[:200]}",
         **forecast_info(text),
     }

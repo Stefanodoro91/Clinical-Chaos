@@ -380,6 +380,8 @@ def _clean_post(p, material=""):
     }
 
 
+LAST_MODEL = ""       # modello che ha dato l'ultima risposta (per segnare le verifiche fatte con il ripiego)
+NO_FALLBACK_TASKS = {"nuovi post da Drive", "post bando", "scelta immagini"}
 THINKING = {}         # livello di ragionamento per attività (config «gemini_thinking»), es. {"verifica bandi": "low"}
 USAGE = {}            # consumo di Gemini in questo giro: {(attività, modello): contatori}
 _EXHAUSTED = set()    # modelli con la quota giornaliera finita: in questo giro non si riprovano
@@ -455,47 +457,6 @@ def _parts_to_text(parts):
     return "\n\n".join(p["text"] for p in parts if "text" in p)
 
 
-def _mistral_json(prompt_text, schema, temperature=0.5, task="altro"):
-    """Chiama Mistral Small (specializzato in scrittura accademica) e restituisce JSON decodificato."""
-    key = os.environ.get("MISTRAL_API_KEY")
-    if not key:
-        return None
-    schema_str = json.dumps(schema, ensure_ascii=False)
-    system = (
-        "You are a clinical research content expert. "
-        "Respond ONLY with a valid JSON object that strictly follows this JSON Schema: "
-        + schema_str
-        + "\nNo text before or after the JSON."
-    )
-    body = {
-        "model": "mistral-small-latest",
-        "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt_text}],
-        "temperature": temperature,
-        "response_format": {"type": "json_object"},
-    }
-    for attempt in range(3):
-        try:
-            r = requests.post(
-                "https://api.mistral.ai/v1/chat/completions",
-                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-                json=body, timeout=120,
-            )
-            if r.status_code == 429 or r.status_code >= 500:
-                time.sleep(30 * (attempt + 1))
-                continue
-            if not r.ok:
-                print(f"  Mistral errore {r.status_code}: {r.text[:200]}")
-                return None
-            text = r.json()["choices"][0]["message"]["content"]
-            result = json.loads(text)
-            record_usage(task, "mistral-small", status="ok")
-            return result
-        except Exception as e:
-            print(f"  Mistral eccezione: {e}")
-            return None
-    return None
-
-
 def _groq_json(prompt_text, schema, temperature=0.5, task="altro"):
     """Chiama Groq (llama-3.3-70b) e restituisce JSON decodificato. Usato come riserva finale."""
     key = os.environ.get("GROQ_API_KEY")
@@ -539,7 +500,7 @@ def _groq_json(prompt_text, schema, temperature=0.5, task="altro"):
 def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
     """Chiede a Gemini una risposta JSON conforme allo schema e la restituisce già decodificata.
     `thinking` ("minimal", "low", "medium", "high") limita il ragionamento interno dei modelli Gemini 3.
-    Se Gemini è esaurito, passa automaticamente a DeepSeek V3, poi a Groq."""
+    Se Gemini è esaurito, le richieste di solo testo (non la scrittura dei post) passano a Groq."""
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         raise RuntimeError("GEMINI_API_KEY mancante")
@@ -568,16 +529,22 @@ def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
                 raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:500]}")
             data = r.json()
             record_usage(task, model, data)
+            globals()["LAST_MODEL"] = data.get("modelVersion") or model
             text = "".join(p.get("text", "") for p in data["candidates"][0]["content"]["parts"] if not p.get("thought"))
             return json.loads(text)
         print(f"  Gemini {model} non disponibile, provo il modello di riserva.")
-    # ── Fallback: Groq (gratuito, veloce) ────────────────────────────────────
-    print(f"  Gemini esaurito per «{task}», provo Groq…")
-    prompt_text = _parts_to_text(parts)
-    result = _groq_json(prompt_text, schema, temperature, task)
-    if result is not None:
-        return result
-    raise RuntimeError(f"Tutti i modelli AI non disponibili. Ultimo errore Gemini: {last_error}")
+    # ── Ripiego: Groq, solo per richieste di solo testo e mai per scrivere i post ──────────────
+    # (PDF e immagini non passano a Groq; i testi dei post restano a Gemini). Le verifiche fatte con Groq
+    # sono segnate e vengono rifatte con Gemini prima di finire in un post.
+    text_only = all("text" in p for p in parts)
+    if text_only and task not in NO_FALLBACK_TASKS and os.environ.get("GROQ_API_KEY"):
+        print(f"  Gemini esaurito per «{task}», provo Groq…")
+        result = _groq_json(_parts_to_text(parts), schema, temperature, task)
+        if result is not None:
+            global LAST_MODEL
+            LAST_MODEL = "groq-llama3"
+            return result
+    raise RuntimeError(f"Gemini non disponibile: {last_error}")
 
 
 def groq_json(prompt_text, schema, temperature=0.0, task="altro"):

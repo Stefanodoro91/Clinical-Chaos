@@ -60,6 +60,12 @@ RX_POSITION = re.compile(
     r"clinical academic|clinical research fellow|clinical fellowship|fellowship|borsa di ricerca|tecnologo|"
     r"ricercatore sanitario|ricerca sanitaria|contratt\w* di ricerca|incaric\w* (post-?doc|di ricerca)|"
     r"ricercat\w* \w* ?tenure|ricercat\w*.{0,40}\b(iii|terzo) livello", re.I)
+RX_MEDIUM_TITLE = re.compile(
+    r"clinical|patient|trial|epidemiolog|public health|population health|global health|rehabilit|physiother|"
+    r"occupational therap|speech|medic(al|ine)|health sciences|nursing|psychiatr|orthopa|anaesthes|anesthes|gastro|"
+    r"obstetric|pharmac|biostat|biomedical|bioengineer|medical imaging|\bmri\b|device", re.I)
+RX_MEDIUM_TEXT = re.compile(r"clinical (studies|study|data|text|trials?|research|practice)|patients?\b|pharmacoepidemiolog|"
+                            r"exercise physiolog|adverse (drug )?(events?|reactions?)|rehabilit|physiotherap", re.I)
 RX_CLOSED = re.compile(
     r"(this (position|vacancy|job|posting|advert(isement)?) (has been|is now|is) (closed|filled|expired)|"
     r"(position|vacancy|job) (has been )?filled|no longer (accepting applications|available|open)|"
@@ -478,9 +484,11 @@ def active(archive, today=None):
         if v.get("status") != "ok" or v.get("is_open") == "no" or v.get("relevance") not in ("high", "medium") \
                 or v.get("type") not in TYPES:
             continue
-        # pertinenza «media» solo se un termine riabilitativo compare davvero nel titolo o nella descrizione
-        if (v.get("relevance") == "medium" and v.get("area") not in ("clinical", "engineering")
-                and not RX_CLINICAL_REHAB.search(f"{v.get('title', '')} {v.get('summary', '')}")):
+        # pertinenza «media» solo se il tema clinico, di ingegneria clinica o riabilitativo compare davvero nel titolo
+        # o nella descrizione: fuori biologia di base, scienze sociali e ingegneria generica (falsi positivi)
+        blob = f"{v.get('title', '')} {v.get('summary', '')}"
+        if v.get("relevance") == "medium" and not (RX_CLINICAL_REHAB.search(blob) or RX_MEDIUM_TITLE.search(v.get("title", ""))
+                                                   or RX_MEDIUM_TEXT.search(blob)):
             continue
         d = _date(v.get("deadline"))
         seen = _date(v.get("first_seen")) or today
