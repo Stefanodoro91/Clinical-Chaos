@@ -4,7 +4,7 @@
     "pertinenti": 0,
     "errore": "500 Server Error: Internal Server Error for url: https://www.jobs.ac.uk/jobs/health-and-medical?format=rss",
     "data": "2026-10-25",
-    "errori_di_fila": 1
+    "errori_di_fila": 2
   },
   "jobs.ac.uk – rehabilitation": {
     "letti": 19,
@@ -133,8 +133,8 @@
     "errori_di_fila": 0
   },
   "JREC-IN Portal (Giappone)": {
-    "letti": 19,
-    "pertinenti": 1,
+    "letti": 23,
+    "pertinenti": 0,
     "errore": "",
     "data": "2026-10-25",
     "errori_di_fila": 0
