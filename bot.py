@@ -304,6 +304,35 @@ def publish_facebook(image_urls, caption, kind=None):
     return r.json().get("id")
 
 
+def facebook_text(post, caption, kind=None, link=""):
+    """Facebook: testo lungo. Metodologia: didascalia, punti chiave per esteso, messaggio da ricordare, fonti e link.
+    Bandi, posizioni e annunci: la didascalia con i link cliccabili."""
+    if kind not in (None, "research"):
+        return facebook_caption(caption, kind)
+    import re as _re
+    tags = _re.findall(r"#\w+", caption)
+    body = _re.sub(r"(\s*#\w+)+\s*$", "", caption).strip()
+    body = body.replace("link in bio", link or CONFIG.get("links_page_url", ""))
+    points = "\n".join(f"{i}. {s['heading']}: {s['body']}" for i, s in enumerate(post.get("slides", []), 1))
+    refs = "\n".join(f"- {r}" for r in (post.get("references") or [])[:3])
+    parts = [body, f"Key points:\n{points}" if points else "", f"Takeaway: {post['takeaway']}" if post.get("takeaway") else "",
+             f"References:\n{refs}" if refs else "", f"All our methodology carousels, with references: {link}" if link else "",
+             " ".join(tags[:5])]
+    return "\n\n".join(x for x in parts if x)[:6000]
+
+
+def publish_facebook_single(image_url, message):
+    """Facebook: un'immagine con testo lungo (per il pubblico della Pagina rende più del carosello). Restituisce l'id del post."""
+    page_id = os.environ.get("FB_PAGE_ID")
+    token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
+    r = requests.post(f"https://graph.facebook.com/{GRAPH_VERSION}/{page_id}/photos",
+                      data={"url": image_url, "caption": message, "published": "true", "access_token": token}, timeout=90)
+    if not r.ok:
+        raise RuntimeError(f"Errore Facebook (foto) {r.status_code}: {r.text[:300]}")
+    j = r.json()
+    return j.get("post_id") or j.get("id")
+
+
 def wait_until_public(url):
     for _ in range(12):
         try:
@@ -490,6 +519,15 @@ def main():
         for i, img in enumerate(slides, start=1):
             (PREVIEW_DIR / f"slide-{i}.jpg").write_bytes(img)
         (PREVIEW_DIR / "caption.txt").write_text(caption, encoding="utf-8")
+        # anteprima dei formati per social: Facebook (immagine singola + testo lungo), Bluesky e Threads (testo breve)
+        import social
+        plink = grants.site_url(CONFIG, {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",
+                                         "research": f"methodology#m-{post.get('id', '')}"}.get(post.get("kind") or "research", ""))
+        if kind == "research":
+            (PREVIEW_DIR / "facebook.jpg").write_bytes(cards.facebook_single(post, CONFIG))
+        (PREVIEW_DIR / "facebook.txt").write_text(facebook_text(post, caption, post.get("kind"), plink), encoding="utf-8")
+        (PREVIEW_DIR / "bluesky.txt").write_text(social.short_text({**post, "caption": caption}, plink, 300), encoding="utf-8")
+        (PREVIEW_DIR / "threads.txt").write_text(social.short_text({**post, "caption": caption}, plink, 500), encoding="utf-8")
         (PREVIEW_DIR / "queue.json").write_text(json.dumps(queue, indent=2, ensure_ascii=False), encoding="utf-8")
         print("Modalità prova: niente pubblicato. Anteprima nell'artifact 'preview'.")
         return
@@ -503,9 +541,16 @@ def main():
         path = folder / f"slide-{i}.jpg"
         path.write_bytes(img)
         rel_paths.append(path.relative_to(ROOT).as_posix())
-    sha = commit_and_push(rel_paths, f"Slide del {today}")
+    fb_single = CONFIG.get("facebook_format", "single") == "single"
+    fb_rel = None
+    if fb_single and kind == "research":          # metodologia: immagine riassuntiva; bandi e posizioni: la copertina
+        fb_path = folder / "facebook.jpg"
+        fb_path.write_bytes(cards.facebook_single(post, CONFIG))
+        fb_rel = fb_path.relative_to(ROOT).as_posix()
+    sha = commit_and_push(rel_paths + ([fb_rel] if fb_rel else []), f"Slide del {today}")
     base = f"https://raw.githubusercontent.com/{os.environ['GITHUB_REPOSITORY']}/{sha}/"
     urls = [base + p for p in rel_paths]
+    fb_url = base + fb_rel if fb_rel else urls[0]
     try:
         for u in urls:
             wait_until_public(u)
@@ -522,24 +567,28 @@ def main():
         sys.exit(1)
     print(f"Pubblicato su Instagram! id={media_id}")
 
+    import social
+    kind_link = {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",
+                 "research": f"methodology#m-{post['id']}"}.get(post.get("kind") or "research", "")
+    link = grants.site_url(CONFIG, kind_link)
     fb_id = None
     if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID"):
         try:   # un errore su Facebook non blocca il post Instagram già uscito
-            fb_id = publish_facebook(urls, caption, post.get("kind"))
+            if fb_single and post.get("kind") != "announcement":
+                fb_id = publish_facebook_single(fb_url, facebook_text(post, caption, post.get("kind"), link))
+            else:
+                fb_id = publish_facebook(urls, caption, post.get("kind"))
             print(f"Pubblicato su Facebook! id={fb_id}")
         except Exception as e:
             print(f"::warning title=Facebook non pubblicato::{str(e)[:300]}")
             notify("Post non pubblicato su Facebook", f"Il post «{post['title']}» è uscito su Instagram ma non su Facebook: {e}")
 
-    # stessi post su Bluesky e Threads, se i secret ci sono (un errore non blocca nulla)
-    import social
-    kind_link = {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",
-                 "research": f"methodology#m-{post['id']}"}.get(post.get("kind") or "research", "")
-    link = grants.site_url(CONFIG, kind_link)
+    # Bluesky (prima slide + link) e Threads (carosello + testo breve), se i secret ci sono: un errore non blocca nulla
     bsky_uri = threads_id = None
     if social.bluesky_enabled():
         try:
-            bsky_uri = social.publish_bluesky([ROOT / p for p in rel_paths], {**post, "caption": caption}, link)
+            bsky_uri = social.publish_bluesky([ROOT / p for p in rel_paths], {**post, "caption": caption}, link,
+                                              max_images=int(CONFIG.get("bluesky_images", 1)))
             print(f"::notice title=Bluesky::pubblicato {bsky_uri}")
         except Exception as e:
             print(f"::warning title=Bluesky non pubblicato::{str(e)[:300]}")
@@ -903,6 +952,67 @@ def weekly_digest():
             requests.patch(r.json()["url"], headers=h, json={"state": "closed"}, timeout=30)
 
 
+def backfill_social():
+    """Ripubblica su Bluesky e Threads i post usciti su Instagram e Facebook prima che i due profili esistessero,
+    con il formato di ciascuno (Bluesky: prima slide + link; Threads: carosello + testo breve). Pochi per giro,
+    per non inondare i profili; i post di metodologia sempre, i bandi solo se mancano almeno 14 giorni alla scadenza."""
+    import social, methodology
+    posted = load(POSTED_FILE, [])
+    methods = methodology.load()
+    corrected = {c.get("post_id") for c in load(ROOT / "corrections.json", [])}      # post rettificati: non si ripubblicano
+    today = datetime.now(timezone.utc).date()
+    per_run = int(CONFIG.get("backfill_per_run", 1))
+    sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    base = f"https://raw.githubusercontent.com/{os.environ.get('GITHUB_REPOSITORY', '')}/{sha}/"
+    done = 0
+    for p in posted:
+        if done >= per_run:
+            break
+        need_b = social.bluesky_enabled() and not p.get("bluesky_uri")
+        need_t = social.threads_enabled() and not p.get("threads_id")
+        if not (need_b or need_t) or p.get("kind") in ("positions", "announcement") or p["id"] in corrected:
+            continue
+        if p.get("kind") == "grant":
+            d = grants._date(p.get("deadline"))
+            if not d or (d - today).days < 14:
+                continue
+            title = p.get("grant_title") or p.get("title", "")
+            pseudo = {"title": title, "caption": f"{title}\n\nNext deadline: {grants._fmt_date(d)}.\n\n{p.get('summary', '')}"}
+            link = grants.site_url(CONFIG, "calls#" + grants.card_anchor(p.get("grant_id", "")))
+        else:
+            m = methods.get(p["id"])
+            if not m or m.get("duplicate_of"):
+                continue
+            heads = " · ".join(x["heading"] for x in m.get("points", []))
+            pseudo = {"title": m["title"], "caption": f"{m['title']}\n\n{m.get('takeaway', '')}\n\nKey points: {heads}"}
+            link = grants.site_url(CONFIG, f"methodology#m-{p['id']}")
+        safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in p["id"])
+        folder = IMAGES_DIR / f"{p['date']}-{safe}"
+        slides = sorted(folder.glob("slide-*.jpg"), key=lambda q: int(q.stem.split("-")[1]))
+        if not slides:
+            continue
+        if need_b:
+            try:
+                p["bluesky_uri"] = social.publish_bluesky(slides[:1], pseudo, link, max_images=1)
+                print(f"::notice title=Bluesky (arretrati)::{p['title'][:60]} → {p['bluesky_uri']}")
+            except Exception as e:
+                print(f"::warning title=Bluesky (arretrati)::{str(e)[:200]}")
+        if need_t:
+            try:
+                urls = [base + q.relative_to(ROOT).as_posix() for q in slides[:10]]
+                p["threads_id"] = social.publish_threads(urls, pseudo, link)
+                print(f"::notice title=Threads (arretrati)::{p['title'][:60]} → {p['threads_id']}")
+            except Exception as e:
+                print(f"::warning title=Threads (arretrati)::{str(e)[:200]}")
+        p["backfill"] = today.isoformat()
+        done += 1
+    if not done:
+        print("::notice title=Arretrati social::nessun post da ripubblicare")
+        return
+    save(POSTED_FILE, posted)
+    commit_and_push([POSTED_FILE.name], "Post precedenti ripubblicati su Bluesky e Threads")
+
+
 if __name__ == "__main__":
     if "--status" in sys.argv:
         status()
@@ -914,6 +1024,8 @@ if __name__ == "__main__":
         check_token()
     elif "--weekly" in sys.argv:
         weekly_digest()
+    elif "--backfill" in sys.argv:
+        backfill_social()
     elif "--corrections" in sys.argv:
         corrections()
     elif "--positions" in sys.argv:

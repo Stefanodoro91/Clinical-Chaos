@@ -50,7 +50,7 @@ POST DESIGN:
 - One clear concept per post; produce as many posts as the material genuinely supports (0-{max_posts}),
   each different from the others.
 - title: a sharp hook, max 70 characters (e.g. a common misconception, a question, a crisp claim).
-- slides: 3 to 5 slides, each with heading (max 55 characters), body (max 220 characters,
+- slides: 4 to 7 slides (the carousel adds cover, takeaway and call to action: 7–10 slides in total), each with heading (max 55 characters), body (max 170 characters: few words, large type,
   plain language for professionals, concrete, no fluff) and image_prompt.
 - image_prompt: in English, 15-35 words describing ONE simple illustration that a researcher would
   connect to the slide's idea at a glance. Describe a concrete scene with 2-4 recognizable elements
@@ -360,7 +360,7 @@ def _clean_post(p, material=""):
                        "image_prompt": _clip(s.get("image_prompt", ""), 300),
                        "highlight": exact_phrase(s.get("highlight"), body),
                        "source": _source_ok(s.get("source"), refs)})
-    slides = slides[:5]
+    slides = slides[:7]
     if len(slides) < 2 or not p.get("title") or not p.get("takeaway"):
         return None
     tags = ["#" + t.lstrip("#").replace(" ", "") for t in p.get("hashtags", []) if t.strip("# ")]

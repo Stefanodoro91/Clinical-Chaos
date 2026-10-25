@@ -197,10 +197,10 @@ def cover(post, cfg, total):
     d.rounded_rectangle((MARGIN, pill_top, MARGIN + pw, pill_top + 60), radius=30, outline=navy, width=3)
     d.text((MARGIN + 28, pill_top + 11), label, font=pill_f, fill=navy)
     title_top = pill_top + 110
-    fnt, lines, size = fit(d, post["title"], "ExtraBold", 104, 60, W - 2 * MARGIN, H - 300 - title_top, 1.12)
+    fnt, lines, size = fit(d, post["title"], "ExtraBold", 124, 64, W - 2 * MARGIN, H - 320 - title_top, 1.08)
     phrase = post.get("title_highlight") or (lines[-1] if lines else "")
-    draw_rich(d, post["title"], phrase, fnt, size, MARGIN, title_top, W - 2 * MARGIN, navy, 1.12, c["accent"], half=True)
-    d.text((MARGIN, H - 240), "Swipe  →", font=font("Bold", 40), fill=navy)
+    draw_rich(d, post["title"], phrase, fnt, size, MARGIN, title_top, W - 2 * MARGIN, navy, 1.08, c["accent"], half=True)
+    d.text((MARGIN, H - 240), "Swipe  →", font=font("ExtraBold", 46), fill=DARK_ACCENT.get(c["accent"], navy))
     return img
 
 
@@ -233,15 +233,15 @@ def grant_cover(post, cfg, total):
 def content(slide, number, cfg, index, total):
     c = cfg["colors"]
     img, d = canvas(cfg, index, total)
-    hf, hl, hs = fit(d, slide["heading"], "Bold", 64, 42, W - 2 * MARGIN, 260, 1.2)
-    head_h = len(hl) * hs * 1.2
-    bf, bl, bs = fit(d, slide["body"], "Regular", 46, 30, W - 2 * MARGIN, H - 170 - 180 - head_h - 220, 1.45)
+    hf, hl, hs = fit(d, slide["heading"], "ExtraBold", 76, 46, W - 2 * MARGIN, 300, 1.15)
+    head_h = len(hl) * hs * 1.15
+    bf, bl, bs = fit(d, slide["body"], "Regular", 54, 32, W - 2 * MARGIN, H - 170 - 180 - head_h - 220, 1.4)
     block = 180 + head_h + 40 + len(bl) * bs * 1.45
     top = max(150, (H - block) / 2 - 50)   # blocco centrato in verticale
     d.text((MARGIN, top), f"{number:02d}", font=font("ExtraBold", 120), fill=c["accent"])
-    y = draw_lines(d, hl, hf, hs, MARGIN, top + 180, c["text"], 1.2) + 40
+    y = draw_lines(d, hl, hf, hs, MARGIN, top + 180, c["text"], 1.15) + 44
     draw_rich(d, slide["body"], slide.get("highlight"), bf, bs, MARGIN, y, W - 2 * MARGIN,
-              c["muted_text"], 1.45, c["accent"], c["background"])
+              c["muted_text"], 1.4, c["accent"], c["background"])
     source_line(d, slide, cfg)
     return img
 
@@ -463,6 +463,82 @@ def position_slide(job, number, cfg, index, total):
     return img
 
 
+def _question(post):
+    """La domanda finale della didascalia (per la slide «Comment»), se c'è."""
+    import re as _re
+    qs = _re.findall(r"[^.!?\n]*\?", post.get("caption") or "")
+    q = qs[-1].strip() if qs else ""
+    return q if 10 <= len(q) <= 140 else "What is your experience? Tell us in the comments."
+
+
+def rule_slide(post, cfg, index, total):
+    """Carosello v2: il messaggio da ricordare, da solo, su fondo chiaro."""
+    c = cfg["colors"]
+    navy = c["background"]
+    img, d = light_canvas(cfg, index, total)
+    d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 36), fill=DARK_ACCENT.get(c["accent"], navy))
+    fnt, lines, size = fit(d, post["takeaway"], "ExtraBold", 100, 56, W - 2 * MARGIN, H - 300 - 250, 1.12)
+    draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 260, W - 2 * MARGIN,
+              navy, 1.12, c["accent"], half=True)
+    return img
+
+
+def cta_slide(post, cfg, index, total):
+    """Carosello v2: call to action esplicita (salva, commenta, condividi) e dove trovarci."""
+    c = cfg["colors"]
+    img, d = canvas(cfg, index, total)
+    d.text((MARGIN, 170), "BEFORE YOU GO", font=font("Bold", 36), fill=c["accent"])
+    import re as _re
+    save_line = _re.sub(r"^save (it|this)( post)?\s*", "", ((post.get("closing_cta") or ("",))[0] or ""), flags=_re.I).strip()
+    save_line = save_line if len(save_line) > 6 else "for your next protocol"
+    rows = ((_bookmark, "Save this post", save_line), (_person_plus, "Comment", _question(post)),
+            (_plane, "Share it", "with a colleague who needs it"))
+    y = 280
+    for icon, head, sub in rows:
+        icon(d, MARGIN, y + 8, c["accent"], s=60)
+        d.text((MARGIN + 120, y), head, font=font("ExtraBold", 62), fill="#FFFFFF")
+        sf, sl, ss = fit(d, sub, "Regular", 40, 28, W - 2 * MARGIN - 120, 112, 1.3)
+        draw_lines(d, sl, sf, ss, MARGIN + 120, y + 84, c["muted_text"], 1.3)
+        y += 250
+    d.text((MARGIN, y + 10), "More: link in bio", font=font("Bold", 46), fill=c["accent"])
+    x, yy = MARGIN, y + 100
+    nets = post.get("networks") or (["instagram", "facebook"] + [n for n in ("threads", "bluesky") if cfg.get(f"{n}_handle")])
+    for n in nets:
+        if paste_logo(img, f"icon-{n}", x, yy, height=48):
+            x += 70
+    d.text((x + 10, yy + 2), cfg["handle"], font=font("SemiBold", 38), fill="#FFFFFF")
+    return img
+
+
+def facebook_single(post, cfg):
+    """Facebook: immagine singola che riassume il post (il testo lungo va nella didascalia)."""
+    c = cfg["colors"]
+    navy, accent = c["background"], c["accent"]
+    img = Image.new("RGB", (W, H), navy)
+    d = ImageDraw.Draw(img)
+    d.rectangle((0, 0, W, 14), fill=accent)
+    sym = paste_logo(img, "logo-symbol-light", MARGIN, 90, height=110)
+    if sym:
+        paste_logo(img, "logo-wordmark-light", MARGIN + sym[0] + 20, 100, height=80)
+    d.text((MARGIN, 290), post.get("category", "Research methods").upper(), font=font("Bold", 34), fill=accent)
+    fnt, lines, size = fit(d, post["title"], "ExtraBold", 84, 54, W - 2 * MARGIN, 330, 1.1)
+    y = draw_lines(d, lines, fnt, size, MARGIN, 350, "#FFFFFF", 1.1) + 50
+    steps = [s["heading"] for s in post.get("slides", [])][:4]
+    room = (H - 170 - y) / max(1, len(steps))
+    for n, head in enumerate(steps, 1):
+        d.rounded_rectangle((MARGIN, y, MARGIN + 80, y + 80), radius=40, fill=accent)
+        nf = font("ExtraBold", 46)
+        d.text((MARGIN + 40 - d.textlength(str(n), font=nf) / 2, y + 12), str(n), font=nf, fill=navy)
+        hf, hl, hs = fit(d, head, "Bold", 46, 32, W - 2 * MARGIN - 120, room - 20, 1.2)
+        draw_lines(d, hl, hf, hs, MARGIN + 120, y + 8, "#FFFFFF", 1.2)
+        y += max(110, min(room, len(hl) * hs * 1.2 + 50))
+    site = cfg.get("links_page_url", "").replace("https://", "").rstrip("/")
+    d.text((MARGIN, H - 110), site, font=font("SemiBold", 36), fill=c["muted_text"])
+    buf = io.BytesIO()
+    img.save(buf, "JPEG", quality=92, optimize=True)
+    return buf.getvalue()
+
+
 def render_carousel(post, cfg):
     """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
     if post.get("kind") == "grant":   # i bandi hanno un colore d'accento proprio, per riconoscerli a colpo d'occhio
@@ -484,7 +560,8 @@ def render_carousel(post, cfg):
         return out
     has_facts = bool(post.get("facts"))
     has_numbers = bool(post.get("numbers"))
-    total = len(post["slides"]) + 2 + has_facts + has_numbers
+    v2 = cfg.get("carousel_v2", True) and not post.get("kind")     # metodologia: regola e CTA su slide separate
+    total = len(post["slides"]) + 2 + has_facts + has_numbers + bool(v2)
     use_images = cfg.get("ai_images", True) and not post.get("no_images")
     max_images = int(cfg.get("max_images_per_post", 2))
     used = 0
@@ -507,7 +584,11 @@ def render_carousel(post, cfg):
             pages.append(content(slide, i, cfg, index, total))
     if has_facts and not facts_first:
         pages.append(facts_slide(post, cfg, len(pages) + 1, total))
-    pages.append(closing(post, cfg, total))
+    if v2:
+        pages.append(rule_slide(post, cfg, len(pages) + 1, total))
+        pages.append(cta_slide(post, cfg, len(pages) + 1, total))
+    else:
+        pages.append(closing(post, cfg, total))
     out = []
     for img in pages:
         buf = io.BytesIO()

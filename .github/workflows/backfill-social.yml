@@ -1,0 +1,42 @@
+name: Arretrati su Bluesky e Threads
+
+# Ripubblica su Bluesky e Threads, uno alla volta, i post usciti su Instagram e Facebook prima che i due
+# profili esistessero (metodologia; bandi solo se mancano almeno 14 giorni alla scadenza). Quando non resta
+# niente il giro finisce subito senza pubblicare.
+on:
+  schedule:
+    # Orari in UTC: GitHub ignora il fuso orario. Inverno = ora di Roma - 1.
+    - cron: "5 9 * * *"     # 10:05 a Roma
+    - cron: "5 16 * * *"    # 17:05 a Roma
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram-publish
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Configura git
+        run: |
+          git config user.name "research-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Ripubblica un post
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python bot.py --backfill

@@ -39,5 +39,9 @@
   "announcement_accent": "#FF7A59",
   "bluesky_handle": "researchchaos.bsky.social",
   "threads_handle": "clinicalresearchchaos",
-  "feedback_key": "b7ca6d7a-44b3-40db-8576-dbfdb05298e2"
+  "feedback_key": "b7ca6d7a-44b3-40db-8576-dbfdb05298e2",
+  "carousel_v2": true,
+  "facebook_format": "single",
+  "bluesky_images": 1,
+  "backfill_per_run": 1
 }
