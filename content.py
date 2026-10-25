@@ -435,19 +435,20 @@ def _parts_to_text(parts):
     return "\n\n".join(p["text"] for p in parts if "text" in p)
 
 
-def _deepseek_json(prompt_text, schema, temperature=0.5, task="altro"):
-    """Chiama DeepSeek V3 e restituisce JSON decodificato. Usato come fallback di Gemini."""
-    key = os.environ.get("DEEPSEEK_API_KEY")
+def _mistral_json(prompt_text, schema, temperature=0.5, task="altro"):
+    """Chiama Mistral Small (specializzato in scrittura accademica) e restituisce JSON decodificato."""
+    key = os.environ.get("MISTRAL_API_KEY")
     if not key:
         return None
     schema_str = json.dumps(schema, ensure_ascii=False)
     system = (
-        "Rispondi SOLO con un oggetto JSON valido che rispetti esattamente questo schema JSON Schema: "
+        "You are a clinical research content expert. "
+        "Respond ONLY with a valid JSON object that strictly follows this JSON Schema: "
         + schema_str
-        + "\nNessun testo prima o dopo il JSON."
+        + "\nNo text before or after the JSON."
     )
     body = {
-        "model": "deepseek-chat",
+        "model": "mistral-small-latest",
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt_text}],
         "temperature": temperature,
         "response_format": {"type": "json_object"},
@@ -455,22 +456,22 @@ def _deepseek_json(prompt_text, schema, temperature=0.5, task="altro"):
     for attempt in range(3):
         try:
             r = requests.post(
-                "https://api.deepseek.com/chat/completions",
+                "https://api.mistral.ai/v1/chat/completions",
                 headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-                json=body, timeout=300,
+                json=body, timeout=120,
             )
             if r.status_code == 429 or r.status_code >= 500:
                 time.sleep(30 * (attempt + 1))
                 continue
             if not r.ok:
-                print(f"  DeepSeek errore {r.status_code}: {r.text[:200]}")
+                print(f"  Mistral errore {r.status_code}: {r.text[:200]}")
                 return None
             text = r.json()["choices"][0]["message"]["content"]
             result = json.loads(text)
-            record_usage(task, "deepseek-chat", status="ok")
+            record_usage(task, "mistral-small", status="ok")
             return result
         except Exception as e:
-            print(f"  DeepSeek eccezione: {e}")
+            print(f"  Mistral eccezione: {e}")
             return None
     return None
 
@@ -550,18 +551,23 @@ def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
             text = "".join(p.get("text", "") for p in data["candidates"][0]["content"]["parts"] if not p.get("thought"))
             return json.loads(text)
         print(f"  Gemini {model} non disponibile, provo il modello di riserva.")
-    # ── Fallback 1: DeepSeek V3 ──────────────────────────────────────────────
-    print(f"  Gemini esaurito per «{task}», provo DeepSeek V3…")
+    # ── Fallback: Groq (gratuito, veloce) ────────────────────────────────────
+    print(f"  Gemini esaurito per «{task}», provo Groq…")
     prompt_text = _parts_to_text(parts)
-    result = _deepseek_json(prompt_text, schema, temperature, task)
-    if result is not None:
-        return result
-    # ── Fallback 2: Groq ─────────────────────────────────────────────────────
-    print(f"  DeepSeek non disponibile per «{task}», provo Groq…")
     result = _groq_json(prompt_text, schema, temperature, task)
     if result is not None:
         return result
     raise RuntimeError(f"Tutti i modelli AI non disponibili. Ultimo errore Gemini: {last_error}")
+
+
+def groq_json(prompt_text, schema, temperature=0.0, task="altro"):
+    """Interfaccia pubblica per Groq: task logici veloci (es. controllo doppioni).
+    Se GROQ_API_KEY non è disponibile, ricade su gemini_json con parts testuali."""
+    result = _groq_json(prompt_text, schema, temperature, task)
+    if result is not None:
+        return result
+    # fallback: usa Gemini con il solo testo
+    return gemini_json([{"text": prompt_text}], schema, temperature, task)
 
 
 def generate_posts(part, filename, brand, max_posts=12, published=()):

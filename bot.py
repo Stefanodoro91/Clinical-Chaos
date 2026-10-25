@@ -200,7 +200,7 @@ def drop_repeats(queue, posted, threshold=0.72):
               "Different aspects of the same broad topic are NOT duplicates.\n\nPublished:\n- "
               + "\n- ".join(published) + f"\n\nCandidates:\n{lines}")
     try:
-        dups = content.gemini_json([{"text": prompt}], DUP_SCHEMA, 0.0, task="controllo doppioni").get("duplicates", [])
+        dups = content.groq_json(prompt, DUP_SCHEMA, 0.0, task="controllo doppioni").get("duplicates", [])
     except Exception as e:
         print(f"Controllo doppioni non riuscito ({e}): la coda resta com'è.")
         return kept

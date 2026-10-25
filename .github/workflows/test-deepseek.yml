@@ -11,5 +11,4 @@ jobs:
       - run: pip install requests --quiet
       - name: Genera post con DeepSeek
         env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: python test_deepseek.py
