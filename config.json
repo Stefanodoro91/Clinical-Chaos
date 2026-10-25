@@ -36,5 +36,8 @@
   "positions_min_days_left": 10,
   "positions_verify_per_run": 40,
   "reels_auto": false,
-  "announcement_accent": "#FF7A59"
+  "announcement_accent": "#FF7A59",
+  "bluesky_handle": "researchchaos.bsky.social",
+  "threads_handle": "clinicalresearchchaos",
+  "feedback_key": "b7ca6d7a-44b3-40db-8576-dbfdb05298e2"
 }
