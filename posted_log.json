@@ -283,5 +283,25 @@
     "source": "PICO.pdf",
     "media_id": "17915881986465308",
     "facebook_id": "1277022912171972_122110305099432698"
+  },
+  {
+    "date": "2026-10-25",
+    "time": "2026-10-25T15:08:21+00:00",
+    "id": "grant-EU-HORIZON-HLTH-2027-01-DISEASE-06",
+    "title": "Funding for Monoclonal Antibodies Against Viral Infections",
+    "source": "GrantFinder",
+    "media_id": "18119657522000051",
+    "facebook_id": "1277022912171972_122110615029432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mypid6w6oj2m",
+    "threads_id": "18135645088672879",
+    "kind": "grant",
+    "grant_id": "EU-HORIZON-HLTH-2027-01-DISEASE-06",
+    "url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-DISEASE-06",
+    "deadline": "2027-02-17",
+    "funder": "Horizon Europe – Cluster 1: Health",
+    "summary": "This call aims to support the development of prophylactic and therapeutic monoclonal antibody candidates targeting specific Flaviviruses such as Dengue, Tick-borne Encephalitis, Japanese Encephalitis, West Nile Fever, Yellow Fever, and Zika. Funded activities include in-vitro and in-vivo testing, GMP batch production, and first-in-human clinical safety studies. Eligible applicants include research entities, universities, start-ups, and SMEs from EU member states and associated countries forming consortia.",
+    "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+    "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-DISEASE-06",
+    "grant_title": "Development of monoclonal antibodies to prevent and treat infections from Flaviviruses"
   }
 ]
