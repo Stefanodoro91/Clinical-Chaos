@@ -3,20 +3,14 @@
   "kind": "announcement",
   "no_images": true,
   "accent": "#FF7A59",
-  "title": "New calls and positions: 99 open calls, 86 positions in 17 countries",
+  "title": "New calls and positions: 99 open calls, 86 positions in 16 countries",
   "title_highlight": "New calls and positions",
   "category": "Milestone",
   "slides": [
     {
-      "heading": "Asia: 34 open positions",
-      "body": "PhD, post-doc and faculty roles in Hong Kong, mainland China, the United Arab Emirates, Vietnam, Japan and Taiwan. Asia is now our second region for positions, after Europe.",
+      "heading": "Asia: 31 open positions",
+      "body": "PhD, post-doc and faculty roles in Hong Kong, mainland China, the United Arab Emirates, Vietnam, Japan and Taiwan, plus new funders from India, Japan, Korea, China and Taiwan. Asia is now our second region for positions.",
       "highlight": "our second region for positions",
-      "source": ""
-    },
-    {
-      "heading": "Asia: new funders on our radar",
-      "body": "We now read the calls of ICMR and ANRF (India), AMED and JSPS (Japan), NRF and KHIDI (Korea), NSFC (China), NSTC and NHRI (Taiwan) and the e-ASIA programme. The first Asian calls are going through our checks.",
-      "highlight": "going through our checks",
       "source": ""
     },
     {
@@ -32,19 +26,25 @@
       "source": ""
     },
     {
-      "heading": "Free, and open to everyone",
-      "body": "Each call shows deadlines and eligibility, with a link to the official text. Add deadlines to your calendar, share any card or follow us via RSS.",
-      "highlight": "a link to the official text",
+      "heading": "Our site, open to everyone",
+      "body": "Calls, positions and every methodology carousel in one place, no account needed. Add deadlines to your calendar, share any card, follow via RSS, or send us feedback and report an error in one click.",
+      "highlight": "no account needed",
+      "source": ""
+    },
+    {
+      "heading": "Now on Bluesky and Threads",
+      "body": "You can now follow us on Instagram, Facebook, Threads and Bluesky. Pick the one where you already read research news.",
+      "highlight": "Threads and Bluesky",
       "source": ""
     }
   ],
-  "takeaway": "One link for open calls, positions and methodology, checked on the official texts.",
+  "takeaway": "Open calls, positions and methodology in one link, checked on the official texts.",
   "takeaway_highlight": "checked on the official texts",
   "closing_cta": [
     "Share it with a colleague",
     "Everything is in the link in bio"
   ],
-  "caption": "New calls and positions on clinicalresearchchaos.com: 99 open funding calls and 86 academic positions, every one checked on the official text before it goes online.\n\nBy the numbers:\n• 99 open calls in clinical research, rehabilitation and clinical engineering\n• 50 open to Italian institutions\n• 86 PhD, post-doc and faculty positions in 17 countries\n• 11 methodology carousels you can swipe on the site, no Instagram account needed\n\nAsia is growing fast on our page: 34 open positions in Hong Kong, mainland China, the UAE, Vietnam, Japan and Taiwan, and new funders from India, Japan, Korea, China and Taiwan.\n\nLatin America: coming soon.\n\nNew this week: filters for neurology, physiatry and orthopaedics, ageing, oncology and haematology, clinical genetics and rare diseases. And a stricter quality filter — only positions directly relevant to clinical research, rehabilitation and biomedical engineering.\n\nWhich country or funder should we add next? Tell us in the comments.\n\nclinicalresearchchaos.com\nInstagram & Threads: @clinicalresearchchaos\nBluesky: @clinicalresearchchaos.bsky.social\n\nAlways check eligibility and deadlines in the official call or advertisement.",
+  "caption": "New calls and positions on our site: 99 open funding calls and 86 academic positions, every one checked on the official text before it goes online.\n\nBy the numbers:\n• 99 open calls in clinical research, rehabilitation and clinical engineering\n• 42 open internationally\n• 86 PhD, post-doc and faculty positions in 16 countries\n• 11 methodology carousels you can swipe on the site, no Instagram account needed\n\nAsia is growing fast: 31 open positions in Hong Kong, mainland China, the UAE, Vietnam, Japan and Taiwan, and new funders from India, Japan, Korea, China and Taiwan.\n\nLatin America: coming soon.\n\nNew on the site: filters by medical area (neurology, physiatry and orthopaedics, ageing, oncology and haematology, clinical genetics and rare diseases), calendar reminders, RSS feeds and a feedback page to suggest a call or report an error.\n\nAnd we are now on Threads and Bluesky too.\n\nWhich country or funder should we add next? Tell us in the comments.\n\nAll calls and positions: link in bio\nInstagram & Threads: @clinicalresearchchaos\nBluesky: @researchchaos.bsky.social\n\nAlways check eligibility and deadlines in the official call or advertisement.",
   "hashtags": [
     "#ResearchFunding",
     "#ClinicalResearch",
@@ -70,8 +70,8 @@
       "calls open internationally"
     ],
     [
-      "95",
-      "PhD, post-doc and faculty positions in 17 countries"
+      "86",
+      "PhD, post-doc and faculty positions in 16 countries"
     ],
     [
       "11",
@@ -81,6 +81,7 @@
   "networks": [
     "instagram",
     "facebook",
+    "threads",
     "bluesky"
   ]
 }
