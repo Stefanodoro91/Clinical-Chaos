@@ -525,6 +525,7 @@ def main():
                                          "research": f"methodology#m-{post.get('id', '')}"}.get(post.get("kind") or "research", ""))
         if kind == "research":
             (PREVIEW_DIR / "facebook.jpg").write_bytes(cards.facebook_single(post, CONFIG))
+        (PREVIEW_DIR / "bluesky.jpg").write_bytes(cards.single_cover(post, CONFIG))
         (PREVIEW_DIR / "facebook.txt").write_text(facebook_text(post, caption, post.get("kind"), plink), encoding="utf-8")
         (PREVIEW_DIR / "bluesky.txt").write_text(social.short_text({**post, "caption": caption}, plink, 300), encoding="utf-8")
         (PREVIEW_DIR / "threads.txt").write_text(social.short_text({**post, "caption": caption}, plink, 500), encoding="utf-8")
@@ -547,7 +548,13 @@ def main():
         fb_path = folder / "facebook.jpg"
         fb_path.write_bytes(cards.facebook_single(post, CONFIG))
         fb_rel = fb_path.relative_to(ROOT).as_posix()
-    sha = commit_and_push(rel_paths + ([fb_rel] if fb_rel else []), f"Slide del {today}")
+    # immagine singola (Bluesky e Facebook a foto singola): la copertina senza «Swipe» e senza numero di pagina
+    single_path = folder / "cover-single.jpg"
+    single_path.write_bytes(cards.single_cover(post, CONFIG))
+    single_rel = single_path.relative_to(ROOT).as_posix()
+    if fb_single and not fb_rel:
+        fb_rel = single_rel
+    sha = commit_and_push(rel_paths + list(dict.fromkeys([single_rel] + ([fb_rel] if fb_rel else []))), f"Slide del {today}")
     base = f"https://raw.githubusercontent.com/{os.environ['GITHUB_REPOSITORY']}/{sha}/"
     urls = [base + p for p in rel_paths]
     fb_url = base + fb_rel if fb_rel else urls[0]
@@ -587,8 +594,9 @@ def main():
     bsky_uri = threads_id = None
     if social.bluesky_enabled():
         try:
-            bsky_uri = social.publish_bluesky([ROOT / p for p in rel_paths], {**post, "caption": caption}, link,
-                                              max_images=int(CONFIG.get("bluesky_images", 1)))
+            n_bsky = int(CONFIG.get("bluesky_images", 1))
+            bsky_imgs = [single_path] if n_bsky == 1 else [ROOT / p for p in rel_paths]
+            bsky_uri = social.publish_bluesky(bsky_imgs, {**post, "caption": caption}, link, max_images=n_bsky)
             print(f"::notice title=Bluesky::pubblicato {bsky_uri}")
         except Exception as e:
             print(f"::warning title=Bluesky non pubblicato::{str(e)[:300]}")

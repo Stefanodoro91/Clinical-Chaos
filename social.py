@@ -71,14 +71,15 @@ def publish_bluesky(image_paths, post, link, max_images=1):
     sess = s.json()
     auth = {"Authorization": f"Bearer {sess['accessJwt']}"}
     images = []
-    for i, p in enumerate(list(image_paths)[:max(1, min(4, max_images))]):
+    paths = list(image_paths)[:max(1, min(4, max_images))]
+    for i, p in enumerate(paths):
         data = Path(p).read_bytes()
         if len(data) > 950_000:
             continue                                  # limite di Bluesky: circa 1 MB per immagine
         r = requests.post(f"{BSKY}/com.atproto.repo.uploadBlob", data=data, timeout=60,
                           headers={**auth, "Content-Type": "image/jpeg"})
         r.raise_for_status()
-        images.append({"alt": f"{post.get('title', '')} – slide {i + 1}", "image": r.json()["blob"],
+        images.append({"alt": post.get('title', '') + (f" – slide {i + 1}" if len(paths) > 1 else ""), "image": r.json()["blob"],
                        "aspectRatio": {"width": 1080, "height": 1350}})
     text = short_text(post, link, 300)
     start = text.encode("utf-8").find(link.encode("utf-8"))

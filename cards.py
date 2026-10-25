@@ -166,8 +166,9 @@ def light_canvas(cfg, index, total):
     d.rectangle((0, 0, W, 14), fill=c["accent"])
     foot = font("SemiBold", 30)
     d.text((MARGIN, H - 110), cfg["handle"], font=foot, fill=INK_MUTED)
-    page = f"{index}/{total}"
-    d.text((W - MARGIN - d.textlength(page, font=foot), H - 110), page, font=foot, fill=INK_MUTED)
+    if total:                                  # total=None: immagine singola (Bluesky), senza numero di pagina
+        page = f"{index}/{total}"
+        d.text((W - MARGIN - d.textlength(page, font=foot), H - 110), page, font=foot, fill=INK_MUTED)
     return img, d
 
 
@@ -179,8 +180,9 @@ def canvas(cfg, index, total):
     # piè di pagina: handle a sinistra, numero slide a destra
     foot = font("SemiBold", 30)
     d.text((MARGIN, H - 110), cfg["handle"], font=foot, fill=c["muted"])
-    page = f"{index}/{total}"
-    d.text((W - MARGIN - d.textlength(page, font=foot), H - 110), page, font=foot, fill=c["muted"])
+    if total:
+        page = f"{index}/{total}"
+        d.text((W - MARGIN - d.textlength(page, font=foot), H - 110), page, font=foot, fill=c["muted"])
     return img, d
 
 
@@ -200,7 +202,8 @@ def cover(post, cfg, total):
     fnt, lines, size = fit(d, post["title"], "ExtraBold", 124, 64, W - 2 * MARGIN, H - 320 - title_top, 1.08)
     phrase = post.get("title_highlight") or (lines[-1] if lines else "")
     draw_rich(d, post["title"], phrase, fnt, size, MARGIN, title_top, W - 2 * MARGIN, navy, 1.08, c["accent"], half=True)
-    d.text((MARGIN, H - 240), "Swipe  →", font=font("ExtraBold", 46), fill=DARK_ACCENT.get(c["accent"], navy))
+    if total:
+        d.text((MARGIN, H - 240), "Swipe  →", font=font("ExtraBold", 46), fill=DARK_ACCENT.get(c["accent"], navy))
     return img
 
 
@@ -226,7 +229,8 @@ def grant_cover(post, cfg, total):
         d.rounded_rectangle((MARGIN, box_top, W - MARGIN, box_top + 190), radius=28, fill=navy)
         d.text((MARGIN + 50, box_top + 32), "DEADLINE", font=font("Bold", 30), fill=c["accent"])
         d.text((MARGIN + 50, box_top + 80), post["deadline"], font=font("ExtraBold", 70), fill="#FFFFFF")
-    d.text((MARGIN, H - 220), "Swipe  →", font=font("Bold", 40), fill=navy)
+    if total:
+        d.text((MARGIN, H - 220), "Swipe  →", font=font("Bold", 40), fill=navy)
     return img
 
 
@@ -434,7 +438,8 @@ def positions_cover(post, cfg, total):
         d.rounded_rectangle((x, y, x + cw, y + 60), radius=30, outline=navy, width=3)
         d.text((x + 22, y + 11), chip, font=font("Bold", 32), fill=navy)
         x += cw + 16
-    d.text((MARGIN, H - 220), "Swipe  →", font=font("Bold", 40), fill=navy)
+    if total:
+        d.text((MARGIN, H - 220), "Swipe  →", font=font("Bold", 40), fill=navy)
     return img
 
 
@@ -534,6 +539,27 @@ def facebook_single(post, cfg):
         y += max(110, min(room, len(hl) * hs * 1.2 + 50))
     site = cfg.get("links_page_url", "").replace("https://", "").rstrip("/")
     d.text((MARGIN, H - 110), site, font=font("SemiBold", 36), fill=c["muted_text"])
+    buf = io.BytesIO()
+    img.save(buf, "JPEG", quality=92, optimize=True)
+    return buf.getvalue()
+
+
+def _accent(post, cfg):
+    """Colore d'accento per tipo di post: bandi, annunci, posizioni."""
+    if post.get("kind") == "grant":
+        cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("grant_accent", "#FFB547")}}
+    if post.get("accent"):
+        cfg = {**cfg, "colors": {**cfg["colors"], "accent": post["accent"]}}
+    if post.get("kind") == "positions":
+        cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("positions_accent", "#A78BFA")}}
+    return cfg
+
+
+def single_cover(post, cfg):
+    """Copertina come immagine singola (Bluesky): senza «Swipe» e senza numero di pagina. JPEG in byte."""
+    cfg = _accent(post, cfg)
+    kind = post.get("kind")
+    img = (grant_cover if kind == "grant" else positions_cover if kind == "positions" else cover)(post, cfg, None)
     buf = io.BytesIO()
     img.save(buf, "JPEG", quality=92, optimize=True)
     return buf.getvalue()
