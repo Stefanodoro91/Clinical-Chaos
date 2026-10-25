@@ -399,7 +399,7 @@ def closing(post, cfg, total):
     sy = card_top + 425
     x = MARGIN + 50
     # icone ufficiali (Simple Icons, CC0) dei profili attivi: Bluesky e Threads solo se configurati
-    nets = ["instagram", "facebook"] + [n for n in ("bluesky", "threads") if cfg.get(f"{n}_handle")]
+    nets = post.get("networks") or (["instagram", "facebook"] + [n for n in ("bluesky", "threads") if cfg.get(f"{n}_handle")])
     for n in nets:
         size = paste_logo(img, f"icon-{n}", x, sy, height=44)
         if size is None:                       # icone mancanti: disegno semplificato di riserva
