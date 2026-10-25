@@ -590,7 +590,7 @@ PAGE = """<!doctype html>
   <footer>
     Positions collected from academic job portals and checked automatically: always read the full advertisement
     before applying.<br>
-    Updated {updated} · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a> · <a href="feed-positions.xml">RSS feed</a>
+    Updated {updated} · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a> · <a href="rss.html">RSS feed</a>
   </footer>
 </main>
 </body>

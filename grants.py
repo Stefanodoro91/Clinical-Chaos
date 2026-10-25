@@ -1076,7 +1076,7 @@ PAGE = """<!doctype html>
   <footer>
     Calls collected by our monitoring and checked automatically against the official text: always verify eligibility,
     amounts and dates in the official call before applying.<br>
-    Updated {updated} · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a> · <a href="feed-calls.xml">RSS feed</a>
+    Updated {updated} · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a> · <a href="rss.html">RSS feed</a>
   </footer>
 </main>
 </body>
@@ -1328,7 +1328,7 @@ def social_links(cfg):
         links.append(("bluesky", "Bluesky", f"https://bsky.app/profile/{cfg['bluesky_handle'].lstrip('@')}"))
     if cfg.get("threads_handle"):
         links.append(("threads", "Threads", f"https://www.threads.com/@{cfg['threads_handle'].lstrip('@')}"))
-    links.append(("rss", "RSS", "feed-calls.xml"))
+    links.append(("rss", "RSS", "rss.html"))            # pagina che spiega come iscriversi (il feed grezzo è XML)
     return "\n".join(f'    <a href="{url}" rel="me">{icon(name)}<span>{label}</span></a>' for name, label, url in links)
 
 

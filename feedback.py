@@ -130,3 +130,92 @@ def build_page(cfg, today=None):
                        og=grants.og_tags(cfg, f"Feedback · {cfg['brand_name']}",
                                          "Tell us what to improve, suggest a call or a position, or report an error.",
                                          "feedback"))
+
+
+FEEDS = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Follow by RSS · {brand}</title>
+<meta name="description" content="Get new funding calls and academic positions in your RSS reader.">
+{og}
+<link rel="alternate" type="application/rss+xml" title="Open funding calls" href="feed-calls.xml">
+<link rel="alternate" type="application/rss+xml" title="Academic positions" href="feed-positions.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {{ --bg: {bg}; --card: #15304A; --text: #FFFFFF; --muted: {muted}; --soft: {soft}; --accent: {accent}; }}
+  * {{ box-sizing: border-box; }}
+  body {{ margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.5; }}
+  .bar {{ height: 6px; background: var(--accent); }}
+  main {{ max-width: 640px; margin: 0 auto; padding: 28px 16px 48px; }}
+  .switch {{ display: inline-block; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
+            border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px; margin: 0 6px 18px 0; }}
+  .badge {{ display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
+           letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; }}
+  h1 {{ font-size: 30px; font-weight: 800; margin: 14px 0 6px; line-height: 1.15; }}
+  .intro {{ color: var(--soft); margin: 0 0 20px; font-size: 15px; }}
+  .feed {{ background: var(--card); border-radius: 18px; padding: 18px 20px; margin-bottom: 14px; }}
+  .feed h2 {{ font-size: 19px; margin: 0 0 4px; }}
+  .feed p {{ color: var(--soft); margin: 0 0 12px; font-size: 14px; }}
+  .url {{ display: flex; gap: 8px; }}
+  .url input {{ flex: 1; min-width: 0; font: 500 14px Inter, system-ui, sans-serif; color: var(--text); background: var(--bg);
+               border: 1px solid var(--muted); border-radius: 10px; padding: 10px 12px; }}
+  .url button {{ background: var(--accent); color: var(--bg); border: 0; border-radius: 10px; padding: 0 16px;
+                font: 800 14px Inter, system-ui, sans-serif; cursor: pointer; white-space: nowrap; }}
+  h3 {{ font-size: 16px; margin: 26px 0 8px; }}
+  ol {{ color: var(--soft); font-size: 15px; padding-left: 22px; margin: 0; }}
+  footer {{ color: var(--muted); font-size: 13px; margin-top: 30px; }}
+  footer a, ol a {{ color: var(--accent); }}
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<main>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Positions &rarr;</a><br>
+  <span class="badge">RSS</span>
+  <h1>New calls and positions in your reader</h1>
+  <p class="intro">RSS sends every new verified call or position to the app you already use for news, with no account and no email.</p>
+  <div class="feed">
+    <h2>Open funding calls</h2>
+    <p>Every call we add, with deadline, eligibility and the link to the official text.</p>
+    <div class="url"><input readonly value="{calls_url}" aria-label="Funding calls feed address"><button type="button" data-copy="{calls_url}">Copy</button></div>
+  </div>
+  <div class="feed">
+    <h2>Academic positions</h2>
+    <p>PhD, post-doc and faculty positions, checked on the original advertisement.</p>
+    <div class="url"><input readonly value="{jobs_url}" aria-label="Positions feed address"><button type="button" data-copy="{jobs_url}">Copy</button></div>
+  </div>
+  <h3>How to use it</h3>
+  <ol>
+    <li>Copy one of the addresses above.</li>
+    <li>Open your RSS reader (for example Feedly, Inoreader, NetNewsWire, or Outlook and Thunderbird, which read RSS too).</li>
+    <li>Choose «Add feed» or «Follow» and paste the address.</li>
+  </ol>
+  <footer>Prefer social media? <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a></footer>
+</main>
+<script>
+(function () {{
+  var bs = document.querySelectorAll("button[data-copy]");
+  for (var i = 0; i < bs.length; i++) bs[i].addEventListener("click", function () {{
+    var b = this, t = b.getAttribute("data-copy"), inp = b.parentNode.querySelector("input");
+    function done() {{ b.textContent = "Copied"; setTimeout(function () {{ b.textContent = "Copy"; }}, 1800); }}
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, function () {{ inp.select(); }});
+    else {{ inp.select(); try {{ document.execCommand("copy"); done(); }} catch (e) {{}} }}
+  }});
+}})();
+</script>
+</body>
+</html>
+"""
+
+
+def build_feeds_page(cfg):
+    c = cfg["colors"]
+    return FEEDS.format(brand=escape(cfg["brand_name"]), bg=c["background"], muted=c["muted"], soft=c["muted_text"],
+                        accent=c["accent"], ig=cfg["handle"].lstrip("@"), handle=escape(cfg["handle"]),
+                        calls_url=escape(grants.site_url(cfg, "feed-calls.xml"), quote=True),
+                        jobs_url=escape(grants.site_url(cfg, "feed-positions.xml"), quote=True),
+                        og=grants.og_tags(cfg, f"Follow by RSS · {cfg['brand_name']}",
+                                          "New funding calls and academic positions in your RSS reader.", "rss"))

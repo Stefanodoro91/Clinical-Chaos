@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Follow by RSS · Clinical Research Chaos</title>
+<meta name="description" content="Get new funding calls and academic positions in your RSS reader.">
+<link rel="canonical" href="https://clinical-chaos-dsv.pages.dev/rss">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Clinical Research Chaos">
+<meta property="og:title" content="Follow by RSS · Clinical Research Chaos">
+<meta property="og:description" content="New funding calls and academic positions in your RSS reader.">
+<meta property="og:url" content="https://clinical-chaos-dsv.pages.dev/rss">
+<meta property="og:image" content="https://clinical-chaos-dsv.pages.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Open funding calls" href="feed-calls.xml">
+<link rel="alternate" type="application/rss+xml" title="Academic positions" href="feed-positions.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #0E2233; --card: #15304A; --text: #FFFFFF; --muted: #7F96AB; --soft: #D3DEE8; --accent: #3DD9C1; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.5; }
+  .bar { height: 6px; background: var(--accent); }
+  main { max-width: 640px; margin: 0 auto; padding: 28px 16px 48px; }
+  .switch { display: inline-block; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
+            border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px; margin: 0 6px 18px 0; }
+  .badge { display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
+           letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; }
+  h1 { font-size: 30px; font-weight: 800; margin: 14px 0 6px; line-height: 1.15; }
+  .intro { color: var(--soft); margin: 0 0 20px; font-size: 15px; }
+  .feed { background: var(--card); border-radius: 18px; padding: 18px 20px; margin-bottom: 14px; }
+  .feed h2 { font-size: 19px; margin: 0 0 4px; }
+  .feed p { color: var(--soft); margin: 0 0 12px; font-size: 14px; }
+  .url { display: flex; gap: 8px; }
+  .url input { flex: 1; min-width: 0; font: 500 14px Inter, system-ui, sans-serif; color: var(--text); background: var(--bg);
+               border: 1px solid var(--muted); border-radius: 10px; padding: 10px 12px; }
+  .url button { background: var(--accent); color: var(--bg); border: 0; border-radius: 10px; padding: 0 16px;
+                font: 800 14px Inter, system-ui, sans-serif; cursor: pointer; white-space: nowrap; }
+  h3 { font-size: 16px; margin: 26px 0 8px; }
+  ol { color: var(--soft); font-size: 15px; padding-left: 22px; margin: 0; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 30px; }
+  footer a, ol a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<main>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Positions &rarr;</a><br>
+  <span class="badge">RSS</span>
+  <h1>New calls and positions in your reader</h1>
+  <p class="intro">RSS sends every new verified call or position to the app you already use for news, with no account and no email.</p>
+  <div class="feed">
+    <h2>Open funding calls</h2>
+    <p>Every call we add, with deadline, eligibility and the link to the official text.</p>
+    <div class="url"><input readonly value="https://clinical-chaos-dsv.pages.dev/feed-calls.xml" aria-label="Funding calls feed address"><button type="button" data-copy="https://clinical-chaos-dsv.pages.dev/feed-calls.xml">Copy</button></div>
+  </div>
+  <div class="feed">
+    <h2>Academic positions</h2>
+    <p>PhD, post-doc and faculty positions, checked on the original advertisement.</p>
+    <div class="url"><input readonly value="https://clinical-chaos-dsv.pages.dev/feed-positions.xml" aria-label="Positions feed address"><button type="button" data-copy="https://clinical-chaos-dsv.pages.dev/feed-positions.xml">Copy</button></div>
+  </div>
+  <h3>How to use it</h3>
+  <ol>
+    <li>Copy one of the addresses above.</li>
+    <li>Open your RSS reader (for example Feedly, Inoreader, NetNewsWire, or Outlook and Thunderbird, which read RSS too).</li>
+    <li>Choose «Add feed» or «Follow» and paste the address.</li>
+  </ol>
+  <footer>Prefer social media? <a href="https://www.instagram.com/clinicalresearchchaos/">@clinicalresearchchaos on Instagram</a></footer>
+</main>
+<script>
+(function () {
+  var bs = document.querySelectorAll("button[data-copy]");
+  for (var i = 0; i < bs.length; i++) bs[i].addEventListener("click", function () {
+    var b = this, t = b.getAttribute("data-copy"), inp = b.parentNode.querySelector("input");
+    function done() { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1800); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, function () { inp.select(); });
+    else { inp.select(); try { document.execCommand("copy"); done(); } catch (e) {} }
+  });
+})();
+</script>
+
+<div id="crc-rain" class="crc-side" aria-hidden="true"></div>
+<div id="crc-rain-r" class="crc-side" aria-hidden="true"></div>
+<style>
+  .crc-side { position: fixed; top: 0; bottom: 0; width: calc((100vw - 740px) / 2); pointer-events: none; z-index: 0; display: none; }
+  #crc-rain { left: 0; }
+  #crc-rain-r { right: 0; }
+  .crc-side canvas { display: block; width: 100%; height: 100%; }
+  @media (min-width: 1180px) { .crc-side { display: block; } }
+  main, header, footer, .bar { position: relative; z-index: 1; }
+</style>
+<script>
+(function () {
+  var wide = window.matchMedia("(min-width: 1180px)");
+  var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var started = false;
+  function start() {
+    if (started || !wide.matches) return;
+    started = true;
+    var COLORS = ["#3DD9C1", "#14A085", "#FFFFFF", "#7F96AB"];
+    var SIZES = [4, 6, 8, 10, 12], SHAPES = [[], [], [[1, 0]], [[0, 1]], [[1, 0], [0, 1]], [[1, 0], [1, 1]]];
+    function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+    /* cascata lenta di quadratini ai due lati, singoli o a piccoli gruppi come nel logo */
+    function side(id) {
+      var el = document.getElementById(id), c = document.createElement("canvas"), ctx = c.getContext("2d");
+      el.appendChild(c);
+      var L = { ctx: ctx, drops: [], R: null };
+      function drop(y) {
+        return { x: Math.random() * L.R.width, y: (y === undefined ? -40 : y), s: pick(SIZES), v: 7 + Math.random() * 20,
+                 c: pick(COLORS), a: 0.12 + Math.random() * 0.5, shape: pick(SHAPES) };
+      }
+      L.fit = function () {
+        var r = el.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+        c.width = r.width * d; c.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); L.R = r;
+        L.drops = []; var n = Math.round(r.width * r.height / 7500);
+        for (var i = 0; i < n; i++) L.drops.push(drop(Math.random() * r.height));
+      };
+      L.step = function (dt) {
+        ctx.clearRect(0, 0, L.R.width, L.R.height);
+        L.drops.forEach(function (d) {
+          d.y += d.v * dt;
+          if (d.y > L.R.height + 40) { var n = drop(); for (var k in n) d[k] = n[k]; }
+          ctx.globalAlpha = d.a; ctx.fillStyle = d.c; ctx.fillRect(d.x, d.y, d.s, d.s);
+          d.shape.forEach(function (o) { ctx.fillRect(d.x + o[0] * (d.s + 2), d.y + o[1] * (d.s + 2), d.s, d.s); });
+        });
+      };
+      L.fit();
+      return L;
+    }
+    var sides = [side("crc-rain"), side("crc-rain-r")];
+    var last = performance.now();
+    function frame(t) {
+      var dt = Math.min(0.05, (t - last) / 1000); last = t;
+      sides.forEach(function (L) { L.step(dt); });
+      if (!still) requestAnimationFrame(frame);
+    }
+    window.addEventListener("resize", function () { sides.forEach(function (L) { L.fit(); }); if (still) frame(performance.now()); });
+    requestAnimationFrame(frame);
+  }
+  start();
+  if (wide.addEventListener) wide.addEventListener("change", start);
+})();
+</script>
+</body>
+</html>
