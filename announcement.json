@@ -1,33 +1,86 @@
 {
-  "id": "explainer-2026-10-22-eu-partner-search",
+  "id": "milestone-2026-10-25-numbers",
   "kind": "announcement",
   "no_images": true,
   "accent": "#FF7A59",
-  "title": "How to find partners for EU research calls",
-  "title_highlight": "find partners",
-  "category": "How to",
+  "title": "New calls and positions: 99 open calls, 95 positions in 17 countries",
+  "title_highlight": "New calls and positions",
+  "category": "Milestone",
   "slides": [
-    {"heading": "Why you need partners",
-     "body": "Many Horizon Europe calls require a consortium: research and innovation actions ask for at least three independent organisations from three different countries, one in an EU Member State.",
-     "highlight": "at least three independent organisations", "source": ""},
-    {"heading": "Use the official tool",
-     "body": "The EU Funding & Tenders Portal has a free Partner Search: filter by topic, keyword, country or type of organisation and see who is looking for partners.",
-     "highlight": "a free Partner Search", "source": ""},
-    {"heading": "Start from the topic ID",
-     "body": "Every EU call has a topic ID, such as HORIZON-HLTH-2027-01-DISEASE-10. Paste it in the Partner Search, or open the call page and check Partner search announcements.",
-     "highlight": "Paste it in the Partner Search", "source": ""},
-    {"heading": "Get in touch, or be found",
-     "body": "Contact organisations with the Contact organisation button in the portal. With an EU Login account you can also publish your own announcement, up to 500 characters.",
-     "highlight": "publish your own announcement", "source": ""},
-    {"heading": "Ready on our page",
-     "body": "In our link-in-bio page every EU call has a Find partners button and its topic ID ready to copy, next to the link to the official call.",
-     "highlight": "Find partners button", "source": ""}
+    {
+      "heading": "Asia: 34 open positions",
+      "body": "PhD, post-doc and faculty roles in Hong Kong, mainland China, the United Arab Emirates, Vietnam, Japan and Taiwan. Asia is now our second region for positions, after Europe.",
+      "highlight": "our second region for positions",
+      "source": ""
+    },
+    {
+      "heading": "Asia: new funders on our radar",
+      "body": "We now read the calls of ICMR and ANRF (India), AMED and JSPS (Japan), NRF and KHIDI (Korea), NSFC (China), NSTC and NHRI (Taiwan) and the e-ASIA programme. The first Asian calls are going through our checks.",
+      "highlight": "going through our checks",
+      "source": ""
+    },
+    {
+      "heading": "Latin America: coming soon",
+      "body": "Calls and positions from Latin America are coming soon to our page.",
+      "highlight": "coming soon",
+      "source": ""
+    },
+    {
+      "heading": "New filters by medical area",
+      "body": "Neurology, physiatry and orthopaedics, ageing and geriatrics, oncology and haematology, clinical genetics and rare diseases: pick your field on the calls page.",
+      "highlight": "pick your field",
+      "source": ""
+    },
+    {
+      "heading": "Free, and open to everyone",
+      "body": "Each call shows deadlines and eligibility, with a link to the official text. Add deadlines to your calendar, share any card or follow us via RSS.",
+      "highlight": "a link to the official text",
+      "source": ""
+    }
   ],
-  "takeaway": "Looking for a consortium? Start from the topic ID and the EU Partner Search.",
-  "takeaway_highlight": "the EU Partner Search",
-  "closing_cta": ["Save it for your next EU proposal", "Open calls and Find partners: link in bio"],
-  "caption": "Building a consortium is often the hardest part of an EU proposal. The European Commission offers a free tool to find partners for each call.\n\nHow it works:\n1. Copy the topic ID of the call (on our page it is next to every EU call).\n2. Open the EU Partner Search and paste it in the filter.\n3. Contact organisations through the portal, or publish your own announcement with an EU Login account.\n\nEU Partner Search: https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/partner-search\nOpen calls with Find partners buttons: https://clinical-chaos-dsv.pages.dev\n\nConsortium rules differ between calls: always check the eligibility conditions in the official call.\n\nHave you ever found a partner this way? Tell us how it went.",
-  "hashtags": ["#HorizonEurope", "#EU4Health", "#PartnerSearch", "#ResearchFunding", "#Consortium", "#EUFunding", "#ClinicalTrials"],
+  "takeaway": "One link for open calls, positions and methodology, checked on the official texts.",
+  "takeaway_highlight": "checked on the official texts",
+  "closing_cta": [
+    "Share it with a colleague",
+    "Everything is in the link in bio"
+  ],
+  "caption": "New calls and positions on our link in bio: 99 open funding calls and 95 academic positions, every one checked on the official text before it goes online.\n\nBy the numbers:\n• 99 open calls in clinical research, rehabilitation and clinical engineering\n• 42 open internationally\n• 95 PhD, post-doc and faculty positions in 17 countries\n• 11 methodology carousels you can swipe on the site, no Instagram account needed\n\nAsia is growing fast on our page: 34 open positions in Hong Kong, mainland China, the UAE, Vietnam, Japan and Taiwan, and new funders from India, Japan, Korea, China and Taiwan.\n\nLatin America: coming soon.\n\nNew this week: filters for neurology, physiatry and orthopaedics, ageing, oncology and haematology, clinical genetics and rare diseases.\n\nWhich country or funder should we add next? Tell us in the comments.\n\nAll calls and positions: https://clinical-chaos-dsv.pages.dev\n\nAlways check eligibility and deadlines in the official call or advertisement.",
+  "hashtags": [
+    "#ResearchFunding",
+    "#ClinicalResearch",
+    "#AcademicJobs",
+    "#Rehabilitation",
+    "#BiomedicalEngineering",
+    "#PhDPositions",
+    "#Postdoc",
+    "#GlobalHealth",
+    "#ResearchInAsia",
+    "#LatinAmericaResearch"
+  ],
   "references": [],
-  "source": "Announcement"
+  "source": "Announcement",
+  "numbers_label": "By the numbers",
+  "numbers": [
+    [
+      "99",
+      "open funding calls in clinical research, rehabilitation and clinical engineering"
+    ],
+    [
+      "42",
+      "calls open internationally"
+    ],
+    [
+      "95",
+      "PhD, post-doc and faculty positions in 17 countries"
+    ],
+    [
+      "11",
+      "methodology carousels to swipe on the site"
+    ]
+  ],
+  "networks": [
+    "instagram",
+    "facebook",
+    "bluesky"
+  ]
 }
