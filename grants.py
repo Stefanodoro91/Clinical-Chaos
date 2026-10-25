@@ -1044,6 +1044,7 @@ PAGE = """<!doctype html>
   form.filters button[hidden] {{ display: none; }}
   @media (max-width: 520px) {{ form.filters {{ grid-template-columns: 1fr; }} }}
   .nomatch {{ color: var(--soft); background: var(--card); border-radius: 18px; padding: 18px 20px; font-size: 15px; }}
+  .report {{ display: inline-block; margin-top: 10px; font-size: 12px; color: var(--muted); }}
   [hidden] {{ display: none !important; }}
   footer {{ color: var(--muted); font-size: 13px; margin-top: 36px; }}
   footer a {{ color: var(--teal); }}
@@ -1197,6 +1198,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
         <div class="btns">{share}{calendar_button(d, title, g["url"], v.get("programme") or "")}{find}<a class="btn" href="{escape(g["url"], quote=True)}" target="_blank" rel="noopener">Official call &rarr;</a></div>
       </div>
       {dates_html}
+      <a class="report" href="feedback.html?topic=Report%20an%20error&amp;ref={card_anchor(g["id"])}">Report an error</a>
     </article>"""
 
     def programmes(items, css):
@@ -1263,6 +1265,7 @@ HOME = """<!doctype html>
   a.big:focus-visible {{ outline: 3px solid var(--text); outline-offset: 3px; }}
   a.big:hover {{ filter: brightness(1.05); }}
   .social {{ display: flex; justify-content: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }}
+  .noig a {{ color: var(--teal); font-weight: 600; }}
   .noig {{ color: var(--soft); font-size: 14px; text-align: center; max-width: 440px; margin: 16px auto 0; line-height: 1.5; }}
   .social a {{ color: var(--soft); text-decoration: none; font-weight: 600; font-size: 14px; border: 1px solid var(--muted);
               border-radius: 999px; padding: 8px 14px; display: inline-flex; align-items: center; gap: 8px; }}
@@ -1297,6 +1300,7 @@ HOME = """<!doctype html>
   </div>
   <p class="noig">No Instagram account? You don't need one: every call, position and methodology carousel is on this site.
   Bookmark it or add it to your home screen, and share any card with the Share button.</p>
+  <p class="noig"><a href="feedback.html">Feedback, a call to suggest or an error to report? Write to us</a></p>
 </main>
 <footer>Educational content for researchers and health professionals; not medical advice. Always check eligibility and deadlines in the official call or advertisement. Updated {updated}.</footer>
 </body>

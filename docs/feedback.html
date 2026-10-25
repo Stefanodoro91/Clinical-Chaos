@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feedback · Clinical Research Chaos</title>
+<meta name="description" content="Tell us what to improve, suggest a funding call or a position, or report an error.">
+<link rel="canonical" href="https://clinical-chaos-dsv.pages.dev/feedback">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Clinical Research Chaos">
+<meta property="og:title" content="Feedback · Clinical Research Chaos">
+<meta property="og:description" content="Tell us what to improve, suggest a call or a position, or report an error.">
+<meta property="og:url" content="https://clinical-chaos-dsv.pages.dev/feedback">
+<meta property="og:image" content="https://clinical-chaos-dsv.pages.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #0E2233; --card: #15304A; --text: #FFFFFF; --muted: #7F96AB; --soft: #D3DEE8; --accent: #3DD9C1; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.5; }
+  .bar { height: 6px; background: var(--accent); }
+  main { max-width: 640px; margin: 0 auto; padding: 28px 16px 48px; }
+  .switch { display: inline-block; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
+            border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px; margin: 0 6px 18px 0; }
+  .badge { display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
+           letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; }
+  h1 { font-size: 30px; font-weight: 800; margin: 14px 0 6px; line-height: 1.15; }
+  .intro { color: var(--soft); margin: 0 0 20px; font-size: 15px; }
+  form { background: var(--card); border-radius: 18px; padding: 20px; display: grid; gap: 14px; }
+  label { display: grid; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+          color: var(--muted); }
+  label small { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--soft); font-size: 13px; }
+  input, select, textarea { font: 500 16px Inter, system-ui, sans-serif; color: var(--text); background: var(--bg);
+                            border: 1px solid var(--muted); border-radius: 10px; padding: 11px 12px; width: 100%; }
+  textarea { min-height: 140px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  button { background: var(--accent); color: var(--bg); border: 0; border-radius: 999px; padding: 13px 20px;
+           font: 800 16px Inter, system-ui, sans-serif; cursor: pointer; }
+  button:disabled { opacity: .5; cursor: default; }
+  .note { color: var(--soft); font-size: 13px; margin: 0; }
+  .status { font-size: 15px; font-weight: 600; min-height: 1.5em; margin: 0; }
+  .status.ok { color: var(--accent); }
+  .status.err { color: #FF9B85; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 30px; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<main>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Positions &rarr;</a><br>
+  <span class="badge">FEEDBACK</span>
+  <h1>Help us improve the page</h1>
+  <p class="intro">Something missing, wrong or hard to use? Know a call or a position we should add? Write to us: we read every message.</p>
+  <form id="fb" action="https://api.web3forms.com/submit" method="POST">
+    <input type="hidden" name="access_key" value="">
+    <input type="hidden" name="subject" value="Feedback from Clinical Research Chaos">
+    <input type="hidden" name="from_name" value="Clinical Research Chaos website">
+    <label>What is it about?
+      <select name="topic" required>
+        <option value="Feedback on the site">Feedback on the site</option>
+        <option value="Suggest a funding call">Suggest a funding call</option>
+        <option value="Suggest a position">Suggest an academic position</option>
+        <option value="Report an error">Report an error in a call or position</option>
+        <option value="Other">Other</option>
+      </select>
+    </label>
+    <label>Your message
+      <textarea name="message" required maxlength="3000" placeholder="Tell us what you think, or describe the call, position or error"></textarea>
+    </label>
+    <label>Link <small>(optional: the official call, advertisement or card you are writing about)</small>
+      <input type="url" name="link" placeholder="https://" maxlength="500">
+    </label>
+    <label>Email <small>(optional, only if you want a reply)</small>
+      <input type="email" name="email" autocomplete="email" maxlength="200">
+    </label>
+    <div class="hp" aria-hidden="true"><label>Leave this empty<input type="checkbox" name="botcheck" tabindex="-1"></label></div>
+    <p class="note">Your message reaches the page owner by email through Web3Forms. We use it only to improve the page,
+    we never publish it and we never share your email.</p>
+    <button type="submit" disabled>Send</button>
+    <p class="status" role="status" aria-live="polite">The form will be active very soon.</p>
+  </form>
+  <footer>Updated 25 Oct 2026 · <a href="https://www.instagram.com/clinicalresearchchaos/">@clinicalresearchchaos on Instagram</a></footer>
+</main>
+<script>
+(function () {
+  var f = document.getElementById("fb"), st = f.querySelector(".status"), btn = f.querySelector("button");
+  try {
+    var q = new URLSearchParams(location.search), t = q.get("topic"), ref = q.get("ref");
+    if (t) { var o = f.topic.querySelector('option[value="' + t + '"]'); if (o) f.topic.value = t; }
+    if (ref) f.link.value = location.origin + "/calls#" + ref.replace(/[^A-Za-z0-9-]/g, "");
+  } catch (e) {}
+  if (!window.fetch || !window.FormData) return;          // browser vecchi: invio classico del modulo
+  f.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    if (btn.disabled) return;
+    btn.disabled = true; st.className = "status"; st.textContent = "Sending…";
+    fetch(f.action, { method: "POST", body: new FormData(f), headers: { "Accept": "application/json" } })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return r.ok && j.success !== false; }); })
+      .then(function (ok) {
+        if (ok) { f.reset(); st.className = "status ok"; st.textContent = "Thank you! Your message has been sent."; }
+        else { st.className = "status err"; st.textContent = "Sorry, it did not work. Please try again in a few minutes."; }
+        btn.disabled = false;
+      })
+      .catch(function () { st.className = "status err"; st.textContent = "No connection. Please try again."; btn.disabled = false; });
+  });
+})();
+</script>
+
+<div id="crc-rain" class="crc-side" aria-hidden="true"></div>
+<div id="crc-rain-r" class="crc-side" aria-hidden="true"></div>
+<style>
+  .crc-side { position: fixed; top: 0; bottom: 0; width: calc((100vw - 740px) / 2); pointer-events: none; z-index: 0; display: none; }
+  #crc-rain { left: 0; }
+  #crc-rain-r { right: 0; }
+  .crc-side canvas { display: block; width: 100%; height: 100%; }
+  @media (min-width: 1180px) { .crc-side { display: block; } }
+  main, header, footer, .bar { position: relative; z-index: 1; }
+</style>
+<script>
+(function () {
+  var wide = window.matchMedia("(min-width: 1180px)");
+  var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var started = false;
+  function start() {
+    if (started || !wide.matches) return;
+    started = true;
+    var COLORS = ["#3DD9C1", "#14A085", "#FFFFFF", "#7F96AB"];
+    var SIZES = [4, 6, 8, 10, 12], SHAPES = [[], [], [[1, 0]], [[0, 1]], [[1, 0], [0, 1]], [[1, 0], [1, 1]]];
+    function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+    /* cascata lenta di quadratini ai due lati, singoli o a piccoli gruppi come nel logo */
+    function side(id) {
+      var el = document.getElementById(id), c = document.createElement("canvas"), ctx = c.getContext("2d");
+      el.appendChild(c);
+      var L = { ctx: ctx, drops: [], R: null };
+      function drop(y) {
+        return { x: Math.random() * L.R.width, y: (y === undefined ? -40 : y), s: pick(SIZES), v: 7 + Math.random() * 20,
+                 c: pick(COLORS), a: 0.12 + Math.random() * 0.5, shape: pick(SHAPES) };
+      }
+      L.fit = function () {
+        var r = el.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+        c.width = r.width * d; c.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); L.R = r;
+        L.drops = []; var n = Math.round(r.width * r.height / 7500);
+        for (var i = 0; i < n; i++) L.drops.push(drop(Math.random() * r.height));
+      };
+      L.step = function (dt) {
+        ctx.clearRect(0, 0, L.R.width, L.R.height);
+        L.drops.forEach(function (d) {
+          d.y += d.v * dt;
+          if (d.y > L.R.height + 40) { var n = drop(); for (var k in n) d[k] = n[k]; }
+          ctx.globalAlpha = d.a; ctx.fillStyle = d.c; ctx.fillRect(d.x, d.y, d.s, d.s);
+          d.shape.forEach(function (o) { ctx.fillRect(d.x + o[0] * (d.s + 2), d.y + o[1] * (d.s + 2), d.s, d.s); });
+        });
+      };
+      L.fit();
+      return L;
+    }
+    var sides = [side("crc-rain"), side("crc-rain-r")];
+    var last = performance.now();
+    function frame(t) {
+      var dt = Math.min(0.05, (t - last) / 1000); last = t;
+      sides.forEach(function (L) { L.step(dt); });
+      if (!still) requestAnimationFrame(frame);
+    }
+    window.addEventListener("resize", function () { sides.forEach(function (L) { L.fit(); }); if (still) frame(performance.now()); });
+    requestAnimationFrame(frame);
+  }
+  start();
+  if (wide.addEventListener) wide.addEventListener("change", start);
+})();
+</script>
+</body>
+</html>

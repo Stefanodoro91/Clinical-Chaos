@@ -662,7 +662,7 @@ def write_sitemap():
     """sitemap.xml e robots.txt, perché Google trovi tutte le pagine (anche quelle delle singole posizioni)."""
     from xml.sax.saxutils import escape as xesc
     today = datetime.now().date().isoformat()
-    paths = ["", "calls", "positions", "methodology"] + sorted("jobs/" + f.stem for f in JOBS_DIR.glob("*.html"))
+    paths = ["", "calls", "positions", "methodology", "feedback"] + sorted("jobs/" + f.stem for f in JOBS_DIR.glob("*.html"))
     urls = "".join(f"  <url><loc>{xesc(grants.site_url(CONFIG, p))}</loc><lastmod>{today}</lastmod></url>\n" for p in paths)
     (ROOT / "docs" / "sitemap.xml").write_text(
         f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n',
@@ -682,6 +682,8 @@ def write_home():
     import methodology
     methods = methodology.load()
     (ROOT / "docs" / "methodology.html").write_text(grants.add_decor(methodology.build_page(methods, CONFIG)), encoding="utf-8")
+    import feedback
+    (ROOT / "docs" / "feedback.html").write_text(grants.add_decor(feedback.build_page(CONFIG)), encoding="utf-8")
     HOME_FILE.write_text(grants.add_decor(grants.build_home(n_calls, int(m.group(1)) if m else 0, n_positions, CONFIG,
                                                             n_methods=sum(1 for e in methods.values() if not e.get("duplicate_of")))),
                          encoding="utf-8")
