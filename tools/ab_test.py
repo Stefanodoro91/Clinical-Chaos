@@ -6,13 +6,18 @@ from datetime import date
 sys.path.insert(0, os.getcwd())
 import content, grants, positions
 
-N = int(os.environ.get("AB_N", "20"))
+N = int(os.environ.get("AB_N", "8"))
+FLASH, LITE = "gemini-flash-latest", "gemini-flash-lite-latest"
+B_MODEL = os.environ.get("AB_B_MODEL", LITE)          # variante B: modello leggero (quota separata e più ampia)
+B_THINK = os.environ.get("AB_B_THINKING") or None
+B_CHARS = int(os.environ.get("AB_B_CHARS", "15000"))
 cfg = json.load(open("config.json"))
 out = {"date": date.today().isoformat(), "grants": [], "positions": [], "models": set()}
 
 _orig = content.gemini_json
-def tagged(variant, thinking):
+def tagged(variant, thinking, model=FLASH):
     def f(parts, schema, temperature=0.5, task="altro", thinking_=None, **kw):
+        content.GEMINI_MODEL = content.GEMINI_FALLBACK = model      # nessun ripiego: ogni variante usa il suo modello
         return _orig(parts, schema, temperature, task=f"{task} [{variant}]", thinking=thinking)
     return f
 
@@ -35,7 +40,7 @@ for gid in sample:
     g = gl[gid]
     try:
         content.gemini_json = tagged("A", None); a = grants.verify(g, cfg)
-        content.gemini_json = tagged("B", "low"); b = grants.verify(g, cfg)
+        content.gemini_json = tagged("B", B_THINK, B_MODEL); b = grants.verify(g, cfg)
     except Exception as e:
         out["grants"].append({"id": gid, "error": str(e)[:200]}); continue
     fields = {
@@ -49,7 +54,7 @@ for gid in sample:
     }
     out["grants"].append({"id": gid, "same": fields, "A": {k: a.get(k) for k in ("due_dates", "italy", "eligible_countries", "lead", "is_open_call")},
                           "B": {k: b.get(k) for k in ("due_dates", "italy", "eligible_countries", "lead", "is_open_call")}})
-    time.sleep(4)
+    time.sleep(9)
 
 arch = positions.load_archive()
 psample = [(k, v) for k, v in arch.items() if v.get("status") == "ok" and v.get("url") and not v.get("url", "").startswith("https://www.inpa")][:N]
@@ -57,23 +62,24 @@ for k, v in psample:
     item = {"url": v["url"], "title": v.get("title", ""), "source": v.get("source", "")}
     try:
         positions.TEXT_CHARS = 40000; content.gemini_json = tagged("A", None); a = positions.verify(item)
-        positions.TEXT_CHARS = 15000; content.gemini_json = tagged("B", "low"); b = positions.verify(item)
+        positions.TEXT_CHARS = B_CHARS; content.gemini_json = tagged("B", B_THINK, B_MODEL); b = positions.verify(item)
     except Exception as e:
         out["positions"].append({"id": k, "error": str(e)[:200]}); continue
     fields = {f: a.get(f) == b.get(f) for f in ("is_open", "type", "relevance", "deadline", "area")}
     fields["country"] = norm(a.get("country")) == norm(b.get("country"))
     out["positions"].append({"id": k, "same": fields, "A": {f: a.get(f) for f in ("is_open", "type", "relevance", "deadline", "country")},
                              "B": {f: b.get(f) for f in ("is_open", "type", "relevance", "deadline", "country")}})
-    time.sleep(4)
+    time.sleep(9)
 
 content.gemini_json = _orig
 def rate(rows, f):
     ok = [r for r in rows if "same" in r]
     return f"{sum(r['same'][f] for r in ok)}/{len(ok)}" if ok else "-"
-lines = [f"# Confronto A/B – {out['date']}", "", "## Bandi (A = attuale, B = ragionamento low)"]
+lines = [f"# Confronto A/B – {out['date']}", "", f"A = {FLASH}, impostazione attuale; B = {B_MODEL}, ragionamento {B_THINK or 'predefinito'}, "
+         f"annunci di {B_CHARS} caratteri", "", "## Bandi"]
 gf = ["due_dates", "deadline_source", "italy", "is_open_call", "countries", "lead_present", "loi"]
 lines += [f"- {f}: {rate(out['grants'], f)}" for f in gf]
-lines += ["", "## Posizioni (A = attuale, B = low + 15.000 caratteri)"]
+lines += ["", "## Posizioni"]
 pf = ["is_open", "type", "relevance", "deadline", "area", "country"]
 lines += [f"- {f}: {rate(out['positions'], f)}" for f in pf]
 lines += ["", "## Consumo (token)", "", "| Attività | Richieste | Ingresso | Uscita | Ragionamento |", "| --- | --- | --- | --- | --- |"]

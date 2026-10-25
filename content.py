@@ -413,10 +413,30 @@ def save_usage(folder):
     return out
 
 
+_LOGGED_429 = set()
+
+
+def retry_delay(r):
+    """Secondi suggeriti da Gemini prima di riprovare (RetryInfo), oppure None."""
+    import re as _re
+    m = _re.search(r'"retryDelay"\s*:\s*"(\d+)', r.text)
+    return int(m.group(1)) if m else None
+
+
 def quota_exhausted(r):
-    """429 per quota finita (non un semplice picco di richieste al minuto)."""
-    t = r.text.lower()
-    return r.status_code == 429 and ("perday" in t or "per day" in t or "exceeded your current quota" in t)
+    """429 per quota GIORNALIERA finita. Un 429 per troppe richieste al minuto porta un retryDelay: si aspetta."""
+    if r.status_code != 429:
+        return False
+    t = r.text
+    key = t[:80]
+    if key not in _LOGGED_429:                    # il primo rifiuto di ogni tipo finisce nel log, per capire quale limite
+        _LOGGED_429.add(key)
+        import re as _re
+        ids = _re.findall(r'"quotaId"\s*:\s*"([^"]+)"', t) + _re.findall(r'"quotaValue"\s*:\s*"([^"]+)"', t)
+        print(f"::warning title=Gemini 429::{', '.join(ids) or t[:300]}")
+    if "PerDay" in t or "per day" in t.lower():
+        return True
+    return retry_delay(r) is None and "PerMinute" not in t
 
 
 def with_hook(hook, caption, limit):
@@ -542,7 +562,7 @@ def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
                 if quota_exhausted(r):
                     _EXHAUSTED.add(model)     # quota giornaliera finita: inutile riprovare questo modello
                     break
-                time.sleep(30 * (attempt + 1))
+                time.sleep(min(60, (retry_delay(r) or 20 * (attempt + 1)) + 2))
                 continue
             if not r.ok:
                 raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:500]}")
