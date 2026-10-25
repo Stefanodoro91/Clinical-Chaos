@@ -117,6 +117,7 @@ def _threads_ready(cid):
         if st in ("ERROR", "EXPIRED"):
             raise RuntimeError(f"Threads ha rifiutato il contenuto ({st})")
         time.sleep(5)
+    raise RuntimeError("Threads: contenuto non pronto dopo 150 s")
 
 
 def publish_threads(image_urls, post, link):
