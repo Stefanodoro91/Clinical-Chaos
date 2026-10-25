@@ -45,7 +45,10 @@
     "deadline": "2027-01-26",
     "funder": "National Institutes of Health",
     "withdrawn": true,
-    "withdrawn_reason": "Foreign organizations not eligible according to the full NOFO (GrantFinder false positive)"
+    "withdrawn_reason": "Foreign organizations not eligible according to the full NOFO (GrantFinder false positive)",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mypxszb22v2t",
+    "threads_id": "17976372378147289",
+    "backfill": "2026-10-25"
   },
   {
     "date": "2026-10-20",
