@@ -110,8 +110,11 @@ Write IN ENGLISH:
 - coverage: funding coverage in a few words (e.g. "Fully funded"), or "" if not stated.
 - takeaway: one sentence on why this call is worth a look, max 120 characters.
 - takeaway_highlight: 2-5 words copied EXACTLY from the takeaway.
-- caption: 2-4 short lines with context; end with a question inviting researchers to share whether they
-  plan to apply or know similar calls. Max 500 characters, no hashtags, no links.
+- hook: the FIRST line of the caption, max 120 characters: tell the right researchers, in plain words, why
+  this call is for them (e.g. "Running a pilot rehabilitation trial? This call funds exactly that.").
+  Only from the official text; no deadline, amounts, funder or countries; no hashtags, at most one emoji.
+- caption: 2-4 short lines with context that come AFTER the hook; end with a question inviting researchers
+  to share whether they plan to apply or know similar calls. Max 500 characters, no hashtags, no links.
 - hashtags: 6-10 specific hashtags (e.g. #ResearchFunding #GrantOpportunity #Neurorehabilitation).
 
 VERIFIED FACTS: programme: {programme}; eligible countries: {countries}
@@ -136,10 +139,11 @@ SCHEMA = {
         "coverage": {"type": "STRING"},
         "takeaway": {"type": "STRING"},
         "takeaway_highlight": {"type": "STRING"},
+        "hook": {"type": "STRING"},
         "caption": {"type": "STRING"},
         "hashtags": {"type": "ARRAY", "items": {"type": "STRING"}},
     },
-    "required": ["title", "title_highlight", "slides", "takeaway", "takeaway_highlight", "caption", "hashtags"],
+    "required": ["title", "title_highlight", "slides", "takeaway", "takeaway_highlight", "hook", "caption", "hashtags"],
 }
 
 FIELDS = ["titolo", "titolo_it", "ente", "programma", "sommario", "macrogruppi", "tipo_bando", "tipo_ricerca",
@@ -906,7 +910,7 @@ def build_post(g, v, cfg):
     countries_line = f"Eligible countries: {v['eligible_countries']}"
     if v.get("countries_evidence"):
         countries_line += f" (official call: \u201c{clip(v['countries_evidence'], 220)}\u201d)"
-    caption = (f"{out.get('caption', '').strip()[:500]}\n\n"
+    caption = (f"{content.with_hook(out.get('hook'), out.get('caption', ''), 640)}\n\n"
                f"Programme: {v['programme']}\n"
                f"{countries_line}\n"
                + (f"Who can lead: {v['lead']}\n" if v.get("lead") else "")

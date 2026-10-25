@@ -73,8 +73,12 @@ POST DESIGN:
   pages. https://doi.org/...). Copy authors, year, title and journal from the material; if an element
   is missing in the material, leave it out: NEVER invent authors, years, titles, journals or DOIs.
   Empty list if the material cites nothing relevant.
-- caption: 3-6 short lines that add context beyond the slides, end with a question that invites
-  professionals to share their experience. Max 900 characters. No hashtags inside the caption.
+- hook: the FIRST line of the caption, max 120 characters (Instagram shows only about 125 characters
+  before "more"). It must make a researcher stop scrolling: name a common mistake, a counter-intuitive
+  consequence, or ask a sharp question that the post answers. Use only the material: no invented numbers,
+  no clickbait, no hashtags, at most one emoji. Do not repeat the title word for word.
+- caption: 3-6 short lines that come AFTER the hook and add context beyond the slides; end with a question
+  that invites professionals to share their experience. Max 900 characters. No hashtags inside the caption.
 - hashtags: 8-12 specific hashtags (e.g. #ClinicalTrials #Biostatistics #ResearchEthics).
 - category: one of {categories}.
 - source_hint: where in the material this comes from (e.g. "slides 12-15"), for the owner's review.
@@ -107,12 +111,13 @@ SCHEMA = {
                     "takeaway": {"type": "STRING"},
                     "takeaway_highlight": {"type": "STRING"},
                     "references": {"type": "ARRAY", "items": {"type": "STRING"}},
+                    "hook": {"type": "STRING"},
                     "caption": {"type": "STRING"},
                     "hashtags": {"type": "ARRAY", "items": {"type": "STRING"}},
                     "source_hint": {"type": "STRING"},
                 },
                 "required": ["title", "title_highlight", "category", "slides", "takeaway",
-                             "takeaway_highlight", "caption", "hashtags", "references"],
+                             "takeaway_highlight", "hook", "caption", "hashtags", "references"],
             },
         }
     },
@@ -369,7 +374,7 @@ def _clean_post(p, material=""):
         "takeaway": takeaway,
         "takeaway_highlight": exact_phrase(p.get("takeaway_highlight"), takeaway, 5),
         "references": refs,
-        "caption": p.get("caption", "").strip()[:1200],
+        "caption": with_hook(p.get("hook"), p.get("caption", ""), 1200),
         "hashtags": tags[:15],
         "source_hint": p.get("source_hint", ""),
     }
@@ -409,6 +414,17 @@ def quota_exhausted(r):
     """429 per quota finita (non un semplice picco di richieste al minuto)."""
     t = r.text.lower()
     return r.status_code == 429 and ("perday" in t or "per day" in t or "exceeded your current quota" in t)
+
+
+def with_hook(hook, caption, limit):
+    """Didascalia con l'hook in prima riga (la parte visibile prima di «altro» su Instagram)."""
+    hook = " ".join(str(hook or "").split()).strip()
+    caption = str(caption or "").strip()
+    if len(hook) > 125:
+        hook = hook[:124].rsplit(" ", 1)[0] + "…"
+    if not hook or caption.lower().startswith(hook.lower()[:60]):
+        return caption[:limit]
+    return f"{hook}\n\n{caption}"[:limit]
 
 
 def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
