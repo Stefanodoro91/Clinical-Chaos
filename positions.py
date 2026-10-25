@@ -194,7 +194,7 @@ def _inpa_items(query):
             "provinciaCodice": None, "dateFrom": None, "dateTo": None, "livelliAnzianitaIds": None,
             "tipoImpiegoId": None, "salaryMin": None, "salaryMax": None, "enteRiferimentoName": ""}
     r = requests.post(INPA_API, json=body, timeout=45,
-                      headers={"User-Agent": "Mozilla/5.0 (compatible; ClinicalResearchChaosBot/1.0; +https://clinical-chaos-dsv.pages.dev)",
+                      headers={"User-Agent": "Mozilla/5.0 (compatible; ClinicalResearchChaosBot/1.0; +https://clinicalresearchchaos.com)",
                                "Accept": "application/json", "Content-Type": "application/json"})
     r.raise_for_status()
     if "json" not in r.headers.get("content-type", ""):

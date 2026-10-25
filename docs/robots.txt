@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://clinical-chaos-dsv.pages.dev/sitemap.xml
+Sitemap: https://clinicalresearchchaos.com/sitemap.xml
