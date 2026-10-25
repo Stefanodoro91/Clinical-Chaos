@@ -56,7 +56,10 @@
     "id": "90bc6cd4",
     "title": "Bang's Blinding Index: A Better Way to Measure",
     "source": "Blinding.pdf",
-    "media_id": "18125281714686715"
+    "media_id": "18125281714686715",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mypxw2jwfn2m",
+    "threads_id": "18078123290723631",
+    "backfill": "2026-10-25"
   },
   {
     "date": "2026-10-21",
