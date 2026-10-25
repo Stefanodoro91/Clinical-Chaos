@@ -9,6 +9,10 @@ on:
     - cron: "5 9 * * *"     # 10:05 a Roma
     - cron: "5 16 * * *"    # 17:05 a Roma
   workflow_dispatch:
+    inputs:
+      count:
+        description: "Quanti post ripubblicare in questo giro"
+        default: "1"
 
 permissions:
   contents: write
@@ -20,7 +24,7 @@ concurrency:
 jobs:
   backfill:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -39,4 +43,5 @@ jobs:
           THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
           THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BACKFILL_PER_RUN: ${{ inputs.count }}
         run: python bot.py --backfill

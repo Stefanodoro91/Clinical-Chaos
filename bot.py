@@ -961,7 +961,7 @@ def backfill_social():
     methods = methodology.load()
     corrected = {c.get("post_id") for c in load(ROOT / "corrections.json", [])}      # post rettificati: non si ripubblicano
     today = datetime.now(timezone.utc).date()
-    per_run = int(CONFIG.get("backfill_per_run", 1))
+    per_run = int(os.environ.get("BACKFILL_PER_RUN") or CONFIG.get("backfill_per_run", 1))
     sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     base = f"https://raw.githubusercontent.com/{os.environ.get('GITHUB_REPOSITORY', '')}/{sha}/"
     done = 0
@@ -1006,11 +1006,12 @@ def backfill_social():
                 print(f"::warning title=Threads (arretrati)::{str(e)[:200]}")
         p["backfill"] = today.isoformat()
         done += 1
+        save(POSTED_FILE, posted)            # salvato dopo ogni post: se il giro si interrompe, niente doppioni
+        commit_and_push([POSTED_FILE.name], f"Arretrati social: {p['title'][:60]}")
+        if done < per_run:
+            time.sleep(45)                   # qualche secondo tra un post e l'altro: niente raffiche
     if not done:
         print("::notice title=Arretrati social::nessun post da ripubblicare")
-        return
-    save(POSTED_FILE, posted)
-    commit_and_push([POSTED_FILE.name], "Post precedenti ripubblicati su Bluesky e Threads")
 
 
 if __name__ == "__main__":
