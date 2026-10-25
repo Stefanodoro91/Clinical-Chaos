@@ -4,8 +4,8 @@ name: Resoconto settimanale
 # post della settimana, fonti che rendono e fonti rotte). Arriva per email come issue (chiusa subito).
 on:
   schedule:
-    - cron: "41 8 * * 1"
-      timezone: "Europe/Rome"
+    # Orari in UTC: GitHub ignora il fuso orario. Inverno (fino al 28/3/2027) = ora di Roma - 1; in estate - 2.
+    - cron: "41 7 * * 1"    # lunedì 08:41 a Roma
   workflow_dispatch:
 
 permissions:

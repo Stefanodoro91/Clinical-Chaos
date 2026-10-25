@@ -4,8 +4,8 @@ name: Controlla token Instagram
 # e apre un avviso se scade entro 14 giorni.
 on:
   schedule:
-    - cron: "41 8 * * 1"
-      timezone: "Europe/Rome"
+    # Orari in UTC: GitHub ignora il fuso orario. Inverno (fino al 28/3/2027) = ora di Roma - 1; in estate - 2.
+    - cron: "41 7 * * 1"    # lunedì 08:41 a Roma
   workflow_dispatch:
     inputs:
       test_facebook:

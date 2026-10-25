@@ -4,16 +4,12 @@ on:
   # Due post al giorno, ora italiana (GitHub può partire con qualche minuto di ritardo):
   # alle 12:30 un bando, alle 23:30 un post di metodologia; il lunedì alle 18:30 la raccolta di posizioni accademiche;
   # mercoledì e sabato alle 19:00 un reel ricavato dal carosello di metodologia più recente.
-  # Il fuso Europe/Rome gestisce da solo il cambio tra ora legale e ora solare.
   schedule:
-    - cron: "30 12 * * *"
-      timezone: "Europe/Rome"
-    - cron: "30 23 * * *"
-      timezone: "Europe/Rome"
-    - cron: "30 18 * * 1"
-      timezone: "Europe/Rome"
-    - cron: "0 19 * * 3,6"
-      timezone: "Europe/Rome"
+    # Orari in UTC: GitHub ignora il fuso orario. Inverno (fino al 28/3/2027) = ora di Roma - 1; in estate - 2.
+    - cron: "30 11 * * *"   # 12:30 a Roma
+    - cron: "30 22 * * *"   # 23:30 a Roma
+    - cron: "30 17 * * 1"   # lunedì 18:30 a Roma
+    - cron: "0 18 * * 3,6"   # 19:00 a Roma
   workflow_dispatch:
     inputs:
       dry_run:
@@ -85,7 +81,7 @@ jobs:
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
           POSITIONS_PER_POST: ${{ inputs.positions_count }}
           REEL_SOURCE: ${{ inputs.reel_source }}
-          POST_TYPE: ${{ github.event_name == 'schedule' && (github.event.schedule == '30 12 * * *' && 'grant' || (github.event.schedule == '30 18 * * 1' && 'positions' || (github.event.schedule == '0 19 * * 3,6' && 'reel' || 'research'))) || inputs.post_type || 'research' }}
+          POST_TYPE: ${{ github.event_name == 'schedule' && (github.event.schedule == '30 11 * * *' && 'grant' || (github.event.schedule == '30 17 * * 1' && 'positions' || (github.event.schedule == '0 18 * * 3,6' && 'reel' || 'research'))) || inputs.post_type || 'research' }}
         run: python bot.py
 
       - name: Salva anteprima (solo in modalità prova)
