@@ -430,9 +430,95 @@ def with_hook(hook, caption, limit):
     return f"{hook}\n\n{caption}"[:limit]
 
 
+def _parts_to_text(parts):
+    """Estrae solo le parti testuali da una lista di parts Gemini (scarta inline_data/file_data)."""
+    return "\n\n".join(p["text"] for p in parts if "text" in p)
+
+
+def _deepseek_json(prompt_text, schema, temperature=0.5, task="altro"):
+    """Chiama DeepSeek V3 e restituisce JSON decodificato. Usato come fallback di Gemini."""
+    key = os.environ.get("DEEPSEEK_API_KEY")
+    if not key:
+        return None
+    schema_str = json.dumps(schema, ensure_ascii=False)
+    system = (
+        "Rispondi SOLO con un oggetto JSON valido che rispetti esattamente questo schema JSON Schema: "
+        + schema_str
+        + "\nNessun testo prima o dopo il JSON."
+    )
+    body = {
+        "model": "deepseek-chat",
+        "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt_text}],
+        "temperature": temperature,
+        "response_format": {"type": "json_object"},
+    }
+    for attempt in range(3):
+        try:
+            r = requests.post(
+                "https://api.deepseek.com/chat/completions",
+                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                json=body, timeout=300,
+            )
+            if r.status_code == 429 or r.status_code >= 500:
+                time.sleep(30 * (attempt + 1))
+                continue
+            if not r.ok:
+                print(f"  DeepSeek errore {r.status_code}: {r.text[:200]}")
+                return None
+            text = r.json()["choices"][0]["message"]["content"]
+            result = json.loads(text)
+            record_usage(task, "deepseek-chat", status="ok")
+            return result
+        except Exception as e:
+            print(f"  DeepSeek eccezione: {e}")
+            return None
+    return None
+
+
+def _groq_json(prompt_text, schema, temperature=0.5, task="altro"):
+    """Chiama Groq (llama-3.3-70b) e restituisce JSON decodificato. Usato come riserva finale."""
+    key = os.environ.get("GROQ_API_KEY")
+    if not key:
+        return None
+    schema_str = json.dumps(schema, ensure_ascii=False)
+    system = (
+        "Rispondi SOLO con un oggetto JSON valido che rispetti esattamente questo schema JSON Schema: "
+        + schema_str
+        + "\nNessun testo prima o dopo il JSON."
+    )
+    body = {
+        "model": "llama-3.3-70b-versatile",
+        "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt_text}],
+        "temperature": temperature,
+        "response_format": {"type": "json_object"},
+    }
+    for attempt in range(3):
+        try:
+            r = requests.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                json=body, timeout=120,
+            )
+            if r.status_code == 429 or r.status_code >= 500:
+                time.sleep(30 * (attempt + 1))
+                continue
+            if not r.ok:
+                print(f"  Groq errore {r.status_code}: {r.text[:200]}")
+                return None
+            text = r.json()["choices"][0]["message"]["content"]
+            result = json.loads(text)
+            record_usage(task, "groq-llama3", status="ok")
+            return result
+        except Exception as e:
+            print(f"  Groq eccezione: {e}")
+            return None
+    return None
+
+
 def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
     """Chiede a Gemini una risposta JSON conforme allo schema e la restituisce già decodificata.
-    `thinking` ("minimal", "low", "medium", "high") limita il ragionamento interno dei modelli Gemini 3."""
+    `thinking` ("minimal", "low", "medium", "high") limita il ragionamento interno dei modelli Gemini 3.
+    Se Gemini è esaurito, passa automaticamente a DeepSeek V3, poi a Groq."""
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         raise RuntimeError("GEMINI_API_KEY mancante")
@@ -464,7 +550,18 @@ def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
             text = "".join(p.get("text", "") for p in data["candidates"][0]["content"]["parts"] if not p.get("thought"))
             return json.loads(text)
         print(f"  Gemini {model} non disponibile, provo il modello di riserva.")
-    raise RuntimeError(f"Gemini non disponibile: {last_error}")
+    # ── Fallback 1: DeepSeek V3 ──────────────────────────────────────────────
+    print(f"  Gemini esaurito per «{task}», provo DeepSeek V3…")
+    prompt_text = _parts_to_text(parts)
+    result = _deepseek_json(prompt_text, schema, temperature, task)
+    if result is not None:
+        return result
+    # ── Fallback 2: Groq ─────────────────────────────────────────────────────
+    print(f"  DeepSeek non disponibile per «{task}», provo Groq…")
+    result = _groq_json(prompt_text, schema, temperature, task)
+    if result is not None:
+        return result
+    raise RuntimeError(f"Tutti i modelli AI non disponibili. Ultimo errore Gemini: {last_error}")
 
 
 def generate_posts(part, filename, brand, max_posts=12, published=()):
