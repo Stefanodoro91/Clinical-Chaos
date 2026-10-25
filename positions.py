@@ -24,6 +24,7 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KH
            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,application/rss+xml;q=0.9,*/*;q=0.8",
            "Accept-Language": "en,it;q=0.8"}
 STATUS_FILE = "positions_sources_status.json"
+TEXT_CHARS = 40000    # caratteri dell'annuncio mandati a Gemini (config «positions_text_chars»)
 
 # temi: clinica riabilitativa (inglese e italiano)
 RX_REHAB = re.compile(
@@ -398,7 +399,8 @@ def verify(item):
             raise RuntimeError("annuncio chiuso o scaduto")
     if len(text) < (120 if inpa else 300):
         raise RuntimeError(f"annuncio troppo breve ({len(text)} caratteri)")
-    out = content.gemini_json([{"text": VERIFY_PROMPT.format(url=item["url"], text=text[:40000])}], VERIFY_SCHEMA, 0.1, task="verifica posizioni")
+    out = content.gemini_json([{"text": VERIFY_PROMPT.format(url=item["url"], text=text[:TEXT_CHARS])}], VERIFY_SCHEMA, 0.1,
+                              task="verifica posizioni")
     ev = (out.get("deadline_evidence") or "").strip()
     deadline = out.get("deadline") if (_date(out.get("deadline")) and ev and grants._simple(ev) in grants._simple(text)) else ""
     if inpa and _date(inpa.get("deadline")):           # la scadenza strutturata di inPA è quella ufficiale

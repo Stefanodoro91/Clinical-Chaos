@@ -380,6 +380,7 @@ def _clean_post(p, material=""):
     }
 
 
+THINKING = {}         # livello di ragionamento per attività (config «gemini_thinking»), es. {"verifica bandi": "low"}
 USAGE = {}            # consumo di Gemini in questo giro: {(attività, modello): contatori}
 _EXHAUSTED = set()    # modelli con la quota giornaliera finita: in questo giro non si riprovano
 
@@ -390,6 +391,8 @@ def record_usage(task, model, data=None, status="ok"):
         u["respinte"] += 1
         return
     meta = (data or {}).get("usageMetadata") or {}
+    if (data or {}).get("modelVersion"):
+        u["versione"] = data["modelVersion"]          # versione reale dietro l'alias «-latest»
     u["richieste"] += 1
     u["ingresso"] += int(meta.get("promptTokenCount") or 0)
     u["uscita"] += int(meta.get("candidatesTokenCount") or 0)
@@ -434,6 +437,7 @@ def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
     if not key:
         raise RuntimeError("GEMINI_API_KEY mancante")
     config = {"temperature": temperature, "responseMimeType": "application/json", "responseSchema": schema}
+    thinking = thinking or THINKING.get(task)
     if thinking:
         config["thinkingConfig"] = {"thinkingLevel": thinking}
     body = {"contents": [{"parts": parts}], "generationConfig": config}

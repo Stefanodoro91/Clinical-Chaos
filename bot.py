@@ -52,6 +52,9 @@ def git(*args):
     subprocess.run(["git", *args], cwd=ROOT, check=True)
 
 
+content.THINKING = dict(CONFIG.get("gemini_thinking") or {})
+positions.TEXT_CHARS = int(CONFIG.get("positions_text_chars") or positions.TEXT_CHARS)
+
 def _head():
     try:
         return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
