@@ -3,366 +3,266 @@
     "letti": 0,
     "pertinenti": 0,
     "errore": "500 Server Error: Internal Server Error for url: https://www.jobs.ac.uk/jobs/health-and-medical?format=rss",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 1
   },
   "jobs.ac.uk – rehabilitation": {
     "letti": 19,
     "pertinenti": 19,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "jobs.ac.uk – physiotherapy": {
     "letti": 11,
     "pertinenti": 11,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "jobs.ac.uk – occupational therapy": {
     "letti": 11,
     "pertinenti": 11,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "jobs.ac.uk – stroke": {
     "letti": 6,
     "pertinenti": 6,
     "errore": "",
-    "data": "2026-10-24"
-  },
-  "EURAXESS – rehabilitation": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=rehabilitation",
-    "data": "2026-10-24"
-  },
-  "EURAXESS – physiotherapy": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=physiotherapy",
-    "data": "2026-10-24"
-  },
-  "EURAXESS – stroke": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=stroke",
-    "data": "2026-10-24"
-  },
-  "EURAXESS – riabilitazione": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=riabilitazione",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "Nature Careers – rehabilitation": {
     "letti": 10,
     "pertinenti": 10,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "Times Higher Education – rehabilitation": {
     "letti": 9,
     "pertinenti": 9,
     "errore": "",
-    "data": "2026-10-24"
-  },
-  "University Affairs – rehabilitation": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://www.universityaffairs.ca/search-job/?keywords=rehabilitation",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "ACRM Career Center": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "AcademicTransfer – rehabilitation": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
-  },
-  "EURAXESS – fisioterapia": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=fisioterapia",
-    "data": "2026-10-24"
-  },
-  "EURAXESS – neuroriabilitazione": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=neuroriabilitazione",
-    "data": "2026-10-24"
-  },
-  "EURAXESS – MED/48 scienze riabilitative": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=MED%2F48",
-    "data": "2026-10-24"
-  },
-  "EURAXESS – occupational therapy": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=occupational%20therapy",
-    "data": "2026-10-24"
-  },
-  "EURAXESS – neurorehabilitation": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://euraxess.ec.europa.eu/jobs/search?keywords=neurorehabilitation",
-    "data": "2026-10-24"
-  },
-  "Nature Careers – physiotherapy": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "Exceeded 30 redirects.",
-    "data": "2026-10-24"
-  },
-  "Nature Careers – stroke": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "Exceeded 30 redirects.",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "Times Higher Education – clinical research": {
     "letti": 15,
     "pertinenti": 15,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "Times Higher Education – biomedical engineering": {
     "letti": 20,
     "pertinenti": 20,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "Times Higher Education – physiotherapy": {
     "letti": 2,
     "pertinenti": 2,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "Times Higher Education – clinical trials": {
     "letti": 16,
     "pertinenti": 16,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "Times Higher Education – epidemiology": {
     "letti": 18,
     "pertinenti": 18,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "jobs.ac.uk – clinical trials": {
     "letti": 5,
     "pertinenti": 5,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "jobs.ac.uk – biomedical engineering": {
     "letti": 22,
     "pertinenti": 22,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "jobs.ac.uk – clinical research": {
-    "letti": 14,
-    "pertinenti": 14,
+    "letti": 15,
+    "pertinenti": 15,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "Nature Careers – clinical research": {
     "letti": 11,
-    "pertinenti": 0,
+    "pertinenti": 2,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "Nature Careers – bioengineering": {
     "letti": 19,
     "pertinenti": 19,
     "errore": "",
-    "data": "2026-10-24"
-  },
-  "MUR – Ricercatori a tempo determinato (RTT)": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://bandi.mur.gov.it/jobs.php/public/cercaJobs",
-    "data": "2026-10-24"
-  },
-  "MUR – Contratti di ricerca": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://bandi.mur.gov.it/contrattidiricerca.php/public/cercaFellowship",
-    "data": "2026-10-24"
-  },
-  "MUR – Incarichi post doc": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://bandi.mur.gov.it/incarichipostdoc.php/public/cercaFellowship",
-    "data": "2026-10-24"
-  },
-  "MUR – Incarichi di ricerca": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://bandi.mur.gov.it/incarichidiricerca.php/public/cercaFellowship",
-    "data": "2026-10-24"
-  },
-  "MUR – Chiamate dei professori": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "403 Client Error: Forbidden for url: https://bandi.mur.gov.it/profcalls.php/public/cercaJobs",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "JREC-IN Portal (Giappone)": {
-    "letti": 23,
-    "pertinenti": 0,
+    "letti": 19,
+    "pertinenti": 1,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – riabilitazione": {
     "letti": 10,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – fisioterapia": {
     "letti": 3,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – neuroriabilitazione": {
     "letti": 1,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – logopedia": {
     "letti": 2,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – terapia occupazionale": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – ricerca clinica": {
     "letti": 2,
     "pertinenti": 1,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – sperimentazione clinica": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – studi clinici": {
     "letti": 1,
     "pertinenti": 1,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – biostatistica": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – ingegneria biomedica": {
     "letti": 1,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – bioingegneria": {
     "letti": 1,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – ingegneria clinica": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – ricercatore sanitario": {
     "letti": 1,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – ricercatore a tempo determinato": {
     "letti": 20,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – assegno di ricerca": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – dottorato di ricerca": {
     "letti": 6,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – MED/48": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   },
   "inPA – MED/34": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-24"
-  },
-  "Ricerca web – Brazil": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "Gemini non disponibile: gemini-flash-lite-latest 429",
-    "data": "2026-10-24"
-  },
-  "Ricerca web – Latin America": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "Gemini non disponibile: gemini-flash-lite-latest 429",
-    "data": "2026-10-24"
-  },
-  "Ricerca web – Japan": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "Gemini non disponibile: gemini-flash-lite-latest 429",
-    "data": "2026-10-24"
-  },
-  "Ricerca web – South Korea": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "Gemini non disponibile: gemini-flash-lite-latest 429",
-    "data": "2026-10-24"
-  },
-  "Ricerca web – China": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "Gemini non disponibile: gemini-flash-lite-latest 429",
-    "data": "2026-10-24"
-  },
-  "Ricerca web – Singapore and Southeast Asia": {
-    "letti": 0,
-    "pertinenti": 0,
-    "errore": "Gemini non disponibile: gemini-flash-lite-latest 429",
-    "data": "2026-10-24"
+    "data": "2026-10-25",
+    "errori_di_fila": 0
   }
 }

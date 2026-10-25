@@ -1,0 +1,12 @@
+{
+ "workflow": "Aggiorna posizioni accademiche",
+ "consumo": {
+  "verifica posizioni|gemini-flash-latest": {
+   "richieste": 4,
+   "ingresso": 9956,
+   "uscita": 784,
+   "ragionamento": 2403,
+   "respinte": 0
+  }
+ }
+}
