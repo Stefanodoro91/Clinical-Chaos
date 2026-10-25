@@ -280,11 +280,33 @@ def illustrated(slide, number, cfg, index, total, picture):
     return img
 
 
+def numbers_slide(post, cfg, index, total):
+    """Post speciali: i numeri raggiunti, grandi e in colore d'accento, con la loro etichetta."""
+    c = cfg["colors"]
+    img, d = canvas(cfg, index, total)
+    d.text((MARGIN, 150), post.get("numbers_label", "By the numbers").upper(), font=font("Bold", 34), fill=c["accent"])
+    rows = post["numbers"]
+    top, bottom = 240, H - 200
+    step_h = (bottom - top) / len(rows)
+    num_f = font("ExtraBold", min(120, int(step_h * .62)))
+    col = max(d.textlength(str(n), font=num_f) for n, _ in rows) + 40
+    for i, (num, label) in enumerate(rows):
+        y = top + i * step_h
+        d.text((MARGIN, y), str(num), font=num_f, fill=c["accent"])
+        lf, ll, ls = fit(d, label, "SemiBold", 40, 28, W - 2 * MARGIN - col, step_h - 30, 1.25)
+        block = len(ll) * ls * 1.25
+        ny = y + (num_f.size * 1.0 - block) / 2 + 6
+        draw_lines(d, ll, lf, ls, MARGIN + col, ny, c["text"], 1.25)
+        if i < len(rows) - 1:
+            d.line((MARGIN, y + step_h - 14, W - MARGIN, y + step_h - 14), fill="#24405A", width=2)
+    return img
+
+
 def facts_slide(post, cfg, index, total):
     """Slide dei dati chiave (bandi): etichetta in turchese, valore in bianco, una voce sotto l'altra."""
     c = cfg["colors"]
     img, d = canvas(cfg, index, total)
-    d.text((MARGIN, 150), "KEY FACTS", font=font("Bold", 34), fill=c["accent"])
+    d.text((MARGIN, 150), post.get("facts_label", "KEY FACTS").upper(), font=font("Bold", 34), fill=c["accent"])
     facts = post["facts"]
     text_w = W - 2 * MARGIN
     space = H - 150 - 260          # tra il titolo e il piè di pagina
@@ -375,10 +397,15 @@ def closing(post, cfg, total):
     # dove trovarci: Instagram e Facebook con lo stesso nome
     d.line((MARGIN + 50, card_top + 400, W - MARGIN - 50, card_top + 400), fill="#2A4560", width=2)
     sy = card_top + 425
-    _instagram_glyph(d, MARGIN + 50, sy, "#FFFFFF")
-    _facebook_glyph(d, MARGIN + 116, sy, "#FFFFFF", navy)
-    _bluesky_glyph(d, MARGIN + 182, sy, "#FFFFFF")
-    d.text((MARGIN + 246, sy + 4), cfg["handle"], font=font("SemiBold", 32), fill="#FFFFFF")
+    x = MARGIN + 50
+    # icone ufficiali (Simple Icons, CC0) dei profili attivi: Bluesky e Threads solo se configurati
+    nets = ["instagram", "facebook"] + [n for n in ("bluesky", "threads") if cfg.get(f"{n}_handle")]
+    for n in nets:
+        size = paste_logo(img, f"icon-{n}", x, sy, height=44)
+        if size is None:                       # icone mancanti: disegno semplificato di riserva
+            (_instagram_glyph(d, x, sy, "#FFFFFF") if n == "instagram" else _facebook_glyph(d, x, sy, "#FFFFFF", navy))
+        x += 66
+    d.text((x + 6, sy + 4), cfg["handle"], font=font("SemiBold", 32), fill="#FFFFFF")
     return img
 
 
@@ -456,13 +483,19 @@ def render_carousel(post, cfg):
             out.append(buf.getvalue())
         return out
     has_facts = bool(post.get("facts"))
-    total = len(post["slides"]) + 2 + has_facts
+    has_numbers = bool(post.get("numbers"))
+    total = len(post["slides"]) + 2 + has_facts + has_numbers
     use_images = cfg.get("ai_images", True) and not post.get("no_images")
     max_images = int(cfg.get("max_images_per_post", 2))
     used = 0
     pages = [grant_cover(post, cfg, total) if post.get("kind") == "grant" else cover(post, cfg, total)]
+    facts_first = has_facts and post.get("facts_first")
+    if has_numbers:                                          # post speciali: i numeri subito dopo la copertina
+        pages.append(numbers_slide(post, cfg, 2, total))
+    if facts_first:
+        pages.append(facts_slide(post, cfg, len(pages) + 1, total))
     for i, slide in enumerate(post["slides"], start=1):
-        index = i + 1
+        index = len(pages) + 1
         picture = None
         if use_images and index % 2 == 0 and used < max_images:
             print(f"Genero l'immagine per la slide {index}: {slide['heading']}")
@@ -472,7 +505,7 @@ def render_carousel(post, cfg):
             pages.append(illustrated(slide, i, cfg, index, total, picture))
         else:
             pages.append(content(slide, i, cfg, index, total))
-    if has_facts:
+    if has_facts and not facts_first:
         pages.append(facts_slide(post, cfg, len(pages) + 1, total))
     pages.append(closing(post, cfg, total))
     out = []

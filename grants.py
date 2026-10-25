@@ -1258,10 +1258,12 @@ HOME = """<!doctype html>
   a.big .count {{ font-size: 15px; font-weight: 600; }}
   a.big:focus-visible {{ outline: 3px solid var(--text); outline-offset: 3px; }}
   a.big:hover {{ filter: brightness(1.05); }}
-  .social {{ display: flex; justify-content: center; gap: 18px; margin-top: 8px; flex-wrap: wrap; }}
+  .social {{ display: flex; justify-content: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }}
   .noig {{ color: var(--soft); font-size: 14px; text-align: center; max-width: 440px; margin: 16px auto 0; line-height: 1.5; }}
   .social a {{ color: var(--soft); text-decoration: none; font-weight: 600; font-size: 14px; border: 1px solid var(--muted);
-              border-radius: 999px; padding: 8px 14px; }}
+              border-radius: 999px; padding: 8px 14px; display: inline-flex; align-items: center; gap: 8px; }}
+  .social a svg {{ width: 18px; height: 18px; flex: none; }}
+  .social a:hover {{ color: #FFFFFF; border-color: var(--soft); }}
   footer {{ color: var(--muted); font-size: 12px; text-align: center; padding: 0 16px 30px; max-width: 520px; margin: 0 auto; }}
 </style>
 </head>
@@ -1287,9 +1289,7 @@ HOME = """<!doctype html>
     <span class="count">{method_line}</span>
   </a>
   <div class="social">
-    <a href="https://www.instagram.com/{ig}/">Instagram</a>
-    <a href="https://www.facebook.com/{ig}">Facebook</a>
-    <a href="feed-calls.xml">RSS</a>
+{social}
   </div>
   <p class="noig">No Instagram account? You don't need one: every call, position and methodology carousel is on this site.
   Bookmark it or add it to your home screen, and share any card with the Share button.</p>
@@ -1300,13 +1300,37 @@ HOME = """<!doctype html>
 """
 
 
+ICONS_DIR = __import__("pathlib").Path(__file__).resolve().parent / "icons"
+
+
+def icon(name):
+    """Icona SVG in linea (Simple Icons, CC0): prende il colore del testo."""
+    try:
+        return (ICONS_DIR / f"{name}.svg").read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
+
+
+def social_links(cfg):
+    """Pulsanti dei profili: Bluesky e Threads compaiono quando il loro indirizzo è in config.json."""
+    ig = cfg["handle"].lstrip("@")
+    links = [("instagram", "Instagram", f"https://www.instagram.com/{ig}/"),
+             ("facebook", "Facebook", f"https://www.facebook.com/{ig}")]
+    if cfg.get("bluesky_handle"):
+        links.append(("bluesky", "Bluesky", f"https://bsky.app/profile/{cfg['bluesky_handle'].lstrip('@')}"))
+    if cfg.get("threads_handle"):
+        links.append(("threads", "Threads", f"https://www.threads.com/@{cfg['threads_handle'].lstrip('@')}"))
+    links.append(("rss", "RSS", "feed-calls.xml"))
+    return "\n".join(f'    <a href="{url}" rel="me">{icon(name)}<span>{label}</span></a>' for name, label, url in links)
+
+
 def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
     from html import escape
     today = today or date.today()
     c = cfg["colors"]
     calls_line = f"{n_calls} open calls worldwide" + (f" · {n_italy} open to Italian institutions" if n_italy else "")
     jobs_line = f"{n_positions} open PhD, post-doc and faculty positions" if n_positions else "PhD, post-doc and faculty positions"
-    return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"],
+    return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"], social=social_links(cfg),
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
                        amber=cfg.get("grant_accent", "#FFB547"), lilac=cfg.get("positions_accent", "#A78BFA"),
                        calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
