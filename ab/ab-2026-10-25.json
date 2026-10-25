@@ -1,0 +1,391 @@
+{
+ "date": "2026-10-25",
+ "grants": [
+  {
+   "id": "GG-PAR-25-226",
+   "error": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
+  },
+  {
+   "id": "GG-PAR-25-124",
+   "same": {
+    "due_dates": true,
+    "deadline_source": true,
+    "italy": true,
+    "is_open_call": true,
+    "countries": true,
+    "lead_present": true,
+    "loi": true
+   },
+   "A": {
+    "due_dates": [
+     "2025-02-16",
+     "2025-06-16",
+     "2025-10-16",
+     "2026-02-16",
+     "2026-06-16",
+     "2026-10-16",
+     "2027-02-16",
+     "2027-06-16",
+     "2027-10-16"
+    ],
+    "italy": "yes",
+    "eligible_countries": "Any country (non-US organisations eligible)",
+    "lead": "Independent investigator no more than 8 years beyond the date their first advanced degree was awarded, not currently a postdoctoral fellow.",
+    "is_open_call": "yes"
+   },
+   "B": {
+    "due_dates": [
+     "2025-02-16",
+     "2025-06-16",
+     "2025-10-16",
+     "2026-02-16",
+     "2026-06-16",
+     "2026-10-16",
+     "2027-02-16",
+     "2027-06-16",
+     "2027-10-16"
+    ],
+    "italy": "yes",
+    "eligible_countries": "Any country (non-US organisations eligible)",
+    "lead": "Independent investigator, no more than 8 years beyond the date the terminal academic degree was awarded. Not a postdoctoral fellow.",
+    "is_open_call": "yes"
+   }
+  },
+  {
+   "id": "GG-PAR-25-052",
+   "same": {
+    "due_dates": true,
+    "deadline_source": true,
+    "italy": true,
+    "is_open_call": true,
+    "countries": true,
+    "lead_present": true,
+    "loi": true
+   },
+   "A": {
+    "due_dates": [
+     "2025-02-19",
+     "2025-06-20",
+     "2025-10-20",
+     "2026-02-19",
+     "2026-06-18",
+     "2026-10-19"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only (foreign organisations not eligible)",
+    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "is_open_call": "yes"
+   },
+   "B": {
+    "due_dates": [
+     "2025-02-19",
+     "2025-06-20",
+     "2025-10-20",
+     "2026-02-19",
+     "2026-06-18",
+     "2026-10-19"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only (foreign organisations not eligible)",
+    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "is_open_call": "yes"
+   }
+  },
+  {
+   "id": "GG-HHS-2027-ACL-NIDILRR-ARCP-0300",
+   "same": {
+    "due_dates": true,
+    "deadline_source": true,
+    "italy": true,
+    "is_open_call": true,
+    "countries": true,
+    "lead_present": true,
+    "loi": true
+   },
+   "A": {
+    "due_dates": [
+     "2026-12-07"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only",
+    "lead": "Individuals with doctorates, or similar advanced degrees, participating through eligible institutions of higher education.",
+    "is_open_call": "no"
+   },
+   "B": {
+    "due_dates": [
+     "2026-12-07"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only",
+    "lead": "Individuals with doctorates, or similar advanced degrees.",
+    "is_open_call": "no"
+   }
+  },
+  {
+   "id": "GG-HHS-2027-ACL-NIDILRR-DPTB-0311",
+   "same": {
+    "due_dates": true,
+    "deadline_source": true,
+    "italy": true,
+    "is_open_call": false,
+    "countries": true,
+    "lead_present": true,
+    "loi": true
+   },
+   "A": {
+    "due_dates": [
+     "2027-04-01"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only",
+    "lead": "States, public or private agencies/organizations (including for-profits), IHEs, and Indian tribes providing a multidisciplinary continuum of care.",
+    "is_open_call": "yes"
+   },
+   "B": {
+    "due_dates": [
+     "2027-04-01"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only",
+    "lead": "States, public or private agencies/organizations including for-profit, IHEs, and Indian tribes providing a multidisciplinary continuum of care for people with T",
+    "is_open_call": "no"
+   }
+  },
+  {
+   "id": "GG-HHS-2027-ACL-NIDILRR-REGE-0312",
+   "same": {
+    "due_dates": true,
+    "deadline_source": true,
+    "italy": true,
+    "is_open_call": true,
+    "countries": true,
+    "lead_present": true,
+    "loi": true
+   },
+   "A": {
+    "due_dates": [
+     "2027-04-15"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only",
+    "lead": "States, public or private agencies, organizations including for-profits, higher education institutions, and Indian tribes and tribal organizations.",
+    "is_open_call": "no"
+   },
+   "B": {
+    "due_dates": [
+     "2027-04-15"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only",
+    "lead": "States, public or private agencies/organizations, for-profit entities, IHEs, and Indian tribes and tribal organizations.",
+    "is_open_call": "no"
+   }
+  },
+  {
+   "id": "GG-HHS-2027-ACL-NIDILRR-REGE-0313",
+   "same": {
+    "due_dates": true,
+    "deadline_source": false,
+    "italy": true,
+    "is_open_call": false,
+    "countries": true,
+    "lead_present": false,
+    "loi": true
+   },
+   "A": {
+    "due_dates": [
+     "2027-04-22"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only",
+    "lead": "States, public/private agencies and organizations including for-profits, IHEs, and Indian tribes and tribal organizations (US entities only).",
+    "is_open_call": "yes"
+   },
+   "B": {
+    "due_dates": [
+     "2027-04-22"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only",
+    "lead": "",
+    "is_open_call": "no"
+   }
+  },
+  {
+   "id": "GG-PAR-24-321",
+   "same": {
+    "due_dates": true,
+    "deadline_source": true,
+    "italy": true,
+    "is_open_call": true,
+    "countries": true,
+    "lead_present": true,
+    "loi": true
+   },
+   "A": {
+    "due_dates": [
+     "2025-02-12",
+     "2025-06-12",
+     "2025-10-12",
+     "2026-02-12",
+     "2026-06-12",
+     "2026-10-12",
+     "2027-02-12",
+     "2027-06-12",
+     "2027-10-12"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only (foreign organisations not eligible)",
+    "lead": "Established investigators who are U.S. citizens, nationals, or permanent residents, holding a doctoral degree, and named as PD/PI on an active R01 or equivalent",
+    "is_open_call": "yes"
+   },
+   "B": {
+    "due_dates": [
+     "2025-02-12",
+     "2025-06-12",
+     "2025-10-12",
+     "2026-02-12",
+     "2026-06-12",
+     "2026-10-12",
+     "2027-02-12",
+     "2027-06-12",
+     "2027-10-12"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only (foreign organisations not eligible)",
+    "lead": "Established investigator with a clinical, research, or health-professional doctoral degree; must be a U.S. citizen, non-citizen national, or permanent resident.",
+    "is_open_call": "yes"
+   }
+  },
+  {
+   "id": "GG-PAR-25-024",
+   "error": "Gemini non disponibile: gemini-flash-lite-latest 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information "
+  },
+  {
+   "id": "GG-RFA-OH-26-001",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "GG-RFA-OH-27-031",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "GG-PAR-25-167",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "GG-RFA-AI-28-004",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "GG-RFA-AI-28-001",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "GG-PAR-27-105",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "GG-PAR-28-005",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "GG-PAR-25-053",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "EU-HORIZON-JU-EUROHPC-2026-QML-07-01",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "GG-PAR-25-026",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "GG-PAR-25-025",
+   "error": "Gemini non disponibile: None"
+  }
+ ],
+ "positions": [
+  {
+   "id": "POS-5b29a40a7b6e",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-c1acac7174d5",
+   "error": "403 Client Error: Forbidden for url: https://www.universityaffairs.ca/search-jobs/?keywords=rehabilitation&job_id=72377"
+  },
+  {
+   "id": "POS-149809c508d2",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-6083123f1405",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-0f64800d1d0b",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-b7aa939471a3",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-81cdb60b390a",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-657d36465b82",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-4493bc4712ff",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-01659ef4929e",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-e4360d4f3b3e",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-a3228c41653b",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-8d869400c356",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-00ba6fb33ccc",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-88d05a1109db",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-717291463e36",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-b9323973a6c4",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-d8a9565f7ae9",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-00cd82037b10",
+   "error": "Gemini non disponibile: None"
+  },
+  {
+   "id": "POS-ae5f411c7687",
+   "error": "Gemini non disponibile: None"
+  }
+ ]
+}
