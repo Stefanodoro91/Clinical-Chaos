@@ -50,7 +50,7 @@ def frame(slide_path, cfg, index, total, accent):
 def music(path, seconds, seed=0):
     """Base strumentale originale (lo-fi con batteria, basso, accordi e melodia): vedi music.py."""
     import music as _music
-    return _music.for_video(path, seconds, seed)
+    return _music.for_video(path, seconds, seed, mood="Metodologia")
 
 
 def build_reel(slide_paths, out_path, cfg, accent=None, per_slide=4.6, edge=2.8, fade=0.5, with_music=True, images=None):
