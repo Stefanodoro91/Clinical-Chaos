@@ -198,6 +198,80 @@ def _html_items(html, base):
     return out[:80]
 
 
+# ---------------------------------------------------------------- portali costruiti con JavaScript
+# Alcuni portali universitari (TU Delft, Aarhus, Twente...) mostrano gli annunci solo dopo l'esecuzione del
+# JavaScript: per le fonti di tipo «browser» la pagina si apre con Chromium headless (Playwright), con lo stesso
+# User-Agent dichiarato del bot e solo dove robots.txt lo consente.
+_BROWSER = {}
+import atexit
+atexit.register(lambda: close_browser())
+
+
+def _page():
+    if "ctx" not in _BROWSER:
+        from playwright.sync_api import sync_playwright
+        _BROWSER["pw"] = sync_playwright().start()
+        _BROWSER["br"] = _BROWSER["pw"].chromium.launch()
+        _BROWSER["ctx"] = _BROWSER["br"].new_context(user_agent=HEADERS.get("User-Agent", ""), locale="en-GB")
+    return _BROWSER["ctx"].new_page()
+
+
+def close_browser():
+    if "br" in _BROWSER:
+        try:
+            _BROWSER["br"].close(); _BROWSER["pw"].stop()
+        except Exception:
+            pass
+        _BROWSER.clear()
+
+
+def _robots_ok(url):
+    import urllib.robotparser
+    u = urlparse(url)
+    rp = urllib.robotparser.RobotFileParser()
+    try:
+        r = requests.get(f"{u.scheme}://{u.netloc}/robots.txt", headers=HEADERS, timeout=20)
+        rp.parse(r.text.splitlines() if r.status_code == 200 else [])
+    except requests.RequestException:
+        return True
+    return rp.can_fetch(HEADERS.get("User-Agent", "*"), url)
+
+
+def _render(url):
+    """(html, indirizzo finale, link (href, testo) di pagina e iframe) dopo l'esecuzione del JavaScript."""
+    if not _robots_ok(url):
+        raise RuntimeError("robots.txt non consente la lettura")
+    pg = _page()
+    try:
+        pg.goto(url, wait_until="domcontentloaded", timeout=45000)
+        try:
+            pg.wait_for_load_state("networkidle", timeout=20000)
+        except Exception:
+            pass
+        for _ in range(3):                      # elenchi che si caricano scorrendo
+            pg.mouse.wheel(0, 4000)
+            pg.wait_for_timeout(700)
+        links = []
+        for fr in pg.frames:
+            try:
+                links += fr.eval_on_selector_all("a[href]", "els => els.map(e => [e.href, (e.innerText || '').trim()])")
+            except Exception:
+                pass
+        return pg.content(), pg.url, links
+    finally:
+        pg.close()
+
+
+def _browser_items(url):
+    html, final, links = _render(url)
+    out = {i["url"]: i for i in _html_items(html, final)}
+    for href, text in links:                    # anche annunci su portali di candidatura esterni
+        text = " ".join(text.split())
+        if href.startswith("http") and 12 <= len(text) <= 220 and RX_POSITION.search(text) and href not in out:
+            out[href] = {"title": text, "url": href, "snippet": ""}
+    return [dict(i, browser=True) for i in list(out.values())[:80]]
+
+
 INPA_API = "https://portale.inpa.gov.it/concorsi-smart/api/concorso-public-area/search-better?page=0&size=50"
 INPA_PAGE = "https://www.inpa.gov.it/bandi-e-avvisi/dettaglio-bando-avviso/?concorso_id={id}"
 
@@ -362,6 +436,8 @@ def collect(sources=None, guided=True):
         try:
             if (src.get("tipo") or "").strip() == "inpa":      # API inPA: la ricerca è dopo il #
                 items = _inpa_items(unquote(urlparse(src["url"]).fragment).replace("+", " "))
+            elif (src.get("tipo") or "").strip() == "browser":   # portale costruito con JavaScript
+                items = _browser_items(src["url"])
             else:
                 r = requests.get(src["url"], headers=HEADERS, timeout=45)
                 r.raise_for_status()
@@ -416,6 +492,11 @@ def verify(item):
         r = requests.get(item["url"], headers=HEADERS, timeout=45)
         r.raise_for_status()
         text = grants.html_to_text(r.text)
+        if item.get("browser") and len(text) < 1500:      # annuncio che si costruisce con JavaScript
+            try:
+                text = grants.html_to_text(_render(item["url"])[0])
+            except Exception as e:
+                print(f"  lettura con browser non riuscita: {str(e)[:120]}")
     if not inpa:        # filtro prima di Gemini: pagine che non sono annunci aperti non consumano quota
         if not RX_POSITION.search(text[:30000]):
             raise RuntimeError("la pagina non contiene un tipo di posizione")
