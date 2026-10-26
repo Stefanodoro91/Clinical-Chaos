@@ -61,6 +61,9 @@ POST DESIGN:
   "a crowd of simple figures split by a large coin into two equal groups, each walking toward a pill bottle";
   "a magnifying glass revealing a hidden crack in a perfect-looking bridge".
   No text, letters, numbers, labeled charts, logos or recognizable real people.
+- photo_query (per slide): 2-4 English keywords to search a real stock PHOTO that fits the slide
+  (e.g. "physiotherapist knee rehabilitation", "researchers meeting whiteboard", "pills blister pack"),
+  only for slides whose idea a real scene can show; "" when the idea is too abstract for a photo.
 - highlight (per slide): the key idea of that slide, 2-6 words copied EXACTLY from its body (same
   words, same order); it is shown with a highlighter.
 - source (per slide): short citation "Surname, Year" or "Surname et al., Year" ONLY if the slide's
@@ -102,9 +105,9 @@ SCHEMA = {
                         "items": {
                             "type": "OBJECT",
                             "properties": {"heading": {"type": "STRING"}, "body": {"type": "STRING"},
-                                           "image_prompt": {"type": "STRING"}, "highlight": {"type": "STRING"},
-                                           "source": {"type": "STRING"}},
-                            "required": ["heading", "body", "image_prompt", "highlight", "source"],
+                                           "image_prompt": {"type": "STRING"}, "photo_query": {"type": "STRING"},
+                                           "highlight": {"type": "STRING"}, "source": {"type": "STRING"}},
+                            "required": ["heading", "body", "image_prompt", "photo_query", "highlight", "source"],
                         },
                     },
                     "title_highlight": {"type": "STRING"},
@@ -358,6 +361,7 @@ def _clean_post(p, material=""):
         body = _clip(s.get("body", ""), 320)
         slides.append({"heading": _clip(s.get("heading", ""), 70), "body": body,
                        "image_prompt": _clip(s.get("image_prompt", ""), 300),
+                       "photo_query": _clip(s.get("photo_query", ""), 60),
                        "highlight": exact_phrase(s.get("highlight"), body),
                        "source": _source_ok(s.get("source"), refs)})
     slides = slides[:7]

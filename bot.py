@@ -652,12 +652,17 @@ def main():
                       if post.get("kind") == "grant" else {})})
     save(QUEUE_FILE, queue)
     save(POSTED_FILE, posted)
+    photos = [sl["pixabay_id"] for sl in post.get("slides", []) if sl.get("pixabay_id")]
+    import images
+    for pid in photos:                       # foto Pixabay usate: mai più riproposte
+        images.mark_used(pid)
     if kind == "research":
         import methodology
         methodology.add(post, today, IMAGES_DIR)
     # pagina «link in bio»: rigenerata a ogni post, così i bandi scaduti spariscono da soli
     PAGE_FILE.parent.mkdir(exist_ok=True)
-    commit_and_push([QUEUE_FILE.name, POSTED_FILE.name, "methodology.json"], f"Post del {today}")
+    commit_and_push([QUEUE_FILE.name, POSTED_FILE.name, "methodology.json"] + (["pixabay_used.json"] if photos else []),
+                    f"Post del {today}")
     if post.get("kind") == "positions":
         try:
             update_positions(posted, verify_limit=0)

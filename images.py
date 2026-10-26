@@ -1,10 +1,12 @@
-"""Genera con Pollinations.ai le illustrazioni AI per le slide con immagine."""
+"""Immagini delle slide: illustrazioni AI generate con Pollinations.ai e, se c'è PIXABAY_API_KEY, foto vere da Pixabay
+(API ufficiale; licenza Pixabay: uso commerciale senza attribuzione). Gemini sceglie la candidata migliore."""
 
 import hashlib
 import io
 import os
 import re
 import time
+from pathlib import Path
 from urllib.parse import quote
 
 import requests
@@ -92,9 +94,12 @@ For EACH image return:
 - relevance: 1-10, how clearly a researcher would connect the image to the slide's idea at a glance
   (10 = the visual metaphor explains the concept; 1 = unrelated or generic decoration).
 - has_text: true if the image contains any letters, words, numbers or fake writing.
-- style_ok: true if it is a clean flat 2D vector illustration (no 3D render, no photorealism, no clutter),
-  with dark navy background and teal/white elements.
-- problems: a few words on what is wrong ("" if nothing)."""
+- style_ok: for an ILLUSTRATION, true if it is a clean flat 2D vector illustration (no 3D render, no photorealism,
+  no clutter), with dark navy background and teal/white elements. For a PHOTO, true if it is a sharp, natural,
+  professional photo of a real scene, with no visible brand names or logos, no graphic or distressing medical
+  content and no cheesy staged-stock look.
+- problems: a few words on what is wrong ("" if nothing).
+Prefer the image that best explains the slide: a photo only when it shows the idea better than an illustration."""
 
 JUDGE_SCHEMA = {
     "type": "OBJECT",
@@ -105,16 +110,68 @@ JUDGE_SCHEMA = {
 }
 
 
-def choose_best(slide, pictures, cfg):
+PIXABAY_API = "https://pixabay.com/api/"
+USED_FILE = Path(__file__).resolve().parent / "pixabay_used.json"
+LAST = {}
+
+
+def _used():
+    import json
+    try:
+        return set(json.loads(USED_FILE.read_text(encoding="utf-8")))
+    except (OSError, ValueError):
+        return set()
+
+
+def mark_used(pid):
+    """Registra la foto Pixabay usata in un post pubblicato (mai la stessa foto due volte)."""
+    import json
+    ids = sorted(_used() | {int(pid)})
+    USED_FILE.write_text(json.dumps(ids), encoding="utf-8")
+
+
+def pixabay_photos(query, n=2, width=1024, height=640):
+    """Fino a n foto orizzontali da Pixabay per la ricerca `query`, mai usate prima: [(immagine, id)]."""
+    key = os.environ.get("PIXABAY_API_KEY")
+    if not key or not query.strip():
+        return []
+    try:
+        r = requests.get(PIXABAY_API, timeout=30, params={
+            "key": key, "q": query.strip()[:100], "image_type": "photo", "orientation": "horizontal",
+            "safesearch": "true", "min_width": width, "min_height": height, "per_page": 20, "order": "popular"})
+        if not r.ok:
+            print(f"  Pixabay non risponde ({r.status_code}): solo illustrazioni AI.")
+            return []
+        hits = r.json().get("hits", [])
+    except Exception as e:
+        print(f"  Pixabay non raggiungibile ({e}): solo illustrazioni AI.")
+        return []
+    used, out = _used(), []
+    for h in hits:
+        if h["id"] in used:
+            continue
+        try:
+            img = Image.open(io.BytesIO(requests.get(h["largeImageURL"], timeout=60).content)).convert("RGB")
+        except Exception:
+            continue
+        out.append((img, h["id"]))
+        if len(out) == n:
+            break
+    print(f"  Pixabay «{query}»: {len(hits)} risultati, {len(out)} foto candidate")
+    return out
+
+
+def choose_best(slide, pictures, cfg, kinds=None):
     """Gemini guarda le candidate insieme al testo della slide e sceglie la migliore.
     Restituisce None se nessuna è pertinente, pulita e in stile (la slide resta solo testo)."""
     import base64
     import content
+    kinds = kinds or ["illustration"] * len(pictures)
     parts = [{"text": JUDGE_PROMPT.format(n=len(pictures), heading=slide["heading"], body=slide["body"])}]
-    for i, pic in enumerate(pictures, 1):
+    for i, (pic, kind) in enumerate(zip(pictures, kinds), 1):
         buf = io.BytesIO()
         pic.convert("RGB").resize((512, 320)).save(buf, "JPEG", quality=85)
-        parts += [{"text": f"Image {i}:"},
+        parts += [{"text": f"Image {i} ({kind.upper()}):"},
                   {"inline_data": {"mime_type": "image/jpeg", "data": base64.b64encode(buf.getvalue()).decode()}}]
     try:
         scores = content.gemini_json(parts, JUDGE_SCHEMA, 0.0, task="scelta immagini").get("images", [])
@@ -125,10 +182,11 @@ def choose_best(slide, pictures, cfg):
     best, best_score = None, -1
     for i, (pic, sc) in enumerate(zip(pictures, scores), 1):
         ok = not sc.get("has_text") and sc.get("style_ok") and int(sc.get("relevance", 0)) >= minimum
-        print(f"  Candidata {i}: pertinenza {sc.get('relevance')}, testo {sc.get('has_text')}, "
+        print(f"  Candidata {i} ({kinds[i - 1]}): pertinenza {sc.get('relevance')}, testo {sc.get('has_text')}, "
               f"stile {sc.get('style_ok')}{' – ' + sc['problems'] if sc.get('problems') else ''}")
         if ok and int(sc["relevance"]) > best_score:
             best, best_score = pic, int(sc["relevance"])
+    LAST["kind"] = kinds[pictures.index(best)] if best is not None else None
     if best is None:
         print(f"  Nessuna candidata abbastanza buona: la slide «{slide['heading']}» resta solo testo.")
     return best
@@ -138,14 +196,32 @@ def generate(slide, cfg, width=1024, height=640):
     """Genera alcune candidate (config «image_candidates», default 3) e tiene la migliore secondo Gemini.
     Restituisce None se non ce n'è una adatta o se Pollinations non risponde (la slide resta solo testo)."""
     n = max(1, int(cfg.get("image_candidates", 3)))
-    pictures = []
+    pictures, kinds, ids = [], [], []
     for i in range(n):
         pic = generate_one(slide, cfg, width, height, variant=i)
         if pic is not None:
             pictures.append(pic)
+            kinds.append("illustration")
+            ids.append(None)
+    if cfg.get("pixabay_photos", True):
+        for pic, pid in pixabay_photos(slide.get("photo_query", ""), int(cfg.get("pixabay_candidates", 2)), width, height):
+            pictures.append(pic)
+            kinds.append("photo")
+            ids.append(pid)
+    LAST.clear()
     if not pictures:
         return None
-    return choose_best(slide, pictures, cfg) if len(pictures) > 1 or cfg.get("image_judge_single", True) else pictures[0]
+    if len(pictures) == 1 and not cfg.get("image_judge_single", True):
+        best = pictures[0]
+    else:
+        best = choose_best(slide, pictures, cfg, kinds)
+    if best is not None:
+        k = pictures.index(best)
+        LAST.update(kind=kinds[k], pixabay_id=ids[k])
+        if ids[k]:
+            slide["pixabay_id"] = ids[k]          # registrata in pixabay_used.json quando il post esce
+            print(f"  Scelta la foto Pixabay {ids[k]}")
+    return best
 
 
 def generate_one(slide, cfg, width=1024, height=640, variant=0):

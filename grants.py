@@ -108,6 +108,8 @@ Write IN ENGLISH:
   Slide 2 heading "Who it is for": applicants and teams it targets. Each body max 220 characters.
   Each slide also has image_prompt: 15-35 words describing ONE simple illustration of the slide's idea
   (concrete scene with 2-4 recognizable elements; no text, letters, numbers, logos or real people),
+  photo_query: 2-4 English keywords to search a real stock photo of the research area or of the team it
+  targets (e.g. "stroke rehabilitation therapy", "clinical trial nurse patient"),
   and highlight: its key idea, 2-6 words copied EXACTLY from its body.
 - coverage: funding coverage in a few words (e.g. "Fully funded"), or "" if not stated.
 - takeaway: one sentence on why this call is worth a look, max 120 characters.
@@ -134,8 +136,9 @@ SCHEMA = {
             "items": {
                 "type": "OBJECT",
                 "properties": {"heading": {"type": "STRING"}, "body": {"type": "STRING"},
-                               "image_prompt": {"type": "STRING"}, "highlight": {"type": "STRING"}},
-                "required": ["heading", "body", "image_prompt", "highlight"],
+                               "image_prompt": {"type": "STRING"}, "photo_query": {"type": "STRING"},
+                               "highlight": {"type": "STRING"}},
+                "required": ["heading", "body", "image_prompt", "photo_query", "highlight"],
             },
         },
         "coverage": {"type": "STRING"},
@@ -885,6 +888,7 @@ def build_post(g, v, cfg):
             body = clip(sl["body"], 320)
             slides.append({"heading": clip(sl["heading"], 70), "body": body,
                            "image_prompt": clip(sl.get("image_prompt", ""), 300),
+                           "photo_query": clip(sl.get("photo_query", ""), 60),
                            "highlight": content.exact_phrase(sl.get("highlight"), body)})
     slides = slides[:2]
     if len(slides) < 2 or not out.get("title"):
