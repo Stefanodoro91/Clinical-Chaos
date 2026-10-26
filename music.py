@@ -197,17 +197,25 @@ def _drive():
     return build("drive", "v3", credentials=creds, cache_discovery=False)
 
 
-def library_files(drive, folder_name="Musica"):
-    import os
-    inbox = os.environ["GDRIVE_FOLDER_ID"]
-    q = (f"'{inbox}' in parents and name = '{folder_name}' and trashed = false "
+def _folder(drive, parent, name):
+    q = (f"'{parent}' in parents and name = '{name}' and trashed = false "
          "and mimeType = 'application/vnd.google-apps.folder'")
-    kw = {"supportsAllDrives": True, "includeItemsFromAllDrives": True}
-    folders = drive.files().list(q=q, fields="files(id)", **kw).execute().get("files", [])
-    if not folders:
+    found = drive.files().list(q=q, fields="files(id)", supportsAllDrives=True,
+                               includeItemsFromAllDrives=True).execute().get("files", [])
+    return found[0]["id"] if found else None
+
+
+def library_files(drive, mood=None):
+    """Brani della cartella «Musica»; con `mood` (es. «Metodologia») quelli della sottocartella omonima, se esiste
+    e contiene brani. Le storie usano i brani direttamente in «Musica» (funk)."""
+    import os
+    root = _folder(drive, os.environ["GDRIVE_FOLDER_ID"], "Musica")
+    if not root:
         return []
-    files = drive.files().list(q=f"'{folders[0]['id']}' in parents and trashed = false", pageSize=200,
-                               fields="files(id, name, mimeType)", **kw).execute().get("files", [])
+    folder = (_folder(drive, root, mood) if mood else None) or root
+    files = drive.files().list(q=f"'{folder}' in parents and trashed = false", pageSize=200,
+                               fields="files(id, name, mimeType)", supportsAllDrives=True,
+                               includeItemsFromAllDrives=True).execute().get("files", [])
     return sorted((f for f in files if f["name"].lower().endswith(AUDIO_EXT) or f["mimeType"].startswith("audio/")),
                   key=lambda f: f["name"].lower())
 
@@ -244,7 +252,7 @@ def best_start(path, seconds):
     return float(lo + int(np.argmax(scores)))
 
 
-def from_library(path, seconds, seed=0, cache=None):
+def from_library(path, seconds, seed=0, cache=None, mood=None):
     """Scrive in `path` un estratto di un brano della cartella Drive «Musica» (diverso ogni giorno con il seme).
     Restituisce il nome del brano, oppure None se la cartella non è raggiungibile o è vuota."""
     import os
@@ -253,24 +261,25 @@ def from_library(path, seconds, seed=0, cache=None):
     if not (os.environ.get("GDRIVE_SERVICE_ACCOUNT_JSON") and os.environ.get("GDRIVE_FOLDER_ID")):
         return None
     drive = _drive()
-    files = library_files(drive)
+    files = library_files(drive, mood)
     if not files:
         return None
     f = files[seed % len(files)]
     src = _download(drive, f, cache or tempfile.gettempdir())
     start = best_start(src, seconds)
     fade_out = 1.2
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{start:.2f}", "-t", f"{seconds:.2f}", "-i", str(src),
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-stream_loop", "-1", "-ss", f"{start:.2f}", "-i", str(src),
+                    "-t", f"{seconds:.2f}",
                     "-af", f"afade=t=in:d=0.4,afade=t=out:st={seconds - fade_out:.2f}:d={fade_out},"
                            "loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", str(RATE), "-ac", "2", str(path)], check=True)
     return f["name"]
 
 
-def for_video(path, seconds, seed=0):
+def for_video(path, seconds, seed=0, mood=None):
     """Musica per storie e reel: un brano della libreria su Drive; se non disponibile, la base generata qui."""
     LAST_TRACK.clear()
     try:
-        name = from_library(path, seconds, seed)
+        name = from_library(path, seconds, seed, mood=mood)
         if name:
             LAST_TRACK["name"] = name
             print(f"::notice title=Musica::{name}")
