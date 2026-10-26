@@ -1,0 +1,20 @@
+{
+ "workflow": "Aggiorna bandi e pagina link in bio",
+ "consumo": {
+  "verifica bandi|gemini-flash-latest": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 2
+  },
+  "verifica bandi|gemini-flash-lite-latest": {
+   "richieste": 19,
+   "ingresso": 109279,
+   "uscita": 7120,
+   "ragionamento": 0,
+   "respinte": 1,
+   "versione": "gemini-3.5-flash-lite"
+  }
+ }
+}
