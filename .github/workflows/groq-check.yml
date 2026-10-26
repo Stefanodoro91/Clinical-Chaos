@@ -1,0 +1,36 @@
+name: Controllo Groq (temporaneo)
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Prova la chiave Groq (senza mostrarla)
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request, urllib.error
+          k = os.environ.get("GROQ_API_KEY", "")
+          if not k:
+              print("::warning title=Groq::secret GROQ_API_KEY assente o vuoto"); raise SystemExit
+          print(f"::notice title=Groq::secret presente ({len(k)} caratteri, inizia con {k[:4]})")
+          def call(url, data=None):
+              req = urllib.request.Request(url, data=json.dumps(data).encode() if data else None,
+                    headers={"Authorization": f"Bearer {k}", "Content-Type": "application/json", "User-Agent": "ClinicalResearchChaosBot"})
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as r: return r.status, r.read().decode()
+              except urllib.error.HTTPError as e: return e.code, e.read().decode()[:300]
+          s, body = call("https://api.groq.com/openai/v1/models")
+          print(f"::notice title=Groq modelli::HTTP {s}")
+          if s == 200:
+              ids = [m["id"] for m in json.loads(body)["data"]]
+              print(f"::notice title=Groq llama-3.3-70b-versatile::{'presente' if 'llama-3.3-70b-versatile' in ids else 'NON presente'}")
+              print("::notice title=Groq modelli disponibili::" + ", ".join(sorted(i for i in ids if 'whisper' not in i))[:900])
+          else:
+              print(f"::warning title=Groq risposta::{body[:300]}")
+          s, body = call("https://api.groq.com/openai/v1/chat/completions", {"model": "llama-3.3-70b-versatile",
+                 "messages": [{"role": "user", "content": "Rispondi con JSON {\"ok\": true}"}], "response_format": {"type": "json_object"}})
+          print(f"::notice title=Groq prova llama-3.3-70b::HTTP {s} {body[:200].replace(chr(10),' ')}")
+          PY
