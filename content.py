@@ -487,7 +487,9 @@ def _parts_to_text(parts):
 
 
 def _groq_json(prompt_text, schema, temperature=0.5, task="altro"):
-    """Chiama Groq (llama-3.3-70b) e restituisce JSON decodificato. Usato come riserva finale."""
+    """Chiama Groq e restituisce JSON decodificato. Usato come riserva finale.
+    Groq ritira i modelli senza preavviso (llama-3.3-70b-versatile è sparito a ottobre 2026):
+    si prova il primo modello disponibile dell'elenco GROQ_MODELS."""
     key = os.environ.get("GROQ_API_KEY")
     if not key:
         return None
@@ -497,8 +499,21 @@ def _groq_json(prompt_text, schema, temperature=0.5, task="altro"):
         + schema_str
         + "\nNessun testo prima o dopo il JSON."
     )
+    for model in GROQ_MODELS:
+        out = _groq_call(key, model, system, prompt_text, temperature, task)
+        if out == "modello assente":
+            print(f"  Groq: modello {model} non disponibile, provo il successivo")
+            continue
+        return out
+    return None
+
+
+GROQ_MODELS = [m.strip() for m in (os.environ.get("GROQ_MODELS") or "openai/gpt-oss-120b,qwen/qwen3.8-27b").split(",") if m.strip()]
+
+
+def _groq_call(key, model, system, prompt_text, temperature, task):
     body = {
-        "model": "llama-3.3-70b-versatile",
+        "model": model,
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt_text}],
         "temperature": temperature,
         "response_format": {"type": "json_object"},
@@ -513,12 +528,15 @@ def _groq_json(prompt_text, schema, temperature=0.5, task="altro"):
             if r.status_code == 429 or r.status_code >= 500:
                 time.sleep(30 * (attempt + 1))
                 continue
+            if r.status_code in (400, 404) and ("model_not_found" in r.text or "decommissioned" in r.text):
+                return "modello assente"
             if not r.ok:
-                print(f"  Groq errore {r.status_code}: {r.text[:200]}")
+                print(f"::warning title=Groq non disponibile::{model} {r.status_code}: {r.text[:200]}")
                 return None
             text = r.json()["choices"][0]["message"]["content"]
             result = json.loads(text)
-            record_usage(task, "groq-llama3", status="ok")
+            record_usage(task, f"groq-{model.split('/')[-1]}", status="ok")
+            globals()["LAST_GROQ"] = f"groq-{model.split('/')[-1]}"
             return result
         except Exception as e:
             print(f"  Groq eccezione: {e}")
@@ -571,7 +589,7 @@ def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
         result = _groq_json(_parts_to_text(parts), schema, temperature, task)
         if result is not None:
             global LAST_MODEL
-            LAST_MODEL = "groq-llama3"
+            LAST_MODEL = globals().get("LAST_GROQ", "groq")
             return result
     raise RuntimeError(f"Gemini non disponibile: {last_error}")
 

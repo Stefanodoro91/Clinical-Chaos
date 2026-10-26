@@ -6,34 +6,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Prova la chiave Groq (senza mostrarla)
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: {python-version: "3.12"}
+      - run: pip install -q requests
+      - name: Controllo doppioni con il codice del bot
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
-          python3 - <<'PY'
-          import os, json, urllib.request, urllib.error
-          k = os.environ.get("GROQ_API_KEY", "")
-          if not k:
-              print("::warning title=Groq::secret GROQ_API_KEY assente o vuoto"); raise SystemExit
-          print(f"::notice title=Groq::secret presente ({len(k)} caratteri, inizia con {k[:4]})")
-          def call(url, data=None):
-              req = urllib.request.Request(url, data=json.dumps(data).encode() if data else None,
-                    headers={"Authorization": f"Bearer {k}", "Content-Type": "application/json", "User-Agent": "ClinicalResearchChaosBot"})
-              try:
-                  with urllib.request.urlopen(req, timeout=30) as r: return r.status, r.read().decode()
-              except urllib.error.HTTPError as e: return e.code, e.read().decode()[:300]
-          s, body = call("https://api.groq.com/openai/v1/models")
-          print(f"::notice title=Groq modelli::HTTP {s}")
-          if s == 200:
-              ids = [m["id"] for m in json.loads(body)["data"]]
-              print(f"::notice title=Groq llama-3.3-70b-versatile::{'presente' if 'llama-3.3-70b-versatile' in ids else 'NON presente'}")
-              print("::notice title=Groq modelli disponibili::" + ", ".join(sorted(i for i in ids if 'whisper' not in i))[:900])
-          else:
-              print(f"::warning title=Groq risposta::{body[:300]}")
-          for m in ("openai/gpt-oss-120b", "qwen/qwen3.8-27b", "openai/gpt-oss-20b"):
-              s, body = call("https://api.groq.com/openai/v1/chat/completions", {"model": m,
-                     "messages": [{"role": "system", "content": "Rispondi SOLO con un oggetto JSON valido: {\"duplicates\": [numeri]}"},
-                                  {"role": "user", "content": "Titoli: 1) Blinding in RCTs 2) Why blinding matters in trials 3) PICO basics. Quali sono doppioni?"}],
-                     "temperature": 0, "response_format": {"type": "json_object"}})
-              print(f"::notice title=Groq prova {m}::HTTP {s} {body[:220].replace(chr(10),' ')}")
-          PY
+          python3 -c "
+          import content
+          out = content._groq_json('Titoli: 1) Blinding in RCTs 2) Blinding in randomised controlled trials 3) PICO basics. Quali numeri sono doppioni?', {'type':'OBJECT','properties':{'duplicates':{'type':'ARRAY','items':{'type':'INTEGER'}}}}, 0.0, 'controllo doppioni')
+          print('::notice title=Groq dal bot::', out, content.USAGE)
+          "
