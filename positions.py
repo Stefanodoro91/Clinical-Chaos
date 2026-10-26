@@ -41,6 +41,10 @@ RX_REHAB = re.compile(
     # settori scientifico-disciplinari italiani: scienze riabilitative, statistica medica, bioingegneria
     r"physiatr|fisiatri|physical medicine|orthop(a)?edic|ortoped|musculoskeletal|rheumatolog|reumatolog|"
     r"neurolog|epilep|oncolog|haematolog|hematolog|ematolog|rare diseases?|malattie rare|clinical genetic|genetica medica|"
+    r"neuropsycholog|neuropsicolog|cognitive rehabilit|riabilitazione cognitiva|p(a)?ediatric|pediatri|neonatolog|neonatal|"
+    r"child health|radiolog|diagnostic imaging|diagnostica per immagini|radiotherap|radioterapi|nuclear medicine|"
+    r"medicina nucleare|neuroimaging|human genetics|medical genetics|genetic counsel|consulenza genetica|"
+    r"clinical genomics|autoimmun|arthritis|lupus|MED/36|MED/38|MED/16|MED/03|M-PSI/02|"
     r"MED/48|MEDS-26|MED/34|MEDS-19|06/F4|MED/01|MEDS-24|ING-IND/34|IBIO-01|sperimentazion\w* clinic|scienze riabilitative", re.I)
 # per la pertinenza «media»: termini riabilitativi clinici; «rehabilitation» da solo non basta
 # (esclude riabilitazione di detenuti, animali, edifici)
@@ -63,7 +67,8 @@ RX_POSITION = re.compile(
 RX_MEDIUM_TITLE = re.compile(
     r"clinical|patient|trial|epidemiolog|public health|population health|global health|rehabilit|physiother|"
     r"occupational therap|speech|medic(al|ine)|health sciences|nursing|psychiatr|orthopa|anaesthes|anesthes|gastro|"
-    r"obstetric|pharmac|biostat|biomedical|bioengineer|medical imaging|\bmri\b|device", re.I)
+    r"obstetric|pharmac|biostat|biomedical|bioengineer|medical imaging|\bmri\b|device|radiolog|imaging|"
+    r"p(a)?ediatr|neonat|child health|rheumat|neuropsycholog|cognitive|genetic counsel|human genetics", re.I)
 RX_MEDIUM_TEXT = re.compile(r"clinical (studies|study|data|text|trials?|research|practice)|patients?\b|pharmacoepidemiolog|"
                             r"exercise physiolog|adverse (drug )?(events?|reactions?)|rehabilit|physiotherap", re.I)
 RX_CLOSED = re.compile(
@@ -90,8 +95,10 @@ Return:
   occupational or speech therapy, neurorehabilitation, stroke, spinal cord or brain injury, Parkinson, MS,
   prosthetics, rehabilitation engineering, disability, motor recovery, physical and rehabilitation medicine,
   orthopaedic or musculoskeletal rehabilitation, sports medicine, cancer rehabilitation, healthy ageing
-  interventions); "medium" if it is clinical research in any medical field, especially neurology, orthopaedics,
-  rheumatology, geriatrics, oncology, haematology, clinical genetics and rare diseases (clinical trials,
+  interventions, neuropsychology and cognitive rehabilitation, paediatric rehabilitation); "medium" if it is
+  clinical research in any medical field, especially neurology, neuropsychology, orthopaedics, rheumatology and
+  autoimmune diseases, paediatrics and neonatology, radiology, imaging and radiotherapy, geriatrics, oncology,
+  haematology, clinical and human genetics and rare diseases (clinical trials,
   studies with patients, clinical epidemiology, biostatistics for clinical studies, health services or
   implementation research) or clinical/biomedical engineering applied
   to patients or health care (medical devices, imaging, digital health), or if rehabilitation is one
@@ -255,8 +262,9 @@ GUIDED_PROMPT = """Search the web for OPEN academic job advertisements (applicat
 and published in the last 6 weeks) in: {zone}. Search also in {lang}.
 Positions: PhD studentships, post-doc, research fellow or research associate, assistant/associate/full professor,
 lecturer, tenure-track or fixed-term researcher, clinical academic posts.
-Fields: clinical research or clinical trials in any medical area (especially neurology, orthopaedics, physical and
-rehabilitation medicine, geriatrics, oncology and haematology, clinical genetics and rare diseases; not basic
+Fields: clinical research or clinical trials in any medical area (especially neurology, neuropsychology, orthopaedics,
+physical and rehabilitation medicine, rheumatology, paediatrics and neonatology, radiology and medical imaging,
+geriatrics, oncology and haematology, clinical genetics and rare diseases; not basic
 or preclinical science), rehabilitation, physiotherapy/physical therapy,
 occupational therapy, speech therapy, neurorehabilitation, sports medicine, disability and assistive technology,
 clinical or biomedical engineering, medical devices, biostatistics or epidemiology for clinical research.

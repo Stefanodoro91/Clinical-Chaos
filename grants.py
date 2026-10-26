@@ -1561,7 +1561,8 @@ def og_tags(cfg, title, description, path):
 
 
 AREA_LABELS = {"rehab": "Rehabilitation", "clinical": "Clinical research", "engineering": "Clinical & biomedical engineering",
-               "neuro": "Neurology", "msk": "Physiatry & orthopaedics", "ageing": "Ageing & geriatrics",
+               "neuro": "Neurology", "neuropsych": "Neuropsychology", "msk": "Physiatry & orthopaedics",
+               "rheum": "Rheumatology", "paeds": "Paediatrics", "radiology": "Radiology & imaging", "ageing": "Ageing & geriatrics",
                "onco": "Oncology & haematology", "genetics": "Clinical genetics & rare diseases", "open": "Open topic"}
 
 
@@ -1574,7 +1575,8 @@ def areas(g):
     if "Ricerca clinica" in mg:
         out.append("clinical")
     for group, key in (("Neurologia", "neuro"), ("Ictus", "neuro"), ("Parkinson", "neuro"), ("Fisiatria e ortopedia", "msk"),
-                       ("Invecchiamento", "ageing"), ("Oncologia ed ematologia", "onco"),
+                       ("Neuropsicologia", "neuropsych"), ("Reumatologia", "rheum"), ("Pediatria", "paeds"),
+                       ("Radiologia e imaging", "radiology"), ("Invecchiamento", "ageing"), ("Oncologia ed ematologia", "onco"),
                        ("Genetica clinica e malattie rare", "genetics")):
         if group in mg and key not in out:
             out.append(key)
