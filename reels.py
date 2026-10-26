@@ -60,7 +60,10 @@ def build_reel(slide_paths, out_path, cfg, accent=None, per_slide=4.6, edge=2.8,
     accent = accent or cfg["colors"]["accent"]
     slide_paths = list(slide_paths) if images is None else list(range(len(images)))
     total = len(slide_paths)
-    lengths = [edge if i in (0, total - 1) else per_slide for i in range(total)]
+    if isinstance(per_slide, (list, tuple)):                   # durate già calcolate slide per slide
+        lengths = [float(x) for x in per_slide][:total] + [edge] * max(0, total - len(per_slide))
+    else:
+        lengths = [edge if i in (0, total - 1) else per_slide for i in range(total)]
     duration = sum(lengths) - (total - 1) * fade
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
@@ -91,6 +94,21 @@ def build_reel(slide_paths, out_path, cfg, accent=None, per_slide=4.6, edge=2.8,
                 "-movflags", "+faststart", "-t", f"{duration:.2f}", str(out_path)]
         subprocess.run(cmd, check=True)
     return round(duration, 1)
+
+
+WPM = 180            # lettura su telefono, testo in inglese per non madrelingua: più lenta della media (≈ 230)
+
+
+def reading_lengths(total, words_per_slide, edge=3.5, minimum=5.0, maximum=11.0, cap=88.0):
+    """Durata di ogni slide in base alle parole da leggere: copertina e chiusura `edge` secondi, le altre
+    1,5 s per orientarsi + il tempo di lettura, tra `minimum` e `maximum`; reel entro `cap` secondi."""
+    words = list(words_per_slide) + [words_per_slide[-1] if words_per_slide else 30] * total
+    inner = [max(minimum, min(maximum, 1.5 + words[i] * 60 / WPM)) for i in range(total - 2)]
+    room = cap - 2 * edge
+    if sum(inner) > room:                                   # troppo lungo: si accorcia in proporzione
+        k = room / sum(inner)
+        inner = [max(minimum * 0.9, x * k) for x in inner]
+    return [edge] + [round(x, 1) for x in inner] + [edge]
 
 
 def reel_caption(post_entry, caption_text, cfg):

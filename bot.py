@@ -385,6 +385,29 @@ REEL_KINDS = {   # tipo di carosello → musica (cartella Drive «Musica/…»),
 }
 
 
+def reel_words(kind, p, total):
+    """Parole da leggere in ogni slide interna del carosello (stima dai testi salvati), per dare a ogni slide
+    del reel il tempo di lettura giusto."""
+    n = max(1, total - 2)
+    if kind == "research":
+        try:
+            m = load(ROOT / "methodology.json", [])
+            items = m if isinstance(m, list) else list(m.values())
+            entry = next((x for x in items if x.get("id") == p.get("id")), None)
+        except Exception:
+            entry = None
+        if entry and entry.get("points"):
+            counts = [len(f"{pt.get('heading', '')} {pt.get('body', '')}".split()) for pt in entry["points"]]
+            avg = sum(counts) / len(counts)
+            return [avg] * n                 # le slide extra (regola, invito) hanno meno testo: la media basta
+        return [32] * n
+    if kind == "positions":
+        return [55] * n                      # scheda: tipo, titolo, ente, luogo, scadenza, sintesi
+    if kind == "grant":
+        return [45] * n                      # due slide di testo e la scheda con i dati del bando
+    return [35] * n
+
+
 def reel_run(posted):
     """Reel da un carosello già pubblicato e non ancora trasformato in reel: metodologia (ultimi 21 giorni), bando,
     posizioni o post speciale (ultimi 10 giorni), a rotazione tra i tipi. REEL_SOURCE: latest (rotazione),
@@ -423,7 +446,8 @@ def reel_run(posted):
     PREVIEW_DIR.mkdir(exist_ok=True)
     video = PREVIEW_DIR / "reel.mp4"
     accent = CONFIG.get("grant_accent", "#FFB547") if kind == "grant" else CONFIG["colors"]["accent"]
-    seconds = reels.build_reel(slides, video, CONFIG, accent=accent, mood=style["music"])
+    lengths = reels.reading_lengths(len(slides), reel_words(kind, p, len(slides)))
+    seconds = reels.build_reel(slides, video, CONFIG, accent=accent, mood=style["music"], per_slide=lengths)
     caption = (f"{p['title']}\n\n" + style["text"].format(seconds=round(seconds)) + "\n\n"
                + " ".join(CONFIG.get("fixed_hashtags", []) + style["tags"]))
     print(f"Reel da: {p['title']} ({kind}, musica {style['music']}, {len(slides)} slide, {seconds} s)\n--- Didascalia ---\n{caption}")
