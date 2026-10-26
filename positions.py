@@ -183,7 +183,10 @@ def _rss_items(xml_text):
     return out
 
 
-def _html_items(html, base):
+RX_BANDO = re.compile(r"\b(bando|bandi|avviso|selezion\w*|concorso|call for applications)\b", re.I)
+
+
+def _html_items(html, base, extra=None):
     """Link degli annunci in una pagina di risultati: il testo del link deve sembrare una posizione."""
     out, seen = [], set()
     host = urlparse(base).netloc
@@ -191,7 +194,7 @@ def _html_items(html, base):
         href, text = m.group(1), grants.html_to_text(m.group(2))
         url = urljoin(base, unescape(href))
         if (len(text) < 12 or len(text) > 220 or url in seen or urlparse(url).netloc != host
-                or not RX_POSITION.search(text)):
+                or not (RX_POSITION.search(text) or (extra and extra.search(text)))):
             continue
         seen.add(url)
         out.append({"title": text, "url": url, "snippet": ""})
@@ -447,7 +450,8 @@ def collect(sources=None, guided=True):
                 if head.startswith("<?xml") or "<rss" in head or "<feed" in head:
                     items = _rss_items(text)
                 else:   # anche le fonti «rss» che rispondono con una pagina HTML
-                    items = _html_items(text, src["url"])
+                    # enti «:tema»: valgono anche i link «bando/avviso/selezione» (bandi in PDF senza tipo nel titolo)
+                    items = _html_items(text, src["url"], RX_BANDO if flag == "tema" else None)
             # se la fonte è già una ricerca per tema (es. «rehabilitation»), basta che sia una posizione:
             # la pertinenza la controlla poi Gemini sull'annuncio
             # «:tema» = ente già dedicato a ricerca clinica e riabilitazione (es. IRCCS di neuroriabilitazione):
@@ -456,7 +460,8 @@ def collect(sources=None, guided=True):
             kept = 0
             for it in items:
                 blob = f"{it['title']} {it['snippet']}"
-                if it["url"] and RX_POSITION.search(blob) and (topic_search or RX_REHAB.search(blob)):
+                if it["url"] and (RX_POSITION.search(blob) or (flag == "tema" and RX_BANDO.search(blob))) \
+                        and (topic_search or RX_REHAB.search(blob)):
                     found.setdefault(_id(it["url"]), dict(it, source=src["nome"]))
                     kept += 1
             report.append((src["nome"], len(items), kept, ""))
