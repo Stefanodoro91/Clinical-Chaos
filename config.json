@@ -13,7 +13,7 @@
     "#ResearchMethodology"
   ],
   "max_new_files_per_run": 1,
-  "max_posts_per_file": 12,
+  "max_posts_per_file": 5,
   "low_queue_warning": 5,
   "ai_images": true,
   "image_model": "flux",
