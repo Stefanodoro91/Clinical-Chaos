@@ -205,12 +205,146 @@ def story_frame(slide, cfg, index, total, accent):
     return img
 
 
-def build_story_reel(spec, out_path, cfg):
-    """Reel di annuncio da una lista di slide (spec): durata 25–30 secondi."""
+def frame_seconds(slide):
+    """Tempo a schermo di una schermata del reel: copertina e chiusura brevi, le altre secondo le parole
+    (circa 200 al minuto, più un secondo per orientarsi), tra 3 e 6 secondi."""
+    if slide.get("type") in ("cover", "closing"):
+        return 3.0
+    words = len(f"{slide.get('title', '')} {slide.get('body', '')}".split())
+    return round(max(3.0, min(6.0, 1.0 + words / 3.4)), 1)
+
+
+def build_story_reel(spec, out_path, cfg, mood="Aziendale|Speciale|Funky"):
+    """Reel nativo verticale da una lista di schermate (spec): copertina, punti brevi, chiusura. 20–30 secondi."""
     accent = spec.get("accent") or cfg.get("announcement_accent", "#FF7A59")
     slides = spec["slides"]
     imgs = [story_frame(s, cfg, i, len(slides), accent) for i, s in enumerate(slides)]
-    return build_reel([], out_path, cfg, accent=accent, per_slide=4.8, edge=3.2, images=imgs, mood="Aziendale|Speciale|Funky")
+    return build_reel([], out_path, cfg, accent=accent, per_slide=[frame_seconds(s) for s in slides], images=imgs,
+                      mood=spec.get("mood") or mood)
+
+
+# ---------------------------------------------------------------- copioni dei reel, diversi per tipo di post
+def _clip_words(text, n):
+    words = (text or "").split()
+    return " ".join(words) if len(words) <= n else " ".join(words[:n]).rstrip(",;:") + "…"
+
+
+def _short_sentence(text, n):
+    """Prima frase intera se non supera n parole, altrimenti niente (mai frasi tagliate a metà)."""
+    import re
+    first = re.split(r"(?<=[.!?])\s+", (text or "").strip())[0]
+    return first if 0 < len(first.split()) <= n else ""
+
+
+def _what_it_funds(summary):
+    """«This funding opportunity from X aims to pilot…» → «Pilot…»: la frase sui progetti finanziati, intera."""
+    import re
+    for sent in re.split(r"(?<=[.!?])\s+", (summary or "").strip())[:2]:
+        core = re.sub(r"^(this|the) (funding opportunity|funding call|call|programme|program|grant|award|scheme|"
+                      r"initiative|notice of funding opportunity)( from [^,]+?| by [^,]+?)?,? "
+                      r"(aims to|seeks to|is intended to|will|supports|funds|provides funding for|invites applications to)\s+",
+                      "", sent, flags=re.I)
+        core = core[:1].upper() + core[1:]
+        if 0 < len(core.split()) <= 24:
+            return core
+    return ""
+
+
+REEL_SCRIPT_PROMPT = """Turn this Instagram carousel about research methodology into the script of a ~25-second reel
+for clinical researchers. Use ONLY the content below: no new facts, numbers, studies or claims.
+- hook: max 8 words, a curiosity hook built on the title (a question or a crisp claim).
+- beats: exactly 3, the most useful points, each with title (max 6 words) and line (max 14 words, plain language).
+- takeaway: the message to remember, max 14 words.
+
+Title: {title}
+Points:
+{points}
+Takeaway: {takeaway}"""
+
+REEL_SCRIPT_SCHEMA = {"type": "OBJECT", "properties": {
+    "hook": {"type": "STRING"}, "takeaway": {"type": "STRING"},
+    "beats": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {
+        "title": {"type": "STRING"}, "line": {"type": "STRING"}}, "required": ["title", "line"]}}},
+    "required": ["hook", "beats", "takeaway"]}
+
+
+def research_spec(entry, cfg):
+    """Metodologia: gancio, 3 punti essenziali (riscritti brevi da Gemini, solo dal carosello), messaggio finale."""
+    points = entry.get("points") or []
+    script = None
+    try:
+        import content
+        txt = "\n".join(f"- {p['heading']}: {p['body']}" for p in points)
+        script = content.gemini_json([{"text": REEL_SCRIPT_PROMPT.format(title=entry["title"], points=txt,
+                                                                          takeaway=entry.get("takeaway", ""))}],
+                                     REEL_SCRIPT_SCHEMA, 0.3, task="copione reel")
+    except Exception as e:
+        print(f"  Copione del reel non scritto da Gemini ({str(e)[:120]}): uso i titoli del carosello.")
+    if script and len(script.get("beats", [])) >= 2:
+        hook = _clip_words(script["hook"], 9)
+        beats = [(_clip_words(b["title"], 7), _clip_words(b["line"], 16)) for b in script["beats"][:3]]
+        takeaway = _clip_words(script["takeaway"], 16)
+    else:
+        hook = entry["title"]
+        beats = [(p["heading"], _short_sentence(p["body"], 20)) for p in points[:3]]
+        takeaway = _clip_words(entry.get("takeaway", ""), 16)
+    slides = [{"type": "cover", "kicker": (entry.get("category") or "Research methods").upper(), "title": hook}]
+    slides += [{"type": "point", "number": f"{i:02d}", "title": t, "body": b} for i, (t, b) in enumerate(beats, 1)]
+    if takeaway:
+        slides.append({"type": "point", "number": "→", "title": "Remember", "body": takeaway})
+    slides.append({"type": "closing", "title": "Full carousel with references on our profile", "body": "Save it for later"})
+    return {"accent": cfg["colors"]["accent"], "mood": "Classica", "slides": slides}
+
+
+def grant_spec(p, v, cfg, today=None):
+    """Bando: solo dati verificati sul testo ufficiale (scadenza, Paesi ammessi, cosa finanzia). None se scaduto."""
+    from datetime import date
+    import grants
+    import stories
+    today = today or date.today()
+    deadline = grants._date(p.get("deadline"))
+    if not deadline or (deadline - today).days < 7:
+        return None
+    days = (deadline - today).days
+    slides = [{"type": "cover", "kicker": "FUNDING CALL", "title": p["title"],
+               "body": _clip_words(v.get("programme") or p.get("funder", ""), 14)},
+              {"type": "point", "number": "01", "title": "Deadline",
+               "body": f"{grants._fmt_date(deadline)}: {days} days left to apply."}]
+    where = stories.open_to(v) if v else None
+    if where:
+        slides.append({"type": "point", "number": "02", "title": "Who can apply", "body": f"Open to: {where}."})
+    what = _what_it_funds(v.get("summary") or p.get("summary", ""))
+    if what:
+        slides.append({"type": "point", "number": f"{len(slides):02d}", "title": "What it funds", "body": what})
+    slides.append({"type": "closing", "title": "Official call and all open calls", "body": "Link in bio"})
+    return {"accent": cfg.get("grant_accent", "#FFB547"), "mood": "Rock", "slides": slides}
+
+
+def positions_spec(p, archive, cfg, today=None, max_jobs=4):
+    """Posizioni: fino a 4 annunci ancora aperti (tipo, titolo, ente, Paese, scadenza); gli altri si contano."""
+    from datetime import date
+    import grants
+    import positions
+    today = today or date.today()
+    jobs = []
+    for pid in p.get("position_ids", []):
+        v = archive.get(pid) or {}
+        d = grants._date(v.get("deadline"))
+        if v.get("status") == "ok" and (not d or d >= today):
+            jobs.append((v, d))
+    if len(jobs) < 2:
+        return None
+    slides = [{"type": "cover", "kicker": "ACADEMIC POSITIONS", "title": f"{len(jobs)} open positions this week",
+               "body": "Clinical research, biomedical engineering and rehabilitation."}]
+    for i, (v, d) in enumerate(jobs[:max_jobs], 1):
+        bits = [positions.TYPES.get(v.get("type"), ""), _clip_words(v.get("institution", ""), 6), v.get("country", ""),
+                f"deadline {grants._fmt_date(d)}" if d else ""]
+        slides.append({"type": "point", "number": f"{i:02d}", "title": _clip_words(v.get("title", ""), 9),
+                       "body": " · ".join(b for b in bits if b)})
+    more = len(jobs) - max_jobs
+    slides.append({"type": "closing", "title": (f"+{more} more, " if more > 0 else "") + "all with deadlines and links",
+                   "body": "Link in bio"})
+    return {"accent": cfg["colors"]["accent"], "mood": "Funky", "slides": slides}
 
 
 if __name__ == "__main__":     # prova locale: python reels.py <cartella slide> <file.mp4>

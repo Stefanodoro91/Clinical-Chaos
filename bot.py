@@ -385,6 +385,26 @@ REEL_KINDS = {   # tipo di carosello → musica (cartella Drive «Musica/…»),
 }
 
 
+def reel_spec(kind, p):
+    """Copione del reel per metodologia, bandi e posizioni (None: si usano le slide del carosello)."""
+    import reels
+    try:
+        if kind == "research":
+            m = load(ROOT / "methodology.json", [])
+            items = m if isinstance(m, list) else list(m.values())
+            entry = next((x for x in items if x.get("id") == p.get("id")), None)
+            return reels.research_spec(entry, CONFIG) if entry and entry.get("points") else None
+        if kind == "grant":
+            import grants
+            return reels.grant_spec(p, grants.load_verified().get(p.get("grant_id"), {}), CONFIG)
+        if kind == "positions":
+            import positions
+            return reels.positions_spec(p, positions.load_archive(), CONFIG)
+    except Exception as e:
+        print(f"::warning title=Copione del reel::{kind}: {str(e)[:200]} (uso le slide del carosello)")
+    return None
+
+
 def reel_words(kind, p, total):
     """Parole da leggere in ogni slide interna del carosello (stima dai testi salvati), per dare a ogni slide
     del reel il tempo di lettura giusto."""
@@ -446,8 +466,12 @@ def reel_run(posted):
     PREVIEW_DIR.mkdir(exist_ok=True)
     video = PREVIEW_DIR / "reel.mp4"
     accent = CONFIG.get("grant_accent", "#FFB547") if kind == "grant" else CONFIG["colors"]["accent"]
-    lengths = reels.reading_lengths(len(slides), reel_words(kind, p, len(slides)))
-    seconds = reels.build_reel(slides, video, CONFIG, accent=accent, mood=style["music"], per_slide=lengths)
+    spec = reel_spec(kind, p)
+    if spec:                         # reel nativo e breve, scritto per il tipo di post (20–30 secondi)
+        seconds = reels.build_story_reel(spec, video, CONFIG, mood=style["music"])
+    else:                            # post speciali: le slide del carosello, il tempo di leggerle (max 40 s)
+        lengths = reels.reading_lengths(len(slides), reel_words(kind, p, len(slides)), cap=40.0)
+        seconds = reels.build_reel(slides, video, CONFIG, accent=accent, mood=style["music"], per_slide=lengths)
     caption = (f"{p['title']}\n\n" + style["text"].format(seconds=round(seconds)) + "\n\n"
                + " ".join(CONFIG.get("fixed_hashtags", []) + style["tags"]))
     print(f"Reel da: {p['title']} ({kind}, musica {style['music']}, {len(slides)} slide, {seconds} s)\n--- Didascalia ---\n{caption}")
