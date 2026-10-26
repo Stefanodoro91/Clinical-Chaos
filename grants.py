@@ -309,7 +309,7 @@ def region(g, v, cfg):
     gid = g.get("id", "")
     if "EDCTP" in gid.upper():
         return REGIONS[0]
-    if gid.startswith("EU-"):
+    if gid.startswith("EU-") or (g.get("fonte") or "").startswith("ERA-LEARN"):
         return "Europe"
     if gid.startswith("GG-") or g.get("fonte") == "Grants.gov":
         return "North America"
