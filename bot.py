@@ -367,36 +367,66 @@ def publish_reel(video_path, caption):
     return ig("POST", f"{user}/media_publish", creation_id=c["id"])["id"]
 
 
+REEL_KINDS = {   # tipo di carosello → musica (cartella Drive «Musica/…»), testo e hashtag del reel
+    "research": {"music": "Classica",
+                 "text": "The key points in about {seconds} seconds. The full carousel, with references, is on our profile: "
+                         "save it for your next protocol.",
+                 "tags": ["#Reels", "#ResearchTips", "#EvidenceBasedPractice"]},
+    "grant": {"music": "Rock",
+              "text": "A funding call worth knowing, in {seconds} seconds. Official call and all open calls, checked on the "
+                      "official text: link in bio.",
+              "tags": ["#Reels", "#ResearchFunding", "#GrantOpportunity"]},
+    "positions": {"music": "Funky",
+                  "text": "New academic positions in {seconds} seconds. All positions, with deadlines and links: link in bio.",
+                  "tags": ["#Reels", "#AcademicJobs", "#Postdoc", "#PhDPosition"]},
+    "announcement": {"music": "Aziendale|Speciale|Funky",
+                     "text": "More on our profile and at the link in bio.",
+                     "tags": ["#Reels", "#ResearchCommunity"]},
+}
+
+
 def reel_run(posted):
-    """Reel dal carosello di metodologia più recente non ancora trasformato in reel (pubblicato negli ultimi 21 giorni)."""
+    """Reel da un carosello già pubblicato e non ancora trasformato in reel: metodologia (ultimi 21 giorni), bando,
+    posizioni o post speciale (ultimi 10 giorni), a rotazione tra i tipi. REEL_SOURCE: latest (rotazione),
+    research, grant, positions, special (carosello speciale) oppure announcement (reel di reel_announcement.json)."""
     import reels
-    if (os.environ.get("REEL_SOURCE") or "").strip().lower() == "announcement":
+    source = (os.environ.get("REEL_SOURCE") or "latest").strip().lower()
+    if source == "announcement":
         return reel_announcement_run(posted)
+    force = {"special": "announcement"}.get(source, source) if source != "latest" else None
     done = {p.get("reel_of") for p in posted if p.get("kind") == "reel"}
-    recent = datetime.now(timezone.utc).timestamp() - 21 * 86400
-    source = None
+    now = datetime.now(timezone.utc).timestamp()
+    latest = {}                      # per ogni tipo, il carosello più recente non ancora trasformato in reel
     for p in reversed(posted):
-        if (p.get("kind") or "research") != "research" or p.get("id") in done or not p.get("time"):
+        kind = p.get("kind") or "research"
+        if kind not in REEL_KINDS or kind in latest or p.get("id") in done or not p.get("time") or force not in (None, kind):
             continue
-        if datetime.fromisoformat(p["time"]).timestamp() < recent:
-            break
+        if datetime.fromisoformat(p["time"]).timestamp() < now - (21 if kind == "research" else 10) * 86400:
+            continue                 # bandi, posizioni e speciali: solo se usciti negli ultimi 10 giorni
         safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in p["id"])
         folder = IMAGES_DIR / f"{p['date']}-{safe}"
         slides = sorted(folder.glob("slide-*.jpg"), key=lambda x: int(x.stem.split("-")[1]))
         if len(slides) >= 3:
-            source = (p, slides)
-            break
-    if not source:
+            latest[kind] = (p, slides)
+    if not latest:
         print("::notice title=Reel::nessun carosello recente da trasformare in reel")
         return
-    p, slides = source
+    # a rotazione: il tipo che non ha un reel da più tempo (a parità, prima la metodologia)
+    last_reel = {}
+    by_id = {p.get("id"): (p.get("kind") or "research") for p in posted}
+    for r in posted:
+        if r.get("kind") == "reel" and r.get("reel_of"):
+            last_reel[by_id.get(r["reel_of"], "research")] = r.get("time", "")
+    kind = min(latest, key=lambda k: (last_reel.get(k, ""), list(REEL_KINDS).index(k)))
+    p, slides = latest[kind]
+    style = REEL_KINDS[kind]
     PREVIEW_DIR.mkdir(exist_ok=True)
     video = PREVIEW_DIR / "reel.mp4"
-    seconds = reels.build_reel(slides, video, CONFIG, accent=CONFIG["colors"]["accent"])
-    caption = (f"{p['title']}\n\nThe key points in about {round(seconds)} seconds. The full carousel, with references, "
-               f"is on our profile: save it for your next protocol.\n\n"
-               + " ".join(CONFIG.get("fixed_hashtags", []) + ["#Reels", "#ResearchTips", "#EvidenceBasedPractice"]))
-    print(f"Reel da: {p['title']} ({len(slides)} slide, {seconds} s)\n--- Didascalia ---\n{caption}")
+    accent = CONFIG.get("grant_accent", "#FFB547") if kind == "grant" else CONFIG["colors"]["accent"]
+    seconds = reels.build_reel(slides, video, CONFIG, accent=accent, mood=style["music"])
+    caption = (f"{p['title']}\n\n" + style["text"].format(seconds=round(seconds)) + "\n\n"
+               + " ".join(CONFIG.get("fixed_hashtags", []) + style["tags"]))
+    print(f"Reel da: {p['title']} ({kind}, musica {style['music']}, {len(slides)} slide, {seconds} s)\n--- Didascalia ---\n{caption}")
     if DRY_RUN:
         (PREVIEW_DIR / "reel-caption.txt").write_text(caption, encoding="utf-8")
         print("Modalità prova: reel non pubblicato. Anteprima nell'artifact 'preview'.")
@@ -426,7 +456,7 @@ def reel_announcement_run(posted):
         return
     PREVIEW_DIR.mkdir(exist_ok=True)
     video = PREVIEW_DIR / "reel.mp4"
-    seconds = reels.build_story_reel(spec, video, CONFIG)
+    seconds = reels.build_story_reel(spec, video, CONFIG)       # musica: Musica/Aziendale (poi Speciale, Funky)
     caption = f"{spec['caption']}\n\n{' '.join(spec.get('hashtags', []))}".strip()
     print(f"Reel speciale: {spec['id']} ({seconds} s)\n--- Didascalia ---\n{caption}")
     if DRY_RUN:

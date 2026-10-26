@@ -7,18 +7,24 @@ on:
   #   metodologia  mar, mer, gio 19:00 e sab 17:00  (sera infrasettimanale e sabato pomeriggio: picchi di Instagram e Bluesky)
   #   posizioni    lun 18:30  (inizio settimana, quando si cercano opportunità)
   #   domenica     pausa
-  # Reel: solo a mano per ora. Storie: workflow stories.yml (lun-ven 9:31).
+  #   reel         mer 12:30 e dom 18:00, da un carosello già uscito, a rotazione: metodologia (musica classica),
+  #                bando (rock), posizioni (funky), speciale (aziendale)
+  # Storie: workflow stories.yml (lun-ven 9:31).
   schedule:
     # Orari in UTC: GitHub ignora il fuso orario. Inverno (fino al 28/3/2027) = ora di Roma - 1; in estate - 2.
     - cron: "30 11 * * 1,2,4,5"   # bando, 12:30 a Roma
     - cron: "0 18 * * 2,3,4"      # metodologia, 19:00 a Roma
     - cron: "0 16 * * 6"          # metodologia, sabato 17:00 a Roma
     - cron: "30 17 * * 1"         # posizioni, lunedì 18:30 a Roma
+    - cron: "30 11 * * 3"         # reel, mercoledì 12:30 a Roma
+    - cron: "0 17 * * 0"          # reel, domenica 18:00 a Roma
     # riserve un'ora dopo: GitHub a volte salta o ritarda i run pianificati; se il post è già uscito, il run salta da solo
     - cron: "30 12 * * 1,2,4,5"   # riserva bando, 13:30 a Roma
     - cron: "0 19 * * 2,3,4"      # riserva metodologia, 20:00 a Roma
     - cron: "0 17 * * 6"          # riserva metodologia, sabato 18:00 a Roma
     - cron: "30 18 * * 1"         # riserva posizioni, lunedì 19:30 a Roma
+    - cron: "30 12 * * 3"         # riserva reel, mercoledì 13:30 a Roma
+    - cron: "0 18 * * 0"          # riserva reel, domenica 19:00 a Roma
   workflow_dispatch:
     inputs:
       dry_run:
@@ -34,9 +40,9 @@ on:
         description: "Solo per positions: quante posizioni nel post (vuoto = raccolta settimanale normale)"
         default: ""
       reel_source:
-        description: "Solo per reel: latest = dal carosello di metodologia più recente, announcement = reel speciale"
+        description: "Solo per reel: latest = a rotazione tra i tipi; research/grant/positions/special = dal carosello di quel tipo; announcement = reel di reel_announcement.json"
         type: choice
-        options: [latest, announcement]
+        options: [latest, research, grant, positions, special, announcement]
         default: latest
 
 permissions:
@@ -91,7 +97,7 @@ jobs:
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
           POSITIONS_PER_POST: ${{ inputs.positions_count }}
           REEL_SOURCE: ${{ inputs.reel_source }}
-          POST_TYPE: ${{ github.event_name == 'schedule' && ((github.event.schedule == '30 11 * * 1,2,4,5' || github.event.schedule == '30 12 * * 1,2,4,5') && 'grant' || ((github.event.schedule == '30 17 * * 1' || github.event.schedule == '30 18 * * 1') && 'positions' || 'research')) || inputs.post_type || 'research' }}
+          POST_TYPE: ${{ github.event_name == 'schedule' && ((github.event.schedule == '30 11 * * 1,2,4,5' || github.event.schedule == '30 12 * * 1,2,4,5') && 'grant' || ((github.event.schedule == '30 17 * * 1' || github.event.schedule == '30 18 * * 1') && 'positions' || ((github.event.schedule == '30 11 * * 3' || github.event.schedule == '30 12 * * 3' || github.event.schedule == '0 17 * * 0' || github.event.schedule == '0 18 * * 0') && 'reel' || 'research'))) || inputs.post_type || 'research' }}
         run: python bot.py
 
       - name: Salva anteprima (solo in modalità prova)

@@ -192,7 +192,7 @@ def build_story_reel(spec, out_path, cfg):
     accent = spec.get("accent") or cfg.get("announcement_accent", "#FF7A59")
     slides = spec["slides"]
     imgs = [story_frame(s, cfg, i, len(slides), accent) for i, s in enumerate(slides)]
-    return build_reel([], out_path, cfg, accent=accent, per_slide=4.8, edge=3.2, images=imgs, mood="Speciale|Funky")
+    return build_reel([], out_path, cfg, accent=accent, per_slide=4.8, edge=3.2, images=imgs, mood="Aziendale|Speciale|Funky")
 
 
 if __name__ == "__main__":     # prova locale: python reels.py <cartella slide> <file.mp4>
