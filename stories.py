@@ -1,4 +1,4 @@
-"""Storie video per Instagram e Facebook (1080×1920, 12 s, brano Pixabay dalla cartella Drive «Musica», o base generata), senza sticker:
+"""Storie video per Instagram e Facebook (1080×1920, 12 s, brano Pixabay da Drive (Rock per i bandi, Funky per la settimana), o base generata), senza sticker:
 - countdown: un bando verificato sul testo ufficiale che scade presto;
 - weekly: le novità della settimana (call, posizioni, caroselli).
 Testo solo nella zona sicura (niente nei primi 250 px e negli ultimi 340 px, coperti dall'app). Invito: «link in bio»."""
@@ -159,7 +159,7 @@ def render(kind, data, out_path, cfg, seed=0):
         p.stdin.write(draw(k / FPS, data, pt).tobytes())
     p.stdin.close()
     p.wait()
-    music.for_video(wav, SECONDS, seed)
+    music.for_video(wav, SECONDS, seed, mood="Rock" if kind == "countdown" else "Funky")
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(silent), "-i", str(wav), "-c:v", "copy", "-c:a", "aac",
                     "-b:a", "160k", "-shortest", "-movflags", "+faststart", str(out_path)], check=True)
     silent.unlink(missing_ok=True)

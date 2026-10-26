@@ -206,18 +206,24 @@ def _folder(drive, parent, name):
 
 
 def library_files(drive, mood=None):
-    """Brani della cartella «Musica»; con `mood` (es. «Metodologia») quelli della sottocartella omonima, se esiste
-    e contiene brani. Le storie usano i brani direttamente in «Musica» (funk)."""
+    """Brani della cartella «Musica». `mood` = sottocartella per genere, anche più d'una in ordine di preferenza
+    («Speciale|Funky»): si usa la prima che contiene brani, altrimenti i brani direttamente in «Musica».
+    Generi: Classica = contenuti scientifici, Funky = posizioni accademiche, Rock = bandi."""
     import os
     root = _folder(drive, os.environ["GDRIVE_FOLDER_ID"], "Musica")
     if not root:
         return []
-    folder = (_folder(drive, root, mood) if mood else None) or root
-    files = drive.files().list(q=f"'{folder}' in parents and trashed = false", pageSize=200,
-                               fields="files(id, name, mimeType)", supportsAllDrives=True,
-                               includeItemsFromAllDrives=True).execute().get("files", [])
-    return sorted((f for f in files if f["name"].lower().endswith(AUDIO_EXT) or f["mimeType"].startswith("audio/")),
-                  key=lambda f: f["name"].lower())
+    for name in [*(mood.split("|") if mood else []), None]:
+        folder = _folder(drive, root, name) if name else root
+        if not folder:
+            continue
+        files = drive.files().list(q=f"'{folder}' in parents and trashed = false", pageSize=200,
+                                   fields="files(id, name, mimeType)", supportsAllDrives=True,
+                                   includeItemsFromAllDrives=True).execute().get("files", [])
+        files = [f for f in files if f["name"].lower().endswith(AUDIO_EXT) or f["mimeType"].startswith("audio/")]
+        if files:
+            return sorted(files, key=lambda f: f["name"].lower())
+    return []
 
 
 def _download(drive, f, folder):
