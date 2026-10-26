@@ -30,7 +30,10 @@ jobs:
               print("::notice title=Groq modelli disponibili::" + ", ".join(sorted(i for i in ids if 'whisper' not in i))[:900])
           else:
               print(f"::warning title=Groq risposta::{body[:300]}")
-          s, body = call("https://api.groq.com/openai/v1/chat/completions", {"model": "llama-3.3-70b-versatile",
-                 "messages": [{"role": "user", "content": "Rispondi con JSON {\"ok\": true}"}], "response_format": {"type": "json_object"}})
-          print(f"::notice title=Groq prova llama-3.3-70b::HTTP {s} {body[:200].replace(chr(10),' ')}")
+          for m in ("openai/gpt-oss-120b", "qwen/qwen3.8-27b", "openai/gpt-oss-20b"):
+              s, body = call("https://api.groq.com/openai/v1/chat/completions", {"model": m,
+                     "messages": [{"role": "system", "content": "Rispondi SOLO con un oggetto JSON valido: {\"duplicates\": [numeri]}"},
+                                  {"role": "user", "content": "Titoli: 1) Blinding in RCTs 2) Why blinding matters in trials 3) PICO basics. Quali sono doppioni?"}],
+                     "temperature": 0, "response_format": {"type": "json_object"}})
+              print(f"::notice title=Groq prova {m}::HTTP {s} {body[:220].replace(chr(10),' ')}")
           PY
