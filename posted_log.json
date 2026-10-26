@@ -360,5 +360,25 @@
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3myptl6cipi2w",
     "threads_id": "18092395391202021",
     "kind": "announcement"
+  },
+  {
+    "date": "2026-10-26",
+    "time": "2026-10-26T20:53:08+00:00",
+    "id": "positions-2026-10-26",
+    "title": "6 open academic positions this week",
+    "source": "Academic positions",
+    "media_id": "17966378331211827",
+    "facebook_id": "1277022912171972_122111345715432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3myslzm5wnk2p",
+    "threads_id": "18104688449016812",
+    "kind": "positions",
+    "position_ids": [
+      "POS-2267a43b03d4",
+      "POS-eb184d9ad5aa",
+      "POS-51e477b3d012",
+      "POS-cebfd2689855",
+      "POS-7dbd2506af18",
+      "POS-c0e0147c5f18"
+    ]
   }
 ]
