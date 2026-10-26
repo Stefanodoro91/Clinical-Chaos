@@ -363,22 +363,22 @@
   },
   {
     "date": "2026-10-26",
-    "time": "2026-10-26T20:53:08+00:00",
-    "id": "positions-2026-10-26",
-    "title": "6 open academic positions this week",
-    "source": "Academic positions",
-    "media_id": "17966378331211827",
-    "facebook_id": "1277022912171972_122111345715432698",
-    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3myslzm5wnk2p",
-    "threads_id": "18104688449016812",
-    "kind": "positions",
-    "position_ids": [
-      "POS-2267a43b03d4",
-      "POS-eb184d9ad5aa",
-      "POS-51e477b3d012",
-      "POS-cebfd2689855",
-      "POS-7dbd2506af18",
-      "POS-c0e0147c5f18"
-    ]
+    "time": "2026-10-26T20:59:06+00:00",
+    "id": "grant-GG-RFA-DP-27-036",
+    "title": "Funding for Cancer Clinical Decision Support Tools",
+    "source": "GrantFinder",
+    "media_id": "17912342307327543",
+    "facebook_id": "1277022912171972_122111348157432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mysmfbg4ax22",
+    "threads_id": "18123251729290568",
+    "kind": "grant",
+    "grant_id": "GG-RFA-DP-27-036",
+    "url": "https://www.grants.gov/search-results-detail/363309",
+    "deadline": "2027-03-23",
+    "funder": "Centers for Disease Control and Prevention - ERA",
+    "summary": "This funding opportunity from the Centers for Disease Control and Prevention aims to pilot test, implement, and evaluate clinical decision support tools integrated into electronic health records to facilitate evidence-based screening and management for cervical, breast, and colorectal cancers. Component A focuses on cervical cancer tools within large health systems, while Component B focuses on breast and colorectal cancer tools. Eligible applicants include various US government, educational, and non-profit entities.",
+    "italy_evidence": "",
+    "official_source": "Grants.gov opportunity 363309",
+    "grant_title": "Pilot Testing, Implementation, and Evaluation of the Cervical, Breast and Colorectal Cancer Clinical Decision Support Tools"
   }
 ]
