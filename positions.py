@@ -116,6 +116,11 @@ Return:
 - deadline_evidence: the sentence or phrase of the text, copied word for word, that states the deadline
   ("" if none).
 - summary: 35-60 words in English: research topic, main tasks, key requirements. Factual, no hype.
+- street_address, postal_code, region: the workplace street address, postal code and region/state/province,
+  copied from the text; "" for each one not written in the advertisement (never guess or look up).
+- salary_min, salary_max: the gross salary numbers stated in the text (digits only, no separators), "" if
+  not stated; salary_currency: ISO code (EUR, GBP, USD, SEK...); salary_unit: "YEAR", "MONTH", "WEEK" or
+  "HOUR"; salary_evidence: the phrase of the text that states the salary, copied word for word ("" if none).
 
 ADVERTISEMENT ({url}):
 {text}"""
@@ -130,6 +135,9 @@ VERIFY_SCHEMA = {
         "title": {"type": "STRING"}, "institution": {"type": "STRING"}, "country": {"type": "STRING"},
         "city": {"type": "STRING"}, "deadline": {"type": "STRING"}, "deadline_evidence": {"type": "STRING"},
         "summary": {"type": "STRING"},
+        "street_address": {"type": "STRING"}, "postal_code": {"type": "STRING"}, "region": {"type": "STRING"},
+        "salary_min": {"type": "STRING"}, "salary_max": {"type": "STRING"}, "salary_currency": {"type": "STRING"},
+        "salary_unit": {"type": "STRING", "enum": ["YEAR", "MONTH", "WEEK", "HOUR", ""]}, "salary_evidence": {"type": "STRING"},
     },
     "required": ["is_open_position", "position_type", "relevance", "area", "title", "institution", "country", "city",
                  "deadline", "deadline_evidence", "summary"],
@@ -432,7 +440,26 @@ def verify(item):
         "city": content._clip(out.get("city") or (inpa or {}).get("city", ""), 60),
         "deadline": deadline, "deadline_evidence": content._clip(ev, 200) if deadline else "",
         "summary": content._clip(out.get("summary", ""), 500),
+        **_place_salary(out, text),
     }
+
+
+def _place_salary(out, text):
+    """Indirizzo e stipendio solo se scritti davvero nell'annuncio (controllo sul testo): mai stimati."""
+    plain = grants._simple(text)
+    res = {}
+    for k in ("street_address", "postal_code", "region"):
+        val = (out.get(k) or "").strip()
+        if val and grants._simple(val) in plain:
+            res[k] = content._clip(val, 120)
+    ev = (out.get("salary_evidence") or "").strip()
+    nums = [re.sub(r"\D", "", out.get(k) or "") for k in ("salary_min", "salary_max")]
+    cur, unit = (out.get("salary_currency") or "").strip().upper(), out.get("salary_unit") or ""
+    if ev and grants._simple(ev) in plain and nums[0] and re.fullmatch(r"[A-Z]{3}", cur) and unit:
+        digits = re.sub(r"\D", "", ev)
+        if all(n in digits for n in nums if n):
+            res["salary"] = {"min": int(nums[0]), "max": int(nums[1]) if nums[1] else None, "currency": cur, "unit": unit}
+    return res
 
 
 def refresh(archive, limit=25, today=None):
@@ -773,6 +800,9 @@ def job_jsonld(k, v, d):
     address = {"@type": "PostalAddress", "addressCountry": v["country"]}
     if v.get("city"):
         address["addressLocality"] = v["city"]
+    for k, field in (("region", "addressRegion"), ("postal_code", "postalCode"), ("street_address", "streetAddress")):
+        if v.get(k):                       # solo se scritti nell'annuncio
+            address[field] = v[k]
     data = {
         "@context": "https://schema.org/",
         "@type": "JobPosting",
@@ -788,6 +818,14 @@ def job_jsonld(k, v, d):
     }
     if d:
         data["validThrough"] = f"{d.isoformat()}T23:59:59"
+    sal = v.get("salary")
+    if sal:                                 # solo se lo stipendio è scritto nell'annuncio
+        value = {"@type": "QuantitativeValue", "unitText": sal["unit"]}
+        if sal.get("max") and sal["max"] != sal["min"]:
+            value.update(minValue=sal["min"], maxValue=sal["max"])
+        else:
+            value["value"] = sal["min"]
+        data["baseSalary"] = {"@type": "MonetaryAmount", "currency": sal["currency"], "value": value}
     if v.get("type") == "phd":
         data["educationRequirements"] = {"@type": "EducationalOccupationalCredential", "credentialCategory": "postgraduate degree"}
     text = json.dumps(data, ensure_ascii=False, indent=1).replace("</", "<\\/")
