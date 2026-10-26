@@ -7,7 +7,7 @@ on:
   #   metodologia  mar, mer, gio 19:00 e sab 17:00  (sera infrasettimanale e sabato pomeriggio: picchi di Instagram e Bluesky)
   #   posizioni    lun 18:30  (inizio settimana, quando si cercano opportunità)
   #   domenica     pausa
-  # Reel e storie: solo a mano per ora.
+  # Reel: solo a mano per ora. Storie: workflow stories.yml (lun-ven 9:31).
   schedule:
     # Orari in UTC: GitHub ignora il fuso orario. Inverno (fino al 28/3/2027) = ora di Roma - 1; in estate - 2.
     - cron: "30 11 * * 1,2,4,5"   # bando, 12:30 a Roma

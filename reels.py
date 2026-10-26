@@ -2,11 +2,8 @@
 con un leggero zoom, dissolvenza tra le slide e una musica di sottofondo originale generata qui (niente diritti)."""
 
 import json
-import math
-import struct
 import subprocess
 import tempfile
-import wave
 from pathlib import Path
 
 from PIL import Image, ImageDraw
@@ -51,29 +48,9 @@ def frame(slide_path, cfg, index, total, accent):
 
 
 def music(path, seconds, seed=0):
-    """Sottofondo originale e tenue: accordi lenti (do–la–fa–sol) con inviluppo morbido, generati in Python."""
-    rate = 44100
-    roots = [261.63, 220.00, 174.61, 196.00]           # C, A, F, G
-    chord = [1.0, 1.26, 1.5]                           # triade maggiore approssimata (ottava giusta)
-    bar = 4.0
-    n = int(seconds * rate)
-    frames = bytearray()
-    for i in range(n):
-        t = i / rate
-        k = int(t // bar) % len(roots)
-        local = (t % bar) / bar
-        env = min(1.0, local * 4) * min(1.0, (1 - local) * 4)        # attacco e rilascio morbidi in ogni battuta
-        base = roots[(k + seed) % len(roots)]
-        s = sum(math.sin(2 * math.pi * base * r * t) for r in chord) / len(chord)
-        s += 0.35 * math.sin(2 * math.pi * base / 2 * t)             # basso un'ottava sotto
-        fade = min(1.0, t / 1.5, (seconds - t) / 1.5)
-        v = int(max(-1, min(1, s * env * fade * 0.22)) * 32767)
-        frames += struct.pack("<hh", v, v)
-    with wave.open(str(path), "wb") as w:
-        w.setnchannels(2)
-        w.setsampwidth(2)
-        w.setframerate(rate)
-        w.writeframes(bytes(frames))
+    """Base strumentale originale (lo-fi con batteria, basso, accordi e melodia): vedi music.py."""
+    import music as _music
+    return _music.write(path, seconds, seed)
 
 
 def build_reel(slide_paths, out_path, cfg, accent=None, per_slide=4.6, edge=2.8, fade=0.5, with_music=True, images=None):

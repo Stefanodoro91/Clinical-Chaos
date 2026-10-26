@@ -1,0 +1,73 @@
+name: Storie Instagram e Facebook
+
+on:
+  # Una storia video al giorno, lun-ven 9:31 a Roma (picco del mattino), senza sticker:
+  #   lunedì        «la settimana in 12 secondi»: bandi aperti verificati, in scadenza, nuove posizioni
+  #   mar-ven       conto alla rovescia di un bando verificato che chiude tra 7 e 30 giorni (se c'è)
+  # Orari in UTC: inverno = ora di Roma - 1 (fino al 28/3/2027); in estate - 2.
+  schedule:
+    - cron: "31 8 * * 1-5"
+    - cron: "31 9 * * 1-5"      # riserva: se la storia di oggi è già uscita, il run salta da solo
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Solo prova (non pubblica, salva l'anteprima negli artifact)"
+        type: boolean
+        default: true
+      kind:
+        description: "Tipo di storia"
+        type: choice
+        options: [auto, countdown, weekly]
+        default: auto
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram-publish
+  cancel-in-progress: false
+
+jobs:
+  story:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Installa dipendenze
+        run: |
+          pip install -r requirements.txt
+          which ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+
+      - name: Prepara e pubblica la storia
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+          STORY_KIND: ${{ inputs.kind || 'auto' }}
+        run: python stories.py
+
+      - name: Salva il registro delle storie
+        if: always()
+        run: |
+          git config user.name "research-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stories_log.json 2>/dev/null || exit 0
+          git diff --cached --quiet && exit 0
+          git commit -m "Storia del $(date -u +%F)"
+          for i in 1 2 3; do git push && break; git pull --rebase -X theirs; done
+
+      - name: Salva anteprima
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: story-preview
+          path: preview/
+          if-no-files-found: ignore

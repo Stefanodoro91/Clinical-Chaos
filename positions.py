@@ -119,8 +119,8 @@ Return:
 - street_address, postal_code, region: the workplace street address, postal code and region/state/province,
   copied from the text; "" for each one not written in the advertisement (never guess or look up).
 - salary_min, salary_max: the gross salary numbers stated in the text (digits only, no separators), "" if
-  not stated; salary_currency: ISO code (EUR, GBP, USD, SEK...); salary_unit: "YEAR", "MONTH", "WEEK" or
-  "HOUR"; salary_evidence: the phrase of the text that states the salary, copied word for word ("" if none).
+  not stated; salary_currency: ISO code (EUR, GBP, USD, SEK...); salary_unit: "YEAR", "MONTH", "WEEK",
+  "HOUR" or "NONE"; salary_evidence: the phrase of the text that states the salary, copied word for word ("" if none).
 
 ADVERTISEMENT ({url}):
 {text}"""
@@ -137,7 +137,7 @@ VERIFY_SCHEMA = {
         "summary": {"type": "STRING"},
         "street_address": {"type": "STRING"}, "postal_code": {"type": "STRING"}, "region": {"type": "STRING"},
         "salary_min": {"type": "STRING"}, "salary_max": {"type": "STRING"}, "salary_currency": {"type": "STRING"},
-        "salary_unit": {"type": "STRING", "enum": ["YEAR", "MONTH", "WEEK", "HOUR", ""]}, "salary_evidence": {"type": "STRING"},
+        "salary_unit": {"type": "STRING", "enum": ["YEAR", "MONTH", "WEEK", "HOUR", "NONE"]}, "salary_evidence": {"type": "STRING"},
     },
     "required": ["is_open_position", "position_type", "relevance", "area", "title", "institution", "country", "city",
                  "deadline", "deadline_evidence", "summary"],
@@ -548,7 +548,7 @@ def _place_salary(out, text):
             res[k] = content._clip(val, 120)
     ev = (out.get("salary_evidence") or "").strip()
     nums = [re.sub(r"\D", "", out.get(k) or "") for k in ("salary_min", "salary_max")]
-    cur, unit = (out.get("salary_currency") or "").strip().upper(), out.get("salary_unit") or ""
+    cur, unit = (out.get("salary_currency") or "").strip().upper(), (out.get("salary_unit") or "").replace("NONE", "")
     if ev and grants._simple(ev) in plain and nums[0] and re.fullmatch(r"[A-Z]{3}", cur) and unit:
         digits = re.sub(r"\D", "", ev)
         if all(n in digits for n in nums if n):

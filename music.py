@@ -1,0 +1,180 @@
+"""Basi strumentali originali per storie e reel (nessun diritto d'autore): lo-fi/chill con batteria, basso, accordi e
+piano elettrico, sintetizzati in Python con numpy. Ogni seme sceglie tonalità, giro di accordi e tempo diversi."""
+import wave
+from pathlib import Path
+
+import numpy as np
+
+RATE = 44100
+# giri di accordi (gradi in semitoni dalla tonica, accordi a 4 voci): pop/lo-fi classici
+PROGRESSIONS = [
+    [[9, 12, 16, 19], [5, 9, 12, 16], [0, 4, 7, 11], [7, 11, 14, 17]],    # vi–IV–I–V   (Am7 Fmaj7 Cmaj7 G7)
+    [[2, 5, 9, 12], [7, 11, 14, 17], [0, 4, 7, 11], [9, 12, 16, 19]],     # ii–V–I–vi   (Dm7 G7 Cmaj7 Am7)
+    [[0, 4, 7, 11], [9, 12, 16, 19], [5, 9, 12, 16], [7, 11, 14, 17]],    # I–vi–IV–V
+    [[5, 9, 12, 16], [7, 11, 14, 17], [4, 7, 11, 14], [9, 12, 16, 19]],   # IV–V–iii–vi
+]
+KEYS = [0, 2, 3, 5, 7, 8]          # do, re, mib, fa, sol, lab (tonica sotto il do centrale + offset)
+
+
+def _hz(semi, base=130.81):        # 130.81 Hz = do3
+    return base * 2 ** (semi / 12)
+
+
+def _lowpass(x, cutoff):
+    a = np.exp(-2 * np.pi * cutoff / RATE)
+    y = np.empty_like(x)
+    acc = 0.0
+    for i in range(len(x)):        # filtro a un polo: suono più caldo (accordi e basso)
+        acc = (1 - a) * x[i] + a * acc
+        y[i] = acc
+    return y
+
+
+def _env(n, attack, release, total=None):
+    total = total or n
+    e = np.ones(n)
+    a, r = int(attack * RATE), int(release * RATE)
+    if a:
+        e[:a] = np.linspace(0, 1, a)
+    if r:
+        e[max(0, total - r):] *= np.linspace(1, 0, len(e[max(0, total - r):]))
+    return e
+
+
+def _saw(freq, t, harmonics=10):
+    out = np.zeros_like(t)
+    for k in range(1, harmonics + 1):
+        out += np.sin(2 * np.pi * freq * k * t) / k
+    return out
+
+
+def _add(buf, start, sig):
+    s = int(start * RATE)
+    if s >= len(buf):
+        return
+    end = min(len(buf), s + len(sig))
+    buf[s:end] += sig[:end - s]
+
+
+PENTA = [0, 2, 4, 7, 9]             # pentatonica maggiore: suona bene su tutti i giri
+
+
+def _pluck(freq, dur):
+    """Nota pizzicata brillante (armoniche che si spengono prima della fondamentale)."""
+    tt = np.arange(int(dur * RATE)) / RATE
+    out = np.zeros_like(tt)
+    for k, amp in ((1, 1.0), (2, 0.6), (3, 0.42), (4, 0.3), (5, 0.22), (6, 0.15), (7, 0.1), (8, 0.07)):
+        out += amp * np.sin(2 * np.pi * freq * k * tt) * np.exp(-tt * (4 + 1.5 * k))
+    return out * np.minimum(1, tt / 0.004)
+
+
+def _motif(rng):
+    """Due battute di melodia: (posizione in battiti, grado della pentatonica, intensità)."""
+    rhythms = [[0, 0.75, 1.5, 2.5, 3], [0.5, 1, 2, 2.75, 3.5], [0, 1, 1.5, 2.5, 3.25]]
+    out = []
+    deg = int(rng.integers(2, 6))
+    for bar in range(2):
+        notes = []
+        for pos in rhythms[int(rng.integers(len(rhythms)))]:
+            deg = int(np.clip(deg + rng.choice([-2, -1, 1, 1, 2]), 0, 8))
+            notes.append((pos, deg, 0.22 + 0.08 * rng.random()))
+        out.append(notes)
+    out[1][-1] = (out[1][-1][0], 5, 0.26)                          # chiude sulla tonica all'ottava
+    return out
+
+
+def track(seconds, seed=0):
+    """Restituisce l'audio (stereo, float -1..1) di una base di `seconds` secondi."""
+    rng = np.random.default_rng(seed)
+    prog = PROGRESSIONS[seed % len(PROGRESSIONS)]
+    key = KEYS[(seed // len(PROGRESSIONS)) % len(KEYS)]
+    bpm = [86, 90, 94, 98][seed % 4]
+    beat = 60 / bpm
+    bar = 4 * beat
+    n = int(seconds * RATE)
+    pads, keys_, bass, drums, lead = (np.zeros(n) for _ in range(5))
+    motif = _motif(rng)
+    t_bar = np.arange(int(bar * RATE)) / RATE
+
+    bars = int(np.ceil(seconds / bar))
+    for b in range(bars):
+        chord = [c + key for c in prog[b % len(prog)]]
+        start = b * bar
+        # accordi: saw morbide leggermente stonate tra loro, filtrate (pad caldo)
+        pad = sum(_saw(_hz(c), t_bar) + _saw(_hz(c) * 1.004, t_bar) for c in chord)
+        pad = _lowpass(pad / (2 * len(chord)), 2400) * _env(len(t_bar), 0.25, 0.35)
+        _add(pads, start, pad * 0.6)
+        # piano elettrico: note dell'accordo in levare, con decadimento
+        for k, pos in enumerate([0.5, 1.5, 2.5, 3.25]):
+            note = chord[(k + b) % len(chord)] + 12
+            tt = np.arange(int(0.9 * RATE)) / RATE
+            ep = (np.sin(2 * np.pi * _hz(note) * tt) + 0.35 * np.sin(2 * np.pi * _hz(note) * 2 * tt)
+                  + 0.12 * np.sin(2 * np.pi * _hz(note) * 3 * tt) + 0.2 * np.sin(2 * np.pi * _hz(note) * 7 * tt) * np.exp(-tt * 14)) * np.exp(-tt * 4.0)
+            _add(keys_, start + pos * beat, ep * (0.55 + 0.1 * rng.random()))
+        # melodia: pluck brillante su scala pentatonica (motivo di 2 battute, ripetuto con variazioni)
+        if b >= 1:
+            for pos, deg, vel in motif[b % 2]:
+                semi = key + 24 + PENTA[deg % 5] + 12 * (deg // 5)
+                _add(lead, start + pos * beat, _pluck(_hz(semi), 0.55) * vel)
+        # basso: tonica sui tempi 1 e 3, quinta di passaggio
+        root = chord[0] - 12
+        while root > 0:
+            root -= 12
+        for pos, semi, dur in ((0, root, 1.4), (2, root, 1.0), (3.5, root + 7, 0.45)):
+            tt = np.arange(int(dur * beat * RATE)) / RATE
+            bs = np.tanh(1.6 * np.sin(2 * np.pi * _hz(semi) * tt)) * _env(len(tt), 0.01, 0.12)
+            _add(bass, start + pos * beat, bs * 0.28)
+        # batteria
+        for pos in (0, 2, 2.5):                                   # cassa
+            tt = np.arange(int(0.35 * RATE)) / RATE
+            f = 45 + 75 * np.exp(-tt * 30)
+            kick = np.sin(2 * np.pi * np.cumsum(f) / RATE) * np.exp(-tt * 9)
+            _add(drums, start + pos * beat, kick * (0.55 if pos != 2.5 else 0.35))
+        for pos in (1, 3):                                        # rullante morbido
+            tt = np.arange(int(0.22 * RATE)) / RATE
+            noise = rng.standard_normal(len(tt))
+            sn = (0.9 * np.diff(noise, 1, prepend=0)) * np.exp(-tt * 16) + 0.3 * np.sin(2 * np.pi * 185 * tt) * np.exp(-tt * 25)
+            _add(drums, start + pos * beat, sn * 0.45)
+        for i in range(8):                                        # charleston in ottavi, con swing
+            pos = i * 0.5 + (0.08 if i % 2 else 0)
+            tt = np.arange(int(0.05 * RATE)) / RATE
+            noise = rng.standard_normal(len(tt))
+            hat = np.diff(noise, 2, prepend=[0, 0]) * np.exp(-tt * 60)                # passa-alto: più «aria»
+            _add(drums, start + pos * beat, hat * (0.16 if i % 2 else 0.22) * (0.8 + 0.4 * rng.random()))
+        if b % 2:                                                 # charleston aperto a fine giro
+            tt = np.arange(int(0.3 * RATE)) / RATE
+            noise = rng.standard_normal(len(tt))
+            _add(drums, start + 3.5 * beat, np.diff(noise, 2, prepend=[0, 0]) * np.exp(-tt * 9) * 0.08)
+
+    # «pompaggio» degli accordi sulla cassa (sidechain) e piccolo eco sul piano
+    t = np.arange(n) / RATE
+    phase = (t % (2 * beat)) / (2 * beat)
+    pads *= 0.55 + 0.45 * np.minimum(1, phase * 6)
+    delay = int(beat * 0.75 * RATE)
+    echo = np.zeros(n)
+    echo[delay:] = keys_[:-delay] * 0.35
+    lecho = np.zeros(n)
+    lecho[delay:] = lead[:-delay] * 0.4
+    crackle = np.zeros(n)                                          # fruscio da vinile, appena udibile
+    pops = rng.random(n) < 0.0004
+    crackle[pops] = rng.standard_normal(pops.sum()) * 0.12
+    crackle += np.diff(rng.standard_normal(n), prepend=0) * 0.004
+    left = pads * 0.9 + keys_ * 0.8 + echo * 0.6 + bass + drums + lead * 1.0 + lecho * 0.4 + crackle
+    right = pads * 1.0 + keys_ * 0.6 + echo * 0.9 + bass + drums + lead * 0.8 + lecho * 0.6 + crackle
+    mix = np.stack([left, right], axis=1)
+    mix = np.tanh(mix * 0.9)                                       # compressione dolce
+    mix /= max(1e-9, np.abs(mix).max()) / 0.85
+    fade_in, fade_out = int(0.6 * RATE), int(1.2 * RATE)
+    mix[:fade_in] *= np.linspace(0, 1, fade_in)[:, None]
+    mix[-fade_out:] *= np.linspace(1, 0, fade_out)[:, None]
+    return mix
+
+
+def write(path, seconds, seed=0):
+    data = (track(seconds, seed) * 32767).astype("<i2")
+    with wave.open(str(Path(path)), "wb") as w:
+        w.setnchannels(2)
+        w.setsampwidth(2)
+        w.setframerate(RATE)
+        w.writeframes(data.tobytes())
+    return path
