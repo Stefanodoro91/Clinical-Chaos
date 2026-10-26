@@ -800,9 +800,9 @@ def job_jsonld(k, v, d):
     address = {"@type": "PostalAddress", "addressCountry": v["country"]}
     if v.get("city"):
         address["addressLocality"] = v["city"]
-    for k, field in (("region", "addressRegion"), ("postal_code", "postalCode"), ("street_address", "streetAddress")):
-        if v.get(k):                       # solo se scritti nell'annuncio
-            address[field] = v[k]
+    for key, field in (("region", "addressRegion"), ("postal_code", "postalCode"), ("street_address", "streetAddress")):
+        if v.get(key):                     # solo se scritti nell'annuncio
+            address[field] = v[key]
     data = {
         "@context": "https://schema.org/",
         "@type": "JobPosting",
