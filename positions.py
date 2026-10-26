@@ -63,7 +63,7 @@ RX_POSITION = re.compile(
     r"post-?doc|postdoctoral|research fellow|assegn\w* di ricerca|"
     r"professor|lecturer|faculty|tenure|\brtd\b|\brtt\b|ricercat\w* a tempo determinato|professore|"
     r"assistant prof|associate prof|reader in|chair in|research (assistant|associate|scientist|officer)|"
-    r"clinical academic|clinical research fellow|clinical fellowship|fellowship|borsa di ricerca|tecnologo|"
+    r"clinical academic|clinical research fellow|clinical fellowship|fellowship|bors[ae] di (ricerca|studio)|tecnologo|"
     r"ricercatore sanitario|ricerca sanitaria|contratt\w* di ricerca|incaric\w* (post-?doc|di ricerca)|"
     r"ricercat\w* \w* ?tenure|ricercat\w*.{0,40}\b(iii|terzo) livello", re.I)
 RX_MEDIUM_TITLE = re.compile(
@@ -434,9 +434,10 @@ def collect(sources=None, guided=True):
     found, report = {}, []
     for src in sources or read_sources():
         try:
-            if (src.get("tipo") or "").strip() == "inpa":      # API inPA: la ricerca è dopo il #
+            tipo, _, flag = (src.get("tipo") or "").strip().partition(":")
+            if tipo == "inpa":      # API inPA: la ricerca è dopo il #
                 items = _inpa_items(unquote(urlparse(src["url"]).fragment).replace("+", " "))
-            elif (src.get("tipo") or "").strip() == "browser":   # portale costruito con JavaScript
+            elif tipo == "browser":   # portale costruito con JavaScript
                 items = _browser_items(src["url"])
             else:
                 r = requests.get(src["url"], headers=HEADERS, timeout=45)
@@ -449,7 +450,9 @@ def collect(sources=None, guided=True):
                     items = _html_items(text, src["url"])
             # se la fonte è già una ricerca per tema (es. «rehabilitation»), basta che sia una posizione:
             # la pertinenza la controlla poi Gemini sull'annuncio
-            topic_search = bool(RX_REHAB.search(unquote(src["url"]).replace("+", " ")))
+            # «:tema» = ente già dedicato a ricerca clinica e riabilitazione (es. IRCCS di neuroriabilitazione):
+            # gli annunci passano tutti alla verifica, che decide la pertinenza
+            topic_search = flag == "tema" or bool(RX_REHAB.search(unquote(src["url"]).replace("+", " ")))
             kept = 0
             for it in items:
                 blob = f"{it['title']} {it['snippet']}"
@@ -491,7 +494,12 @@ def verify(item):
     else:
         r = requests.get(item["url"], headers=HEADERS, timeout=45)
         r.raise_for_status()
-        text = grants.html_to_text(r.text)
+        if "pdf" in r.headers.get("content-type", "").lower() or item["url"].lower().split("?")[0].endswith(".pdf"):
+            import io
+            from pypdf import PdfReader                    # bandi pubblicati in PDF (enti italiani)
+            text = " ".join((pg.extract_text() or "") for pg in PdfReader(io.BytesIO(r.content)).pages[:12])
+        else:
+            text = grants.html_to_text(r.text)
         if item.get("browser") and len(text) < 1500:      # annuncio che si costruisce con JavaScript
             try:
                 text = grants.html_to_text(_render(item["url"])[0])
