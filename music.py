@@ -178,3 +178,104 @@ def write(path, seconds, seed=0):
         w.setframerate(RATE)
         w.writeframes(data.tobytes())
     return path
+
+
+# ---------------------------------------------------------------- brani da libreria (Pixabay Music) su Google Drive
+# I file stanno nella cartella «Musica» dentro la cartella Drive del materiale (GDRIVE_FOLDER_ID), mai nel repository
+# pubblico: la licenza Pixabay vieta di ridistribuire i brani così come sono. Il bot li usa solo dentro i video.
+AUDIO_EXT = (".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac")
+LAST_TRACK = {}
+
+
+def _drive():
+    import json
+    import os
+    from google.oauth2 import service_account
+    from googleapiclient.discovery import build
+    info = json.loads(os.environ["GDRIVE_SERVICE_ACCOUNT_JSON"])
+    creds = service_account.Credentials.from_service_account_info(info, scopes=["https://www.googleapis.com/auth/drive"])
+    return build("drive", "v3", credentials=creds, cache_discovery=False)
+
+
+def library_files(drive, folder_name="Musica"):
+    import os
+    inbox = os.environ["GDRIVE_FOLDER_ID"]
+    q = (f"'{inbox}' in parents and name = '{folder_name}' and trashed = false "
+         "and mimeType = 'application/vnd.google-apps.folder'")
+    kw = {"supportsAllDrives": True, "includeItemsFromAllDrives": True}
+    folders = drive.files().list(q=q, fields="files(id)", **kw).execute().get("files", [])
+    if not folders:
+        return []
+    files = drive.files().list(q=f"'{folders[0]['id']}' in parents and trashed = false", pageSize=200,
+                               fields="files(id, name, mimeType)", **kw).execute().get("files", [])
+    return sorted((f for f in files if f["name"].lower().endswith(AUDIO_EXT) or f["mimeType"].startswith("audio/")),
+                  key=lambda f: f["name"].lower())
+
+
+def _download(drive, f, folder):
+    import io
+    from googleapiclient.http import MediaIoBaseDownload
+    path = Path(folder) / f"{f['id']}{Path(f['name']).suffix or '.mp3'}"
+    if not path.exists():
+        buf = io.BytesIO()
+        dl = MediaIoBaseDownload(buf, drive.files().get_media(fileId=f["id"], supportsAllDrives=True))
+        done = False
+        while not done:
+            _, done = dl.next_chunk()
+        path.write_bytes(buf.getvalue())
+    return path
+
+
+def best_start(path, seconds):
+    """Inizio del tratto più pieno (di solito il ritornello), saltando l'intro e il finale."""
+    import subprocess
+    raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(path), "-ac", "1", "-ar", "8000", "-f", "s16le", "-"],
+                         capture_output=True, check=True).stdout
+    x = np.frombuffer(raw, dtype="<i2").astype(np.float32) / 32768
+    total = len(x) / 8000
+    if total <= seconds + 2:
+        return 0.0
+    env = np.sqrt(np.convolve(x ** 2, np.ones(8000) / 8000, mode="valid")[::8000])       # energia per secondo
+    w = int(seconds)
+    lo, hi = int(total * 0.12), int(min(total * 0.7, total - seconds - 1))
+    if hi <= lo:
+        return max(0.0, (total - seconds) / 2)
+    scores = [env[s:s + w].mean() for s in range(lo, hi)]
+    return float(lo + int(np.argmax(scores)))
+
+
+def from_library(path, seconds, seed=0, cache=None):
+    """Scrive in `path` un estratto di un brano della cartella Drive «Musica» (diverso ogni giorno con il seme).
+    Restituisce il nome del brano, oppure None se la cartella non è raggiungibile o è vuota."""
+    import os
+    import subprocess
+    import tempfile
+    if not (os.environ.get("GDRIVE_SERVICE_ACCOUNT_JSON") and os.environ.get("GDRIVE_FOLDER_ID")):
+        return None
+    drive = _drive()
+    files = library_files(drive)
+    if not files:
+        return None
+    f = files[seed % len(files)]
+    src = _download(drive, f, cache or tempfile.gettempdir())
+    start = best_start(src, seconds)
+    fade_out = 1.2
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{start:.2f}", "-t", f"{seconds:.2f}", "-i", str(src),
+                    "-af", f"afade=t=in:d=0.4,afade=t=out:st={seconds - fade_out:.2f}:d={fade_out},"
+                           "loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", str(RATE), "-ac", "2", str(path)], check=True)
+    return f["name"]
+
+
+def for_video(path, seconds, seed=0):
+    """Musica per storie e reel: un brano della libreria su Drive; se non disponibile, la base generata qui."""
+    LAST_TRACK.clear()
+    try:
+        name = from_library(path, seconds, seed)
+        if name:
+            LAST_TRACK["name"] = name
+            print(f"::notice title=Musica::{name}")
+            return path
+    except Exception as e:
+        print(f"::warning title=Musica dalla libreria non disponibile::{str(e)[:200]} (uso la base generata)")
+    LAST_TRACK["name"] = f"generata (seme {seed})"
+    return write(path, seconds, seed)

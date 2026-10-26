@@ -1,4 +1,4 @@
-"""Storie video per Instagram e Facebook (1080×1920, 12 s, base musicale originale), senza sticker:
+"""Storie video per Instagram e Facebook (1080×1920, 12 s, brano Pixabay dalla cartella Drive «Musica», o base generata), senza sticker:
 - countdown: un bando verificato sul testo ufficiale che scade presto;
 - weekly: le novità della settimana (call, posizioni, caroselli).
 Testo solo nella zona sicura (niente nei primi 250 px e negli ultimi 340 px, coperti dall'app). Invito: «link in bio»."""
@@ -159,7 +159,7 @@ def render(kind, data, out_path, cfg, seed=0):
         p.stdin.write(draw(k / FPS, data, pt).tobytes())
     p.stdin.close()
     p.wait()
-    music.write(wav, SECONDS, seed)
+    music.for_video(wav, SECONDS, seed)
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(silent), "-i", str(wav), "-c:v", "copy", "-c:a", "aac",
                     "-b:a", "160k", "-shortest", "-movflags", "+faststart", str(out_path)], check=True)
     silent.unlink(missing_ok=True)
@@ -328,6 +328,7 @@ def main():
         print("Modalità prova: storia non pubblicata (anteprima negli artifact).")
         return
     entry = {"date": today.isoformat(), "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "kind": kind}
+    entry["music"] = music.LAST_TRACK.get("name", "")
     for key in ("grant_id", "family"):
         if data.get(key):
             entry[key] = data[key]

@@ -31,9 +31,43 @@ def _paragraphs(post):
     return out
 
 
+def _clip(text, n):
+    return text if len(text) <= n else text[:n - 1].rsplit(" ", 1)[0] + "…"
+
+
+def positions_text(post, link, limit):
+    """Posizioni accademiche: una riga intera per posizione (tipo, titolo, Paese) finché ci stanno, mai un annuncio
+    a metà; le altre si contano e si rimanda al sito, dove ci sono scadenze e link."""
+    jobs = post["jobs"]
+    many = len(jobs) > 1
+    long_head = (f"{len(jobs)} new academic positions this week in clinical research, engineering and rehabilitation:"
+                 if many else "New academic position this week in clinical research, engineering and rehabilitation:")
+    short_head = f"{len(jobs)} new academic positions this week:" if many else "New academic position this week:"
+    a, b = _positions_rows(jobs, link, limit, long_head), _positions_rows(jobs, link, limit, short_head)
+    return a[1] if a[0] >= b[0] else b[1]
+
+
+def _positions_rows(jobs, link, limit, head):
+    """(righe incluse, testo) con l'intestazione data."""
+    rows = []
+    for j in jobs:
+        country = (j.get("place") or "").split(", ")[-1]
+        rows.append(f"• {j['type']} – {_clip(j['title'], 60)}" + (f" ({country})" if country else ""))
+    for n in range(len(rows), -1, -1):
+        rest = len(rows) - n
+        tail = (f"\n\n+{rest} more, with deadlines and links: {link}" if rest
+                else f"\n\nDeadlines and links: {link}") if link else (f"\n\n+{rest} more" if rest else "")
+        text = head + ("\n\n" + "\n".join(rows[:n]) if n else "") + tail
+        if len(text) <= limit:
+            return n, text
+    return 0, _clip(head, limit - len(tail)) + tail
+
+
 def short_text(post, link, limit):
     """Testo breve per Bluesky e Threads: l'hook (prima riga della didascalia), poi il contesto che ci sta, poi il link.
-    Senza didascalia: titolo e takeaway."""
+    Senza didascalia: titolo e takeaway. Posizioni accademiche: elenco a righe intere (positions_text)."""
+    if post.get("kind") == "positions" and post.get("jobs"):
+        return positions_text(post, link, limit)
     pars = _paragraphs(post) or [p for p in (post.get("title", "").strip(), post.get("takeaway", "").strip()) if p]
     tail = f"\n\n{link}" if link else ""
     room = limit - len(tail)
