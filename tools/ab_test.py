@@ -6,7 +6,9 @@ from datetime import date
 sys.path.insert(0, os.getcwd())
 import content, grants, positions
 
-N = int(os.environ.get("AB_N", "8"))
+N = int(os.environ.get("AB_N", "4"))
+START, BUDGET = time.time(), 28 * 60       # si ferma prima del timeout del job e scrive comunque i risultati
+STOP = []
 FLASH, LITE = "gemini-flash-latest", "gemini-flash-lite-latest"
 B_MODEL = os.environ.get("AB_B_MODEL", LITE)          # variante B: modello leggero (quota separata e più ampia)
 B_THINK = os.environ.get("AB_B_THINKING") or None
@@ -37,12 +39,17 @@ gl = {g["id"]: g for g in grants.fetch(cfg)}
 ver = grants.load_verified()
 sample = [k for k, v in ver.items() if v.get("status") == "ok" and v.get("version") == 3 and k in gl][:N]
 for gid in sample:
+    if STOP or time.time() - START > BUDGET:
+        break
     g = gl[gid]
     try:
         content.gemini_json = tagged("A", None); a = grants.verify(g, cfg)
         content.gemini_json = tagged("B", B_THINK, B_MODEL); b = grants.verify(g, cfg)
     except Exception as e:
-        out["grants"].append({"id": gid, "error": str(e)[:200]}); continue
+        out["grants"].append({"id": gid, "error": str(e)[:200]})
+        if "Gemini non disponibile" in str(e):
+            STOP.append("quota")
+        continue
     fields = {
         "due_dates": a.get("due_dates") == b.get("due_dates"),
         "deadline_source": a.get("deadline_source") == b.get("deadline_source"),
@@ -59,12 +66,17 @@ for gid in sample:
 arch = positions.load_archive()
 psample = [(k, v) for k, v in arch.items() if v.get("status") == "ok" and v.get("url") and not v.get("url", "").startswith("https://www.inpa")][:N]
 for k, v in psample:
+    if STOP or time.time() - START > BUDGET:
+        break
     item = {"url": v["url"], "title": v.get("title", ""), "source": v.get("source", "")}
     try:
         positions.TEXT_CHARS = 40000; content.gemini_json = tagged("A", None); a = positions.verify(item)
         positions.TEXT_CHARS = B_CHARS; content.gemini_json = tagged("B", B_THINK, B_MODEL); b = positions.verify(item)
     except Exception as e:
-        out["positions"].append({"id": k, "error": str(e)[:200]}); continue
+        out["positions"].append({"id": k, "error": str(e)[:200]})
+        if "Gemini non disponibile" in str(e):
+            STOP.append("quota")
+        continue
     fields = {f: a.get(f) == b.get(f) for f in ("is_open", "type", "relevance", "deadline", "area")}
     fields["country"] = norm(a.get("country")) == norm(b.get("country"))
     out["positions"].append({"id": k, "same": fields, "A": {f: a.get(f) for f in ("is_open", "type", "relevance", "deadline", "country")},
@@ -76,7 +88,7 @@ def rate(rows, f):
     ok = [r for r in rows if "same" in r]
     return f"{sum(r['same'][f] for r in ok)}/{len(ok)}" if ok else "-"
 lines = [f"# Confronto A/B – {out['date']}", "", f"A = {FLASH}, impostazione attuale; B = {B_MODEL}, ragionamento {B_THINK or 'predefinito'}, "
-         f"annunci di {B_CHARS} caratteri", "", "## Bandi"]
+         f"annunci di {B_CHARS} caratteri", "", f"Interrotto: {', '.join(STOP)}" if STOP else "Completato", "", "## Bandi"]
 gf = ["due_dates", "deadline_source", "italy", "is_open_call", "countries", "lead_present", "loi"]
 lines += [f"- {f}: {rate(out['grants'], f)}" for f in gf]
 lines += ["", "## Posizioni"]
