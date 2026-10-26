@@ -826,10 +826,17 @@ def refresh_verified(grants, verified, cfg, limit=None, today=None):
     todo = [g for g in grants if g.get("url") and (not _date(g.get("scadenza")) or _date(g["scadenza"]) >= today) and due(g)]
     soon = (today + timedelta(days=int(cfg.get("grant_fallback_days_left", 30)))).isoformat()
     # prima i bandi che potrebbero andare nei post (scadenza ad almeno 30 giorni), poi gli altri
-    todo.sort(key=lambda g: ((g.get("scadenza") or "9999") < soon, g.get("scadenza") or "9999"))
+    # alternati: un bando che scade presto (perché non si chiuda prima della verifica) e uno che può andare in un post
+    soon_l = sorted([g for g in todo if (g.get("scadenza") or "9999") < soon], key=lambda g: g.get("scadenza") or "9999")
+    later_l = sorted([g for g in todo if (g.get("scadenza") or "9999") >= soon], key=lambda g: g.get("scadenza") or "9999")
+    todo = [g for pair in zip(later_l, soon_l) for g in pair] + later_l[len(soon_l):] + soon_l[len(later_l):]
     done = 0
     start, budget = time.time(), float(cfg.get("grant_verify_minutes", 13)) * 60
+    import content
     for g in todo[:limit]:
+        if not content.checks_allowed():
+            print(f"::notice title=Verifica bandi ferma::quota Gemini di oggi lasciata ai post ({content.gemini_used_today()} richieste usate)")
+            break
         if time.time() - start > budget:     # resta nel tempo del job: il resto al prossimo run
             print(f"::notice title=Verifica a metà::tempo esaurito dopo {done} bandi, si riprende al prossimo run")
             break

@@ -584,6 +584,9 @@ def refresh(archive, limit=25, today=None):
     todo.sort(key=lambda kv: not kv[1].get("guided"))      # prima gli annunci della ricerca per Paese, già mirati
     done = 0
     for k, item in todo[:limit]:
+        if not content.checks_allowed():
+            print(f"::notice title=Verifica posizioni ferma::quota Gemini di oggi lasciata ai post ({content.gemini_used_today()} richieste usate)")
+            break
         try:
             archive[k] = verify(item)
             v = archive[k]

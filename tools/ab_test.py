@@ -109,3 +109,4 @@ open(f"ab/ab-{out['date']}.md", "w", encoding="utf-8").write("\n".join(lines) + 
 out.pop("models")
 json.dump(out, open(f"ab/ab-{out['date']}.json", "w", encoding="utf-8"), indent=1, ensure_ascii=False, default=str)
 print("\n".join(lines))
+content.save_usage("usage")   # conta nella quota del giorno: le verifiche lasciano spazio ai post

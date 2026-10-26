@@ -401,6 +401,35 @@ def record_usage(task, model, data=None, status="ok"):
     u["ragionamento"] += int(meta.get("thoughtsTokenCount") or 0)
 
 
+CHECK_CAP = 34       # richieste Gemini al giorno oltre le quali le verifiche si fermano (config «gemini_daily_cap_checks»)
+
+
+def quota_day():
+    """Giorno della quota Gemini: si azzera a mezzanotte del Pacifico."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    return datetime.now(ZoneInfo("America/Los_Angeles")).date().isoformat()
+
+
+def gemini_used_today(folder=None):
+    """Richieste Gemini riuscite oggi (giorno della quota): file usage/ dei giri precedenti + questo giro."""
+    folder = Path(folder or Path(__file__).resolve().parent / "usage")
+    day, total = quota_day(), 0
+    for f in folder.glob("*.json"):
+        try:
+            data = json.loads(f.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if data.get("quota_day") == day:
+            total += sum(c.get("richieste", 0) for k, c in data.get("consumo", {}).items() if "|gemini" in k)
+    return total + sum(c.get("richieste", 0) for k, c in USAGE.items() if "|gemini" in k)
+
+
+def checks_allowed():
+    """Le verifiche di bandi e posizioni si fermano quando resta solo la riserva per i post del giorno."""
+    return gemini_used_today() < CHECK_CAP
+
+
 def save_usage(folder):
     """Scrive il consumo del giro in usage/AAAA-MM-GG-<giro>.json (un file per giro: nessun conflitto tra giri)."""
     if not USAGE:
@@ -410,7 +439,7 @@ def save_usage(folder):
     folder.mkdir(exist_ok=True)
     run = os.environ.get("GITHUB_RUN_ID") or "locale"
     out = folder / f"{datetime.now(timezone.utc):%Y-%m-%d}-{run}.json"
-    out.write_text(json.dumps({"workflow": os.environ.get("GITHUB_WORKFLOW", ""), "consumo": USAGE},
+    out.write_text(json.dumps({"workflow": os.environ.get("GITHUB_WORKFLOW", ""), "quota_day": quota_day(), "consumo": USAGE},
                               indent=1, ensure_ascii=False), encoding="utf-8")
     return out
 

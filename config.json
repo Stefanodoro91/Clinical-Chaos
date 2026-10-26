@@ -14,6 +14,7 @@
   ],
   "max_new_files_per_run": 1,
   "max_posts_per_file": 5,
+  "gemini_daily_cap_checks": 34,
   "low_queue_warning": 5,
   "ai_images": true,
   "image_model": "flux",

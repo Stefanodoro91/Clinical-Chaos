@@ -53,6 +53,7 @@ def git(*args):
 
 
 content.THINKING = dict(CONFIG.get("gemini_thinking") or {})
+content.CHECK_CAP = int(CONFIG.get("gemini_daily_cap_checks", 34))   # oltre: verifiche ferme, quota lasciata ai post
 positions.TEXT_CHARS = int(CONFIG.get("positions_text_chars") or positions.TEXT_CHARS)
 
 def _head():
