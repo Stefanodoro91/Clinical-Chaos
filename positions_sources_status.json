@@ -3,266 +3,386 @@
     "letti": 0,
     "pertinenti": 0,
     "errore": "500 Server Error: Internal Server Error for url: https://www.jobs.ac.uk/jobs/health-and-medical?format=rss",
-    "data": "2026-10-25",
-    "errori_di_fila": 2
+    "data": "2026-10-26",
+    "errori_di_fila": 3,
+    "pausa_fino": "2026-11-09"
   },
   "jobs.ac.uk – rehabilitation": {
-    "letti": 19,
-    "pertinenti": 19,
+    "letti": 20,
+    "pertinenti": 20,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "jobs.ac.uk – physiotherapy": {
-    "letti": 11,
-    "pertinenti": 11,
+    "letti": 9,
+    "pertinenti": 9,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "jobs.ac.uk – occupational therapy": {
-    "letti": 11,
-    "pertinenti": 11,
+    "letti": 7,
+    "pertinenti": 7,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "jobs.ac.uk – stroke": {
     "letti": 6,
     "pertinenti": 6,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "Nature Careers – rehabilitation": {
     "letti": 10,
     "pertinenti": 10,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "Times Higher Education – rehabilitation": {
-    "letti": 9,
-    "pertinenti": 9,
+    "letti": 8,
+    "pertinenti": 8,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "ACRM Career Center": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "AcademicTransfer – rehabilitation": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "Times Higher Education – clinical research": {
     "letti": 15,
     "pertinenti": 15,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "Times Higher Education – biomedical engineering": {
     "letti": 20,
     "pertinenti": 20,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "Times Higher Education – physiotherapy": {
-    "letti": 2,
-    "pertinenti": 2,
+    "letti": 1,
+    "pertinenti": 1,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "Times Higher Education – clinical trials": {
     "letti": 16,
     "pertinenti": 16,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "Times Higher Education – epidemiology": {
-    "letti": 18,
-    "pertinenti": 18,
+    "letti": 19,
+    "pertinenti": 19,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "jobs.ac.uk – clinical trials": {
     "letti": 5,
     "pertinenti": 5,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "jobs.ac.uk – biomedical engineering": {
-    "letti": 22,
-    "pertinenti": 22,
+    "letti": 21,
+    "pertinenti": 21,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "jobs.ac.uk – clinical research": {
-    "letti": 15,
-    "pertinenti": 15,
+    "letti": 13,
+    "pertinenti": 13,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "Nature Careers – clinical research": {
-    "letti": 11,
+    "letti": 12,
     "pertinenti": 2,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "Nature Careers – bioengineering": {
     "letti": 19,
     "pertinenti": 19,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "JREC-IN Portal (Giappone)": {
-    "letti": 23,
+    "letti": 22,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – riabilitazione": {
-    "letti": 10,
+    "letti": 9,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – fisioterapia": {
-    "letti": 3,
+    "letti": 2,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – neuroriabilitazione": {
     "letti": 1,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – logopedia": {
-    "letti": 2,
+    "letti": 1,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – terapia occupazionale": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – ricerca clinica": {
     "letti": 2,
     "pertinenti": 1,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – sperimentazione clinica": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – studi clinici": {
     "letti": 1,
     "pertinenti": 1,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – biostatistica": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – ingegneria biomedica": {
     "letti": 1,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – bioingegneria": {
     "letti": 1,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – ingegneria clinica": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – ricercatore sanitario": {
     "letti": 1,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – ricercatore a tempo determinato": {
-    "letti": 20,
+    "letti": 19,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – assegno di ricerca": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – dottorato di ricerca": {
-    "letti": 6,
+    "letti": 5,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – MED/48": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   },
   "inPA – MED/34": {
     "letti": 0,
     "pertinenti": 0,
     "errore": "",
-    "data": "2026-10-25",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "Karolinska Institutet – Vacancies": {
+    "letti": 36,
+    "pertinenti": 9,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "Lund University – Vacancies": {
+    "letti": 33,
+    "pertinenti": 2,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "Uppsala University – Vacancies": {
+    "letti": 42,
+    "pertinenti": 0,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "University of Copenhagen – Vacancies": {
+    "letti": 0,
+    "pertinenti": 0,
+    "errore": "HTTPSConnectionPool(host='employment.ku.dk', port=443): Max retries exceeded with url: /all-vacancies/ (Caused by Connec",
+    "data": "2026-10-26",
+    "errori_di_fila": 1
+  },
+  "ETH Zurich – Jobs": {
+    "letti": 60,
+    "pertinenti": 2,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "Erasmus MC – Vacatures": {
+    "letti": 1,
+    "pertinenti": 1,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "Nature Careers – radiology": {
+    "letti": 7,
+    "pertinenti": 7,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "Nature Careers – paediatrics": {
+    "letti": 3,
+    "pertinenti": 3,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "Nature Careers – rheumatology": {
+    "letti": 3,
+    "pertinenti": 3,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "Nature Careers – neuropsychology": {
+    "letti": 10,
+    "pertinenti": 10,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "Times Higher Education – radiology": {
+    "letti": 7,
+    "pertinenti": 7,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "Times Higher Education – paediatrics": {
+    "letti": 3,
+    "pertinenti": 3,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "Times Higher Education – neuropsychology": {
+    "letti": 1,
+    "pertinenti": 1,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "jobs.ac.uk – radiology": {
+    "letti": 2,
+    "pertinenti": 2,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "jobs.ac.uk – rheumatology": {
+    "letti": 3,
+    "pertinenti": 3,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "jobs.ac.uk – paediatrics": {
+    "letti": 9,
+    "pertinenti": 9,
+    "errore": "",
+    "data": "2026-10-26",
+    "errori_di_fila": 0
+  },
+  "jobs.ac.uk – neuropsychology": {
+    "letti": 3,
+    "pertinenti": 3,
+    "errore": "",
+    "data": "2026-10-26",
     "errori_di_fila": 0
   }
 }

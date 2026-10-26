@@ -3308,5 +3308,285 @@
     "deadline": "2026-11-23",
     "deadline_evidence": "Closing date 23 Nov 2026",
     "summary": "The University of Pittsburgh recruits a tenure-stream Associate Professor or Professor in hearing research. The appointee will lead an independent research program advancing understanding, diagnosis, or treatment of hearing loss and related disorders. Candidates must hold a PhD in a relevant field such as neuroscience or bioengineering and demonstrate established research leadership."
+  },
+  "POS-6879abd74d81": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.jobs.ac.uk/job/DTK275/phd-studentship-cerebellar-contributions-to-respiratory-motor-learning",
+    "source": "jobs.ac.uk – rehabilitation",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-3e6cc1561ba3": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.jobs.ac.uk/job/DTK252/research-fellow",
+    "source": "jobs.ac.uk – rehabilitation",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-8716c29ebe4d": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.jobs.ac.uk/job/DTK406/lecturer-esol",
+    "source": "jobs.ac.uk – rehabilitation",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-280a10395253": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.timeshighereducation.com/unijobs/listing/416960/research-assistant-professor-in-the-department-of-psychiatry-school-of-clinical-medicine/?LinkSource=PremiumListing",
+    "source": "Times Higher Education – clinical research",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-0c9224472aff": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.timeshighereducation.com/unijobs/listing/416962/assistant-research-officer-research-officer/?LinkSource=PremiumListing",
+    "source": "Times Higher Education – clinical research",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-6b61988720f0": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.timeshighereducation.com/unijobs/listing/416912/lecturer-signal-processing/?LinkSource=PremiumListing",
+    "source": "Times Higher Education – biomedical engineering",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-5965df1673ab": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.timeshighereducation.com/unijobs/listing/416932/professor-associate-professor-and-head-of-discipline-nutrition-and-dietetics/",
+    "source": "Times Higher Education – physiotherapy",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-b6d76c84d288": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.timeshighereducation.com/unijobs/listing/414112/asari-postdoc-in-zootechny-animal-nutrition-and-pastoralism/?LinkSource=PremiumListing",
+    "source": "Times Higher Education – clinical trials",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-248f4034163b": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://ki.varbi.com/en/what:job/jobID:974576/",
+    "source": "Karolinska Institutet – Vacancies",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-b41ee07c89cd": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://ki.varbi.com/en/what:job/jobID:967378/",
+    "source": "Karolinska Institutet – Vacancies",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-92b81d897cef": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://ki.varbi.com/en/what:job/jobID:979352/",
+    "source": "Karolinska Institutet – Vacancies",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-5e7df1854f4d": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://ki.varbi.com/en/what:job/jobID:978417/",
+    "source": "Karolinska Institutet – Vacancies",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-26047b03927e": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://ki.varbi.com/en/what:job/jobID:977187/",
+    "source": "Karolinska Institutet – Vacancies",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-ffa87e32afb5": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://ki.varbi.com/en/what:job/jobID:979798/",
+    "source": "Karolinska Institutet – Vacancies",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-268fb69fb817": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://ki.varbi.com/en/what:job/jobID:962235/",
+    "source": "Karolinska Institutet – Vacancies",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-c3847b469da9": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://ki.varbi.com/en/what:job/jobID:976546/",
+    "source": "Karolinska Institutet – Vacancies",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-c3c3f4bc5573": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://ki.varbi.com/en/what:job/jobID:972424/",
+    "source": "Karolinska Institutet – Vacancies",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-cb60bb6d7d11": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://lu.varbi.com/en/what:job/jobID:980945/",
+    "source": "Lund University – Vacancies",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-54e950a5d8ab": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://lu.varbi.com/en/what:job/jobID:963476/",
+    "source": "Lund University – Vacancies",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-5f5e8618e9b0": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://jobs.ethz.ch/job/view/JOPG_ethz_o0hFrG5T51aXJSr1x4",
+    "source": "ETH Zurich – Jobs",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-a1f7a479879a": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://jobs.ethz.ch/job/view/JOPG_ethz_5jfFbj5xGmFSyYoPWI",
+    "source": "ETH Zurich – Jobs",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-840d75c396de": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.werkenbijerasmusmc.nl/vacature/1341678/postdoctoraal-onderzoeker-universitair-docent-revalidatie-3961",
+    "source": "Erasmus MC – Vacatures",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-f63f89515888": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12865495/faculty-position-department-of-radiology/",
+    "source": "Nature Careers – radiology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-e266982ffde8": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12864369/faculty-position-chief-of-nuclear-medicine-department-of-radiology/",
+    "source": "Nature Careers – radiology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-49ee1e90fe86": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12864379/faculty-position-department-of-radiology-pediatric-body-radiology/",
+    "source": "Nature Careers – radiology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-4e2cd15204a3": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12864385/faculty-position-in-pediatric-neuroradiology-department-of-radiology/",
+    "source": "Nature Careers – radiology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-f7540b7cbc81": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12863064/postdoctoral-research-associate-radiology/",
+    "source": "Nature Careers – radiology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-de5e73ad501e": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12864397/faculty-position-department-of-information-services-clinical-informatics-researcher/",
+    "source": "Nature Careers – radiology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-20fa7b31a2da": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12862416/postdoctoral-associate-nanopore-spectroscopy-for-single-molecule-biodosimetry/",
+    "source": "Nature Careers – radiology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-8b5686d348d2": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12866073/professor-of-paediatric-haematology-and-oncology/",
+    "source": "Nature Careers – paediatrics",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-3a6120ec5bfc": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12863098/post-doctoral-/",
+    "source": "Nature Careers – paediatrics",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-34bd9498b8d3": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12864595/postdoctoral-fellowship-2-years-in-molecular-mechanisms-of-mll1-driven-leukaemia/",
+    "source": "Nature Careers – paediatrics",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-f965b145c340": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12862293/postdoctoral-fellowships-worldwide/",
+    "source": "Nature Careers – rheumatology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-7dfd7752713a": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12865903/professorship-director-and-chief-physician-of-the-department-of-emergency-medicine/",
+    "source": "Nature Careers – rheumatology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-b353880ebbc8": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12864687/postdoctoral-and-visiting-scholar-positions-in-immunology-stem-cells-and-cancer/",
+    "source": "Nature Careers – rheumatology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-0b9868f3c640": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12864705/full-time-tenure-track-professors-positions/",
+    "source": "Nature Careers – neuropsychology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-6643c21232d4": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12864763/postdoctoral-researcher-f-m-x-remote-and-unsupervised-smartphone-based-assessments-in-early-/",
+    "source": "Nature Careers – neuropsychology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-093ccf30172c": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12864714/postdoctoral-researcher-f-m-x-event-segmentation-and-laminar-7t-fmri-in-alzheimer-s-disease-/",
+    "source": "Nature Careers – neuropsychology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-e3fda2b66dff": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12864368/clinical-faculty-position-child-and-adolescent-psychiatrist-department-of-pediatric-medicine/",
+    "source": "Nature Careers – neuropsychology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
+  },
+  "POS-90000f8eb2da": {
+    "status": "failed",
+    "checked": "2026-10-26",
+    "url": "https://www.nature.com/naturecareers/job/12864823/clinical-research-scientist-psychology-and-biobehavioral-sciences/",
+    "source": "Nature Careers – neuropsychology",
+    "error": "Errore Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"* GenerateContentRequest.generation_config.response_schema.properties[salary_unit].enum[4]: cannot be empty\\n\",\n    \"status\": \"INVALI"
   }
 }
