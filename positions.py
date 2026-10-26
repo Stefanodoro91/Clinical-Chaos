@@ -29,6 +29,8 @@ TEXT_CHARS = 40000    # caratteri dell'annuncio mandati a Gemini (config «posit
 # temi: clinica riabilitativa (inglese e italiano)
 RX_REHAB = re.compile(
     r"rehabilit|riabilit|physiotherap|fisioterap|physical therap|occupational therap|terapia occupazionale|"
+    r"revalidatie|fysiotherap|rehabilitering|fysioterapi|physiotherapie|ergotherap|arbetsterap|rehabilitación|reabilitação|"
+    r"rééducation|kinésithérap|klinische forschung|klinisch onderzoek|klinisk forskning|medizintechnik|medische technologie|"
     r"speech (and language )?therap|logoped|stroke|ictus|neurorehab|spinal cord injur|brain injur|"
     r"parkinson|multiple sclerosis|sclerosi multipla|cerebral palsy|amputee|prosthet|orthot|exoskeleton|"
     r"motor (control|recovery|learning)|gait|mobility|disabilit|chronic pain|musculoskeletal|"
