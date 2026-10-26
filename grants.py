@@ -950,13 +950,19 @@ def next_grant_post(posted, cfg, grants_list=None, verified=None):
     verified = verified if verified is not None else load_verified()
     pool = candidates(grants_list, posted, verified, cfg)
     print(f"Bandi verificati pubblicabili: {len(pool)}")
+    import time
     for g in pool[:3]:
-        try:
-            post = build_post(g, verified[g["id"]], cfg)
-            print(f"::notice title=Bando scelto::{g['id']} | {verified[g['id']]['programme']}")
-            return post
-        except Exception as e:
-            print(f"::warning title=Post del bando non generato::{g['id']} - {str(e)[:300]}")
+        for attempt in range(2):                 # un errore di rete momentaneo non fa saltare il post
+            try:
+                post = build_post(g, verified[g["id"]], cfg)
+                print(f"::notice title=Bando scelto::{g['id']} | {verified[g['id']]['programme']}")
+                return post
+            except Exception as e:
+                transient = any(k in str(e) for k in ("Connection", "Timeout", "timed out", "RemoteDisconnected", " 503", " 500"))
+                print(f"::warning title=Post del bando non generato::{g['id']} (tentativo {attempt + 1}) - {str(e)[:300]}")
+                if not transient:
+                    break
+                time.sleep(30)
     return None
 
 

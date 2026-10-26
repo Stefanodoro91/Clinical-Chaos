@@ -14,6 +14,11 @@ on:
     - cron: "0 18 * * 2,3,4"      # metodologia, 19:00 a Roma
     - cron: "0 16 * * 6"          # metodologia, sabato 17:00 a Roma
     - cron: "30 17 * * 1"         # posizioni, lunedì 18:30 a Roma
+    # riserve un'ora dopo: GitHub a volte salta o ritarda i run pianificati; se il post è già uscito, il run salta da solo
+    - cron: "30 12 * * 1,2,4,5"   # riserva bando, 13:30 a Roma
+    - cron: "0 19 * * 2,3,4"      # riserva metodologia, 20:00 a Roma
+    - cron: "0 17 * * 6"          # riserva metodologia, sabato 18:00 a Roma
+    - cron: "30 18 * * 1"         # riserva posizioni, lunedì 19:30 a Roma
   workflow_dispatch:
     inputs:
       dry_run:
@@ -86,7 +91,7 @@ jobs:
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
           POSITIONS_PER_POST: ${{ inputs.positions_count }}
           REEL_SOURCE: ${{ inputs.reel_source }}
-          POST_TYPE: ${{ github.event_name == 'schedule' && (github.event.schedule == '30 11 * * 1,2,4,5' && 'grant' || (github.event.schedule == '30 17 * * 1' && 'positions' || 'research')) || inputs.post_type || 'research' }}
+          POST_TYPE: ${{ github.event_name == 'schedule' && ((github.event.schedule == '30 11 * * 1,2,4,5' || github.event.schedule == '30 12 * * 1,2,4,5') && 'grant' || ((github.event.schedule == '30 17 * * 1' || github.event.schedule == '30 18 * * 1') && 'positions' || 'research')) || inputs.post_type || 'research' }}
         run: python bot.py
 
       - name: Salva anteprima (solo in modalità prova)
