@@ -118,7 +118,7 @@ def usage_section(today=None, days=7):
         except (OSError, ValueError):
             continue
         for key, c in data.items():
-            tot[key].update(c)
+            tot[key].update({k: v for k, v in c.items() if isinstance(v, (int, float))})   # «versione» è testo
             per_day[d] += c.get("richieste", 0)
     if not tot:
         return "**Consumo Gemini:** nessun dato ancora (il registro è attivo dal 25/10)."
