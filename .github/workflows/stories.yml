@@ -1,4 +1,5 @@
 name: Storie Instagram e Facebook
+run-name: "Storia ${{ github.event_name == 'schedule' && 'pianificata' || inputs.kind }}${{ inputs.dry_run == true && ' (prova)' || '' }}"
 
 on:
   # Una storia video al giorno, lun-ven 9:31 a Roma (picco del mattino), senza sticker:

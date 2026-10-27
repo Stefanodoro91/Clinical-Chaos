@@ -1,0 +1,26 @@
+name: Guardiano del calendario
+
+# Ogni mezz'ora (minuti «dispari», meno carichi): se un post o una storia di oggi non è partito per un ritardo
+# di GitHub, lo lancia a mano. Mai più di un recupero per tipo al giorno.
+on:
+  schedule:
+    - cron: "11,41 7-20 * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - run: python tools/watchdog.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
