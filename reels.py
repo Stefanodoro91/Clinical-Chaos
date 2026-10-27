@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageOps
 
 import cards
 
@@ -131,13 +131,49 @@ def story_frame(slide, cfg, index, total, accent):
     """Slide 1080×1920 per i reel di annuncio: copertina chiara, punti numerati scuri, chiusura con il logo."""
     c = cfg["colors"]
     kind = slide.get("type", "point")
-    light = kind == "cover"
-    bg, fg = (LIGHT_BG, DARK_TEXT) if light else (c["background"], "#FFFFFF")
+    accent = slide.get("accent") or accent
+    bg = slide.get("bg") or (LIGHT_BG if kind == "cover" else c["background"])
+    rgb = tuple(int(bg.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    light = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 > 0.55       # fondo chiaro: testo scuro
+    fg = DARK_TEXT if light else "#FFFFFF"
     img = Image.new("RGB", (W, H), bg)
     d = ImageDraw.Draw(img)
     M = 96
     d.rectangle([0, 0, W, 14], fill=accent)
-    if kind == "cover":
+    if kind == "stat":
+        # numero grande su fondo colorato (es. bandi in giallo, posizioni in lilla), con foto facoltativa
+        d.text((M, 170), (slide.get("kicker") or "").upper(), font=cards.font("Bold", 34), fill=fg)
+        y = 240
+        big = cards.font("ExtraBold", 230)
+        d.text((M, y), slide.get("number", ""), font=big, fill=fg)
+        y += 280
+        fnt, lines, size = cards.fit(d, slide["title"], "ExtraBold", 92, 60, W - 2 * M, 220, 1.08)
+        for line in lines:
+            d.text((M, y), line, font=fnt, fill=fg)
+            y += int(size * 1.08)
+        if slide.get("body"):
+            fb = cards.font("SemiBold", 46)
+            y += 24
+            for line in _wrap(d, slide["body"], fb, W - 2 * M)[:3]:
+                d.text((M, y), line, font=fb, fill=fg)
+                y += 62
+        photo = None
+        if slide.get("photo_query"):
+            try:
+                import images
+                found = images.pixabay_photos(slide["photo_query"], 1, 900, 500)
+                photo = found[0][0] if found else None
+            except Exception:
+                photo = None
+        if photo is not None:
+            y += 50
+            ph = min(H - 260 - y, 640)
+            if ph > 250:
+                pic = ImageOps.fit(photo.convert("RGB"), (W - 2 * M, ph), Image.LANCZOS)
+                mask = Image.new("L", pic.size, 0)
+                ImageDraw.Draw(mask).rounded_rectangle((0, 0, pic.width - 1, pic.height - 1), radius=32, fill=255)
+                img.paste(pic, (M, y), mask)
+    elif kind == "cover":
         logo = Image.open(ROOT / "docs" / "logo-horizontal.png").convert("RGBA")
         lw = 560
         logo = logo.resize((lw, int(logo.height * lw / logo.width)), Image.LANCZOS)
@@ -152,12 +188,12 @@ def story_frame(slide, cfg, index, total, accent):
             y += 130
         fnt, lines, size = cards.fit(d, slide["title"], "ExtraBold", 112, 70, W - 2 * M, 620, 1.12)
         y = cards.draw_rich(d, " ".join(lines), slide.get("highlight", ""), fnt, size, M, y, W - 2 * M, DARK_TEXT,
-                            1.12, accent, half=True)
+                            1.12, slide.get("mark") or accent, half=True)
         if slide.get("body"):
             fb = cards.font("Regular", 44)
             y += 50
             for line in _wrap(d, slide["body"], fb, W - 2 * M):
-                d.text((M, y), line, font=fb, fill="#3D5266")
+                d.text((M, y), line, font=fb, fill="#3D5266" if not slide.get("bg") else DARK_TEXT)
                 y += 62
     elif kind == "image":
         # schermata con immagini (schermate del sito in un telefono, oppure copertine affiancate)
@@ -191,6 +227,13 @@ def story_frame(slide, cfg, index, total, accent):
                 mask = Image.new("L", (pw, ph), 0)
                 ImageDraw.Draw(mask).rounded_rectangle((0, 0, pw - 1, ph - 1), radius=34, fill=255)
                 img.paste(shot, (x0, y), mask)
+        elif pics and slide.get("frame") == "card":           # immagine intera su scheda arrotondata
+            pic = ImageOps.contain(pics[0], (W - 2 * M, bottom - y - 20), Image.LANCZOS)
+            x0 = (W - pic.width) // 2
+            mask = Image.new("L", pic.size, 0)
+            ImageDraw.Draw(mask).rounded_rectangle((0, 0, pic.width - 1, pic.height - 1), radius=32, fill=255)
+            d.rounded_rectangle((x0 - 10, y - 10, x0 + pic.width + 10, y + pic.height + 10), radius=40, fill="#05121C")
+            img.paste(pic, (x0, y), mask)
         elif pics:                                            # copertine a cascata, grandi e sovrapposte
             n = len(pics)
             cw = 560
@@ -254,6 +297,8 @@ def frame_seconds(slide):
     if slide.get("type") in ("cover", "closing"):
         return 3.0 if slide.get("type") == "cover" else 3.5
     if slide.get("type") == "image":
+        return 4.5
+    if slide.get("type") == "stat":
         return 4.5
     words = len(f"{slide.get('title', '')} {slide.get('body', '')}".split())
     return round(max(3.0, min(6.0, 1.0 + words / 3.4)), 1)

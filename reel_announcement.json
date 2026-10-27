@@ -15,29 +15,38 @@
       "kicker": "MILESTONE",
       "title": "Your research radar just got bigger",
       "highlight": "just got bigger",
-      "body": "Funding calls, academic jobs and research methods, checked for you."
+      "body": "Funding calls, academic jobs and research methods, checked for you.",
+      "bg": "#FF7A59",
+      "accent": "#FFFFFF",
+      "mark": "#FFFFFF"
     },
     {
-      "type": "point",
+      "type": "stat",
+      "bg": "#FFB547",
+      "accent": "#0E2233",
+      "kicker": "Open calls",
       "number": "174",
       "title": "Open funding calls",
-      "body": "153 already checked on the official text; 54 open to applicants from any country.",
-      "highlight": "checked on the official text"
+      "body": "153 already checked on the official text. 54 open to applicants from any country.",
+      "photo_query": "scientist laboratory research"
     },
     {
-      "type": "point",
+      "type": "stat",
+      "bg": "#A78BFA",
+      "accent": "#0E2233",
+      "kicker": "Academic positions",
       "number": "80+",
       "title": "Academic positions",
-      "body": "PhD, postdoc, clinical fellowships and faculty posts in 16 countries.",
-      "highlight": "in 16 countries"
+      "body": "PhD, postdoc, clinical fellowships and faculty posts in 16 countries."
     },
     {
       "type": "image",
-      "kicker": "Academic positions",
-      "title": "Every position on one page",
-      "body": "Filter by type and region. Each one checked on the original ad.",
+      "kicker": "One link",
+      "title": "All in one link",
+      "body": "Calls, positions and methods: clinicalresearchchaos.com",
+      "frame": "card",
       "images": [
-        "assets/reel-milestone/positions.png"
+        "assets/reel-milestone/home-link.png"
       ]
     },
     {
