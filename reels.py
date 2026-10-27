@@ -260,12 +260,76 @@ def frame_seconds(slide):
 
 
 def build_story_reel(spec, out_path, cfg, mood="Aziendale|Speciale|Funky"):
-    """Reel nativo verticale da una lista di schermate (spec): copertina, punti brevi, chiusura. 20–30 secondi."""
+    """Reel nativo verticale da una lista di schermate (spec): copertina, punti brevi, chiusura. 20–30 secondi.
+    Con spec «rain» (o config reel_rain) i cubetti scendono ai lati come sul sito."""
     accent = spec.get("accent") or cfg.get("announcement_accent", "#FF7A59")
     slides = spec["slides"]
     imgs = [story_frame(s, cfg, i, len(slides), accent) for i, s in enumerate(slides)]
-    return build_reel([], out_path, cfg, accent=accent, per_slide=[frame_seconds(s) for s in slides], images=imgs,
+    lengths = [frame_seconds(s) for s in slides]
+    if spec.get("rain", cfg.get("reel_rain", False)):
+        return rain_reel(imgs, lengths, out_path, cfg, accent, mood=spec.get("mood") or mood,
+                         track=spec.get("music_track"))
+    return build_reel([], out_path, cfg, accent=accent, per_slide=lengths, images=imgs,
                       mood=spec.get("mood") or mood, track=spec.get("music_track"))
+
+
+def _rain(seed, accent):
+    """Particelle: gruppi di 1–4 cubetti che scendono ai lati (come la cascata del sito), a velocità diverse."""
+    import random
+    rnd = random.Random(seed)
+    a = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    cols = [(61, 217, 193), (42, 64, 88), (120, 135, 150), a]
+    out = []
+    for _ in range(34):
+        side = rnd.random() < 0.5
+        s = rnd.choice([10, 14, 18, 24])
+        span = 2 * s + 3                       # i cubetti restano nei margini, mai sopra il testo (M = 96)
+        x = rnd.randint(4, max(5, 90 - span)) if side else rnd.randint(W - 90, max(W - 89, W - 4 - span))
+        shape = rnd.sample([(0, 0), (1, 0), (0, 1), (1, 1)], rnd.randint(1, 4))
+        out.append({"x": x, "s": s, "shape": shape, "speed": rnd.uniform(90, 260), "off": rnd.uniform(0, H + 300),
+                    "col": rnd.choice(cols), "alpha": rnd.choice([70, 110, 150, 200])})
+    return out
+
+
+def rain_reel(imgs, lengths, out_path, cfg, accent, fade=0.5, mood="Aziendale", track=None):
+    """Come build_reel, ma i fotogrammi si disegnano in Python per far scendere i cubetti; dissolvenze tra le
+    schermate. Restituisce la durata in secondi."""
+    starts, t = [], 0.0
+    for i, ln in enumerate(lengths):
+        starts.append(t)
+        t += ln - (fade if i < len(lengths) - 1 else 0)
+    duration = t
+    parts = _rain(len(imgs), accent)
+    out_path = Path(out_path)
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        silent, wav = tmp / "v.mp4", tmp / "m.wav"
+        p = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
+                              "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "21",
+                              "-preset", "medium", str(silent)], stdin=subprocess.PIPE)
+        for k in range(int(duration * FPS)):
+            tt = k / FPS
+            i = max(j for j in range(len(imgs)) if starts[j] <= tt)
+            if i > 0 and tt < starts[i] + fade:          # dissolvenza dalla schermata precedente
+                frame = Image.blend(imgs[i - 1], imgs[i], (tt - starts[i]) / fade)
+            else:
+                frame = imgs[i]
+            frame = frame.convert("RGBA")
+            layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            d = ImageDraw.Draw(layer)
+            for q in parts:
+                y = (q["off"] + tt * q["speed"]) % (H + 300) - 150
+                for dx, dy in q["shape"]:
+                    x0, y0 = q["x"] + dx * (q["s"] + 3), y + dy * (q["s"] + 3)
+                    d.rectangle((x0, y0, x0 + q["s"], y0 + q["s"]), fill=q["col"] + (q["alpha"],))
+            p.stdin.write(Image.alpha_composite(frame, layer).convert("RGB").tobytes())
+        p.stdin.close()
+        p.wait()
+        music(wav, duration, mood=mood, track=track)
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(silent), "-i", str(wav), "-c:v", "copy",
+                        "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-shortest", "-movflags", "+faststart",
+                        str(out_path)], check=True)
+    return round(duration, 1)
 
 
 # ---------------------------------------------------------------- copioni dei reel, diversi per tipo di post
