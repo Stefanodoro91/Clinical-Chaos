@@ -7,7 +7,9 @@ on:
   # Orari in UTC: inverno = ora di Roma - 1 (fino al 28/3/2027); in estate - 2.
   schedule:
     - cron: "31 8 * * 1-5"
-    - cron: "31 9 * * 1-5"      # riserva: se la storia di oggi è già uscita, il run salta da solo
+    - cron: "31 9 * * 1-5"      # riserve: GitHub a volte salta i run pianificati; se la storia di oggi
+    - cron: "13 10 * * 1-5"     # è già uscita, il run salta da solo
+    - cron: "47 11 * * 1-5"
   workflow_dispatch:
     inputs:
       dry_run:
