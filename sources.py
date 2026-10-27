@@ -38,6 +38,25 @@ def _first_page(data):
     return text, img
 
 
+def header_crop(page):
+    """La parte alta della prima pagina (rivista, titolo, autori, abstract): leggibile sul telefono, a differenza
+    della pagina intera in miniatura. Si taglia dove finisce il primo blocco di testo dopo l'abstract."""
+    import numpy as np
+    w, h = page.size
+    gray = np.asarray(page.convert("L"), dtype=np.uint8)
+    ink = (gray < 200).sum(axis=1) > w * 0.01               # righe con testo
+    top = next((i for i in range(h) if ink[i]), 0)
+    limit = int(h * 0.62)                                   # mai oltre il 62% della pagina
+    blank, cut = 0, limit
+    for i in range(top + int(h * 0.30), limit):             # dopo almeno il 30%: primo spazio bianco ampio
+        blank = blank + 1 if not ink[i] else 0
+        if blank > h * 0.025:
+            cut = i
+            break
+    box = (int(w * 0.04), max(0, top - int(h * 0.01)), int(w * 0.96), cut)
+    return page.crop(box)
+
+
 def _crossref(doi):
     r = requests.get(CROSSREF + doi.rstrip(".,;)"), headers=UA, timeout=20)
     r.raise_for_status()
@@ -88,7 +107,7 @@ def prepare(post, drive):
                 "year": year, "doi": item.get("DOI", ""), "license": _cc_license(item)}
         META[post["id"]] = meta
         if meta["license"]:
-            THUMBS[post["id"]] = img
+            THUMBS[post["id"]] = header_crop(img)
             meta["license_label"] = _cc_label(meta["license"])
         print(f"  Fonte: {meta['title'][:70]} ({meta['journal']}, {year}) – "
               + (f"prima pagina mostrata ({meta['license_label']})" if meta["license"] else "solo citazione"))

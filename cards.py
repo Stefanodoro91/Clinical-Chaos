@@ -515,31 +515,33 @@ def _question(post):
 
 
 def source_slide(post, cfg, index, total, meta, thumb=None):
-    """Slide «fonte»: l'articolo da cui nasce il post (titolo, autori, rivista, anno, DOI) e, solo per articoli
-    con licenza Creative Commons, l'immagine della prima pagina con la licenza citata."""
+    """Slide «fonte»: l'articolo da cui nasce il post. Con licenza Creative Commons mostra la parte alta della prima
+    pagina (rivista, titolo, autori, abstract) su un foglio bianco, con rivista, anno, DOI e licenza sotto;
+    altrimenti solo la citazione (titolo, autori, rivista, anno, DOI)."""
     c = cfg["colors"]
     img, d = canvas(cfg, index, total)
     d.text((MARGIN, 150), "BASED ON", font=font("Bold", 34), fill=c["accent"])
-    y = 220
     if thumb is not None:
-        tw, th = 400, 540
-        page = ImageOps.contain(thumb, (tw, th), Image.LANCZOS)
-        x0 = (W - page.width) // 2
-        d.rectangle((x0 - 6, y - 6, x0 + page.width + 6, y + page.height + 6), fill="#FFFFFF")
-        img.paste(page, (x0, y))
-        y += page.height + 50
+        box_w, box_h = W - 2 * MARGIN, 760
+        page = ImageOps.contain(thumb.convert("RGB"), (box_w - 40, box_h - 40), Image.LANCZOS)
+        top = 220
+        sheet_h = page.height + 40
+        d.rounded_rectangle((MARGIN, top, W - MARGIN, top + sheet_h), radius=18, fill="#FFFFFF")
+        img.paste(page, (MARGIN + (box_w - page.width) // 2, top + 20))
+        y = top + sheet_h + 44
+        rows = [(" · ".join(str(x) for x in (meta.get("journal"), meta.get("year")) if x), "SemiBold", 36, c["accent"]),
+                (f"doi.org/{meta['doi']}" if meta.get("doi") else "", "Regular", 30, c["muted_text"]),
+                (f"Open access · {meta['license_label']}" if meta.get("license_label") else "", "Regular", 28, c["muted_text"])]
     else:
         y = 400                                   # solo citazione: blocco centrato in verticale
-    tf, tl, ts = fit(d, meta["title"], "Bold", 52 if thumb is None else 40, 30, W - 2 * MARGIN,
-                     (420 if thumb is None else 190), 1.2)
-    y = draw_lines(d, tl, tf, ts, MARGIN, y, c["text"], 1.2) + 24
-    for txt, f, col in ((meta.get("authors", ""), font("SemiBold", 34), c["muted_text"]),
-                        (" · ".join(str(x) for x in (meta.get("journal"), meta.get("year")) if x), font("SemiBold", 34), c["accent"]),
-                        (f"doi.org/{meta['doi']}" if meta.get("doi") else "", font("Regular", 30), c["muted_text"]),
-                        (f"First page: {meta['license_label']}" if thumb is not None and meta.get("license_label") else "",
-                         font("Regular", 26), c["muted_text"])):
+        tf, tl, ts = fit(d, meta["title"], "Bold", 52, 30, W - 2 * MARGIN, 420, 1.2)
+        y = draw_lines(d, tl, tf, ts, MARGIN, y, c["text"], 1.2) + 24
+        rows = [(meta.get("authors", ""), "SemiBold", 34, c["muted_text"]),
+                (" · ".join(str(x) for x in (meta.get("journal"), meta.get("year")) if x), "SemiBold", 34, c["accent"]),
+                (f"doi.org/{meta['doi']}" if meta.get("doi") else "", "Regular", 30, c["muted_text"])]
+    for txt, weight, size, col in rows:
         if txt:
-            lf, ll, ls = fit(d, txt, "SemiBold", f.size, 22, W - 2 * MARGIN, 90, 1.25)
+            lf, ll, ls = fit(d, txt, weight, size, 22, W - 2 * MARGIN, 90, 1.25)
             y = draw_lines(d, ll, lf, ls, MARGIN, y, col, 1.25) + 12
     return img
 
