@@ -529,7 +529,7 @@ def source_slide(post, cfg, index, total, meta, thumb=None):
         img.paste(page, (x0, y))
         y += page.height + 50
     else:
-        y += 40
+        y = 400                                   # solo citazione: blocco centrato in verticale
     tf, tl, ts = fit(d, meta["title"], "Bold", 52 if thumb is None else 40, 30, W - 2 * MARGIN,
                      (420 if thumb is None else 190), 1.2)
     y = draw_lines(d, tl, tf, ts, MARGIN, y, c["text"], 1.2) + 24
