@@ -102,7 +102,9 @@ STRICT ACCURACY RULES:
   separately from verified data.
 
 Write IN ENGLISH:
-- title: a clear hook for the cover, max 70 characters, mentioning the research area (no deadline).
+- title: the cover hook, max 70 characters: say who the call is for and what it funds, phrased so the right
+  researcher stops scrolling (e.g. "Stroke rehab trial in mind? Funding for pilot studies" or "Funding for
+  early-career rehabilitation researchers"). Facts only from the official text; no deadline, amounts or funder.
 - title_highlight: 1-4 words copied EXACTLY from the title.
 - slides: exactly 2 slides. Slide 1 heading "What it funds": aim and kind of projects funded.
   Slide 2 heading "Who it is for": applicants and teams it targets. Each body max 220 characters.
@@ -117,9 +119,12 @@ Write IN ENGLISH:
 - hook: the FIRST line of the caption, max 120 characters: tell the right researchers, in plain words, why
   this call is for them (e.g. "Running a pilot rehabilitation trial? This call funds exactly that.").
   Only from the official text; no deadline, amounts, funder or countries; no hashtags, at most one emoji.
+  Include the research area as people would search it (e.g. "stroke rehabilitation", "rare diseases"):
+  Instagram search reads the first line.
 - caption: 2-4 short lines with context that come AFTER the hook; end with a question inviting researchers
   to share whether they plan to apply or know similar calls. Max 500 characters, no hashtags, no links.
-- hashtags: 6-10 specific hashtags (e.g. #ResearchFunding #GrantOpportunity #Neurorehabilitation).
+- hashtags: 3 specific hashtags for the research area (e.g. #Neurorehabilitation #StrokeResearch #RareDiseases);
+  Instagram allows at most 5 per post and the bot adds #ResearchFunding and #ClinicalResearch.
 
 VERIFIED FACTS: programme: {programme}; eligible countries: {countries}
 

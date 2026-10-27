@@ -79,10 +79,12 @@ POST DESIGN:
 - hook: the FIRST line of the caption, max 120 characters (Instagram shows only about 125 characters
   before "more"). It must make a researcher stop scrolling: name a common mistake, a counter-intuitive
   consequence, or ask a sharp question that the post answers. Use only the material: no invented numbers,
-  no clickbait, no hashtags, at most one emoji. Do not repeat the title word for word.
+  no clickbait, no hashtags, at most one emoji. Do not repeat the title word for word. Include the main
+  searchable term of the topic (e.g. "PICO", "sample size", "blinding"): Instagram search reads the first line.
 - caption: 3-6 short lines that come AFTER the hook and add context beyond the slides; end with a question
   that invites professionals to share their experience. Max 900 characters. No hashtags inside the caption.
-- hashtags: 8-12 specific hashtags (e.g. #ClinicalTrials #Biostatistics #ResearchEthics).
+- hashtags: 3 specific hashtags for the topic (e.g. #ClinicalTrials #Biostatistics #ResearchEthics); Instagram
+  allows at most 5 per post and the bot adds #ClinicalResearch and #ResearchMethodology.
 - category: one of {categories}.
 - source_hint: where in the material this comes from (e.g. "slides 12-15"), for the owner's review.
 

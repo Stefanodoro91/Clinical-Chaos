@@ -36,7 +36,7 @@ HOME_FILE = ROOT / "docs" / "index.html"   # pagina iniziale del link in bio: du
 GRAPH_VERSION = os.environ.get("GRAPH_API_VERSION") or "v23.0"
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
 MAX_CAPTION_CHARS = 2200
-MAX_HASHTAGS = 30
+MAX_HASHTAGS = 5          # limite di Instagram (dicembre 2025): oltre, meno portata
 
 
 # ---------------------------------------------------------------- utilità
@@ -225,7 +225,14 @@ def pick_next(queue, posted):
 
 def build_caption(post):
     tags, seen = [], set()
-    for t in CONFIG.get("fixed_hashtags", []) + post.get("hashtags", []):
+    kind = post.get("kind")
+    if kind == "grant":                      # bandi: #ResearchFunding e #ClinicalResearch, poi i 3 più specifici
+        pool = ["#ResearchFunding", "#ClinicalResearch"] + [t for t in post.get("hashtags", []) if t.lower() != "#grantopportunity"]
+    elif kind in ("positions", "announcement"):
+        pool = post.get("hashtags", []) + CONFIG.get("fixed_hashtags", [])
+    else:                                    # metodologia: i 2 fissi e i 3 specifici del tema
+        pool = CONFIG.get("fixed_hashtags", []) + post.get("hashtags", [])
+    for t in pool:
         if t.lower() not in seen:
             seen.add(t.lower())
             tags.append(t)
@@ -259,11 +266,35 @@ def wait_ready(container_id):
     raise RuntimeError("Instagram non ha elaborato il contenuto in tempo")
 
 
-def publish_carousel(image_urls, caption):
+ALT_OK = {"instagram": True, "facebook": True}
+
+
+def alt_texts(post, n):
+    """Testo alternativo di ogni slide (ricerca di Instagram e accessibilità): titolo, poi i titoli delle slide."""
+    title = post.get("title", "")
+    heads = [f"{s.get('heading', '')}: {s.get('body', '')}" for s in post.get("slides", [])] + \
+        [f"{j.get('type', '')}: {j.get('title', '')}, {j.get('institution', '')}" for j in post.get("jobs", [])]
+    out = []
+    for i in range(n):
+        txt = title if i == 0 else (heads[i - 1] if i - 1 < len(heads) else f"{title} (slide {i + 1} of {n})")
+        out.append(f"Clinical Research Chaos – {txt}"[:900])
+    return out
+
+
+def publish_carousel(image_urls, caption, alts=None):
     user = os.environ["IG_USER_ID"]
     children = []
-    for url in image_urls:
-        cid = ig("POST", f"{user}/media", image_url=url, is_carousel_item="true")["id"]
+    for i, url in enumerate(image_urls):
+        params = {"image_url": url, "is_carousel_item": "true"}
+        if alts and ALT_OK["instagram"]:
+            try:
+                cid = ig("POST", f"{user}/media", **params, alt_text=alts[i])["id"]
+            except RuntimeError as e:            # campo non accettato: si continua senza, per tutto il giro
+                ALT_OK["instagram"] = False
+                print(f"::notice title=Testo alternativo::Instagram non lo accetta ({str(e)[:150]}): pubblico senza")
+                cid = ig("POST", f"{user}/media", **params)["id"]
+        else:
+            cid = ig("POST", f"{user}/media", **params)["id"]
         wait_ready(cid)
         children.append(cid)
     carousel = ig("POST", f"{user}/media", media_type="CAROUSEL",
@@ -285,14 +316,22 @@ def facebook_caption(caption, kind=None):
     return caption
 
 
-def publish_facebook(image_urls, caption, kind=None):
+def publish_facebook(image_urls, caption, kind=None, alts=None):
     """Pubblica le stesse slide sulla Pagina Facebook come un unico post con più foto. Restituisce l'id del post."""
     page_id = os.environ.get("FB_PAGE_ID")
     token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
     base = f"https://graph.facebook.com/{GRAPH_VERSION}/{page_id}"
     media = []
-    for url in image_urls:
-        r = requests.post(f"{base}/photos", data={"url": url, "published": "false", "access_token": token}, timeout=90)
+    for i, url in enumerate(image_urls):
+        data = {"url": url, "published": "false", "access_token": token}
+        if alts and ALT_OK["facebook"]:
+            r = requests.post(f"{base}/photos", data={**data, "alt_text_custom": alts[i]}, timeout=90)
+            if not r.ok:                     # campo non accettato: si riprova senza, per tutto il giro
+                ALT_OK["facebook"] = False
+                print(f"::notice title=Testo alternativo::Facebook non lo accetta ({r.text[:150]}): pubblico senza")
+                r = requests.post(f"{base}/photos", data=data, timeout=90)
+        else:
+            r = requests.post(f"{base}/photos", data=data, timeout=90)
         if not r.ok:
             raise RuntimeError(f"Errore Facebook (foto) {r.status_code}: {r.text[:300]}")
         media.append(r.json()["id"])
@@ -371,17 +410,17 @@ REEL_KINDS = {   # tipo di carosello → musica (cartella Drive «Musica/…»),
     "research": {"music": "Classica",
                  "text": "The key points in about {seconds} seconds. The full carousel, with references, is on our profile: "
                          "save it for your next protocol.",
-                 "tags": ["#Reels", "#ResearchTips", "#EvidenceBasedPractice"]},
+                 "tags": ["#ResearchTips", "#EvidenceBasedPractice"]},
     "grant": {"music": "Rock",
               "text": "A funding call worth knowing, in {seconds} seconds. Official call and all open calls, checked on the "
                       "official text: link in bio.",
-              "tags": ["#Reels", "#ResearchFunding", "#GrantOpportunity"]},
+              "tags": ["#ResearchFunding", "#GrantOpportunity"]},
     "positions": {"music": "Funky",
                   "text": "New academic positions in {seconds} seconds. All positions, with deadlines and links: link in bio.",
-                  "tags": ["#Reels", "#AcademicJobs", "#Postdoc", "#PhDPosition"]},
+                  "tags": ["#AcademicJobs", "#Postdoc", "#PhDPosition"]},
     "announcement": {"music": "Aziendale|Speciale|Funky",
                      "text": "More on our profile and at the link in bio.",
-                     "tags": ["#Reels", "#ResearchCommunity"]},
+                     "tags": ["#ResearchCommunity"]},
 }
 
 
@@ -473,7 +512,7 @@ def reel_run(posted):
         lengths = reels.reading_lengths(len(slides), reel_words(kind, p, len(slides)), cap=40.0)
         seconds = reels.build_reel(slides, video, CONFIG, accent=accent, mood=style["music"], per_slide=lengths)
     caption = (f"{p['title']}\n\n" + style["text"].format(seconds=round(seconds)) + "\n\n"
-               + " ".join(CONFIG.get("fixed_hashtags", []) + style["tags"]))
+               + " ".join(list(dict.fromkeys(style["tags"] + CONFIG.get("fixed_hashtags", [])))[:MAX_HASHTAGS]))
     print(f"Reel da: {p['title']} ({kind}, musica {style['music']}, {len(slides)} slide, {seconds} s)\n--- Didascalia ---\n{caption}")
     if DRY_RUN:
         (PREVIEW_DIR / "reel-caption.txt").write_text(caption, encoding="utf-8")
@@ -645,7 +684,7 @@ def main():
         sys.exit(1)
 
     try:
-        media_id = publish_carousel(urls, caption)
+        media_id = publish_carousel(urls, caption, alt_texts(post, len(urls)))
     except Exception as e:
         msg = str(e)[:400]
         print(f"::error title=Instagram non pubblicato::{msg}")
@@ -663,7 +702,7 @@ def main():
             if fb_single and post.get("kind") != "announcement":
                 fb_id = publish_facebook_single(fb_url, facebook_text(post, caption, post.get("kind"), link))
             else:
-                fb_id = publish_facebook(urls, caption, post.get("kind"))
+                fb_id = publish_facebook(urls, caption, post.get("kind"), alt_texts(post, len(urls)))
             print(f"Pubblicato su Facebook! id={fb_id}")
         except Exception as e:
             print(f"::warning title=Facebook non pubblicato::{str(e)[:300]}")

@@ -172,7 +172,8 @@ def cover_photo(post, cfg):
     if not photos:
         return None
     probe = {"heading": post.get("title", ""), "body": post.get("summary") or post.get("takeaway", "")}
-    best = choose_best(probe, [p for p, _ in photos], cfg, ["photo"] * len(photos))
+    best = choose_best(probe, [p for p, _ in photos], cfg, ["photo"] * len(photos), strict=True,
+                       minimum=int(cfg.get("cover_photo_min_relevance", 7)))
     if best is None:
         return None
     pid = next(i for p, i in photos if p is best)
@@ -182,7 +183,7 @@ def cover_photo(post, cfg):
     return best
 
 
-def choose_best(slide, pictures, cfg, kinds=None):
+def choose_best(slide, pictures, cfg, kinds=None, strict=False, minimum=None):
     """Gemini guarda le candidate insieme al testo della slide e sceglie la migliore.
     Restituisce None se nessuna è pertinente, pulita e in stile (la slide resta solo testo)."""
     import base64
@@ -197,9 +198,14 @@ def choose_best(slide, pictures, cfg, kinds=None):
     try:
         scores = content.gemini_json(parts, JUDGE_SCHEMA, 0.0, task="scelta immagini").get("images", [])
     except Exception as e:
-        print(f"  Valutazione delle immagini non riuscita ({e}): uso la prima candidata.")
-        return pictures[0]
-    minimum = int(cfg.get("image_min_relevance", 6))
+        if strict:                       # copertina: senza il giudizio di Gemini nessuna foto (mai a caso)
+            print(f"  Valutazione delle immagini non riuscita ({str(e)[:120]}): copertina senza foto.")
+            return None
+        first = next((p for p, k in zip(pictures, kinds) if k == "illustration"), None)
+        print(f"  Valutazione delle immagini non riuscita ({str(e)[:120]}): "
+              + ("uso la prima illustrazione." if first is not None else "nessuna foto scelta a caso, slide solo testo."))
+        return first
+    minimum = int(minimum or cfg.get("image_min_relevance", 6))
     best, best_score = None, -1
     for i, (pic, sc) in enumerate(zip(pictures, scores), 1):
         ok = not sc.get("has_text") and sc.get("style_ok") and int(sc.get("relevance", 0)) >= minimum

@@ -43,8 +43,9 @@ def fit(draw, text, weight, start, minimum, max_w, max_h, spacing):
         fnt = font(weight, size)
         lines = wrap(draw, text, fnt, max_w)
         too_wide = any(draw.textlength(l, font=fnt) > max_w for l in lines)   # una parola lunga non deve uscire dal margine
-        if (len(lines) * size * spacing <= max_h and not too_wide) or size <= minimum:
-            return fnt, lines, size
+        if (len(lines) * size * spacing <= max_h and not too_wide) or (size <= minimum and not too_wide) \
+                or size <= int(minimum * 0.7):
+            return fnt, lines, size              # una parola troppo lunga fa scendere sotto il minimo, mai fuori slide
         size -= 2
 
 
