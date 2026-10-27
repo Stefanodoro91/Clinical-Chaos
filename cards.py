@@ -514,6 +514,36 @@ def _question(post):
     return q if 10 <= len(q) <= 140 else "What is your experience? Tell us in the comments."
 
 
+def source_slide(post, cfg, index, total, meta, thumb=None):
+    """Slide «fonte»: l'articolo da cui nasce il post (titolo, autori, rivista, anno, DOI) e, solo per articoli
+    con licenza Creative Commons, l'immagine della prima pagina con la licenza citata."""
+    c = cfg["colors"]
+    img, d = canvas(cfg, index, total)
+    d.text((MARGIN, 150), "BASED ON", font=font("Bold", 34), fill=c["accent"])
+    y = 220
+    if thumb is not None:
+        tw, th = 400, 540
+        page = ImageOps.contain(thumb, (tw, th), Image.LANCZOS)
+        x0 = (W - page.width) // 2
+        d.rectangle((x0 - 6, y - 6, x0 + page.width + 6, y + page.height + 6), fill="#FFFFFF")
+        img.paste(page, (x0, y))
+        y += page.height + 50
+    else:
+        y += 40
+    tf, tl, ts = fit(d, meta["title"], "Bold", 52 if thumb is None else 40, 30, W - 2 * MARGIN,
+                     (420 if thumb is None else 190), 1.2)
+    y = draw_lines(d, tl, tf, ts, MARGIN, y, c["text"], 1.2) + 24
+    for txt, f, col in ((meta.get("authors", ""), font("SemiBold", 34), c["muted_text"]),
+                        (" · ".join(str(x) for x in (meta.get("journal"), meta.get("year")) if x), font("SemiBold", 34), c["accent"]),
+                        (f"doi.org/{meta['doi']}" if meta.get("doi") else "", font("Regular", 30), c["muted_text"]),
+                        (f"First page: {meta['license_label']}" if thumb is not None and meta.get("license_label") else "",
+                         font("Regular", 26), c["muted_text"])):
+        if txt:
+            lf, ll, ls = fit(d, txt, "SemiBold", f.size, 22, W - 2 * MARGIN, 90, 1.25)
+            y = draw_lines(d, ll, lf, ls, MARGIN, y, col, 1.25) + 12
+    return img
+
+
 def rule_slide(post, cfg, index, total, with_cta=False):
     """Carosello v2: il messaggio da ricordare su fondo chiaro; con `with_cta` anche salva / commenta / condividi
     in basso, così regola e invito all'azione stanno in una sola slide (carosello più breve)."""
@@ -640,7 +670,9 @@ def render_carousel(post, cfg):
     has_numbers = bool(post.get("numbers"))
     v2 = cfg.get("carousel_v2", True) and not post.get("kind")     # metodologia: regola e CTA su slide separate
     merge = v2 and cfg.get("merge_takeaway_cta", True)          # regola e invito all'azione nella stessa slide
-    total = len(post["slides"]) + 2 + has_facts + has_numbers + bool(v2 and not merge)
+    import sources
+    src = sources.META.get(post.get("id")) if (v2 and cfg.get("source_slide")) else None
+    total = len(post["slides"]) + 2 + has_facts + has_numbers + bool(v2 and not merge) + bool(src)
     use_images = cfg.get("ai_images", True) and not post.get("no_images")
     max_images = int(cfg.get("max_images_per_post", 2))
     used = 0
@@ -665,6 +697,8 @@ def render_carousel(post, cfg):
             pages.append(content(slide, i, cfg, index, total))
     if has_facts and not facts_first:
         pages.append(facts_slide(post, cfg, len(pages) + 1, total))
+    if src:                                   # l'articolo di origine, prima del messaggio finale
+        pages.append(source_slide(post, cfg, len(pages) + 1, total, src, sources.THUMBS.get(post.get("id"))))
     if v2 and merge:
         pages.append(rule_slide(post, cfg, len(pages) + 1, total, with_cta=True))
     elif v2:

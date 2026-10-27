@@ -18,6 +18,7 @@
   "low_queue_warning": 5,
   "ai_images": true,
   "grant_cover_photo": true,
+  "source_slide": false,
   "image_model": "flux",
   "grant_posts": true,
   "grant_min_days_left": 45,

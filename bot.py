@@ -627,6 +627,9 @@ def main():
             print("Coda vuota.")
             sys.exit(1)
         post = pick_next(queue, posted)
+    if kind == "research" and CONFIG.get("source_slide"):
+        import sources
+        sources.prepare(post, drive)             # slide «fonte»: articolo di origine (prima pagina solo se CC)
     slides = cards.render_carousel(post, CONFIG)
     caption = build_caption(post)
     print(f"\nPost scelto: {post['title']}  (fonte: {post['source']}, {post.get('source_hint', '')})")
