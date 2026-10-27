@@ -1,0 +1,13 @@
+{
+ "workflow": "Confronto A/B token (temporaneo)",
+ "quota_day": "2026-10-27",
+ "consumo": {
+  "verifica bandi [A]|gemini-flash-latest": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 3
+  }
+ }
+}

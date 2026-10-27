@@ -1,0 +1,10 @@
+{
+ "date": "2026-10-27",
+ "grants": [
+  {
+   "id": "GG-PAR-25-226",
+   "error": "Gemini non disponibile: gemini-flash-latest 503: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try ag"
+  }
+ ],
+ "positions": []
+}
