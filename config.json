@@ -17,6 +17,7 @@
   "gemini_daily_cap_checks": 34,
   "low_queue_warning": 5,
   "ai_images": true,
+  "grant_cover_photo": false,
   "image_model": "flux",
   "grant_posts": true,
   "grant_min_days_left": 45,

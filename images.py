@@ -161,6 +161,27 @@ def pixabay_photos(query, n=2, width=1024, height=640):
     return out
 
 
+COVER_CACHE = {}       # id del post → foto scelta per la copertina (riusata da carosello, Facebook e Bluesky)
+
+
+def cover_photo(post, cfg):
+    """Foto Pixabay per la copertina di un bando: ricerca con le parole chiave delle slide, poi Gemini sceglie la più
+    pertinente al titolo (nessuna se nessuna è adatta: copertina solo testo)."""
+    query = next((s.get("photo_query") for s in post.get("slides", []) if s.get("photo_query")), "")
+    photos = pixabay_photos(query, int(cfg.get("pixabay_candidates", 2)) + 1, 1080, 500)
+    if not photos:
+        return None
+    probe = {"heading": post.get("title", ""), "body": post.get("summary") or post.get("takeaway", "")}
+    best = choose_best(probe, [p for p, _ in photos], cfg, ["photo"] * len(photos))
+    if best is None:
+        return None
+    pid = next(i for p, i in photos if p is best)
+    COVER_CACHE[post["id"]] = best
+    post["cover_pixabay_id"] = pid
+    print(f"  Copertina: foto Pixabay {pid}")
+    return best
+
+
 def choose_best(slide, pictures, cfg, kinds=None):
     """Gemini guarda le candidate insieme al testo della slide e sceglie la migliore.
     Restituisce None se nessuna è pertinente, pulita e in stile (la slide resta solo testo)."""

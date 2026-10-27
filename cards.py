@@ -208,29 +208,43 @@ def cover(post, cfg, total):
 
 
 def grant_cover(post, cfg, total):
-    """Copertina dei bandi in negativo: «OPEN CALL», ente, titolo evidenziato e scadenza."""
+    """Copertina dei bandi in negativo: «OPEN CALL», ente, titolo evidenziato e scadenza. Con una foto Pixabay
+    scelta per il bando (images.cover_photo) la foto occupa la fascia alta e il testo si compatta sotto."""
+    import images
     c = cfg["colors"]
     navy = c["background"]
     img, d = light_canvas(cfg, 1, total)
+    picture = images.COVER_CACHE.get(post.get("id")) if cfg.get("grant_cover_photo") else None
     badge_f = font("ExtraBold", 36)
     bw = d.textlength("OPEN CALL", font=badge_f) + 64
-    d.rounded_rectangle((MARGIN, 150, MARGIN + bw, 220), radius=35, fill=c["accent"])
-    d.text((MARGIN + 32, 162), "OPEN CALL", font=badge_f, fill=navy)
-    paste_logo(img, "logo-symbol", W - MARGIN - 120, 120, height=120)
-    y = 260
+    if picture is not None:
+        band = 500
+        pic = ImageOps.fit(picture.convert("RGB"), (W, band), Image.LANCZOS)
+        img.paste(pic, (0, 14))                                          # sotto la riga d'accento in alto
+        d.rounded_rectangle((MARGIN, band - 36, MARGIN + bw, band + 34), radius=35, fill=c["accent"])
+        d.text((MARGIN + 32, band - 24), "OPEN CALL", font=badge_f, fill=navy)
+        y = band + 70
+        box_top, box_h = H - 400, 160
+    else:
+        d.rounded_rectangle((MARGIN, 150, MARGIN + bw, 220), radius=35, fill=c["accent"])
+        d.text((MARGIN + 32, 162), "OPEN CALL", font=badge_f, fill=navy)
+        paste_logo(img, "logo-symbol", W - MARGIN - 120, 120, height=120)
+        y = 260
+        box_top, box_h = H - 470, 190
     if post.get("funder"):
-        ff, fl, fs = fit(d, post["funder"], "SemiBold", 38, 28, W - 2 * MARGIN, 100, 1.25)
-        y = draw_lines(d, fl, ff, fs, MARGIN, y, INK_MUTED, 1.25) + 30
-    box_top = H - 470
-    fnt, lines, size = fit(d, post["title"], "ExtraBold", 88, 50, W - 2 * MARGIN, box_top - y - 60, 1.15)
+        ff, fl, fs = fit(d, post["funder"], "SemiBold", 38 if picture is None else 32, 26, W - 2 * MARGIN, 90, 1.25)
+        y = draw_lines(d, fl, ff, fs, MARGIN, y, INK_MUTED, 1.25) + (30 if picture is None else 18)
+    fnt, lines, size = fit(d, post["title"], "ExtraBold", 88 if picture is None else 72, 44, W - 2 * MARGIN,
+                           box_top - y - (60 if picture is None else 36), 1.15)
     phrase = post.get("title_highlight") or (lines[-1] if lines else "")
     draw_rich(d, post["title"], phrase, fnt, size, MARGIN, y, W - 2 * MARGIN, navy, 1.15, c["accent"], half=True)
     if post.get("deadline"):
-        d.rounded_rectangle((MARGIN, box_top, W - MARGIN, box_top + 190), radius=28, fill=navy)
-        d.text((MARGIN + 50, box_top + 32), "DEADLINE", font=font("Bold", 30), fill=c["accent"])
-        d.text((MARGIN + 50, box_top + 80), post["deadline"], font=font("ExtraBold", 70), fill="#FFFFFF")
+        d.rounded_rectangle((MARGIN, box_top, W - MARGIN, box_top + box_h), radius=28, fill=navy)
+        d.text((MARGIN + 50, box_top + 26), "DEADLINE", font=font("Bold", 30), fill=c["accent"])
+        d.text((MARGIN + 50, box_top + (72 if picture is not None else 80)), post["deadline"],
+               font=font("ExtraBold", 64 if picture is not None else 70), fill="#FFFFFF")
     if total:
-        d.text((MARGIN, H - 220), "Swipe  →", font=font("Bold", 40), fill=navy)
+        d.text((MARGIN, H - 220 if picture is None else H - 205), "Swipe  →", font=font("Bold", 40), fill=navy)
     return img
 
 
@@ -629,6 +643,8 @@ def render_carousel(post, cfg):
     use_images = cfg.get("ai_images", True) and not post.get("no_images")
     max_images = int(cfg.get("max_images_per_post", 2))
     used = 0
+    if post.get("kind") == "grant" and cfg.get("grant_cover_photo") and post.get("id") not in images.COVER_CACHE:
+        images.cover_photo(post, cfg)          # foto vera per la copertina del bando (se Pixabay ne ha una adatta)
     pages = [grant_cover(post, cfg, total) if post.get("kind") == "grant" else cover(post, cfg, total)]
     facts_first = has_facts and post.get("facts_first")
     if has_numbers:                                          # post speciali: i numeri subito dopo la copertina

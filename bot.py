@@ -700,7 +700,8 @@ def main():
                       if post.get("kind") == "grant" else {})})
     save(QUEUE_FILE, queue)
     save(POSTED_FILE, posted)
-    photos = [sl["pixabay_id"] for sl in post.get("slides", []) if sl.get("pixabay_id")]
+    photos = [sl["pixabay_id"] for sl in post.get("slides", []) if sl.get("pixabay_id")] + \
+        ([post["cover_pixabay_id"]] if post.get("cover_pixabay_id") else [])
     import images
     for pid in photos:                       # foto Pixabay usate: mai più riproposte
         images.mark_used(pid)
