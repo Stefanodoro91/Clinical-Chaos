@@ -431,5 +431,15 @@
     "facebook_id": "1277022912171972_122111766405432698",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3myuulrpbeh2m",
     "threads_id": "18135645694710489"
+  },
+  {
+    "date": "2026-10-27",
+    "time": "2026-10-27T23:15:44+00:00",
+    "id": "reel-2026-10-milestone",
+    "title": "Your research radar just got bigger",
+    "source": "reel_announcement.json",
+    "kind": "reel",
+    "media_id": "18098222096548846",
+    "seconds": 27.5
   }
 ]
