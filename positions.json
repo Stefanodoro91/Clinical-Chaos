@@ -3308,5 +3308,64 @@
     "deadline": "2026-11-23",
     "deadline_evidence": "Closing date 23 Nov 2026",
     "summary": "The University of Pittsburgh recruits a tenure-stream Associate Professor or Professor in hearing research. The appointee will lead an independent research program advancing understanding, diagnosis, or treatment of hearing loss and related disorders. Candidates must hold a PhD in a relevant field such as neuroscience or bioengineering and demonstrate established research leadership."
+  },
+  "POS-56668e9a2a58": {
+    "status": "failed",
+    "checked": "2026-10-27",
+    "url": "https://www.jobs.ac.uk/job/DTK740/lecturer-in-rehabilitation-technology-rehabtech",
+    "source": "jobs.ac.uk – rehabilitation",
+    "error": "HTTPSConnectionPool(host='generativelanguage.googleapis.com', port=443): Read timed out. (read timeout=300)"
+  },
+  "POS-6879abd74d81": {
+    "status": "ok",
+    "checked": "2026-10-27",
+    "first_seen": "2026-10-27",
+    "url": "https://www.jobs.ac.uk/job/DTK275/phd-studentship-cerebellar-contributions-to-respiratory-motor-learning",
+    "source": "jobs.ac.uk – rehabilitation",
+    "is_open": "yes",
+    "type": "phd",
+    "relevance": "low",
+    "area": "engineering",
+    "title": "PhD Studentship: Cerebellar Contributions to Respiratory Motor Learning",
+    "institution": "University of Birmingham",
+    "country": "United Kingdom",
+    "city": "Birmingham",
+    "deadline": "2026-11-23",
+    "deadline_evidence": "Closes: 23rd November 2026",
+    "summary": "This PhD studentship investigates the physiological mechanisms of respiratory neuroplasticity, focusing on cerebellar contributions to adaptive and learned respiratory behaviours. Funded by BBSRC within the Midlands Integrated Biosciences Training Partnership, the project requires a strong academic background in biosciences, physiology, or a related discipline, with a commitment to undertaking full-time doctoral research.",
+    "topic": "Cerebellar contributions to respiratory motor learning"
+  },
+  "POS-3e6cc1561ba3": {
+    "status": "failed",
+    "checked": "2026-10-27",
+    "url": "https://www.jobs.ac.uk/job/DTK252/research-fellow",
+    "source": "jobs.ac.uk – rehabilitation",
+    "error": "Unterminated string starting at: line 13 column 12 (char 812)"
+  },
+  "POS-8716c29ebe4d": {
+    "status": "failed",
+    "checked": "2026-10-27",
+    "url": "https://www.jobs.ac.uk/job/DTK406/lecturer-esol",
+    "source": "jobs.ac.uk – rehabilitation",
+    "error": "Unterminated string starting at: line 13 column 12 (char 715)"
+  },
+  "POS-bd097df12856": {
+    "status": "ok",
+    "checked": "2026-10-27",
+    "first_seen": "2026-10-27",
+    "url": "https://www.jobs.ac.uk/job/DTK731/lecturer-in-occupational-therapy",
+    "source": "jobs.ac.uk – occupational therapy",
+    "is_open": "yes",
+    "type": "faculty",
+    "relevance": "high",
+    "area": "rehabilitation",
+    "title": "Lecturer in Occupational Therapy",
+    "institution": "University of Plymouth",
+    "country": "United Kingdom",
+    "city": "Plymouth",
+    "deadline": "2026-11-15",
+    "deadline_evidence": "Closes: 15th November 2026",
+    "summary": "Join the University of Plymouth's Occupational Therapy team to contribute to teaching, assessment, student support, research supervision, and curriculum development. Candidates must be registered or registration-eligible Occupational Therapists with current practice knowledge, strong communication skills, and a commitment to evidence-based, person-centred care.",
+    "topic": "Occupational therapy education and practice research concealment development…"
   }
 }
