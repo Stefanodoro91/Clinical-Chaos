@@ -64,6 +64,9 @@ POST DESIGN:
 - photo_query (per slide): 2-4 English keywords to search a real stock PHOTO that fits the slide
   (e.g. "physiotherapist knee rehabilitation", "researchers meeting whiteboard", "pills blister pack"),
   only for slides whose idea a real scene can show; "" when the idea is too abstract for a photo.
+- Each slide carries ONE concept and must make sense on its own, even as a screenshot: never refer to the
+  structure of the source ("step six", "section 3", "this guideline"); spell out every acronym the first time it
+  appears in the carousel (e.g. "patient-reported outcome measures (PROMs)").
 - highlight (per slide): the key idea of that slide, 2-6 words copied EXACTLY from its body (same
   words, same order); it is shown with a highlighter.
 - source (per slide): short citation "Surname, Year" or "Surname et al., Year" ONLY if the slide's
@@ -617,3 +620,62 @@ def generate_posts(part, filename, brand, max_posts=12, published=()):
     posts = gemini_json([{"text": prompt}, part], SCHEMA, task="nuovi post da Drive").get("posts", [])
     material = material_text(part)
     return [c for c in (_clean_post(p, material) for p in posts) if c][:max_posts]
+
+
+# ---------------------------------------------------------------- revisione delle slide prima della pubblicazione
+REVIEW_PROMPT = """You review an Instagram carousel for clinical researchers before it is published. Each slide must
+carry ONE clear concept and be understandable on its own, even as a screenshot, by someone who has not read the
+source document.
+
+Flag a slide if it: refers to the structure of the source (e.g. "step six", "steps six to eight", "the next
+section", "this guideline", "the box above"); uses an acronym not spelled out anywhere in the carousel (e.g. PROM
+without "patient-reported outcome measure"); depends on another slide to make sense; or mixes two concepts.
+Well-known terms such as "Table 1", "P-value" or "RCT" are fine.
+
+For each flagged slide write a new heading (max 55 characters) and body (max 160 characters) that keep exactly the
+same facts in plain words, self-contained. NEVER add facts, numbers, names or claims that are not in the carousel.
+If a slide is fine, do not return it.
+
+Carousel title: {title}
+Slides:
+{slides}"""
+
+REVIEW_SCHEMA = {"type": "OBJECT", "properties": {"fixes": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {
+    "index": {"type": "INTEGER"}, "problem": {"type": "STRING"}, "heading": {"type": "STRING"},
+    "body": {"type": "STRING"}}, "required": ["index", "problem", "heading", "body"]}}}, "required": ["fixes"]}
+
+RX_OUT_OF_CONTEXT = re.compile(r"\b(steps?\s+(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\b|"
+                               r"as (mentioned|described|shown|discussed) (above|below|earlier|previously)|"
+                               r"see (above|below)|in this (review|guideline|manual|chapter|section))", re.I)
+
+
+def review_slides(post):
+    """Ogni slide un concetto, comprensibile da sola: Gemini riscrive le slide fuori contesto (stessi fatti).
+    Se Gemini non risponde, le slide con riferimenti evidenti al documento («step six») si tolgono, se ne restano
+    almeno 3. Restituisce il numero di slide corrette o tolte."""
+    slides = post.get("slides") or []
+    if not slides:
+        return 0
+    listing = "\n".join(f"{i}. {s['heading']} — {s['body']}" for i, s in enumerate(slides))
+    try:
+        out = gemini_json([{"text": REVIEW_PROMPT.format(title=post.get("title", ""), slides=listing)}], REVIEW_SCHEMA,
+                          0.2, task="revisione slide")
+        fixed = 0
+        for f in out.get("fixes", []):
+            i = f.get("index")
+            if not isinstance(i, int) or not (0 <= i < len(slides)) or not f.get("heading") or not f.get("body"):
+                continue
+            body = _clip(f["body"], 170)
+            print(f"  Slide {i + 1} riscritta ({f.get('problem', '')[:80]}): {slides[i]['heading']} → {f['heading']}")
+            slides[i] = {**slides[i], "heading": _clip(f["heading"], 70), "body": body,
+                         "highlight": exact_phrase(slides[i].get("highlight"), body)}
+            fixed += 1
+        return fixed
+    except Exception as e:
+        bad = [i for i, s in enumerate(slides) if RX_OUT_OF_CONTEXT.search(f"{s['heading']} {s['body']}")]
+        keep = [s for i, s in enumerate(slides) if i not in bad]
+        if bad and len(keep) >= 3:
+            post["slides"] = keep
+            print(f"  Revisione non disponibile ({str(e)[:80]}): tolte {len(bad)} slide fuori contesto")
+            return len(bad)
+        return 0

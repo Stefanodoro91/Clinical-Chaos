@@ -627,6 +627,8 @@ def main():
             print("Coda vuota.")
             sys.exit(1)
         post = pick_next(queue, posted)
+    if kind == "research" and CONFIG.get("review_slides", True):
+        content.review_slides(post)              # ogni slide un concetto, comprensibile da sola
     if kind == "research" and CONFIG.get("source_slide"):
         import sources
         sources.prepare(post, drive)             # slide «fonte»: articolo di origine (prima pagina solo se CC)
