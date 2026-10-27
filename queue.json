@@ -813,5 +813,162 @@
     "source_hint": "pages 3-4, sections 6-8 and Fig. 1",
     "id": "fe15d7fc",
     "source": "P-value.pdf"
+  },
+  {
+    "title": "When the Doctor Becomes an Investigator",
+    "title_highlight": "Doctor Becomes an Investigator",
+    "category": "Research ethics",
+    "slides": [
+      {
+        "heading": "Dual Roles in Clinical Research",
+        "body": "The doctor-researcher has to serve both roles, and at times the zeal of an investigator has the potential to cloud morality.",
+        "image_prompt": "a doctor holding a stethoscope in one hand and a research clipboard in the other, standing between a patient and a laboratory desk",
+        "photo_query": "doctor researcher stethoscope clipboard",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Benefit and Risk Balance",
+        "body": "Benefit and risk are two faces of the same coin. The risk is assumed by participants while the benefit is reaped by a population.",
+        "image_prompt": "a two-pan balance scale with a pill bottle on one side and a group of small human figures on the other side",
+        "photo_query": "balance scale pills research",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "The Nuremberg Code (1947)",
+        "body": "Formulated after WWII trials, the Nuremberg Code highlighted the need for informed consent, qualified scientists, and risk justification.",
+        "image_prompt": "an old vintage document resting on a wooden table beside a magnifying glass and a simple fountain pen",
+        "photo_query": "vintage document magnifying glass",
+        "highlight": "highlighted the need for informed consent",
+        "source": ""
+      },
+      {
+        "heading": "Declaration of Helsinki",
+        "body": "Developed by WMA in 1964, it binds the physician to ensure that the health of the patient will be the first consideration.",
+        "image_prompt": "two hands open upward holding a small glowing sphere representing protection and health care ethics",
+        "photo_query": "medical ethics healthcare protection",
+        "highlight": "",
+        "source": ""
+      }
+    ],
+    "takeaway": "The doctor-researcher must balance scientific zeal with patient welfare and ethical guidelines.",
+    "takeaway_highlight": "",
+    "references": [],
+    "caption": "Can a clinician remain an objective investigator without compromising patient welfare? 🩺\n\nTransitioning from clinical care to research introduces complex ethical challenges. When investigating new treatments, the primary duty to the individual patient can sometimes clash with the drive for scientific knowledge. Historical milestones like the Nuremberg Code and the Declaration of Helsinki were established precisely to protect human subjects from overzealous experimentation. How do you manage the dual roles of clinician and researcher in your trials?",
+    "hashtags": [
+      "#ResearchEthics",
+      "#ClinicalTrials",
+      "#GoodClinicalPractice"
+    ],
+    "source_hint": "pages 1-2",
+    "id": "3a6990f9",
+    "source": "Ethics.pdf"
+  },
+  {
+    "title": "The Six Pillars of Research Ethics",
+    "title_highlight": "",
+    "category": "Research ethics",
+    "slides": [
+      {
+        "heading": "Autonomy in Clinical Trials",
+        "body": "Autonomy is the respect for the patient's right to self-governance, choice for care, and the right to accept or refuse treatment.",
+        "image_prompt": "a patient sitting at a table pointing towards one of two directional arrows representing personal choice and decision making",
+        "photo_query": "patient choice decision making",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Beneficence and Harm Reduction",
+        "body": "Beneficence requires acting in the patient's best interest, assessing risks versus benefits, and maximizing benefits while minimizing harms.",
+        "image_prompt": "a doctor and a patient looking at a document together with a glowing green checkmark symbol floating above",
+        "photo_query": "doctor patient consultation reviewing",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Justice in Participant Selection",
+        "body": "Justice seeks fair treatment. Exploitation of patients for the sole purpose of study recruitment and research completion must be refrained.",
+        "image_prompt": "a group of diverse simple human figures standing in an evenly spaced line facing an evaluation scale",
+        "photo_query": "fair treatment equality research",
+        "highlight": "Justice seeks fair treatment",
+        "source": ""
+      },
+      {
+        "heading": "Non-Maleficence and Confidentiality",
+        "body": "Non-maleficence requires practitioners to do no harm. Additionally, confidentiality of study patients and data security must be maintained.",
+        "image_prompt": "a closed folder labeled with a secure lock icon placed on a clean wooden consultation desk",
+        "photo_query": "medical data security confidentiality",
+        "highlight": "",
+        "source": ""
+      }
+    ],
+    "takeaway": "Clinical research ethics rest on autonomy, beneficence, justice, non-maleficence, confidentiality, and honesty.",
+    "takeaway_highlight": "autonomy, beneficence, justice, non-maleficence",
+    "references": [
+      "Beauchamp, T. L., & Childress, J. F. (2001). Principles of Biomedical Ethics (5th ed.). Oxford University Press."
+    ],
+    "caption": "Are you applying all six pillars of research ethics in your human subject protocols?\n\nModern clinical research is anchored by core ethical principles that guide every phase of study design and execution. From ensuring true patient autonomy through informed consent to upholding justice and data confidentiality, these pillars safeguard participant well-being against the pressures of scientific discovery. Which of these principles do you find most challenging to enforce in complex study environments?",
+    "hashtags": [
+      "#ResearchEthics",
+      "#HumanSubjects",
+      "#ClinicalResearch"
+    ],
+    "source_hint": "page 3",
+    "id": "5f7053b6",
+    "source": "Ethics.pdf"
+  },
+  {
+    "title": "Navigating the Ethics Committee Review",
+    "title_highlight": "Ethics Committee Review",
+    "category": "Research ethics",
+    "slides": [
+      {
+        "heading": "Role of the Ethics Committee",
+        "body": "The ethics committee is an independent body that plays a pivotal role in ensuring trials follow GCP and safeguard subject safety.",
+        "image_prompt": "a diverse committee of five professionals seated around a conference table reviewing project documents and research proposals",
+        "photo_query": "ethics committee meeting review",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Multidisciplinary Composition",
+        "body": "Ethics committees require a mix of medical and non-medical persons, scientific experts, legal professionals, and lay community members.",
+        "image_prompt": "different professional icons and silhouettes arranged in a circular committee arrangement around a central document",
+        "photo_query": "multidisciplinary team meeting professional",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Mandatory CDSCO Registration",
+        "body": "All ethics committees must be registered with the Drug Controller General of India to legally approve clinical trial protocols.",
+        "image_prompt": "an official regulatory approval stamp being pressed firmly onto an institutional research proposal document",
+        "photo_query": "regulatory approval stamp document",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Essential Submission Documents",
+        "body": "Investigators must submit the protocol, informed consent document, vernacular translations, and investigator brochure for review.",
+        "image_prompt": "a neat stack of clinical trial protocol folders with attached bookmark tags sitting on a desk",
+        "photo_query": "clinical trial protocol documents",
+        "highlight": "protocol, informed consent document, vernacular translations",
+        "source": ""
+      }
+    ],
+    "takeaway": "Ethics committees ensure scientific validity and protect human subjects through rigorous, independent protocol reviews.",
+    "takeaway_highlight": "independent protocol reviews",
+    "references": [
+      "Bhatt, A. (2012). Indian clinical trials: Paradigm shift from speed to quality? Perspectives in Clinical Research, 3(1), 1-3."
+    ],
+    "caption": "Does your clinical trial protocol meet all regulatory requirements for ethics committee approval? 📋\n\nInstitutional Ethics Committees are the true guardians of safety and integrity in clinical research. Comprising multidisciplinary experts, legal minds, and lay community representatives, they provide unbiased evaluation of trial proposals. Understanding committee expectations, registration mandates, and mandatory document submissions can significantly streamline your approval timeline. What common hurdles do you face during your ethics submissions?",
+    "hashtags": [
+      "#ClinicalTrials",
+      "#RegulatoryAffairs",
+      "#ResearchGovernance"
+    ],
+    "source_hint": "pages 4-6",
+    "id": "baba07fc",
+    "source": "Ethics.pdf"
   }
 ]
