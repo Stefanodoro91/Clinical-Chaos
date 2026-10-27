@@ -187,8 +187,204 @@ def canvas(cfg, index, total):
     return img, d
 
 
+
+# ---------------------------------------------------------------- copertine «poster» (dal 27/10, stile B approvato)
+# Titolo in maiuscolo con Anton (carattere stretto e pesante, licenza OFL), parole chiave nel colore del tipo di post,
+# trama di cubetti come lo sfondo del sito. Tema scuro o chiaro a caso (stabile per post) per variare la griglia.
+def poster_font(size):
+    key = ("Anton", size)
+    if key not in _font_cache:
+        _font_cache[key] = ImageFont.truetype(str(FONTS / "Anton-Regular.ttf"), size)
+    return _font_cache[key]
+
+
+def poster_theme(post, cfg):
+    """«dark» o «light»: config cover_theme = dark | light | random (a caso, ma sempre uguale per lo stesso post)."""
+    mode = cfg.get("cover_theme", "random")
+    if mode in ("dark", "light"):
+        return mode
+    import hashlib
+    return "dark" if int(hashlib.md5(str(post.get("id") or post.get("title")).encode()).hexdigest(), 16) % 2 else "light"
+
+
+def cube_texture(img, seed, accent, dark, keep_out=()):
+    """Gruppi di 1–4 cubetti sparsi, più fitti ai bordi, mai sopra le zone di testo (`keep_out`: rettangoli)."""
+    import random
+    rnd = random.Random(seed)
+    d = ImageDraw.Draw(img, "RGBA")
+    a = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    cols = ([(42, 64, 88, 255), (31, 92, 90, 255), (120, 135, 150, 120), a + (95,)] if dark else
+            [(201, 214, 223, 255), (176, 196, 210, 200), a + (110,), (14, 34, 51, 40)])
+    placed = 0
+    for _ in range(400):
+        if placed >= 44:
+            break
+        s = rnd.choice([8, 12, 16, 22])
+        x = rnd.choice([rnd.randint(0, 60), rnd.randint(W - 230, W - 10), rnd.randint(0, W)]) if rnd.random() < 0.8 \
+            else rnd.randint(0, W)
+        y = rnd.randint(20, H - 20)
+        box = (x - 4, y - 4, x + 2 * s + 8, y + 2 * s + 8)
+        if any(box[0] < k[2] and box[2] > k[0] and box[1] < k[3] and box[3] > k[1] for k in keep_out):
+            continue
+        col = rnd.choice(cols)
+        for dx, dy in rnd.sample([(0, 0), (1, 0), (0, 1), (1, 1)], rnd.randint(1, 4)):
+            d.rectangle((x + dx * (s + 3), y + dy * (s + 3), x + dx * (s + 3) + s, y + dy * (s + 3) + s), fill=col)
+        placed += 1
+
+
+def poster_title(d, text, highlight, x, y, max_w, max_h, color, accent, start=150, minimum=64):
+    """Titolo in maiuscolo con Anton; le parole del `highlight` nel colore d'accento. Restituisce la y finale."""
+    text = text.upper()
+    hl = {w.strip(":?.,!;").upper() for w in (highlight or "").split()}
+    size = start
+    while True:                        # Anton: le maiuscole occupano da 0,31 a 1,19 del corpo; si misura quello
+        f = poster_font(size)
+        lines = wrap(d, text, f, max_w)
+        height = (len(lines) - 1) * size * 1.04 + size * 0.9
+        if (height <= max_h and all(d.textlength(l, font=f) <= max_w for l in lines)) or size <= minimum:
+            break
+        size -= 4
+    lift = int(size * 0.3)             # le maiuscole partono esattamente da y
+    for ln in lines:
+        cx = x
+        for w in ln.split():
+            d.text((cx, y - lift), w, font=f, fill=accent if w.strip(":?.,!;") in hl else color)
+            cx += d.textlength(w + " ", font=f)
+        y += size * 1.04
+    return y - size * 1.04 + size * 0.9
+
+
+def poster_base(post, cfg, total):
+    """Fondo, barra d'accento e piè di pagina della copertina poster; restituisce (img, d, dark, ink, accent_ink)."""
+    c = cfg["colors"]
+    dark = poster_theme(post, cfg) == "dark"
+    img, d = (canvas if dark else light_canvas)(cfg, 1, total)
+    ink = "#FFFFFF" if dark else c["background"]
+    acc = c["accent"] if dark else DARK_ACCENT.get(c["accent"], c["background"])
+    return img, d, dark, ink, acc
+
+
+def poster_logo(img, d, cfg, dark, y=80):
+    if dark:
+        paste_logo(img, "logo-symbol-light", MARGIN - 10, y, height=120)
+        paste_logo(img, "logo-wordmark-light", MARGIN + 122, y + 16, height=88)
+        return 120
+    return _small_lockup(img, d, cfg, y)
+
+
+def _small_lockup(img, d, cfg, y):
+    paste_logo(img, "logo-symbol", MARGIN - 10, y, height=120)
+    paste_logo(img, "logo-wordmark", MARGIN + 122, y + 16, height=88)
+    return 120
+
+
+def poster_pill(d, label, x, y, fill, text):
+    pf = font("Bold", 30)
+    pw = d.textlength(label, font=pf) + 56
+    d.rounded_rectangle((x, y, x + pw, y + 60), radius=30, fill=fill)
+    d.text((x + 28, y + 11), label, font=pf, fill=text)
+    return pw
+
+
+def poster_cover(post, cfg, total):
+    """Copertina poster dei post di metodologia (e speciali)."""
+    c = cfg["colors"]
+    img, d, dark, ink, acc = poster_base(post, cfg, total)
+    lh = poster_logo(img, d, cfg, dark)
+    top = 80 + lh + 50
+    poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, top, c["accent"], c["background"])
+    title_top = top + 110
+    end = poster_title(d, post["title"], post.get("title_highlight"), MARGIN, title_top, W - 2 * MARGIN,
+                       H - 300 - title_top, ink, acc)
+    cube_texture(img, post.get("id") or post["title"], c["accent"], dark,
+                 keep_out=[(MARGIN - 20, 60, W - MARGIN + 20, end + 30), (MARGIN - 20, H - 260, 520, H - 60)])
+    if total:
+        d.text((MARGIN, H - 240), "Swipe  →", font=font("ExtraBold", 46), fill=acc)
+    return img
+
+
+def poster_grant_cover(post, cfg, total, picture=None):
+    """Copertina poster dei bandi: «OPEN CALL», ente, gancio in maiuscolo, scadenza; con foto pertinente in alto."""
+    c = cfg["colors"]
+    img, d, dark, ink, acc = poster_base(post, cfg, total)
+    keep = [(MARGIN - 20, H - 260, 520, H - 60)]
+    if picture is not None:
+        band = 470
+        img.paste(ImageOps.fit(picture.convert("RGB"), (W, band), Image.LANCZOS), (0, 14))
+        poster_pill(d, "OPEN CALL", MARGIN, band - 30, c["accent"], c["background"])
+        y = band + 60
+        keep.append((0, 0, W, band + 40))
+    else:
+        lh = poster_logo(img, d, cfg, dark)
+        y = 80 + lh + 50
+        poster_pill(d, "OPEN CALL", MARGIN, y, c["accent"], c["background"])
+        y += 100
+    if post.get("funder"):
+        ff, fl, fs = fit(d, post["funder"], "SemiBold", 34, 26, W - 2 * MARGIN, 84, 1.25)
+        y = draw_lines(d, fl, ff, fs, MARGIN, y, c["muted_text"] if dark else INK_MUTED, 1.25) + 16
+    box_top, box_h = H - 420, 150
+    end = poster_title(d, post["title"], post.get("title_highlight"), MARGIN, y, W - 2 * MARGIN, box_top - y - 30,
+                       ink, acc, start=130 if picture is None else 104, minimum=56)
+    keep.append((MARGIN - 20, y - 20, W - MARGIN + 20, end + 20))
+    if post.get("deadline"):
+        d.rounded_rectangle((MARGIN, box_top, W - MARGIN, box_top + box_h), radius=26,
+                            fill=c["accent"] if dark else c["background"])
+        lab = c["background"] if dark else c["accent"]
+        d.text((MARGIN + 44, box_top + 22), "DEADLINE", font=font("Bold", 28), fill=lab)
+        d.text((MARGIN + 44, box_top + 58), post["deadline"].upper(), font=poster_font(70),
+               fill=c["background"] if dark else "#FFFFFF")
+        keep.append((MARGIN - 20, box_top - 20, W - MARGIN + 20, box_top + box_h + 20))
+    cube_texture(img, post.get("id") or post["title"], c["accent"], dark, keep_out=keep)
+    if total:
+        d.text((MARGIN, H - 205), "Swipe  →", font=font("Bold", 40), fill=acc)
+    return img
+
+
+def poster_positions_cover(post, cfg, total):
+    """Copertina poster della raccolta settimanale di posizioni accademiche."""
+    c = cfg["colors"]
+    img, d, dark, ink, acc = poster_base(post, cfg, total)
+    lh = poster_logo(img, d, cfg, dark)
+    y = 80 + lh + 50
+    poster_pill(d, "ACADEMIC POSITIONS", MARGIN, y, c["accent"], c["background"])
+    d.text((MARGIN, y + 86), f"Week of {post.get('week', '')}", font=font("SemiBold", 36),
+           fill=c["muted_text"] if dark else INK_MUTED)
+    t_top = y + 160
+    end = poster_title(d, post["title"], post.get("title_highlight"), MARGIN, t_top, W - 2 * MARGIN, 470, ink, acc)
+    counts = {}
+    for j in post.get("jobs", []):
+        t = SHORT_TYPE.get(j["type"], j["type"])
+        counts[t] = counts.get(t, 0) + 1
+    chip_f = font("Bold", 32)
+    rows_, row, width = [], [], 0
+    for chip in [f"{n} {t}" for t, n in counts.items()]:
+        cw = d.textlength(chip, font=chip_f) + 44
+        if row and width + cw > W - 2 * MARGIN:
+            rows_.append(row)
+            row, width = [], 0
+        row.append((chip, cw))
+        width += cw + 16
+    if row:
+        rows_.append(row)
+    cy = H - 270 - 76 * len(rows_)
+    keep = [(MARGIN - 20, 60, W - MARGIN + 20, end + 30), (MARGIN - 20, cy - 20, W - MARGIN + 20, H - 60)]
+    for row in rows_:
+        x = MARGIN
+        for chip, cw in row:
+            d.rounded_rectangle((x, cy, x + cw, cy + 60), radius=30, outline=ink, width=3)
+            d.text((x + 22, cy + 11), chip, font=chip_f, fill=ink)
+            x += cw + 16
+        cy += 76
+    cube_texture(img, post.get("id") or post["title"], c["accent"], dark, keep_out=keep)
+    if total:
+        d.text((MARGIN, H - 220), "Swipe  →", font=font("Bold", 40), fill=acc)
+    return img
+
+
 def cover(post, cfg, total):
     """Copertina in negativo: fondo chiaro, logo, etichetta del tema, titolo con evidenziatore."""
+    if cfg.get("cover_style") == "poster":
+        return poster_cover(post, cfg, total)
     c = cfg["colors"]
     navy = c["background"]
     img, d = light_canvas(cfg, 1, total)
@@ -212,10 +408,12 @@ def grant_cover(post, cfg, total):
     """Copertina dei bandi in negativo: «OPEN CALL», ente, titolo evidenziato e scadenza. Con una foto Pixabay
     scelta per il bando (images.cover_photo) la foto occupa la fascia alta e il testo si compatta sotto."""
     import images
+    picture = images.COVER_CACHE.get(post.get("id")) if cfg.get("grant_cover_photo") else None
+    if cfg.get("cover_style") == "poster":
+        return poster_grant_cover(post, cfg, total, picture)
     c = cfg["colors"]
     navy = c["background"]
     img, d = light_canvas(cfg, 1, total)
-    picture = images.COVER_CACHE.get(post.get("id")) if cfg.get("grant_cover_photo") else None
     badge_f = font("ExtraBold", 36)
     bw = d.textlength("OPEN CALL", font=badge_f) + 64
     if picture is not None:
@@ -433,6 +631,8 @@ SHORT_TYPE = {"Clinical academic & fellowship": "Clinical fellowship", "Research
 
 def positions_cover(post, cfg, total):
     """Copertina della raccolta settimanale di posizioni accademiche (in negativo, accento proprio)."""
+    if cfg.get("cover_style") == "poster":
+        return poster_positions_cover(post, cfg, total)
     c = cfg["colors"]
     navy = c["background"]
     img, d = light_canvas(cfg, 1, total)
