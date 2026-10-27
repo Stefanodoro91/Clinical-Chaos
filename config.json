@@ -32,7 +32,7 @@
   "facebook": true,
   "links_page_url": "https://clinicalresearchchaos.com",
   "positions_accent": "#A78BFA",
-  "positions_per_post": 6,
+  "positions_per_post": 5,
   "positions_min_per_post": 3,
   "positions_min_days_left": 10,
   "positions_verify_per_run": 40,

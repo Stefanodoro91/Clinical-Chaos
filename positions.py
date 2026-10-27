@@ -116,6 +116,11 @@ Return:
 - deadline_evidence: the sentence or phrase of the text, copied word for word, that states the deadline
   ("" if none).
 - summary: 35-60 words in English: research topic, main tasks, key requirements. Factual, no hype.
+- topic: the research topic in 3-8 English words (e.g. "Robot-assisted gait rehabilitation after stroke").
+- ssd: for Italian positions, the scientific-disciplinary sector exactly as written (e.g. "MEDS-19/A",
+  "MED/34", "ING-IND/34", with its name if given); "" if not written.
+- duration: the contract length as stated, in English (e.g. "36 months", "3 years", "Permanent",
+  "12 months, renewable"); "" if not stated.
 - street_address, postal_code, region: the workplace street address, postal code and region/state/province,
   copied from the text; "" for each one not written in the advertisement (never guess or look up).
 - salary_min, salary_max: the gross salary numbers stated in the text (digits only, no separators), "" if
@@ -134,7 +139,8 @@ VERIFY_SCHEMA = {
         "area": {"type": "STRING", "enum": ["rehabilitation", "clinical", "engineering"]},
         "title": {"type": "STRING"}, "institution": {"type": "STRING"}, "country": {"type": "STRING"},
         "city": {"type": "STRING"}, "deadline": {"type": "STRING"}, "deadline_evidence": {"type": "STRING"},
-        "summary": {"type": "STRING"},
+        "summary": {"type": "STRING"}, "topic": {"type": "STRING"}, "ssd": {"type": "STRING"},
+        "duration": {"type": "STRING"},
         "street_address": {"type": "STRING"}, "postal_code": {"type": "STRING"}, "region": {"type": "STRING"},
         "salary_min": {"type": "STRING"}, "salary_max": {"type": "STRING"}, "salary_currency": {"type": "STRING"},
         "salary_unit": {"type": "STRING", "enum": ["YEAR", "MONTH", "WEEK", "HOUR", "NONE"]}, "salary_evidence": {"type": "STRING"},
@@ -534,8 +540,24 @@ def verify(item):
         "city": content._clip(out.get("city") or (inpa or {}).get("city", ""), 60),
         "deadline": deadline, "deadline_evidence": content._clip(ev, 200) if deadline else "",
         "summary": content._clip(out.get("summary", ""), 500),
+        "topic": content._clip(out.get("topic", ""), 80),
+        **_ssd_duration(out, text),
         **_place_salary(out, text),
     }
+
+
+def _ssd_duration(out, text):
+    """SSD e durata solo se compaiono davvero nel testo (il codice SSD; per la durata, il numero)."""
+    res = {}
+    ssd = (out.get("ssd") or "").strip()
+    code = re.match(r"[A-Z]{2,5}(?:-[A-Z]{2,4})?[-/]\d{2}(?:/[A-Z])?", ssd.upper())
+    if code and re.sub(r"\W", "", code.group(0)) in re.sub(r"\W", "", text.upper()):
+        res["ssd"] = content._clip(ssd, 80)
+    dur = (out.get("duration") or "").strip()
+    nums = re.findall(r"\d+", dur)
+    if dur and (all(n in text for n in nums) if nums else re.search(r"permanent|indeterminato|tenure", text, re.I)):
+        res["duration"] = content._clip(dur, 40)
+    return res
 
 
 def _place_salary(out, text):
@@ -607,6 +629,10 @@ def refresh(archive, limit=25, today=None):
         if (d and d < today - timedelta(days=30)) or (v.get("status") == "failed" and (today - old).days > 30):
             del archive[k]
     return report
+
+
+AREA_LABEL = {"rehabilitation": "Rehabilitation research", "clinical": "Clinical research",
+              "engineering": "Biomedical engineering"}
 
 
 def active(archive, today=None):
@@ -1003,6 +1029,8 @@ def weekly_post(archive, posted, cfg, today=None):
         return None
     week = f"{today.day} {today.strftime('%b %Y')}"
     jobs = [{"type": TYPES[v["type"]], "title": v["title"], "institution": v.get("institution", ""),
+             "topic": v.get("topic", ""), "ssd": v.get("ssd", ""), "duration": v.get("duration", ""),
+             "area_label": AREA_LABEL.get(v.get("area"), ""),
              "place": ", ".join(x for x in (v.get("city"), v.get("country")) if x),
              "deadline": _fmt(d) if d else "See advertisement", "summary": v.get("summary", ""), "url": v["url"]}
             for k, v, d in picked]

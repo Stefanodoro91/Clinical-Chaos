@@ -413,6 +413,9 @@ def closing(post, cfg, total):
     return img
 
 
+SHORT_TYPE = {"Clinical academic & fellowship": "Clinical fellowship", "Research assistant / associate": "Research staff"}
+
+
 def positions_cover(post, cfg, total):
     """Copertina della raccolta settimanale di posizioni accademiche (in negativo, accento proprio)."""
     c = cfg["colors"]
@@ -430,21 +433,36 @@ def positions_cover(post, cfg, total):
               c["accent"], half=True)
     counts = {}
     for j in post.get("jobs", []):
-        counts[j["type"]] = counts.get(j["type"], 0) + 1
-    x, y = MARGIN, H - 330
-    for t, n in counts.items():
-        chip = f"{n} {t}"
-        cw = d.textlength(chip, font=font("Bold", 32)) + 44
-        d.rounded_rectangle((x, y, x + cw, y + 60), radius=30, outline=navy, width=3)
-        d.text((x + 22, y + 11), chip, font=font("Bold", 32), fill=navy)
-        x += cw + 16
+        t = SHORT_TYPE.get(j["type"], j["type"])
+        counts[t] = counts.get(t, 0) + 1
+    chip_f = font("Bold", 32)
+    chips = [f"{n} {t}" for t, n in counts.items()]
+    rows_, row, width = [], [], 0                 # i chip vanno a capo invece di uscire dalla slide
+    for chip in chips:
+        cw = d.textlength(chip, font=chip_f) + 44
+        if row and width + cw > W - 2 * MARGIN:
+            rows_.append(row)
+            row, width = [], 0
+        row.append((chip, cw))
+        width += cw + 16
+    if row:
+        rows_.append(row)
+    y = H - 270 - 76 * len(rows_)
+    for row in rows_:
+        x = MARGIN
+        for chip, cw in row:
+            d.rounded_rectangle((x, y, x + cw, y + 60), radius=30, outline=navy, width=3)
+            d.text((x + 22, y + 11), chip, font=chip_f, fill=navy)
+            x += cw + 16
+        y += 76
     if total:
         d.text((MARGIN, H - 220), "Swipe  →", font=font("Bold", 40), fill=navy)
     return img
 
 
 def position_slide(job, number, cfg, index, total):
-    """Una posizione per slide: tipo, titolo, ente e luogo, scadenza, breve descrizione."""
+    """Una posizione per slide, a scheda: titolo, poi università, tipo, tema, SSD, durata, sede e scadenza
+    (le righe senza dato non compaiono)."""
     c = cfg["colors"]
     img, d = canvas(cfg, index, total)
     tf = font("ExtraBold", 32)
@@ -453,18 +471,23 @@ def position_slide(job, number, cfg, index, total):
     d.text((MARGIN + 24, 141), job["type"].upper(), font=tf, fill=c["background"])
     d.text((W - MARGIN - d.textlength(f"{number:02d}", font=font("ExtraBold", 72)), 118), f"{number:02d}",
            font=font("ExtraBold", 72), fill=c["accent"])
-    hf, hl, hs = fit(d, job["title"], "Bold", 58, 38, W - 2 * MARGIN, 300, 1.18)
-    y = draw_lines(d, hl, hf, hs, MARGIN, 240, c["text"], 1.18) + 26
-    inst = job["institution"] + (f" · {job['place']}" if job.get("place") else "")
-    nf, nl, ns = fit(d, inst, "SemiBold", 36, 28, W - 2 * MARGIN, 130, 1.25)
-    y = draw_lines(d, nl, nf, ns, MARGIN, y, c["muted_text"], 1.25) + 34
-    d.rounded_rectangle((MARGIN, y, W - MARGIN, y + 130), radius=24, outline=c["accent"], width=3)
-    d.text((MARGIN + 36, y + 22), "DEADLINE", font=font("Bold", 26), fill=c["accent"])
-    d.text((MARGIN + 36, y + 58), job["deadline"], font=font("ExtraBold", 48), fill=c["text"])
-    y += 170
-    if job.get("summary"):
-        bf, bl, bs = fit(d, job["summary"], "Regular", 36, 26, W - 2 * MARGIN, H - 190 - y, 1.4)
-        draw_lines(d, bl, bf, bs, MARGIN, y, c["muted_text"], 1.4)
+    hf, hl, hs = fit(d, job["title"], "Bold", 54, 36, W - 2 * MARGIN, 200, 1.16)
+    y = draw_lines(d, hl, hf, hs, MARGIN, 236, c["text"], 1.16) + 40
+    rows_ = [("University", job.get("institution")), ("Position", job.get("type")),
+             ("Topic", job.get("topic") or job.get("area_label")), ("SSD", job.get("ssd")),
+             ("Duration", job.get("duration")), ("Location", job.get("place")), ("Deadline", job.get("deadline"))]
+    rows_ = [(k, v) for k, v in rows_ if v]
+    label_w = 250
+    room = H - 170 - y
+    gap = min(150, room / max(1, len(rows_)))
+    for k, v in rows_:
+        d.line((MARGIN, y, W - MARGIN, y), fill="#2A4058", width=2)
+        d.text((MARGIN, y + 20), k.upper(), font=font("Bold", 26), fill=c["accent"])
+        last = k == "Deadline"
+        vf, vl, vs = fit(d, v, "ExtraBold" if last else "SemiBold", 40 if last else 36, 26, W - 2 * MARGIN - label_w,
+                         gap - 28, 1.2)
+        draw_lines(d, vl, vf, vs, MARGIN + label_w, y + 14, c["text"], 1.2)
+        y += gap
     return img
 
 
@@ -476,15 +499,29 @@ def _question(post):
     return q if 10 <= len(q) <= 140 else "What is your experience? Tell us in the comments."
 
 
-def rule_slide(post, cfg, index, total):
-    """Carosello v2: il messaggio da ricordare, da solo, su fondo chiaro."""
+def rule_slide(post, cfg, index, total, with_cta=False):
+    """Carosello v2: il messaggio da ricordare su fondo chiaro; con `with_cta` anche salva / commenta / condividi
+    in basso, così regola e invito all'azione stanno in una sola slide (carosello più breve)."""
     c = cfg["colors"]
     navy = c["background"]
     img, d = light_canvas(cfg, index, total)
     d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 36), fill=DARK_ACCENT.get(c["accent"], navy))
-    fnt, lines, size = fit(d, post["takeaway"], "ExtraBold", 100, 56, W - 2 * MARGIN, H - 300 - 250, 1.12)
+    room = H - 300 - (250 if not with_cta else 560)
+    fnt, lines, size = fit(d, post["takeaway"], "ExtraBold", 100 if not with_cta else 88, 52, W - 2 * MARGIN, room, 1.12)
     draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 260, W - 2 * MARGIN,
               navy, 1.12, c["accent"], half=True)
+    if with_cta:
+        y = H - 560
+        d.line((MARGIN, y, W - MARGIN, y), fill="#C9D6DF", width=3)
+        qf, ql, qs = fit(d, _question(post), "SemiBold", 40, 30, W - 2 * MARGIN, 110, 1.25)
+        draw_lines(d, ql, qf, qs, MARGIN, y + 36, navy, 1.25)
+        y += 190
+        x = MARGIN
+        for icon, label in ((_bookmark, "Save"), (_person_plus, "Comment"), (_plane, "Share")):
+            icon(d, x, y + 4, navy, s=46)
+            d.text((x + 66, y), label, font=font("Bold", 40), fill=navy)
+            x += 66 + d.textlength(label, font=font("Bold", 40)) + 50
+        d.text((MARGIN, y + 90), f"More: link in bio · {cfg['handle']}", font=font("SemiBold", 34), fill=INK_MUTED)
     return img
 
 
@@ -587,7 +624,8 @@ def render_carousel(post, cfg):
     has_facts = bool(post.get("facts"))
     has_numbers = bool(post.get("numbers"))
     v2 = cfg.get("carousel_v2", True) and not post.get("kind")     # metodologia: regola e CTA su slide separate
-    total = len(post["slides"]) + 2 + has_facts + has_numbers + bool(v2)
+    merge = v2 and cfg.get("merge_takeaway_cta", True)          # regola e invito all'azione nella stessa slide
+    total = len(post["slides"]) + 2 + has_facts + has_numbers + bool(v2 and not merge)
     use_images = cfg.get("ai_images", True) and not post.get("no_images")
     max_images = int(cfg.get("max_images_per_post", 2))
     used = 0
@@ -610,7 +648,9 @@ def render_carousel(post, cfg):
             pages.append(content(slide, i, cfg, index, total))
     if has_facts and not facts_first:
         pages.append(facts_slide(post, cfg, len(pages) + 1, total))
-    if v2:
+    if v2 and merge:
+        pages.append(rule_slide(post, cfg, len(pages) + 1, total, with_cta=True))
+    elif v2:
         pages.append(rule_slide(post, cfg, len(pages) + 1, total))
         pages.append(cta_slide(post, cfg, len(pages) + 1, total))
     else:
