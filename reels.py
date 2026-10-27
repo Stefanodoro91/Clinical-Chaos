@@ -159,6 +159,49 @@ def story_frame(slide, cfg, index, total, accent):
             for line in _wrap(d, slide["body"], fb, W - 2 * M):
                 d.text((M, y), line, font=fb, fill="#3D5266")
                 y += 62
+    elif kind == "image":
+        # schermata con immagini (schermate del sito in un telefono, oppure copertine affiancate)
+        f_lab = cards.font("Bold", 30)
+        d.text((M, 170), (slide.get("kicker") or cfg.get("brand_name", "")).upper(), font=f_lab, fill=accent)
+        fnt, lines, size = cards.fit(d, slide["title"], "ExtraBold", 84, 56, W - 2 * M, 230, 1.1)
+        y = 230
+        for line in lines:
+            d.text((M, y), line, font=fnt, fill=fg)
+            y += int(size * 1.1)
+        if slide.get("body"):
+            fb = cards.font("Regular", 40)
+            for line in _wrap(d, slide["body"], fb, W - 2 * M)[:2]:
+                d.text((M, y + 14), line, font=fb, fill=c["muted_text"])
+                y += 54
+        y += 60
+        paths = [ROOT / p if not Path(p).is_absolute() else Path(p) for p in slide.get("images", [])]
+        pics = [Image.open(p).convert("RGB") for p in paths if p.exists()]
+        bottom = H - 250
+        if pics and slide.get("frame", "phone") == "phone":
+            n = len(pics)
+            gap = 50
+            pw = min(560, (W - 2 * M - gap * (n - 1)) // n)
+            for i, pic in enumerate(pics):
+                ph = min(bottom - y - 30, int(pw * pic.height / pic.width))
+                x0 = (W - (pw * n + gap * (n - 1))) // 2 + i * (pw + gap)
+                crop = pic.crop((0, 0, pic.width, int(pic.width * ph / pw)))
+                shot = crop.resize((pw, ph), Image.LANCZOS)
+                d.rounded_rectangle((x0 - 16, y - 16, x0 + pw + 16, y + ph + 16), radius=48, fill="#05121C",
+                                    outline="#2A4058", width=4)
+                mask = Image.new("L", (pw, ph), 0)
+                ImageDraw.Draw(mask).rounded_rectangle((0, 0, pw - 1, ph - 1), radius=34, fill=255)
+                img.paste(shot, (x0, y), mask)
+        elif pics:                                            # copertine a cascata, grandi e sovrapposte
+            n = len(pics)
+            cw = 560
+            step_x = (W - 2 * M - cw) // max(1, n - 1)
+            step_y = min(240, (bottom - y - int(cw * 1.25)) // max(1, n - 1))
+            for i, pic in enumerate(pics):
+                ch = int(cw * pic.height / pic.width)
+                cov = pic.resize((cw, ch), Image.LANCZOS)
+                x0, yy = M + i * step_x, y + i * step_y
+                d.rounded_rectangle((x0 - 8, yy - 8, x0 + cw + 8, yy + ch + 8), radius=20, fill="#05121C")
+                img.paste(cov, (x0, yy))
     elif kind == "closing":
         sym = Image.open(ROOT / "assets" / "logo-symbol-light.png").convert("RGBA").resize((300, 302), Image.LANCZOS)
         img.paste(sym, ((W - 300) // 2, 380), sym)
@@ -209,7 +252,9 @@ def frame_seconds(slide):
     """Tempo a schermo di una schermata del reel: copertina e chiusura brevi, le altre secondo le parole
     (circa 200 al minuto, più un secondo per orientarsi), tra 3 e 6 secondi."""
     if slide.get("type") in ("cover", "closing"):
-        return 3.0
+        return 3.0 if slide.get("type") == "cover" else 3.5
+    if slide.get("type") == "image":
+        return 4.5
     words = len(f"{slide.get('title', '')} {slide.get('body', '')}".split())
     return round(max(3.0, min(6.0, 1.0 + words / 3.4)), 1)
 
