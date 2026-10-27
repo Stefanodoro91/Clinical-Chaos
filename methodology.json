@@ -427,5 +427,34 @@
       "Cooke, A., Smith, D., & Booth, A. (2012). Beyond PICO. Qualitative Health Research, 22(10), 1435–1443. https://doi.org/10.1177/1049732312452938"
     ],
     "cover": "published_images/2026-10-24-68352541/slide-1.jpg"
+  },
+  "f1be1bfc": {
+    "id": "f1be1bfc",
+    "date": "2026-10-27",
+    "title": "Why Content Validity Comes First in PROM Reviews",
+    "category": "Research methods",
+    "takeaway": "Content validity is the primary check in reviewing PROMs; if it fails, further evaluation stops.",
+    "points": [
+      {
+        "heading": "The Core of PROM Quality",
+        "body": "Content validity refers to the degree to which the content of a PROM is an adequate reflection of the construct to be measured.",
+        "source": "Mokkink et al., 2010"
+      },
+      {
+        "heading": "Why It Ranks First",
+        "body": "Content validity is considered to be the most important measurement property because items must be relevant, comprehensive, and comprehensible.",
+        "source": "Prinsen et al., 2018"
+      },
+      {
+        "heading": "The Stop Rule for Bad Content",
+        "body": "If there is high quality evidence that the content validity is insufficient, the PROM will not be considered further in steps six to eight.",
+        "source": "Prinsen et al., 2018"
+      }
+    ],
+    "references": [
+      "Mokkink, L. B., Terwee, C. B., Patrick, D. L., Alonso, J., Stratford, P. W., Knol, D. L., Bouter, L. M., & de Vet, H. C. (2010). The COSMIN study reached international consensus on taxonomy, terminology, and definitions of measurement properties for health-related patient-reported outcomes. Journal of Clinical Epidemiology, 63(7), 737–745. https://doi.org/10.1016/j.jclinepi.2010.02.006",
+      "Prinsen, C. A. C., Mokkink, L. B., Bouter, L. M., Alonso, J., Patrick, D. L., de Vet, H. C. W., & Terwee, C. B. (2018). COSMIN guideline for systematic reviews of patient-reported outcome measures. Quality of Life Research, 27(1147–1157)."
+    ],
+    "cover": "published_images/2026-10-27-f1be1bfc/slide-1.jpg"
   }
 }
