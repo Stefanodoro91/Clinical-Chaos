@@ -13,14 +13,20 @@ META, THUMBS = {}, {}          # id del post → metadati / immagine della prima
 
 
 def _pdf_bytes(drive, name):
-    """Il PDF di origine: cercato per nome nelle cartelle Drive del bot (materiale nuovo o già elaborato)."""
+    """Il file di origine in PDF (anche se su Drive non ha estensione o è un documento Google): None se non c'è."""
     import json
     from pathlib import Path
     log = json.loads((Path(__file__).resolve().parent / "sources_log.json").read_text(encoding="utf-8"))
     entry = next((s for s in reversed(log) if s.get("name") == name), None)
-    if not entry or not name.lower().endswith(".pdf"):
+    if not entry:
         return None
-    return drive.files().get_media(fileId=entry["drive_id"], supportsAllDrives=True).execute()
+    meta = drive.files().get(fileId=entry["drive_id"], fields="mimeType", supportsAllDrives=True).execute()
+    mime = meta.get("mimeType", "")
+    if mime == "application/pdf":
+        return drive.files().get_media(fileId=entry["drive_id"], supportsAllDrives=True).execute()
+    if mime.startswith("application/vnd.google-apps."):
+        return drive.files().export(fileId=entry["drive_id"], mimeType="application/pdf").execute()
+    return None
 
 
 def _first_page(data):
@@ -66,10 +72,14 @@ def prepare(post, drive):
             return None
         text, img = _first_page(data)
         m = RX_DOI.search(text)
-        if not m:
-            print(f"  Fonte: nessun DOI nella prima pagina di {post.get('source')}: niente slide fonte")
+        doi = m.group(1) if m else None
+        if not doi:                          # niente DOI in prima pagina: l'unica reference del post con un DOI
+            dois = [d.group(1) for d in (RX_DOI.search(r) for r in post.get("references") or []) if d]
+            doi = dois[0] if len(dois) == 1 else None
+        if not doi:
+            print(f"  Fonte: nessun DOI per {post.get('source')}: niente slide fonte")
             return None
-        item = _crossref(m.group(1))
+        item = _crossref(doi)
         title = " ".join((item.get("title") or [""])[0].split())
         if not title:
             return None
