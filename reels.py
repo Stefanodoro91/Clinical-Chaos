@@ -47,14 +47,14 @@ def frame(slide_path, cfg, index, total, accent):
     return img
 
 
-def music(path, seconds, seed=0, mood="Classica"):
+def music(path, seconds, seed=0, mood="Classica", track=None):
     """Base strumentale originale (lo-fi con batteria, basso, accordi e melodia): vedi music.py."""
     import music as _music
-    return _music.for_video(path, seconds, seed, mood=mood)
+    return _music.for_video(path, seconds, seed, mood=mood, track=track)
 
 
 def build_reel(slide_paths, out_path, cfg, accent=None, per_slide=4.6, edge=2.8, fade=0.5, with_music=True, images=None,
-               mood="Classica"):
+               mood="Classica", track=None):
     """Video MP4 verticale (H.264 + AAC) dalle slide di un carosello: copertina e chiusura più brevi,
     slide di contenuto abbastanza lunghe da leggerle. Restituisce la durata in secondi."""
     accent = accent or cfg["colors"]["accent"]
@@ -85,7 +85,7 @@ def build_reel(slide_paths, out_path, cfg, accent=None, per_slide=4.6, edge=2.8,
         cmd = ["ffmpeg", "-y", "-loglevel", "error", *inputs]
         if with_music:
             wav = tmp / "music.wav"
-            music(wav, duration, mood=mood)
+            music(wav, duration, mood=mood, track=track)
             cmd += ["-i", str(wav)]
         cmd += ["-filter_complex", graph, "-map", f"[{last}]"]
         if with_music:
@@ -265,7 +265,7 @@ def build_story_reel(spec, out_path, cfg, mood="Aziendale|Speciale|Funky"):
     slides = spec["slides"]
     imgs = [story_frame(s, cfg, i, len(slides), accent) for i, s in enumerate(slides)]
     return build_reel([], out_path, cfg, accent=accent, per_slide=[frame_seconds(s) for s in slides], images=imgs,
-                      mood=spec.get("mood") or mood)
+                      mood=spec.get("mood") or mood, track=spec.get("music_track"))
 
 
 # ---------------------------------------------------------------- copioni dei reel, diversi per tipo di post

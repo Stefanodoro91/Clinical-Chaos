@@ -258,7 +258,7 @@ def best_start(path, seconds):
     return float(lo + int(np.argmax(scores)))
 
 
-def from_library(path, seconds, seed=0, cache=None, mood=None):
+def from_library(path, seconds, seed=0, cache=None, mood=None, track=None):
     """Scrive in `path` un estratto di un brano della cartella Drive «Musica» (diverso ogni giorno con il seme).
     Restituisce il nome del brano, oppure None se la cartella non è raggiungibile o è vuota."""
     import os
@@ -270,7 +270,8 @@ def from_library(path, seconds, seed=0, cache=None, mood=None):
     files = library_files(drive, mood)
     if not files:
         return None
-    f = files[seed % len(files)]
+    chosen = [f for f in files if track and f["name"] == track]      # brano scelto a mano (reel speciali)
+    f = chosen[0] if chosen else files[seed % len(files)]
     src = _download(drive, f, cache or tempfile.gettempdir())
     start = best_start(src, seconds)
     fade_out = 1.2
@@ -281,11 +282,11 @@ def from_library(path, seconds, seed=0, cache=None, mood=None):
     return f["name"]
 
 
-def for_video(path, seconds, seed=0, mood=None):
+def for_video(path, seconds, seed=0, mood=None, track=None):
     """Musica per storie e reel: un brano della libreria su Drive; se non disponibile, la base generata qui."""
     LAST_TRACK.clear()
     try:
-        name = from_library(path, seconds, seed, mood=mood)
+        name = from_library(path, seconds, seed, mood=mood, track=track)
         if name:
             LAST_TRACK["name"] = name
             print(f"::notice title=Musica::{name}")

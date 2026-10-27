@@ -33,6 +33,15 @@
     },
     {
       "type": "image",
+      "kicker": "Academic positions",
+      "title": "Every position on one page",
+      "body": "Filter by type and region. Each one checked on the original ad.",
+      "images": [
+        "assets/reel-milestone/positions.png"
+      ]
+    },
+    {
+      "type": "image",
       "kicker": "One link",
       "title": "Everything in one place",
       "body": "Filter calls by area, region and deadline.",
@@ -57,5 +66,7 @@
       "title": "Big research, translated into small practical pieces.",
       "body": "Link in bio"
     }
-  ]
+  ],
+  "music_track": "bombinsound-awards-ceremony-action-version-2-537847.mp3",
+  "mood": "Aziendale"
 }
