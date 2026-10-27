@@ -7,7 +7,7 @@ on:
   #   metodologia  mar, mer, gio 19:00 e sab 17:00  (sera infrasettimanale e sabato pomeriggio: picchi di Instagram e Bluesky)
   #   posizioni    lun 18:30  (inizio settimana, quando si cercano opportunità)
   #   domenica     pausa
-  #   reel         mer 12:30 e dom 18:00, da un carosello già uscito, a rotazione: metodologia (musica classica),
+  #   reel         mer 12:30 e dom 18:00 (spenti finché config reels_auto = false), a rotazione: metodologia (classica),
   #                bando (rock), posizioni (funky), speciale (aziendale)
   # Storie: workflow stories.yml (lun-ven 9:31).
   schedule:
