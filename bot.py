@@ -418,7 +418,7 @@ REEL_KINDS = {   # tipo di carosello → musica (cartella Drive «Musica/…»),
     "positions": {"music": "Funky",
                   "text": "New academic positions in {seconds} seconds. All positions, with deadlines and links: link in bio.",
                   "tags": ["#AcademicJobs", "#Postdoc", "#PhDPosition"]},
-    "announcement": {"music": "Aziendale|Speciale|Funky",
+    "announcement": {"music": "Cerimony|Ceremony|Aziendale|Speciale|Funky",
                      "text": "More on our profile and at the link in bio.",
                      "tags": ["#ResearchCommunity"]},
 }

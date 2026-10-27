@@ -304,7 +304,7 @@ def frame_seconds(slide):
     return round(max(3.0, min(6.0, 1.0 + words / 3.4)), 1)
 
 
-def build_story_reel(spec, out_path, cfg, mood="Aziendale|Speciale|Funky"):
+def build_story_reel(spec, out_path, cfg, mood="Cerimony|Ceremony|Aziendale|Speciale|Funky"):
     """Reel nativo verticale da una lista di schermate (spec): copertina, punti brevi, chiusura. 20–30 secondi.
     Con spec «rain» (o config reel_rain) i cubetti scendono ai lati come sul sito."""
     accent = spec.get("accent") or cfg.get("announcement_accent", "#FF7A59")
@@ -318,25 +318,28 @@ def build_story_reel(spec, out_path, cfg, mood="Aziendale|Speciale|Funky"):
                       mood=spec.get("mood") or mood, track=spec.get("music_track"))
 
 
+RAIN_COLORS = [(61, 217, 193), (20, 160, 133), (255, 255, 255), (127, 150, 171)]   # stessi colori del sito
+
+
 def _rain(seed, accent):
-    """Particelle: gruppi di 1–4 cubetti che scendono ai lati (come la cascata del sito), a velocità diverse."""
+    """Particelle come la cascata del sito: cubetti singoli o in gruppi da 2–3, lenti (40–110 px/s su 1080 px,
+    cioè la velocità del sito su uno schermo da telefono), semitrasparenti."""
     import random
     rnd = random.Random(seed)
-    a = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
-    cols = [(61, 217, 193), (42, 64, 88), (120, 135, 150), a]
+    shapes = [[(0, 0)], [(0, 0)], [(0, 0), (1, 0)], [(0, 0), (0, 1)], [(0, 0), (1, 0), (0, 1)], [(0, 0), (1, 0), (1, 1)]]
     out = []
-    for _ in range(34):
+    for _ in range(40):
         side = rnd.random() < 0.5
-        s = rnd.choice([10, 14, 18, 24])
-        span = 2 * s + 3                       # i cubetti restano nei margini, mai sopra il testo (M = 96)
+        s = rnd.choice([8, 12, 16, 20, 24])
+        span = 2 * s + 4                       # i cubetti restano nei margini, mai sopra il testo (M = 96)
         x = rnd.randint(4, max(5, 90 - span)) if side else rnd.randint(W - 90, max(W - 89, W - 4 - span))
-        shape = rnd.sample([(0, 0), (1, 0), (0, 1), (1, 1)], rnd.randint(1, 4))
-        out.append({"x": x, "s": s, "shape": shape, "speed": rnd.uniform(90, 260), "off": rnd.uniform(0, H + 300),
-                    "col": rnd.choice(cols), "alpha": rnd.choice([70, 110, 150, 200])})
+        out.append({"x": x, "s": s, "shape": rnd.choice(shapes), "speed": rnd.uniform(40, 110),
+                    "off": rnd.uniform(0, H + 300), "col": rnd.choice(RAIN_COLORS),
+                    "alpha": int(255 * (0.12 + rnd.random() * 0.5))})
     return out
 
 
-def rain_reel(imgs, lengths, out_path, cfg, accent, fade=0.5, mood="Aziendale", track=None):
+def rain_reel(imgs, lengths, out_path, cfg, accent, fade=0.5, mood="Cerimony", track=None):
     """Come build_reel, ma i fotogrammi si disegnano in Python per far scendere i cubetti; dissolvenze tra le
     schermate. Restituisce la durata in secondi."""
     starts, t = [], 0.0
@@ -365,7 +368,7 @@ def rain_reel(imgs, lengths, out_path, cfg, accent, fade=0.5, mood="Aziendale", 
             for q in parts:
                 y = (q["off"] + tt * q["speed"]) % (H + 300) - 150
                 for dx, dy in q["shape"]:
-                    x0, y0 = q["x"] + dx * (q["s"] + 3), y + dy * (q["s"] + 3)
+                    x0, y0 = q["x"] + dx * (q["s"] + 4), y + dy * (q["s"] + 4)
                     d.rectangle((x0, y0, x0 + q["s"], y0 + q["s"]), fill=q["col"] + (q["alpha"],))
             p.stdin.write(Image.alpha_composite(frame, layer).convert("RGB").tobytes())
         p.stdin.close()
