@@ -400,5 +400,25 @@
       "POS-7dbd2506af18",
       "POS-c0e0147c5f18"
     ]
+  },
+  {
+    "date": "2026-10-27",
+    "time": "2026-10-27T12:44:41+00:00",
+    "id": "grant-GG-PAR-24-321",
+    "title": "Funding for Aging and Dementia Research Leadership",
+    "source": "GrantFinder",
+    "media_id": "17952786069336582",
+    "facebook_id": "1277022912171972_122111656899432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3myubaf257t2m",
+    "threads_id": "18132276742750513",
+    "kind": "grant",
+    "grant_id": "GG-PAR-24-321",
+    "url": "https://www.grants.gov/search-results-detail/357000",
+    "deadline": "2027-02-12",
+    "funder": "NIH – US National Institutes of Health",
+    "summary": "The National Institute on Aging offers support for established investigators to enhance aging and Alzheimer's Disease or related dementias research and educational capacity within their academic institution. The award funds research and educational infrastructure, mentorship, and career development activities such as courses, pilot funding, and travel awards. Applicants must be US-based established investigators holding a doctoral degree and a named PD/PI role on an active R01 or equivalent NIA grant.",
+    "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
+    "official_source": "NIH Guide PAR-24-321",
+    "grant_title": "NIA Academic Leadership Career Award (K07 Independent Clinical Trial Not Allowed)"
   }
 ]
