@@ -3,8 +3,126 @@
  "grants": [
   {
    "id": "GG-PAR-25-226",
-   "error": "Gemini non disponibile: gemini-flash-latest 503: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try ag"
+   "error": "HTTPSConnectionPool(host='generativelanguage.googleapis.com', port=443): Read timed out. (read timeout=300)"
+  },
+  {
+   "id": "GG-PAR-25-124",
+   "error": "HTTPSConnectionPool(host='generativelanguage.googleapis.com', port=443): Read timed out. (read timeout=300)"
+  },
+  {
+   "id": "GG-PAR-25-052",
+   "error": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
+  },
+  {
+   "id": "GG-HHS-2027-ACL-NIDILRR-ARCP-0300",
+   "same": {
+    "due_dates": true,
+    "deadline_source": true,
+    "italy": true,
+    "is_open_call": true,
+    "countries": true,
+    "lead_present": false,
+    "loi": true
+   },
+   "A": {
+    "due_dates": [
+     "2026-12-07"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only",
+    "lead": "",
+    "is_open_call": "yes"
+   },
+   "B": {
+    "due_dates": [
+     "2026-12-07"
+    ],
+    "italy": "no",
+    "eligible_countries": "United States only",
+    "lead": "Individuals with doctorates or similar advanced degrees who participate in the training provided by eligible institutions of higher education.",
+    "is_open_call": "yes"
+   }
   }
  ],
- "positions": []
+ "positions": [
+  {
+   "id": "POS-5b29a40a7b6e",
+   "same": {
+    "is_open": true,
+    "type": true,
+    "relevance": true,
+    "deadline": true,
+    "area": true,
+    "country": true
+   },
+   "A": {
+    "is_open": "yes",
+    "type": "faculty",
+    "relevance": "high",
+    "deadline": "2026-12-12",
+    "country": "China"
+   },
+   "B": {
+    "is_open": "yes",
+    "type": "faculty",
+    "relevance": "high",
+    "deadline": "2026-12-12",
+    "country": "China"
+   }
+  },
+  {
+   "id": "POS-c1acac7174d5",
+   "error": "403 Client Error: Forbidden for url: https://www.universityaffairs.ca/search-jobs/?keywords=rehabilitation&job_id=72377"
+  },
+  {
+   "id": "POS-149809c508d2",
+   "same": {
+    "is_open": true,
+    "type": true,
+    "relevance": true,
+    "deadline": true,
+    "area": true,
+    "country": true
+   },
+   "A": {
+    "is_open": "yes",
+    "type": "faculty",
+    "relevance": "high",
+    "deadline": "2026-12-11",
+    "country": "China"
+   },
+   "B": {
+    "is_open": "yes",
+    "type": "faculty",
+    "relevance": "high",
+    "deadline": "2026-12-11",
+    "country": "China"
+   }
+  },
+  {
+   "id": "POS-6083123f1405",
+   "same": {
+    "is_open": true,
+    "type": true,
+    "relevance": true,
+    "deadline": true,
+    "area": false,
+    "country": true
+   },
+   "A": {
+    "is_open": "yes",
+    "type": "phd",
+    "relevance": "low",
+    "deadline": "2026-12-16",
+    "country": "United Kingdom"
+   },
+   "B": {
+    "is_open": "yes",
+    "type": "phd",
+    "relevance": "low",
+    "deadline": "2026-12-16",
+    "country": "United Kingdom"
+   }
+  }
+ ]
 }
