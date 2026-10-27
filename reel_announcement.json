@@ -1,7 +1,7 @@
 {
-  "id": "reel-2026-10-milestone",
+  "id": "reel-2026-10-milestone-v2",
   "accent": "#3DD9C1",
-  "caption": "Your research radar just got bigger.\n\n174 open funding calls (153 already checked on the official text, 54 open to applicants from any country), 80+ academic positions in 16 countries, and a new look for every post.\n\nEverything is in one link: calls by region and deadline, PhD, postdoc and faculty positions, and our methodology library.\n\nBig research, translated into small practical pieces. Link in bio.",
+  "caption": "Your research radar just got bigger.\n\n174 open funding calls (153 already checked on the official text, 54 open to applicants from any country), 80+ academic positions in 16 countries.\n\nEverything is in one link: calls by region and deadline, PhD, postdoc and faculty positions, and our methodology library.\n\nBig research, translated into small practical pieces. Link in bio.",
   "hashtags": [
     "#ClinicalResearch",
     "#ResearchFunding",
@@ -38,27 +38,6 @@
       "body": "Filter by type and region. Each one checked on the original ad.",
       "images": [
         "assets/reel-milestone/positions.png"
-      ]
-    },
-    {
-      "type": "image",
-      "kicker": "One link",
-      "title": "Everything in one place",
-      "body": "Filter calls by area, region and deadline.",
-      "images": [
-        "assets/reel-milestone/home.png",
-        "assets/reel-milestone/calls.png"
-      ]
-    },
-    {
-      "type": "image",
-      "kicker": "New look",
-      "title": "A fresh design for every post",
-      "frame": "covers",
-      "images": [
-        "assets/reel-milestone/cover-methods.jpg",
-        "assets/reel-milestone/cover-grant.jpg",
-        "assets/reel-milestone/cover-positions.jpg"
       ]
     },
     {
