@@ -28,8 +28,26 @@ export default {
     if (hour < 6 || hour > 21) return;        // di notte non c'è niente da recuperare
     ctx.waitUntil(wake(env).then((s) => console.log(s)));
   },
-  // L'indirizzo pubblico del Worker non avvia niente: dice solo che l'orologio esiste.
-  async fetch() {
-    return new Response("Orologio del bot Clinical Research Chaos: attivo.", { status: 200 });
+  // L'indirizzo pubblico del Worker non avvia niente. Con /check verifica il token in sola lettura
+  // (legge le informazioni del workflow del guardiano) e dice se GitHub lo accetta; il token non viene mostrato.
+  async fetch(request, env) {
+    if (new URL(request.url).pathname !== "/check") {
+      return new Response("Orologio del bot Clinical Research Chaos: attivo.", { status: 200 });
+    }
+    if (!env.GH_TOKEN) return new Response("GH_TOKEN mancante o vuoto nel Worker.", { status: 200 });
+    const r = await fetch(URL.replace("/dispatches", ""), {
+      headers: {
+        "Authorization": `Bearer ${env.GH_TOKEN}`,
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "clinical-chaos-clock",
+      },
+    });
+    const msg = r.status === 200 ? "Token OK: GitHub lo accetta."
+      : r.status === 401 ? "Token rifiutato (401): sbagliato, scaduto o incollato con spazi."
+      : r.status === 404 ? "Token senza accesso al repository Clinical-Chaos (404)."
+      : `Risposta inattesa di GitHub: ${r.status}`;
+    return new Response(`${msg}\nInizio token: ${env.GH_TOKEN.slice(0, 11)}… (lunghezza ${env.GH_TOKEN.length})`,
+      { status: 200, headers: { "content-type": "text/plain; charset=utf-8" } });
   },
 };
