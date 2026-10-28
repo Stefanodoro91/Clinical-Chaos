@@ -9420,5 +9420,66 @@
     "lead": "Universities, research institutions, research infrastructures, businesses including SMEs, and other socio-economic actors forming a network.",
     "lead_evidence": "MSCA Doctoral Networks will implement doctoral programmes, by partnerships of universities, research institutions and research infrastructures, businesses including SMEs, and other socio-economic actors from different countries across Europe and beyond.",
     "deadline_raw": "2026-11-24 | Deadline dates: 2026-11-24."
+  },
+  "GG-RFA-NS-27-002": {
+    "status": "failed",
+    "checked": "2026-10-28",
+    "attempts": 1,
+    "error": "HTTPSConnectionPool(host='generativelanguage.googleapis.com', port=443): Read timed out. (read timeout=300)"
+  },
+  "GG-PA-25-253": {
+    "status": "ok",
+    "checked": "2026-10-28",
+    "official_source": "NIH Guide PA-25-253",
+    "official_url": "https://grants.nih.gov/grants/guide/pa-files/PA-25-253.html",
+    "is_open_call": "yes",
+    "title": "Exploratory Grants in Cancer Control (R21 Clinical Trial Optional)",
+    "programme": "R21 Exploratory/Developmental Research Grant",
+    "programme_family": "NIH – US National Institutes of Health",
+    "summary": "This National Cancer Institute (NCI) funding opportunity supports exploratory and developmental research grant (R21) applications focused on cancer control. Funded projects explore novel scientific ideas to modify behavior, enhance screening, understand cancer etiology, and advance population-based cancer research across epidemiologic, behavioral, or clinical domains. Higher education institutions, nonprofits, for-profit entities, and non-U.S. organizations are eligible to apply. Direct costs are limited to $275,000 over a two-year project period.",
+    "coming_soon": false,
+    "eligible_countries": "Any country (non-US organisations eligible)",
+    "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+    "italy": "yes",
+    "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+    "version": 3,
+    "model": "gemini-3.8-flash",
+    "due_dates": [
+      "2025-03-31",
+      "2025-06-16",
+      "2025-10-16",
+      "2026-06-16",
+      "2026-10-16",
+      "2027-06-16",
+      "2027-10-16",
+      "2028-02-16",
+      "2028-06-16"
+    ],
+    "resubmission_dates": [
+      "2025-03-31",
+      "2025-06-16",
+      "2025-10-16",
+      "2026-06-16",
+      "2026-10-16",
+      "2027-06-16",
+      "2027-10-16",
+      "2028-02-16",
+      "2028-06-16"
+    ],
+    "expires": "2028-09-08",
+    "loi_deadline": "",
+    "loi_required": "no",
+    "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+    "deadline_type": "several",
+    "deadline_source": "nih_key_dates",
+    "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director/Principal Investigator.",
+    "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+    "deadline_raw": "2027-06-16 | June 16, 2027 * July 16, 2027 * Not Applicable November 2027 January 2028 April 2028 ."
+  },
+  "GG-RFA-AI-27-014": {
+    "status": "failed",
+    "checked": "2026-10-28",
+    "attempts": 1,
+    "error": "HTTPSConnectionPool(host='generativelanguage.googleapis.com', port=443): Read timed out. (read timeout=300)"
   }
 }
