@@ -23,6 +23,22 @@
    "uscita": 0,
    "ragionamento": 0,
    "respinte": 0
+  },
+  "revisione slide|gemini-flash-lite-latest": {
+   "richieste": 1,
+   "ingresso": 331,
+   "uscita": 97,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "scelta immagini|gemini-flash-lite-latest": {
+   "richieste": 2,
+   "ingresso": 4970,
+   "uscita": 189,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
   }
  }
 }
