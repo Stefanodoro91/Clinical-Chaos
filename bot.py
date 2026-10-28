@@ -11,7 +11,7 @@ import subprocess
 import sys
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
@@ -658,8 +658,29 @@ def reel_announcement_run(posted):
     commit_and_push([POSTED_FILE.name], "Reel speciale pubblicato")
 
 
+def schedule_delay_hours():
+    """Ore di ritardo di un run pianificato rispetto al suo orario (GitHub a volte parte con ore di ritardo).
+    None se il run non è pianificato o l'orario non si legge."""
+    cron = (os.environ.get("SCHEDULE") or "").split()
+    if os.environ.get("GITHUB_EVENT_NAME") != "schedule" or len(cron) < 2:
+        return None
+    try:
+        now = datetime.now(timezone.utc)
+        slot = now.replace(hour=int(cron[1]), minute=int(cron[0]), second=0, microsecond=0)
+    except ValueError:
+        return None
+    if slot > now:                     # orario di ieri, partito dopo la mezzanotte UTC
+        slot -= timedelta(days=1)
+    return (now - slot).total_seconds() / 3600
+
+
 def main():
     posted = load(POSTED_FILE, [])
+    late = schedule_delay_hours()
+    if late is not None and late > 3:
+        # un post fuori orario rende poco: il recupero entro 3 ore lo fa il guardiano (tools/watchdog.py)
+        print(f"::notice title=Run pianificato in ritardo::GitHub è partito con {late:.1f} ore di ritardo: salto.")
+        return
     if (os.environ.get("POST_TYPE") or "").strip().lower() == "reel":
         if os.environ.get("GITHUB_EVENT_NAME") == "schedule" and not CONFIG.get("reels_auto", False):
             print("Reel automatici disattivati (config: reels_auto = false): salto.")

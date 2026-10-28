@@ -1,5 +1,6 @@
 name: Post giornaliero ricerca clinica
-run-name: "Post ${{ github.event_name == 'schedule' && 'pianificato' || inputs.post_type }}${{ inputs.dry_run == true && ' (prova)' || '' }}"
+# Il tipo compare nel nome anche per i run pianificati: il guardiano (tools/watchdog.py) li distingue così.
+run-name: "Post ${{ github.event_name == 'schedule' && format('{0} (pianificato)', ((github.event.schedule == '23 11 * * 1,2,4,5' || github.event.schedule == '23 12 * * 1,2,4,5') && 'grant' || ((github.event.schedule == '23 17 * * 1' || github.event.schedule == '23 18 * * 1') && 'positions' || ((github.event.schedule == '23 11 * * 3' || github.event.schedule == '23 12 * * 3' || github.event.schedule == '47 16 * * 0' || github.event.schedule == '47 17 * * 0') && 'reel' || 'research')))) || inputs.post_type }}${{ inputs.dry_run == true && ' (prova)' || '' }}"
 
 on:
   # Calendario (ora italiana; GitHub può partire con qualche minuto di ritardo), uguale su Instagram, Facebook,
@@ -100,6 +101,7 @@ jobs:
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
           POSITIONS_PER_POST: ${{ inputs.positions_count }}
           REEL_SOURCE: ${{ inputs.reel_source }}
+          SCHEDULE: ${{ github.event.schedule }}
           POST_TYPE: ${{ github.event_name == 'schedule' && ((github.event.schedule == '23 11 * * 1,2,4,5' || github.event.schedule == '23 12 * * 1,2,4,5') && 'grant' || ((github.event.schedule == '23 17 * * 1' || github.event.schedule == '23 18 * * 1') && 'positions' || ((github.event.schedule == '23 11 * * 3' || github.event.schedule == '23 12 * * 3' || github.event.schedule == '47 16 * * 0' || github.event.schedule == '47 17 * * 0') && 'reel' || 'research'))) || inputs.post_type || 'research' }}
         run: python bot.py
 
