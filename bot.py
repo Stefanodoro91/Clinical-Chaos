@@ -754,6 +754,9 @@ def main():
     # Due post al giorno, in due run separati: un bando (POST_TYPE=grant) e un post di metodologia (research).
     post_type = (os.environ.get("POST_TYPE") or "research").strip().lower()
     rome_now = datetime.now(ZoneInfo("Europe/Rome"))
+    if DRY_RUN and os.environ.get("PREVIEW_DATE"):         # anteprima di un giorno futuro (solo in prova)
+        d = datetime.fromisoformat(os.environ["PREVIEW_DATE"])
+        rome_now = rome_now.replace(year=d.year, month=d.month, day=d.day)
     rubrics_on = CONFIG.get("rubrics", True)
     kind = post_type if post_type in ("grant", "positions", "announcement") else "research"
     # Il run pianificato salta se un post dello stesso tipo è uscito nelle ultime 12 ore (es. dopo un lancio manuale).
