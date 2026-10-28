@@ -1,0 +1,10 @@
+{
+ "date": "2026-10-28",
+ "grants": [
+  {
+   "id": "WEB-cb6abc8f2f1a",
+   "error": "Gemini non disponibile: gemini-flash-latest 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on th"
+  }
+ ],
+ "positions": []
+}
