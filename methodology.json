@@ -456,5 +456,34 @@
       "Prinsen, C. A. C., Mokkink, L. B., Bouter, L. M., Alonso, J., Patrick, D. L., de Vet, H. C. W., & Terwee, C. B. (2018). COSMIN guideline for systematic reviews of patient-reported outcome measures. Quality of Life Research, 27(1147–1157)."
     ],
     "cover": "published_images/2026-10-27-f1be1bfc/slide-1.jpg"
+  },
+  "eae4ddb5": {
+    "id": "eae4ddb5",
+    "date": "2026-10-28",
+    "title": "Reflective vs. Formative Models in Scale Testing",
+    "category": "Study design",
+    "takeaway": "Internal structure tests only apply to reflective models where items reflect an underlying construct.",
+    "points": [
+      {
+        "heading": "Understanding Reflective Models",
+        "body": "A reflective model assumes that all items in a scale are manifestations of one underlying construct and are expected to be correlated.",
+        "source": ""
+      },
+      {
+        "heading": "The Example of Anxiety",
+        "body": "Anxiety manifests itself in specific characteristics such as worrying thoughts, panic, and restlessness, reflecting the core construct.",
+        "source": "Prinsen et al., 2018"
+      },
+      {
+        "heading": "Formative Models and Scale Analysis",
+        "body": "If items in a scale are not supposed to be correlated, known as a formative model, internal structure analyses are not relevant.",
+        "source": "Prinsen et al., 2018"
+      }
+    ],
+    "references": [
+      "de Vet, H. C., Terwee, C. B., Mokkink, L. B., & Knol, D. L. (2011). Measurement in medicine. Cambridge: Cambridge University Press.",
+      "Prinsen, C. A. C., Mokkink, L. B., Bouter, L. M., Alonso, J., Patrick, D. L., de Vet, H. C. W., & Terwee, C. B. (2018). COSMIN guideline for systematic reviews of patient-reported outcome measures. Quality of Life Research, 27(5), 1147–1157. https://doi.org/10.1007/s11136-018-1798-3"
+    ],
+    "cover": "published_images/2026-10-28-eae4ddb5/slide-1.jpg"
   }
 }

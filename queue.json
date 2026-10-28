@@ -1,53 +1,5 @@
 [
   {
-    "title": "Reflective vs. Formative Models in Scale Testing",
-    "title_highlight": "Reflective vs. Formative",
-    "category": "Study design",
-    "slides": [
-      {
-        "heading": "Understanding Reflective Models",
-        "body": "A reflective model assumes that all items in a scale are manifestations of one underlying construct and are expected to be correlated.",
-        "image_prompt": "a central glowing core connected by multiple dotted lines to several identical smaller glowing spheres floating around it",
-        "highlight": "manifestations of one underlying construct",
-        "source": ""
-      },
-      {
-        "heading": "The Example of Anxiety",
-        "body": "Anxiety manifests itself in specific characteristics such as worrying thoughts, panic, and restlessness, reflecting the core construct.",
-        "image_prompt": "a simple figure surrounded by small floating icons representing different symptoms all pointing inward toward the person",
-        "highlight": "",
-        "source": "Prinsen et al., 2018"
-      },
-      {
-        "heading": "When Step Six Does Not Apply",
-        "body": "If items in a scale are not supposed to be correlated, known as a formative model, internal structure analyses are not relevant.",
-        "image_prompt": "a researcher sorting separate building blocks into distinct independent piles rather than connecting them into a single tower",
-        "highlight": "formative model",
-        "source": "Prinsen et al., 2018"
-      }
-    ],
-    "takeaway": "Internal structure tests only apply to reflective models where items reflect an underlying construct.",
-    "takeaway_highlight": "reflective models",
-    "references": [
-      "de Vet, H. C., Terwee, C. B., Mokkink, L. B., & Knol, D. L. (2011). Measurement in medicine. Cambridge: Cambridge University Press.",
-      "Prinsen, C. A. C., Mokkink, L. B., Bouter, L. M., Alonso, J., Patrick, D. L., de Vet, H. C. W., & Terwee, C. B. (2018). COSMIN guideline for systematic reviews of patient-reported outcome measures. Quality of Life Research, 27(5), 1147–1157. https://doi.org/10.1007/s11136-018-1798-3"
-    ],
-    "caption": "Before running factor analyses or checking internal consistency, you must identify whether your scale is reflective or formative. Applying classical psychometric tests to a formative index will yield misleading conclusions. Does your instrument treat items as causes or manifestations?",
-    "hashtags": [
-      "#Psychometrics",
-      "#Biostatistics",
-      "#ResearchMethods",
-      "#ClinicalResearch",
-      "#DataAnalysis",
-      "#ScaleDevelopment",
-      "#HealthOutcomes",
-      "#ResearchDesign"
-    ],
-    "source_hint": "page 7, Step 6",
-    "id": "eae4ddb5",
-    "source": "COSMIN.pdf"
-  },
-  {
     "title": "Critical Appraisal vs. Reporting Guidelines: Know the Difference",
     "title_highlight": "",
     "category": "Critical appraisal",
