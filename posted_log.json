@@ -441,5 +441,15 @@
     "kind": "reel",
     "media_id": "18098222096548846",
     "seconds": 27.5
+  },
+  {
+    "date": "2026-10-28",
+    "time": "2026-10-28T10:28:23+00:00",
+    "id": "reel-2026-10-milestone-v2",
+    "title": "Your research radar just got bigger",
+    "source": "reel_announcement.json",
+    "kind": "reel",
+    "media_id": "18103074200039868",
+    "seconds": 18.0
   }
 ]
