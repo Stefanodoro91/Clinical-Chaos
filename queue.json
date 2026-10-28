@@ -922,5 +922,97 @@
     "source_hint": "pages 4-6",
     "id": "baba07fc",
     "source": "Ethics.pdf"
+  },
+  {
+    "title": "Why Cronbach's Alpha Is Sample-Specific",
+    "title_highlight": "Sample-Specific",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Internal Consistency Basics",
+        "body": "High internal consistency implies that all items within a test are internally correlated and measure the same broader construct.",
+        "image_prompt": "a group of simple geometric shapes connected by solid lines, with one shape highlighted by a magnifying glass",
+        "photo_query": "researchers meeting whiteboard",
+        "highlight": "",
+        "source": "Menon et al., 2025"
+      },
+      {
+        "heading": "The Role of Cronbach's Alpha",
+        "body": "Internal consistency is typically calculated using Cronbach's alpha, where item covariance is high relative to item variance.",
+        "image_prompt": "a simple scale balancing two stacks of documents, with arrows pointing toward the center",
+        "photo_query": "data analysis charts",
+        "highlight": "Cronbach's alpha",
+        "source": "Menon et al., 2025"
+      },
+      {
+        "heading": "Sample-Specific Values",
+        "body": "Readers must note that Cronbach's alpha value for a tool is specific to a study sample; hence, authors must report this value for every tool.",
+        "image_prompt": "a researcher looking at a single unique jigsaw puzzle piece among many identical boxes",
+        "photo_query": "scientific paper reading",
+        "highlight": "specific to a study sample",
+        "source": "Menon et al., 2025"
+      }
+    ],
+    "takeaway": "Cronbach's alpha is specific to a study sample and must be reported for every tool used in your research.",
+    "takeaway_highlight": "specific to a study sample",
+    "references": [
+      "Menon, V., Grover, S., Gupta, S., Indu, P., Chacko, D., & Vidhukumar, K. (2025). A primer on reliability testing of a rating scale. Indian Journal of Psychiatry, 67(7), 725–729. https://doi.org/10.4103/indianjpsychiatry_584_25",
+      "Tavakol, M., & Dennick, R. (2011). Making sense of Cronbach's alpha. International Journal of Medical Education, 2, 53–55. https://doi.org/10.5116/ijme.4dfb.8dfd"
+    ],
+    "caption": "Stop reusing old Cronbach's alpha values from past papers. Here is why internal consistency is sample-specific.\n\nMany researchers cite published Cronbach's alpha values without recalculating them for their current cohort. Because internal consistency depends entirely on the study sample, you must report sample-specific values for every tool you use. How do you handle scale adaptation in your studies?",
+    "hashtags": [
+      "#Psychometrics",
+      "#ResearchMethods",
+      "#InternalConsistency"
+    ],
+    "source_hint": "pages 1-2",
+    "id": "09267e83",
+    "source": "Reliability.pdf"
+  },
+  {
+    "title": "Why Pearson Fails Test-Retest Reliability",
+    "title_highlight": "Pearson Fails",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Test-Retest Reliability",
+        "body": "Test-retest reliability estimates how consistent test results are over time by administering the same tool at two different points.",
+        "image_prompt": "a vintage clock placed next to two identical open notebooks with handwritten notes",
+        "photo_query": "clock documents time",
+        "highlight": "consistent test results are over time",
+        "source": "Menon et al., 2025"
+      },
+      {
+        "heading": "The Trap of Pearson's r",
+        "body": "Pearson's correlation measures linear relationship and change magnitude, but can show a perfect score even when individual scores shift drastically.",
+        "image_prompt": "two parallel lines shifting upwards at the exact same angle on a grid background",
+        "photo_query": "scatter plot correlation graph",
+        "highlight": "Pearson's correlation measures linear relationship",
+        "source": "Menon et al., 2025"
+      },
+      {
+        "heading": "The Correct Measure",
+        "body": "The correct measure for test-retest reliability is the intraclass correlation coefficient, which checks for agreement and ranking order preservation.",
+        "image_prompt": "simple figures arranging blocks in exact matching sequences from one table to another",
+        "photo_query": "data sorting organization",
+        "highlight": "intraclass correlation coefficient",
+        "source": "Menon et al., 2025"
+      }
+    ],
+    "takeaway": "Never use Pearson's correlation for test-retest reliability because it ignores magnitude changes in scores.",
+    "takeaway_highlight": "Never use Pearson's correlation",
+    "references": [
+      "Menon, V., Grover, S., Gupta, S., Indu, P., Chacko, D., & Vidhukumar, K. (2025). A primer on reliability testing of a rating scale. Indian Journal of Psychiatry, 67(7), 725–729. https://doi.org/10.4103/indianjpsychiatry_584_25",
+      "Koo, T. K., & Li, M. Y. (2016). A Guideline of Selecting and Reporting Intraclass Correlation Coefficients for Reliability Research. Journal of Chiropractic Medicine, 15(2), 155–163. https://doi.org/10.1016/j.jcm.2016.02.012"
+    ],
+    "caption": "Are you using Pearson's correlation for test-retest reliability? That is a methodological trap.\n\nUsing Pearson's r for test-retest reliability can give you a perfect correlation of 1 even when every participant's score shifts drastically. To properly assess stability over time, researchers must use the intraclass correlation coefficient. What statistics do you rely on for test validation?",
+    "hashtags": [
+      "#Biostatistics",
+      "#ResearchMethods",
+      "#DataAnalysis"
+    ],
+    "source_hint": "pages 2-3",
+    "id": "8db520f3",
+    "source": "Reliability.pdf"
   }
 ]
