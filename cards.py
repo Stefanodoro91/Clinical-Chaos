@@ -286,13 +286,29 @@ def poster_pill(d, label, x, y, fill, text):
     return pw
 
 
+def extra_pills(d, post, x, y, bg, ink):
+    """Pill aggiuntive dopo quella principale: rubrica (es. CHECKLIST) e avviso idoneità dei bandi
+    (es. US-BASED TEAMS ONLY). Fondo del tema e testo in inchiostro, per distinguerle dalla principale."""
+    labels = [l for l in (post.get("eligibility_flag"), post.get("rubric")) if l]   # l'avviso ha la precedenza
+    pf = font("Bold", 28)
+    for label in labels:
+        pw = d.textlength(label.upper(), font=pf) + 52
+        if x + pw > W - MARGIN:                  # niente pill tagliate: quelle che non entrano si saltano
+            continue
+        d.rounded_rectangle((x, y + 2, x + pw, y + 58), radius=28, fill=bg, outline=ink, width=3)
+        d.text((x + 26, y + 13), label.upper(), font=pf, fill=ink)
+        x += pw + 16
+    return x
+
+
 def poster_cover(post, cfg, total):
     """Copertina poster dei post di metodologia (e speciali)."""
     c = cfg["colors"]
     img, d, dark, ink, acc = poster_base(post, cfg, total)
     lh = poster_logo(img, d, cfg, dark)
     top = 80 + lh + 50
-    poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, top, c["accent"], c["background"])
+    pw = poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, top, c["accent"], c["background"])
+    extra_pills(d, post, MARGIN + pw + 16, top, c["background"] if dark else "#FFFFFF", ink)
     title_top = top + 110
     end = poster_title(d, post["title"], post.get("title_highlight"), MARGIN, title_top, W - 2 * MARGIN,
                        H - 300 - title_top, ink, acc)
@@ -311,13 +327,16 @@ def poster_grant_cover(post, cfg, total, picture=None):
     if picture is not None:
         band = 470
         img.paste(ImageOps.fit(picture.convert("RGB"), (W, band), Image.LANCZOS), (0, 14))
-        poster_pill(d, "OPEN CALL", MARGIN, band - 30, c["accent"], c["background"])
+        pw = poster_pill(d, "OPEN CALL", MARGIN, band - 30, c["accent"], c["background"])
+        extra_pills(d, post, MARGIN + pw + 16, band - 30, c["background"] if dark else "#FFFFFF", ink)
         y = band + 60
         keep.append((0, 0, W, band + 40))
     else:
         lh = poster_logo(img, d, cfg, dark)
         y = 80 + lh + 50
-        poster_pill(d, "OPEN CALL", MARGIN, y, c["accent"], c["background"])
+        pw = poster_pill(d, "OPEN CALL", MARGIN, y, c["accent"], c["background"])
+        extra_pills(d, post, MARGIN + pw + 16, y, c["background"] if dark else "#FFFFFF", ink)
+        keep.append((MARGIN - 20, y - 10, W - MARGIN + 20, y + 70))
         y += 100
     if post.get("funder"):
         ff, fl, fs = fit(d, post["funder"], "SemiBold", 34, 26, W - 2 * MARGIN, 84, 1.25)
@@ -346,7 +365,8 @@ def poster_positions_cover(post, cfg, total):
     img, d, dark, ink, acc = poster_base(post, cfg, total)
     lh = poster_logo(img, d, cfg, dark)
     y = 80 + lh + 50
-    poster_pill(d, "ACADEMIC POSITIONS", MARGIN, y, c["accent"], c["background"])
+    pw = poster_pill(d, "ACADEMIC POSITIONS", MARGIN, y, c["accent"], c["background"])
+    extra_pills(d, post, MARGIN + pw + 16, y, c["background"] if dark else "#FFFFFF", ink)
     d.text((MARGIN, y + 86), f"Week of {post.get('week', '')}", font=font("SemiBold", 36),
            fill=c["muted_text"] if dark else INK_MUTED)
     t_top = y + 160
@@ -395,6 +415,7 @@ def cover(post, cfg, total):
     pw = d.textlength(label, font=pill_f) + 56
     d.rounded_rectangle((MARGIN, pill_top, MARGIN + pw, pill_top + 60), radius=30, outline=navy, width=3)
     d.text((MARGIN + 28, pill_top + 11), label, font=pill_f, fill=navy)
+    extra_pills(d, post, MARGIN + pw + 16, pill_top, "#FFFFFF", navy)
     title_top = pill_top + 110
     fnt, lines, size = fit(d, post["title"], "ExtraBold", 124, 64, W - 2 * MARGIN, H - 320 - title_top, 1.08)
     phrase = post.get("title_highlight") or (lines[-1] if lines else "")
@@ -422,11 +443,13 @@ def grant_cover(post, cfg, total):
         img.paste(pic, (0, 14))                                          # sotto la riga d'accento in alto
         d.rounded_rectangle((MARGIN, band - 36, MARGIN + bw, band + 34), radius=35, fill=c["accent"])
         d.text((MARGIN + 32, band - 24), "OPEN CALL", font=badge_f, fill=navy)
+        extra_pills(d, post, MARGIN + bw + 16, band - 33, "#FFFFFF", navy)
         y = band + 70
         box_top, box_h = H - 400, 160
     else:
         d.rounded_rectangle((MARGIN, 150, MARGIN + bw, 220), radius=35, fill=c["accent"])
         d.text((MARGIN + 32, 162), "OPEN CALL", font=badge_f, fill=navy)
+        extra_pills(d, post, MARGIN + bw + 16, 153, "#FFFFFF", navy)
         paste_logo(img, "logo-symbol", W - MARGIN - 120, 120, height=120)
         y = 260
         box_top, box_h = H - 470, 190
@@ -482,10 +505,11 @@ def illustrated(slide, number, cfg, index, total, picture):
     hf, hl, hs = fit(d, slide["heading"], "Bold", 54, 38, text_w, 140, 1.2)
     y = draw_lines(d, hl, hf, hs, MARGIN, top + 100, c["text"], 1.2) + 30
 
-    # il testo ha la precedenza: l'immagine occupa lo spazio che resta (tra 360 e 560 px di altezza)
-    bf, bl, bs = fit(d, slide["body"], "Regular", 40, 28, text_w, bottom - y - 360 - 70, 1.4)
+    # il testo ha la precedenza e deve restare leggibile sul telefono: corpo più grande,
+    # l'immagine occupa lo spazio che resta (tra 340 e 520 px di altezza)
+    bf, bl, bs = fit(d, slide["body"], "Regular", 48, 34, text_w, bottom - y - 340 - 70, 1.4)
     body_h = len(bl) * bs * 1.4
-    pic_h = int(max(360, min(560, bottom - y - 70 - body_h)))
+    pic_h = int(max(340, min(520, bottom - y - 70 - body_h)))
 
     pic, mask = _rounded(picture, text_w, pic_h, 28)
     img.paste(pic, (MARGIN, int(y)), mask)
@@ -527,7 +551,7 @@ def facts_slide(post, cfg, index, total):
     facts = post["facts"]
     text_w = W - 2 * MARGIN
     space = H - 150 - 260          # tra il titolo e il piè di pagina
-    for size in range(42, 25, -2):
+    for size in range(42, 27, -2):
         label_f, value_f = font("SemiBold", max(22, size - 14)), font("SemiBold", size)
         blocks = [(k, wrap(d, v, value_f, text_w)) for k, v in facts]
         need = sum(size - 14 + 14 + len(ls) * size * 1.3 + 34 for _, ls in blocks)
@@ -642,6 +666,7 @@ def positions_cover(post, cfg, total):
     bw = d.textlength(label, font=badge_f) + 60
     d.rounded_rectangle((MARGIN, 300, MARGIN + bw, 366), radius=33, fill=c["accent"])
     d.text((MARGIN + 30, 312), label, font=badge_f, fill=navy)
+    extra_pills(d, post, MARGIN + bw + 16, 303, "#FFFFFF", navy)
     d.text((MARGIN, 396), f"Week of {post.get('week', '')}", font=font("SemiBold", 36), fill=INK_MUTED)
     fnt, lines, size = fit(d, post["title"], "ExtraBold", 100, 60, W - 2 * MARGIN, 420, 1.12)
     draw_rich(d, post["title"], post.get("title_highlight"), fnt, size, MARGIN, 470, W - 2 * MARGIN, navy, 1.12,
@@ -858,9 +883,11 @@ def render_carousel(post, cfg):
     if post.get("kind") == "positions":   # raccolta settimanale di posizioni: senza illustrazioni AI
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("positions_accent", "#A78BFA")}}
         jobs = post.get("jobs", [])
-        total = len(jobs) + 2
+        total = len(jobs) + 2 + bool(post.get("facts"))
         pages = [positions_cover(post, cfg, total)]
         pages += [position_slide(j, i, cfg, i + 1, total) for i, j in enumerate(jobs, start=1)]
+        if post.get("facts"):                      # rubrica Career Path: glossario dei ruoli
+            pages.append(facts_slide(post, cfg, len(pages) + 1, total))
         pages.append(closing(post, cfg, total))
         out = []
         for img in pages:
@@ -870,11 +897,12 @@ def render_carousel(post, cfg):
         return out
     has_facts = bool(post.get("facts"))
     has_numbers = bool(post.get("numbers"))
+    extra = post.get("extra_facts")               # rubrica Before you apply: consigli in una slide in più
     v2 = cfg.get("carousel_v2", True) and not post.get("kind")     # metodologia: regola e CTA su slide separate
     merge = v2 and cfg.get("merge_takeaway_cta", True)          # regola e invito all'azione nella stessa slide
     import sources
     src = sources.META.get(post.get("id")) if (v2 and cfg.get("source_slide")) else None
-    total = len(post["slides"]) + 2 + has_facts + has_numbers + bool(v2 and not merge) + bool(src)
+    total = len(post["slides"]) + 2 + has_facts + has_numbers + bool(extra) + bool(v2 and not merge) + bool(src)
     use_images = cfg.get("ai_images", True) and not post.get("no_images")
     max_images = int(cfg.get("max_images_per_post", 2))
     used = 0
@@ -899,6 +927,9 @@ def render_carousel(post, cfg):
             pages.append(content(slide, i, cfg, index, total))
     if has_facts and not facts_first:
         pages.append(facts_slide(post, cfg, len(pages) + 1, total))
+    if extra:
+        pages.append(facts_slide({**post, "facts": extra["rows"], "facts_label": extra["label"]},
+                                 cfg, len(pages) + 1, total))
     if src:                                   # l'articolo di origine, prima del messaggio finale
         pages.append(source_slide(post, cfg, len(pages) + 1, total, src, sources.THUMBS.get(post.get("id"))))
     if v2 and merge:

@@ -13,6 +13,7 @@ import time
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import requests
 from google.oauth2 import service_account
@@ -22,6 +23,7 @@ import cards
 import content
 import grants
 import positions
+import rubrics
 
 ROOT = Path(__file__).resolve().parent
 CONFIG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
@@ -214,13 +216,68 @@ def drop_repeats(queue, posted, threshold=0.72):
     return [q for i, q in enumerate(kept) if i not in drop]
 
 
-def pick_next(queue, posted):
-    """Prende il primo post della coda, alternando le fonti quando possibile."""
+def pick_next(queue, posted, prefer_doi=False):
+    """Il prossimo post della coda: mai una fonte già usata negli ultimi 7 giorni (al massimo un post per
+    fonte a settimana) né quella dell'ultimo post, quando la coda lo permette. Con prefer_doi (rubrica
+    Clinical Insights del sabato) sceglie possibilmente un post con articolo citabile (DOI nelle reference),
+    così la slide «Based on» ha la fonte."""
+    week_ago = datetime.now(timezone.utc) - timedelta(days=7)
+    recent = {p.get("source") for p in posted
+              if (p.get("kind") or "research") == "research" and p.get("time")
+              and datetime.fromisoformat(p["time"]) >= week_ago}
     last_source = posted[-1]["source"] if posted else None
-    for item in queue:
-        if item.get("source") != last_source:
-            return item
+    pools = ([i for i in queue if i.get("source") not in recent],
+             [i for i in queue if i.get("source") != last_source], queue)
+    for pool in pools:
+        if not pool:
+            continue
+        if prefer_doi:
+            with_doi = [i for i in pool if any("doi" in str(r).lower() for r in i.get("references") or [])]
+            if with_doi:
+                return with_doi[0]
+        return pool[0]
     return queue[0]
+
+
+def source_material(drive, name):
+    """Testo del materiale di origine di un post (dal registro delle fonti), per i controlli anti-copia."""
+    try:
+        entry = next((x for x in reversed(load(SOURCES_FILE, [])) if x.get("name") == name and x.get("drive_id")), None)
+        if not entry:
+            return ""
+        meta = drive.files().get(fileId=entry["drive_id"], fields="id,name,mimeType", supportsAllDrives=True).execute()
+        part = content.material_part(drive, meta)
+        return content.material_text(part) if part else ""
+    except Exception as e:
+        print(f"  Materiale di origine non letto ({str(e)[:120]}): controllo anti-copia saltato")
+        return ""
+
+
+def quality_gate(post, drive, queue):
+    """Controlli di qualità prima della pubblicazione di un post di metodologia: frasi copiate dalla fonte
+    riscritte (rilevazione senza AI), riferimenti dai metadati Crossref, e post concreto (almeno un numero,
+    un esempio o un'azione pratica). Un post che resta generico viene saltato e si prova il successivo in
+    coda (fino a 3); se nessuno passa, esce il migliore disponibile con un avviso."""
+    for _ in range(3):
+        material = source_material(drive, post.get("source", ""))
+        if material:
+            content.rewrite_copied(post, material)
+        content.fix_references(post)
+        missing = content.concreteness(post)
+        if missing and material:
+            print(f"  Post generico (manca: {', '.join(missing)}): provo ad arricchirlo dal materiale")
+            if content.enrich(post, material):
+                missing = []
+        if not missing:
+            return post
+        nxt = (next((q for q in queue if q is not post and q.get("source") != post.get("source")), None)
+               or next((q for q in queue if q is not post), None))
+        if nxt is None:
+            break
+        print(f"::warning title=Post generico saltato::«{post['title']}» senza numeri, esempi o azioni concrete")
+        post = nxt
+    print("::warning title=Post generico pubblicato::nessun post abbastanza concreto in coda: esce il migliore disponibile")
+    return post
 
 
 def build_caption(post):
@@ -696,6 +753,8 @@ def main():
 
     # Due post al giorno, in due run separati: un bando (POST_TYPE=grant) e un post di metodologia (research).
     post_type = (os.environ.get("POST_TYPE") or "research").strip().lower()
+    rome_now = datetime.now(ZoneInfo("Europe/Rome"))
+    rubrics_on = CONFIG.get("rubrics", True)
     kind = post_type if post_type in ("grant", "positions", "announcement") else "research"
     # Il run pianificato salta se un post dello stesso tipo è uscito nelle ultime 12 ore (es. dopo un lancio manuale).
     same = [p for p in posted if (p.get("kind") or "research") == kind and p.get("time")]
@@ -721,12 +780,18 @@ def main():
         if post is None:
             print("::notice title=Nessuna raccolta di posizioni::Meno di 3 posizioni nuove verificate: questa settimana niente post.")
             return
+        if rubrics_on and rome_now.weekday() == 0 and rome_now.day <= 7:
+            rubrics.career_path(post)              # rubrica del primo lunedì del mese
+            print("Rubrica Career Path: glossario dei ruoli in coda al carosello")
     elif kind == "grant":
         files_waiting = 1                      # il run dei bandi non legge Drive e non avvisa sulla coda
         post = grants.next_grant_post(posted, CONFIG)
         if post is None:
             print("::notice title=Nessun bando oggi::Nessun bando verificato con abbastanza anticipo: oggi niente post bando.")
             return
+        if rubrics_on and rome_now.weekday() == 4 and rome_now.isocalendar().week % 2 == 0:
+            rubrics.apply_tips(post)               # rubrica quindicinale: consigli di candidatura
+            print("Rubrica Before you apply: consigli di candidatura in coda al carosello")
     else:
         files_waiting = ingest(drive, queue)
         before = len(queue)
@@ -734,13 +799,21 @@ def main():
         if len(queue) != before and not DRY_RUN:
             save(QUEUE_FILE, queue)
             commit_and_push([QUEUE_FILE.name], "Coda: tolti i post doppioni")
-        if not queue:
-            notify("Coda vuota: il bot è in pausa",
-                   "Non ci sono post da pubblicare. Aggiungi nuovo materiale nella cartella Drive.")
-            print("Coda vuota.")
-            sys.exit(1)
-        post = pick_next(queue, posted)
-    if kind == "research" and CONFIG.get("review_slides", True):
+        post = rubrics.checklist_post(posted) if rubrics_on and rome_now.weekday() == 3 else None
+        if post is not None:                       # giovedì: rubrica Checklist (senza AI, fuori dalla coda)
+            print(f"Rubrica Checklist: {post['source_hint']}")
+        else:
+            if not queue:
+                notify("Coda vuota: il bot è in pausa",
+                       "Non ci sono post da pubblicare. Aggiungi nuovo materiale nella cartella Drive.")
+                print("Coda vuota.")
+                sys.exit(1)
+            saturday = rubrics_on and rome_now.weekday() == 5
+            post = pick_next(queue, posted, prefer_doi=saturday)
+            if saturday:
+                post["rubric"] = "Clinical Insights"   # sabato: un articolo, una lezione (slide «Based on»)
+            post = quality_gate(post, drive, queue)
+    if kind == "research" and CONFIG.get("review_slides", True) and post.get("rubric") != "Checklist":
         content.review_slides(post)              # ogni slide un concetto, comprensibile da sola
     if kind == "research" and CONFIG.get("source_slide"):
         import sources

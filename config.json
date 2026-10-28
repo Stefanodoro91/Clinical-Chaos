@@ -49,5 +49,6 @@
   "carousel_v2": true,
   "facebook_format": "single",
   "bluesky_images": 1,
-  "backfill_per_run": 1
+  "backfill_per_run": 1,
+  "rubrics": true
 }

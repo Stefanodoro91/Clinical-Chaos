@@ -103,8 +103,10 @@ STRICT ACCURACY RULES:
 
 Write IN ENGLISH:
 - title: the cover hook, max 70 characters: say who the call is for and what it funds, phrased so the right
-  researcher stops scrolling (e.g. "Stroke rehab trial in mind? Funding for pilot studies" or "Funding for
-  early-career rehabilitation researchers"). Facts only from the official text; no deadline, amounts or funder.
+  researcher stops scrolling (e.g. "Stroke rehab trial in mind? Grants for pilot studies" or "Early-career in
+  rehab research? This call backs your first project"). Facts only from the official text; no deadline, amounts
+  or funder. VARY the structure: never start with "Funding for", and never open with the same words as these
+  recent titles: {recent}.
 - title_highlight: 1-4 words copied EXACTLY from the title.
 - slides: exactly 2 slides. Slide 1 heading "What it funds": aim and kind of projects funded.
   Slide 2 heading "Who it is for": applicants and teams it targets. Each body max 220 characters.
@@ -184,11 +186,34 @@ def similar(a, b):
     return SequenceMatcher(None, _norm_title(a), _norm_title(b)).ratio()
 
 
+def _non_italy_this_week(posted, verified, today):
+    """Quanti bandi NON aperti all'Italia sono usciti negli ultimi 7 giorni (regola: al massimo uno)."""
+    n = 0
+    for p in posted:
+        if p.get("kind") != "grant" or not p.get("time"):
+            continue
+        when = datetime.fromisoformat(p["time"]).date()
+        if (today - when).days < 7 and verified.get(p.get("grant_id"), {}).get("italy") == "no":
+            n += 1
+    return n
+
+
+def eligibility_flag(v):
+    """Avviso per la copertina quando il bando non è aperto a chi lavora in Italia."""
+    if v.get("italy") != "no":
+        return ""
+    return "US teams only" if "united states" in (v.get("eligible_countries") or "").lower() \
+        else "Not open to Italy"
+
+
 def candidates(grants, posted, verified, cfg, today=None):
-    """Bandi da pubblicare: verificati sul testo ufficiale, call aperta, pertinenza Alta/Media,
-    scadenza abbastanza lontana, mai pubblicati. Tutti i Paesi."""
+    """Bandi da pubblicare: verificati sul testo ufficiale, call aperta, pertinenza Alta/Media, scadenza
+    abbastanza lontana, mai pubblicati. L'idoneità per Paese deve essere chiara («yes» o «no» per l'Italia:
+    mai bandi con idoneità sconosciuta o non ancora pubblicati); prima i bandi aperti all'Italia, e al massimo
+    un bando non aperto all'Italia (es. solo USA) a settimana, segnalato in copertina."""
     today = today or date.today()
     done = {p.get("grant_id") for p in posted if p.get("grant_id")}
+    non_italy_used = _non_italy_this_week(posted, verified, today)
     # largo anticipo: prima i bandi che scadono tra almeno «grant_min_days_left» giorni (45),
     # se non ce ne sono quelli con almeno «grant_fallback_days_left» (30)
     for min_days in (int(cfg.get("grant_min_days_left", 45)), int(cfg.get("grant_fallback_days_left", 30))):
@@ -201,6 +226,8 @@ def candidates(grants, posted, verified, cfg, today=None):
                 continue                     # pre-domanda obbligatoria già chiusa o troppo vicina
             if (v.get("status") == "ok" and checked(v)
                     and v.get("is_open_call") != "no" and not v.get("coming_soon")
+                    and v.get("italy") in ("yes", "no")              # idoneità chiara, mai «unclear»
+                    and not (v.get("italy") == "no" and non_italy_used >= 1)
                     and g.get("rilevanza") in RELEVANCE_ORDER
                     and deadline and deadline >= today + timedelta(days=min_days)
                     and g.get("id") not in done and g.get("url")):
@@ -219,7 +246,8 @@ def candidates(grants, posted, verified, cfg, today=None):
         fresh = [g for g in out if fam(g) not in recent]
         out = fresh or out                           # possibilmente nessun programma degli ultimi 3 post
         if out:
-            return sorted(out, key=lambda g: (RELEVANCE_ORDER[g["rilevanza"]], next_due(g, verified[g["id"]], today)))
+            return sorted(out, key=lambda g: (0 if verified[g["id"]].get("italy") == "yes" else 1,
+                                              RELEVANCE_ORDER[g["rilevanza"]], next_due(g, verified[g["id"]], today)))
     return []
 
 
@@ -880,12 +908,30 @@ def deadline_text(v, d):
     return "Deadline", ""
 
 
-def build_post(g, v, cfg):
+def fresh_title(title, recent):
+    """Vero se il titolo non ricalca l'attacco dei titoli recenti (varietà senza AI)."""
+    first2 = " ".join(_simple(title).split()[:2])
+    return (not _simple(title).startswith("funding for")
+            and sum(1 for t in recent if " ".join(_simple(t).split()[:2]) == first2) == 0)
+
+
+def build_post(g, v, cfg, recent_titles=()):
     """Prepara il post di un bando già verificato (`v`): testo da Gemini sul testo ufficiale, fatti dai dati verificati."""
     text, source, _ = official_text(g)
     prompt = PROMPT.format(brand=cfg["brand_name"], programme=v["programme"], countries=v["eligible_countries"],
-                           source=source, official=text[:60000])
+                           source=source, official=text[:60000],
+                           recent="; ".join(f"\u201c{t}\u201d" for t in recent_titles) or "none")
     out = content.gemini_json([{"text": prompt}], SCHEMA, 0.2, task="post bando")
+    if out.get("title") and not fresh_title(out["title"], recent_titles):
+        print(f"  Titolo ripetitivo ({out['title']!r}): riprovo una volta")
+        retry = prompt + ("\n\nIMPORTANT: your previous title was rejected for repeating a recent opening "
+                          f"({out['title']!r}). Write a title with a clearly different structure.")
+        try:
+            out2 = content.gemini_json([{"text": retry}], SCHEMA, 0.4, task="post bando")
+            if out2.get("title") and fresh_title(out2["title"], recent_titles) and len(out2.get("slides") or []) >= 2:
+                out = out2
+        except Exception as e:
+            print(f"  Secondo tentativo non riuscito ({str(e)[:120]}): tengo il primo")
     clip = content._clip
     slides = []
     for sl in out.get("slides", []):
@@ -905,8 +951,11 @@ def build_post(g, v, cfg):
     title = clip(out["title"], 90)
     takeaway = clip(out.get("takeaway", ""), 160) or "Worth a look if this is your research area."
     dl_label, dl_note = deadline_text(v, deadline)
-    facts = [("Programme", clip(v["programme"], 90)), ("Funder", clip(funder_line(g), 80)),
-             (dl_label, _fmt_date(deadline) + (f" ({dl_note})" if dl_note else ""))]
+    funder = funder_line(g)
+    facts = [("Programme", clip(v["programme"], 90))]
+    if funder and _simple(funder) not in _simple(v["programme"]) and _simple(v["programme"]) not in _simple(funder):
+        facts.append(("Funder", clip(funder, 80)))       # solo se non ripete il programma
+    facts.append((dl_label, _fmt_date(deadline) + (f" ({dl_note})" if dl_note else "")))
     later = later_dues(v, deadline)
     if later:
         facts.append(("Later deadlines", ", ".join(_fmt_date(d) for d in later[:3])))
@@ -947,7 +996,8 @@ def build_post(g, v, cfg):
         "title": title, "title_highlight": content.exact_phrase(out.get("title_highlight"), title, 4),
         "takeaway": takeaway, "takeaway_highlight": content.exact_phrase(out.get("takeaway_highlight"), takeaway, 5),
         "category": "Funding opportunity",
-        "funder": clip(v["programme"], 110), "deadline": _fmt_date(deadline), "deadline_iso": deadline.isoformat(),
+        "funder": clip(v["programme"], 110), "eligibility_flag": eligibility_flag(v),
+        "deadline": _fmt_date(deadline), "deadline_iso": deadline.isoformat(),
         "url": g["url"], "slides": slides, "facts": [(k, val) for k, val in facts if val],
         "closing_cta": ("Check the official call before applying", "All open calls: link in bio"),
         "caption": caption, "hashtags": ["#ResearchFunding", "#GrantOpportunity"] + tags[:10],
@@ -970,7 +1020,8 @@ def next_grant_post(posted, cfg, grants_list=None, verified=None):
     for g in pool[:3]:
         for attempt in range(2):                 # un errore di rete momentaneo non fa saltare il post
             try:
-                post = build_post(g, verified[g["id"]], cfg)
+                recent = [p.get("title", "") for p in posted if p.get("kind") == "grant" and p.get("title")][-6:]
+                post = build_post(g, verified[g["id"]], cfg, recent)
                 print(f"::notice title=Bando scelto::{g['id']} | {verified[g['id']]['programme']}")
                 return post
             except Exception as e:

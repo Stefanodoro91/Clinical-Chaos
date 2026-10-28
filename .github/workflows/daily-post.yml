@@ -6,10 +6,15 @@ on:
   # Calendario (ora italiana; GitHub può partire con qualche minuto di ritardo), uguale su Instagram, Facebook,
   # Threads e Bluesky, ognuno nel suo formato:
   #   bandi        lun, mar, gio, ven 12:23  (pausa pranzo: picco di Facebook e buon orario per Instagram)
+  #                rubrica «Before you apply» il venerdì ogni due settimane (settimane ISO pari)
   #   metodologia  mar, mer, gio 18:47 e sab 16:47  (sera infrasettimanale e sabato pomeriggio: picchi di Instagram e Bluesky)
+  #                rubriche: «Checklist» il giovedì (una voce CONSORT/PRISMA/STROBE/SPIRIT/COSMIN, senza AI),
+  #                «Clinical Insights» il sabato (post con articolo citabile e slide «Based on»)
   #   posizioni    lun 18:23  (inizio settimana, quando si cercano opportunità)
+  #                rubrica «Career Path» il primo lunedì del mese (glossario dei ruoli)
   #   reel         mer 12:23 e dom 17:47, a rotazione: metodologia (classica), bando (rock), posizioni (funky),
   #                speciale (aziendale); attivi con config reels_auto = true
+  # Le rubriche si spengono con config rubrics = false.
   # Storie: workflow stories.yml (lun-ven 9:31).
   # Minuti «dispari» apposta: allo scoccare dell'ora e della mezz'ora GitHub è più carico e i run pianificati
   # vengono ritardati o saltati (il 27/10 nessun run delle 12:30 è partito).

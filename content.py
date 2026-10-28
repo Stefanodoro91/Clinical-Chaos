@@ -679,3 +679,162 @@ def review_slides(post):
             print(f"  Revisione non disponibile ({str(e)[:80]}): tolte {len(bad)} slide fuori contesto")
             return len(bad)
         return 0
+# ---------------------------------------------------------------- qualità: anti-copia, concretezza, riferimenti
+RX_DOI = re.compile(r"\b(10\.\d{4,9}/[^\s\"<>]+)", re.I)
+
+
+def _crossref_by_doi(doi):
+    try:
+        r = requests.get(f"{CROSSREF}/{doi.rstrip('.,;)')}",
+                         headers={"User-Agent": "ClinicalResearchChaosBot/1.0"}, timeout=20)
+        r.raise_for_status()
+        return _apa_from_crossref(r.json()["message"])
+    except Exception:
+        return None
+
+
+def fix_references(post):
+    """Riferimenti riscritti dai metadati ufficiali di Crossref, non dall'AI: prima per DOI (esatto), altrimenti
+    per ricerca bibliografica (solo se autore, anno e titolo coincidono). Senza riscontro il testo resta com'è.
+    Nessuna AI; restituisce quanti riferimenti ha sistemato."""
+    fixed, out = 0, []
+    for r in post.get("references") or []:
+        m = RX_DOI.search(r)
+        official = (_crossref_by_doi(m.group(1)) if m else None) or crossref_reference(r)
+        if official and official != r:
+            print(f"  Riferimento da Crossref: {official[:90]}")
+            fixed += 1
+        out.append(official or r)
+        time.sleep(0.2)
+    post["references"] = out
+    return fixed
+
+
+def _texts_of(post):
+    """(etichetta, testo) di tutte le parti scritte del post."""
+    yield "takeaway", post.get("takeaway", "")
+    yield "caption", post.get("caption", "")
+    for i, sl in enumerate(post.get("slides") or []):
+        yield f"slide {i + 1}", sl.get("body", "")
+
+
+def copied_from(text, source_low, n=7):
+    """La sequenza più lunga di parole consecutive del testo presente identica nel materiale (minimo `n`),
+    oppure None. Rilevazione senza AI; le frasi corte e i termini tecnici brevi non scattano."""
+    words = _simple(text).split()
+    best = None
+    i = 0
+    while i + n <= len(words):
+        j = i + n
+        if " ".join(words[i:j]) in source_low:
+            while j < len(words) and " ".join(words[i:j + 1]) in source_low:
+                j += 1
+            if best is None or j - i > len(best.split()):
+                best = " ".join(words[i:j])
+            i = j
+        else:
+            i += 1
+    return best
+
+
+REWRITE_PROMPT = """You rewrite parts of an Instagram carousel for clinical researchers because they copy the
+source material almost word for word. Rewrite each flagged text in your own words: same facts, same meaning,
+same length limit, plainer and more direct. NEVER add facts, numbers or claims. Keep any acronym expansions.
+
+Carousel title: {title}
+Flagged texts (each copies the quoted passage from the source):
+{flagged}"""
+
+REWRITE_SCHEMA = {"type": "OBJECT", "properties": {"rewrites": {"type": "ARRAY", "items": {"type": "OBJECT",
+                  "properties": {"label": {"type": "STRING"}, "text": {"type": "STRING"}},
+                  "required": ["label", "text"]}}}, "required": ["rewrites"]}
+
+
+def rewrite_copied(post, material):
+    """Trova le frasi copiate quasi parola per parola dal materiale (senza AI) e le fa riscrivere a Gemini
+    (stessi fatti, parole nuove). Restituisce il numero di parti riscritte."""
+    if not material:
+        return 0
+    low = " ".join(_simple(material).split())
+    flagged = [(label, text, hit) for label, text in _texts_of(post)
+               if text and (hit := copied_from(text, low))]
+    if not flagged:
+        return 0
+    for label, _, hit in flagged:
+        print(f"  Copia dalla fonte in {label}: \u201c{hit[:90]}\u201d")
+    listing = "\n".join(f"- {label} (max {320 if label.startswith('slide') else 900} chars): {text}\n"
+                        f"  copied passage: \u201c{hit[:200]}\u201d" for label, text, hit in flagged)
+    try:
+        out = gemini_json([{"text": REWRITE_PROMPT.format(title=post.get("title", ""), slides="", flagged=listing)}],
+                          REWRITE_SCHEMA, 0.4, task="riscrittura anti-copia")
+    except Exception as e:
+        print(f"  Riscrittura non disponibile ({str(e)[:100]}): il post esce com'è, da rivedere")
+        return 0
+    done = 0
+    news = {r.get("label", ""): r.get("text", "") for r in out.get("rewrites", [])}
+    for label, text, hit in flagged:
+        new = " ".join((news.get(label) or "").split())
+        if not new or copied_from(new, low):
+            continue
+        if label == "takeaway":
+            post["takeaway"] = _clip(new, 160)
+            post["takeaway_highlight"] = exact_phrase(post.get("takeaway_highlight"), post["takeaway"], 5)
+        elif label == "caption":
+            post["caption"] = _clip(new, 1200)
+        else:
+            i = int(label.split()[1]) - 1
+            body = _clip(new, 320)
+            post["slides"][i] = {**post["slides"][i], "body": body,
+                                 "highlight": exact_phrase(post["slides"][i].get("highlight"), body)}
+        done += 1
+    return done
+
+
+RX_NUMBER = re.compile(r"\d")
+RX_EXAMPLE = re.compile(r"\b(e\.g\.|for example|for instance|such as|like the|say,|imagine)\b", re.I)
+RX_ACTION = re.compile(r"\b(check|use|report|ask|avoid|define|state|prespecify|pre-register|register|calculate|"
+                       r"measure|compare|choose|pick|plan|test|confirm|write|read|look|verify|run|add|include|"
+                       r"never|always|start|stop)\b", re.I)
+
+
+def concreteness(post):
+    """Cosa manca perché il post sia concreto: deve avere almeno un numero, un esempio o un'azione pratica
+    da qualche parte (slide, takeaway o didascalia). Senza AI."""
+    whole = " ".join(t for _, t in _texts_of(post))
+    missing = [name for name, rx in (("a number", RX_NUMBER), ("an example", RX_EXAMPLE), ("an action", RX_ACTION))
+               if not rx.search(whole)]
+    return missing if len(missing) == 3 else []
+
+
+ENRICH_PROMPT = """This Instagram carousel for clinical researchers is too generic: it has no numbers, no concrete
+example and no practical action. Using ONLY the source material below, rewrite 1-2 slide bodies so the carousel
+gains at least one of: a real number from the material, a concrete example, or a practical action the reader can
+take. Same length limits (body max 160 characters). NEVER invent numbers or facts: only what is in the material.
+If the material truly offers nothing concrete for this topic, return an empty list.
+
+Carousel title: {title}
+Slides:
+{slides}
+
+SOURCE MATERIAL (excerpt):
+{material}"""
+
+
+def enrich(post, material):
+    """Un giro di arricchimento per i post troppo generici; vero se dopo il giro il post è concreto."""
+    listing = "\n".join(f"{i}. {s['heading']} \u2014 {s['body']}" for i, s in enumerate(post.get("slides") or []))
+    try:
+        out = gemini_json([{"text": ENRICH_PROMPT.format(title=post.get("title", ""), slides=listing,
+                                                         material=(material or "")[:30000])}],
+                          REVIEW_SCHEMA, 0.3, task="arricchimento post")
+    except Exception as e:
+        print(f"  Arricchimento non disponibile ({str(e)[:100]})")
+        return not concreteness(post)
+    for f in out.get("fixes", []):
+        i = f.get("index")
+        if isinstance(i, int) and 0 <= i < len(post["slides"]) and f.get("heading") and f.get("body"):
+            body = _clip(f["body"], 170)
+            print(f"  Slide {i + 1} resa concreta: {f['body'][:90]}")
+            post["slides"][i] = {**post["slides"][i], "heading": _clip(f["heading"], 70), "body": body,
+                                 "highlight": exact_phrase(post["slides"][i].get("highlight"), body)}
+    return not concreteness(post)
