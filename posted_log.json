@@ -450,6 +450,9 @@
     "source": "reel_announcement.json",
     "kind": "reel",
     "media_id": "18103074200039868",
-    "seconds": 18.0
+    "seconds": 18.0,
+    "facebook_id": "3462135770625838",
+    "threads_id": "17908546278657638",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mywpmg2sie2q"
   }
 ]
