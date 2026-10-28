@@ -44,6 +44,12 @@ on:
         type: choice
         options: [research, grant, positions, announcement, reel]
         default: research
+      preview_date:
+        description: "Solo prova: simula questa data (AAAA-MM-GG) per scegliere la rubrica del giorno"
+        default: ""
+      preview_name:
+        description: "Solo prova: nome della cartella anteprime"
+        default: "anteprima"
       positions_count:
         description: "Solo per positions: quante posizioni nel post (vuoto = raccolta settimanale normale)"
         default: ""
@@ -106,9 +112,19 @@ jobs:
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
           POSITIONS_PER_POST: ${{ inputs.positions_count }}
           REEL_SOURCE: ${{ inputs.reel_source }}
+          PREVIEW_DATE: ${{ inputs.preview_date }}
           SCHEDULE: ${{ github.event.schedule }}
           POST_TYPE: ${{ github.event_name == 'schedule' && ((github.event.schedule == '23 11 * * 1,2,4,5' || github.event.schedule == '23 12 * * 1,2,4,5') && 'grant' || ((github.event.schedule == '23 17 * * 1' || github.event.schedule == '23 18 * * 1') && 'positions' || ((github.event.schedule == '23 11 * * 3' || github.event.schedule == '23 12 * * 3' || github.event.schedule == '47 16 * * 0' || github.event.schedule == '47 17 * * 0') && 'reel' || 'research'))) || inputs.post_type || 'research' }}
         run: python bot.py
+
+      - name: Anteprima sul ramo di prova (solo preview-cover)
+        if: always() && github.ref_name == 'preview-cover'
+        run: |
+          d="anteprime/${{ inputs.preview_name }}"; rm -rf "$d"; mkdir -p "$d"
+          cp preview/*.jpg preview/*.txt "$d"/ 2>/dev/null || true
+          git add -f anteprime && git commit -qm "Anteprima ${{ inputs.preview_name }}" || true
+          git pull -q --rebase origin preview-cover || true
+          git push origin HEAD:preview-cover || true
 
       - name: Salva anteprima (solo in modalità prova)
         if: always()
