@@ -48,54 +48,6 @@
     "source": "COSMIN.pdf"
   },
   {
-    "title": "Why Structural Validity Must Precede Internal Consistency",
-    "title_highlight": "Structural Validity",
-    "category": "Study design",
-    "slides": [
-      {
-        "heading": "The Sequence of Psychometric Testing",
-        "body": "A proven scale or subscale structure is a prerequisite for the proper interpretation of internal consistency analyses like Cronbach alpha.",
-        "image_prompt": "a builder carefully placing a solid foundation block on the ground before stacking upper levels of a building",
-        "highlight": "",
-        "source": "Prinsen et al., 2018"
-      },
-      {
-        "heading": "Evaluating Structural Validity",
-        "body": "Structural validity refers to the degree to which scores reflect the dimensionality of the construct, usually assessed via factor analysis.",
-        "image_prompt": "a magnifying glass focused on a complex web of intersecting lines being sorted into clean parallel columns",
-        "highlight": "dimensionality of the construct",
-        "source": "Mokkink et al., 2010"
-      },
-      {
-        "heading": "Unidimensionality and Subscales",
-        "body": "Multiple factor analyses assess whether each subscale on its own measures a single construct before calculating internal consistency.",
-        "image_prompt": "a large group of mixed shapes being separated into distinct uniform boxes by a series of dividers",
-        "highlight": "measures a single construct",
-        "source": "Prinsen et al., 2018"
-      }
-    ],
-    "takeaway": "Never calculate Cronbach alpha before confirming that the scale is actually unidimensional.",
-    "takeaway_highlight": "unidimensional",
-    "references": [
-      "Mokkink, L. B., Terwee, C. B., Patrick, D. L., Alonso, J., Stratford, P. W., Knol, D. L., et al. (2010). The COSMIN study reached international consensus on taxonomy, terminology, and definitions of measurement properties for health-related patient-reported outcomes. Journal of Clinical Epidemiology, 63(7), 737–745.",
-      "Prinsen, C. A. C., Mokkink, L. B., Bouter, L. M., Alonso, J., Patrick, D. L., de Vet, H. C. W., & Terwee, C. B. (2018). COSMIN guideline for systematic reviews of patient-reported outcome measures. Quality of Life Research, 27(1147–1157)."
-    ],
-    "caption": "Calculating Cronbach alpha on a multidimensional scale is a common methodological trap. Internal consistency assumes unidimensionality. If your factor structure is flawed, your alpha value is meaningless. How often do you check structural validity before diving into reliability coefficients?",
-    "hashtags": [
-      "#Biostatistics",
-      "#Psychometrics",
-      "#ClinicalResearch",
-      "#DataAnalysis",
-      "#ResearchMethods",
-      "#Statistics",
-      "#HealthOutcomes",
-      "#Measurement"
-    ],
-    "source_hint": "pages 7-8, Steps 6.1 and 6.2",
-    "id": "212aab99",
-    "source": "COSMIN.pdf"
-  },
-  {
     "title": "Critical Appraisal vs. Reporting Guidelines: Know the Difference",
     "title_highlight": "",
     "category": "Critical appraisal",
