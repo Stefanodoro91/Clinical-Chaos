@@ -1,0 +1,5 @@
+Can readers trace every patient in your trial?
+
+CONSORT item 13: if readers cannot trace every randomised patient, your results are hard to trust.
+
+https://clinicalresearchchaos.com/methodology#m-checklist-consort-flow

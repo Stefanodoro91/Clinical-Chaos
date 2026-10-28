@@ -1,0 +1,24 @@
+Can readers trace every patient in your trial?
+
+CONSORT item 13: if readers cannot trace every randomised patient, your results are hard to trust.
+
+One reporting-checklist item at a time, every Thursday: what it asks, why it matters, and how to comply in practice.
+This week: CONSORT, Item 13 – Participant flow.
+Which checklist item do you see ignored most often?
+
+References:
+• Schulz, K. F., Altman, D. G., & Moher, D. (2010). CONSORT 2010 statement: Updated guidelines for reporting parallel group randomised trials. BMJ, 340, c332. https://doi.org/10.1136/bmj.c332
+
+Key points:
+1. What the item asks: Report how many people were assessed, randomised, treated, lost and analysed, in each group: a flow diagram is strongly recommended.
+2. Why it matters: Losses after randomisation can bias results. A trial that randomised 120 but analysed 80 has a story the reader must see.
+3. How to comply: Build the flow diagram from your screening log before writing: numbers at every stage, with reasons for every exclusion.
+
+Takeaway: Report the flow of all participants, stage by stage, with reasons for every exclusion.
+
+References:
+- Schulz, K. F., Altman, D. G., & Moher, D. (2010). CONSORT 2010 statement: Updated guidelines for reporting parallel group randomised trials. BMJ, 340, c332. https://doi.org/10.1136/bmj.c332
+
+All our methodology carousels, with references: https://clinicalresearchchaos.com/methodology#m-checklist-consort-flow
+
+#ClinicalResearch #ResearchMethodology #CONSORT #ClinicalTrials #ReportingGuidelines
