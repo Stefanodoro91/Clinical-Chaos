@@ -1,0 +1,21 @@
+{
+ "workflow": "Aggiorna bandi e pagina link in bio",
+ "quota_day": "2026-10-28",
+ "consumo": {
+  "verifica bandi|gemini-flash-latest": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 4
+  },
+  "verifica bandi|gemini-flash-lite-latest": {
+   "richieste": 20,
+   "ingresso": 139425,
+   "uscita": 6658,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  }
+ }
+}
