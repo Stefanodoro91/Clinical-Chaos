@@ -6,10 +6,10 @@
 // Secret richiesto nel Worker: GH_TOKEN = token GitHub «fine-grained» limitato al repository Clinical-Chaos,
 // permesso Actions: Read and write (nient'altro). Il token non va mai nel codice, nel repository o in chat.
 
-const URL = "https://api.github.com/repos/Stefanodoro91/Clinical-Chaos/actions/workflows/watchdog.yml/dispatches";
+const DISPATCH = "https://api.github.com/repos/Stefanodoro91/Clinical-Chaos/actions/workflows/watchdog.yml/dispatches";
 
 async function wake(env) {
-  const r = await fetch(URL, {
+  const r = await fetch(DISPATCH, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${env.GH_TOKEN}`,
@@ -35,7 +35,7 @@ export default {
       return new Response("Orologio del bot Clinical Research Chaos: attivo.", { status: 200 });
     }
     if (!env.GH_TOKEN) return new Response("GH_TOKEN mancante o vuoto nel Worker.", { status: 200 });
-    const r = await fetch(URL.replace("/dispatches", ""), {
+    const r = await fetch(DISPATCH.replace("/dispatches", ""), {
       headers: {
         "Authorization": `Bearer ${env.GH_TOKEN}`,
         "Accept": "application/vnd.github+json",
