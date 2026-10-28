@@ -170,3 +170,81 @@ def publish_threads(image_urls, post, link):
         c = _threads("POST", f"{user}/threads", media_type="TEXT", text=text)["id"]
     _threads_ready(c)
     return _threads("POST", f"{user}/threads_publish", creation_id=c)["id"]
+
+
+# ---------------------------------------------------------------- reel (video) su Threads e Bluesky
+def _clip_text(text, limit):
+    text = " ".join(text.split()) if "\n" not in text else text
+    return text if len(text) <= limit else text[:limit - 1].rsplit(" ", 1)[0] + "…"
+
+
+def reel_text(title, caption, link, limit):
+    """Testo breve del video: titolo, prima frase utile della didascalia, link (frasi intere, mai tagliate a metà)."""
+    first = next((l.strip() for l in caption.splitlines() if l.strip() and l.strip() != title
+                  and not l.strip().startswith("#")), "")
+    tail = f"\n\n{link}" if link else ""
+    out = f"{title}\n\n{first}" if first and len(title) + len(first) + 2 + len(tail) <= limit else title
+    return _clip_text(out, limit - len(tail)) + tail
+
+
+def publish_threads_video(video_url, text):
+    """Video su Threads da un URL pubblico (mp4). Restituisce l'id del post."""
+    user = os.environ["THREADS_USER_ID"]
+    c = _threads("POST", f"{user}/threads", media_type="VIDEO", video_url=video_url, text=text)["id"]
+    for _ in range(60):                       # i video richiedono qualche minuto di elaborazione
+        st = _threads("GET", c, fields="status,error_message")
+        if st.get("status") == "FINISHED":
+            break
+        if st.get("status") in ("ERROR", "EXPIRED"):
+            raise RuntimeError(f"Threads ha rifiutato il video ({st.get('error_message') or st.get('status')})")
+        time.sleep(10)
+    else:
+        raise RuntimeError("Threads: video non pronto dopo 10 minuti")
+    return _threads("POST", f"{user}/threads_publish", creation_id=c)["id"]
+
+
+def publish_bluesky_video(video_path, text, link, alt=""):
+    """Video su Bluesky con il servizio video ufficiale (app.bsky.video), poi il post con link cliccabile."""
+    s = requests.post(f"{BSKY}/com.atproto.server.createSession", timeout=30,
+                      json={"identifier": os.environ["BLUESKY_HANDLE"], "password": os.environ["BLUESKY_APP_PASSWORD"]})
+    s.raise_for_status()
+    sess = s.json()
+    auth = {"Authorization": f"Bearer {sess['accessJwt']}"}
+    pds = (sess.get("didDoc") or {}).get("service", [{}])[0].get("serviceEndpoint", "https://bsky.social")
+    host = pds.split("://", 1)[-1].rstrip("/")
+    t = requests.get(f"{BSKY}/com.atproto.server.getServiceAuth", headers=auth, timeout=30,
+                     params={"aud": f"did:web:{host}", "lxm": "com.atproto.repo.uploadBlob",
+                             "exp": int(time.time()) + 1800})
+    t.raise_for_status()
+    data = Path(video_path).read_bytes()
+    up = requests.post("https://video.bsky.app/xrpc/app.bsky.video.uploadVideo", timeout=300,
+                       params={"did": sess["did"], "name": Path(video_path).name},
+                       headers={"Authorization": f"Bearer {t.json()['token']}", "Content-Type": "video/mp4"}, data=data)
+    if not up.ok and "already_exists" not in up.text:
+        raise RuntimeError(f"Bluesky: caricamento del video rifiutato {up.status_code}: {up.text[:200]}")
+    job = up.json().get("jobId") or up.json().get("jobStatus", {}).get("jobId")
+    blob = up.json().get("blob") or (up.json().get("jobStatus") or {}).get("blob")
+    for _ in range(60):
+        if blob:
+            break
+        st = requests.get("https://video.bsky.app/xrpc/app.bsky.video.getJobStatus", params={"jobId": job},
+                          headers=auth, timeout=30).json().get("jobStatus", {})
+        if st.get("state") == "JOB_STATE_FAILED":
+            raise RuntimeError(f"Bluesky: elaborazione del video fallita ({st.get('error', '')})")
+        blob = st.get("blob")
+        if not blob:
+            time.sleep(5)
+    if not blob:
+        raise RuntimeError("Bluesky: video non pronto dopo 5 minuti")
+    start = text.encode("utf-8").find(link.encode("utf-8")) if link else -1
+    record = {"$type": "app.bsky.feed.post", "text": text, "langs": ["en"],
+              "createdAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+              "embed": {"$type": "app.bsky.embed.video", "video": blob, "alt": alt[:1000],
+                        "aspectRatio": {"width": 1080, "height": 1920}}}
+    if start >= 0:
+        record["facets"] = [{"index": {"byteStart": start, "byteEnd": start + len(link.encode("utf-8"))},
+                             "features": [{"$type": "app.bsky.richtext.facet#link", "uri": link}]}]
+    r = requests.post(f"{BSKY}/com.atproto.repo.createRecord", headers=auth, timeout=30,
+                      json={"repo": sess["did"], "collection": "app.bsky.feed.post", "record": record})
+    r.raise_for_status()
+    return r.json().get("uri")

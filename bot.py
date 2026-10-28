@@ -473,7 +473,7 @@ def reel_run(posted):
     research, grant, positions, special (carosello speciale) oppure announcement (reel di reel_announcement.json)."""
     import reels
     source = (os.environ.get("REEL_SOURCE") or "latest").strip().lower()
-    if source == "announcement":
+    if source in ("announcement", "crosspost"):
         return reel_announcement_run(posted)
     force = {"special": "announcement"}.get(source, source) if source != "latest" else None
     done = {p.get("reel_of") for p in posted if p.get("kind") == "reel"}
@@ -526,20 +526,102 @@ def reel_run(posted):
         notify("Reel non pubblicato su Instagram", f"Il reel di «{p['title']}» non è uscito: {msg}")
         sys.exit(1)
     print(f"::notice title=Reel pubblicato::{p['title']} | id {media_id}")
-    posted.append({"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-                   "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-                   "id": f"reel-{p['id']}"[:60], "title": p["title"], "source": p.get("source", ""),
-                   "kind": "reel", "reel_of": p["id"], "media_id": media_id, "seconds": seconds})
+    entry = {"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+             "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+             "id": f"reel-{p['id']}"[:60], "title": p["title"], "source": p.get("source", ""),
+             "kind": "reel", "reel_of": p["id"], "media_id": media_id, "seconds": seconds}
+    posted.append(entry)
+    save(POSTED_FILE, posted)
+    link = CONFIG.get("links_page_url") or grants.site_url(CONFIG, "")
+    crosspost_reel(video, caption, p["title"], link, entry, entry["id"])
     save(POSTED_FILE, posted)
     commit_and_push([POSTED_FILE.name], "Reel pubblicato")
+
+
+def publish_facebook_reel(video_path, caption):
+    """Reel sulla Pagina Facebook (API video_reels: avvio, caricamento diretto, pubblicazione)."""
+    page = os.environ["FB_PAGE_ID"]
+    token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
+    url = f"https://graph.facebook.com/{GRAPH_VERSION}/{page}/video_reels"
+    r = requests.post(url, data={"upload_phase": "start", "access_token": token}, timeout=60)
+    if not r.ok:
+        raise RuntimeError(f"Reel Facebook: avvio rifiutato {r.status_code}: {r.text[:300]}")
+    start = r.json()
+    data = Path(video_path).read_bytes()
+    up = requests.post(start.get("upload_url") or f"https://rupload.facebook.com/video-upload/{GRAPH_VERSION}/{start['video_id']}",
+                       headers={"Authorization": f"OAuth {token}", "offset": "0", "file_size": str(len(data))},
+                       data=data, timeout=300)
+    if not up.ok:
+        raise RuntimeError(f"Reel Facebook: caricamento rifiutato {up.status_code}: {up.text[:300]}")
+    for _ in range(12):
+        r = requests.post(url, timeout=60, data={"upload_phase": "finish", "video_id": start["video_id"],
+                                                 "video_state": "PUBLISHED", "description": facebook_caption(caption),
+                                                 "access_token": token})
+        if r.ok:
+            return start["video_id"]
+        time.sleep(10)
+    raise RuntimeError(f"Reel Facebook: pubblicazione rifiutata {r.status_code}: {r.text[:300]}")
+
+
+def public_video_url(video_path, name):
+    """Copia il video nel sito (docs/reels/) e lo rende pubblico: Threads vuole un indirizzo, non il file."""
+    import shutil
+    rel = Path("docs") / "reels" / f"{name}.mp4"
+    (ROOT / rel).parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(video_path, ROOT / rel)
+    sha = commit_and_push([rel.as_posix()], f"Video del reel {name}")
+    trigger_deploy()
+    site = grants.site_url(CONFIG, f"reels/{name}.mp4")
+    for _ in range(36):                       # Cloudflare ripubblica il sito in 1–3 minuti
+        try:
+            h = requests.head(site, timeout=15)
+            if h.status_code == 200 and "video" in h.headers.get("content-type", ""):
+                return site
+        except requests.RequestException:
+            pass
+        time.sleep(10)
+    return f"https://raw.githubusercontent.com/{os.environ.get('GITHUB_REPOSITORY', '')}/{sha}/{rel.as_posix()}"
+
+
+def crosspost_reel(video, caption, title, link, entry, name):
+    """Lo stesso reel su Facebook, Threads e Bluesky (config reels_crosspost); gli errori non fermano il resto."""
+    import social
+    if not CONFIG.get("reels_crosspost", True):
+        return entry
+    if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID") and not entry.get("facebook_id"):
+        try:
+            entry["facebook_id"] = publish_facebook_reel(video, caption)
+            print(f"::notice title=Reel su Facebook::{entry['facebook_id']}")
+        except Exception as e:
+            print(f"::warning title=Reel non pubblicato su Facebook::{str(e)[:300]}")
+    if social.threads_enabled() and not entry.get("threads_id"):
+        try:
+            url = public_video_url(video, name)
+            entry["threads_id"] = social.publish_threads_video(url, social.reel_text(title, caption, link, 500))
+            print(f"::notice title=Reel su Threads::{entry['threads_id']}")
+        except Exception as e:
+            print(f"::warning title=Reel non pubblicato su Threads::{str(e)[:300]}")
+    if social.bluesky_enabled() and not entry.get("bluesky_uri"):
+        try:
+            entry["bluesky_uri"] = social.publish_bluesky_video(video, social.reel_text(title, caption, link, 300), link,
+                                                                alt=title)
+            print(f"::notice title=Reel su Bluesky::{entry['bluesky_uri']}")
+        except Exception as e:
+            print(f"::warning title=Reel non pubblicato su Bluesky::{str(e)[:300]}")
+    return entry
 
 
 def reel_announcement_run(posted):
     """Reel speciale scritto a mano in reel_announcement.json, pubblicato una sola volta."""
     import reels
     spec = load(ROOT / "reel_announcement.json", None)
-    if not spec or any(p.get("id") == spec.get("id") for p in posted):
+    crosspost_only = (os.environ.get("REEL_SOURCE") or "").strip().lower() == "crosspost"
+    done = next((p for p in posted if spec and p.get("id") == spec.get("id")), None)
+    if not spec or (done and not crosspost_only):
         print("::notice title=Reel::nessun reel speciale nuovo da pubblicare")
+        return
+    if crosspost_only and not done:
+        print("::notice title=Reel::il reel speciale non è ancora uscito su Instagram: niente da ripubblicare")
         return
     PREVIEW_DIR.mkdir(exist_ok=True)
     video = PREVIEW_DIR / "reel.mp4"
@@ -550,6 +632,13 @@ def reel_announcement_run(posted):
         (PREVIEW_DIR / "reel-caption.txt").write_text(caption, encoding="utf-8")
         print("Modalità prova: reel non pubblicato. Anteprima nell'artifact 'preview'.")
         return
+    title = spec["slides"][0].get("title", "")
+    link = CONFIG.get("links_page_url") or grants.site_url(CONFIG, "")
+    if crosspost_only:                        # già su Instagram: solo Facebook, Threads e Bluesky
+        crosspost_reel(video, caption, title, link, done, spec["id"])
+        save(POSTED_FILE, posted)
+        commit_and_push([POSTED_FILE.name], "Reel speciale anche su Facebook, Threads e Bluesky")
+        return
     try:
         media_id = publish_reel(video, caption)
     except Exception as e:
@@ -558,10 +647,13 @@ def reel_announcement_run(posted):
         notify("Reel non pubblicato su Instagram", f"Il reel speciale {spec['id']} non è uscito: {msg}")
         sys.exit(1)
     print(f"::notice title=Reel pubblicato::{spec['id']} | id {media_id}")
-    posted.append({"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-                   "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-                   "id": spec["id"], "title": spec["slides"][0].get("title", ""), "source": "reel_announcement.json",
-                   "kind": "reel", "media_id": media_id, "seconds": seconds})
+    entry = {"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+             "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+             "id": spec["id"], "title": title, "source": "reel_announcement.json",
+             "kind": "reel", "media_id": media_id, "seconds": seconds}
+    posted.append(entry)
+    save(POSTED_FILE, posted)
+    crosspost_reel(video, caption, title, link, entry, spec["id"])
     save(POSTED_FILE, posted)
     commit_and_push([POSTED_FILE.name], "Reel speciale pubblicato")
 

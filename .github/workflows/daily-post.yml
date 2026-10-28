@@ -44,7 +44,7 @@ on:
       reel_source:
         description: "Solo per reel: latest = a rotazione tra i tipi; research/grant/positions/special = dal carosello di quel tipo; announcement = reel di reel_announcement.json"
         type: choice
-        options: [latest, research, grant, positions, special, announcement]
+        options: [latest, research, grant, positions, special, announcement, crosspost]
         default: latest
 
 permissions:
