@@ -207,8 +207,83 @@ def poster_theme(post, cfg):
     return "dark" if int(hashlib.md5(str(post.get("id") or post.get("title")).encode()).hexdigest(), 16) % 2 else "light"
 
 
-def cube_texture(img, seed, accent, dark, keep_out=()):
+CUBE_V2 = False        # impostato da render_carousel (config «cube_v2»)
+
+
+def cube_texture_v2(img, seed, accent, dark, keep_out=(), density=1.0):
+    """Cubetti armoniosi: gruppi di 1–4 quadratini mai sovrapposti tra loro né a testo, logo o immagini (le zone
+    occupate si leggono dai pixel già disegnati, più i rettangoli `keep_out`), distanziati da un margine, tutti della
+    stessa famiglia di dimensioni, più fitti ai bordi e con qualche cubetto negli angoli liberi. `density` = quantità
+    (1 = copertine, ~0.35 = slide interne)."""
+    import random
+    import numpy as np
+    rnd = random.Random(f"{seed}")
+    arr = np.asarray(img.convert("RGB"), dtype=np.int16)
+    sample = arr[::6, ::6].reshape(-1, 3).astype(np.int32)
+    keys, counts = np.unique(sample[:, 0] * 65536 + sample[:, 1] * 256 + sample[:, 2], return_counts=True)
+    top = int(keys[counts.argmax()])
+    bg = np.array([top >> 16, (top >> 8) & 255, top & 255], dtype=np.int16)
+    ink = np.abs(arr - bg).sum(axis=2) > 36                       # pixel diversi dallo sfondo = contenuto
+    C = 22                                                         # lato cella della griglia di occupazione
+    gh, gw = H // C + 1, W // C + 1
+    pad = np.zeros((gh * C, gw * C), dtype=bool)
+    pad[:H, :W] = ink
+    occ = pad.reshape(gh, C, gw, C).any(axis=(1, 3))
+    for k in keep_out:
+        occ[max(0, int(k[1]) // C):int(k[3]) // C + 1, max(0, int(k[0]) // C):int(k[2]) // C + 1] = True
+    occ[:2, :] = True                                              # barra d'accento in alto
+    grown = occ.copy()                                             # margine di una cella attorno al contenuto
+    grown[1:, :] |= occ[:-1, :]; grown[:-1, :] |= occ[1:, :]
+    grown[:, 1:] |= occ[:, :-1]; grown[:, :-1] |= occ[:, 1:]
+    a = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    cols = ([(42, 64, 88, 255), (31, 92, 90, 255), (120, 135, 150, 130), a + (100,)] if dark else
+            [(201, 214, 223, 255), (176, 196, 210, 220), a + (115,), (14, 34, 51, 45)])
+    sizes = rnd.choice([(12, 18), (14, 20), (16, 22)]) if density >= 0.6 else rnd.choice([(10, 14), (12, 16)])             # una sola famiglia di dimensioni per immagine
+    d = ImageDraw.Draw(img, "RGBA")
+    shapes = [[(0, 0)], [(0, 0), (1, 0)], [(0, 0), (0, 1)], [(0, 0), (1, 0), (0, 1)], [(0, 0), (1, 0), (0, 1), (1, 1)]]
+    taken = grown.copy()
+
+    def try_place(cx, cy):
+        s = rnd.choice(sizes)
+        shape = rnd.choice(shapes)
+        fw = (max(dx for dx, _ in shape) + 1) * (s + 4)
+        fh = (max(dy for _, dy in shape) + 1) * (s + 4)
+        x, y = cx * C + rnd.randint(0, C - 1), cy * C + rnd.randint(0, C - 1)
+        if x + fw >= W - 8 or y + fh >= H - 8 or x < 8 or y < 8:
+            return False
+        c0, c1, r0, r1 = (x - C) // C, (x + fw + C) // C, (y - C) // C, (y + fh + C) // C
+        if taken[max(0, r0):r1 + 1, max(0, c0):c1 + 1].any():
+            return False
+        col = rnd.choice(cols)
+        for dx, dy in shape:
+            d.rectangle((x + dx * (s + 4), y + dy * (s + 4), x + dx * (s + 4) + s, y + dy * (s + 4) + s), fill=col)
+        taken[max(0, r0):r1 + 1, max(0, c0):c1 + 1] = True
+        return True
+
+    # 1) qualche cubetto negli angoli liberi
+    corners = [(1, 2), (gw - 7, 2), (1, gh - 8), (gw - 7, gh - 8)]
+    for cx, cy in corners:
+        if rnd.random() < 0.55 + 0.3 * density:
+            for _ in range(12):
+                if try_place(cx + rnd.randint(0, 4), cy + rnd.randint(0, 4)):
+                    break
+    # 2) riempimento casuale degli spazi liberi, più fitto verso i bordi
+    target = int(round(34 * density * (1.7 if density >= 0.6 else 1)))
+    placed = 0
+    for _ in range(900):
+        if placed >= target:
+            break
+        cx = rnd.choice([rnd.randint(0, 3), rnd.randint(gw - 10, gw - 1), rnd.randint(0, gw - 1)]) \
+            if rnd.random() < 0.7 else rnd.randint(0, gw - 1)
+        cy = rnd.randint(2, gh - 3)
+        if not taken[cy, min(cx, gw - 1)] and try_place(cx, cy):
+            placed += 1
+
+
+def cube_texture(img, seed, accent, dark, keep_out=(), density=1.0):
     """Gruppi di 1–4 cubetti sparsi, più fitti ai bordi, mai sopra le zone di testo (`keep_out`: rettangoli)."""
+    if CUBE_V2:
+        return cube_texture_v2(img, seed, accent, dark, keep_out, density)
     import random
     rnd = random.Random(seed)
     d = ImageDraw.Draw(img, "RGBA")
@@ -874,8 +949,21 @@ def single_cover(post, cfg):
     return buf.getvalue()
 
 
+def decorate_inner(pages, post, cfg):
+    """Cubetti discreti anche sulle slide interne (angoli e spazi vuoti), solo con config «cube_v2»."""
+    if not CUBE_V2:
+        return pages
+    for i, img in enumerate(pages[1:], start=1):
+        bg = img.getpixel((W // 2, H - 30))
+        dark = sum(bg[:3]) < 384
+        cube_texture(img, f"{post.get('id') or post.get('title')}-{i}", cfg["colors"]["accent"], dark, density=0.3)
+    return pages
+
+
 def render_carousel(post, cfg):
     """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
+    global CUBE_V2
+    CUBE_V2 = bool(cfg.get("cube_v2"))
     if post.get("kind") == "grant":   # i bandi hanno un colore d'accento proprio, per riconoscerli a colpo d'occhio
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("grant_accent", "#FFB547")}}
     if post.get("accent"):   # post speciali (annunci): colore d'accento proprio
@@ -889,6 +977,7 @@ def render_carousel(post, cfg):
         if post.get("facts"):                      # rubrica Career Path: glossario dei ruoli
             pages.append(facts_slide(post, cfg, len(pages) + 1, total))
         pages.append(closing(post, cfg, total))
+        decorate_inner(pages, post, cfg)
         out = []
         for img in pages:
             buf = io.BytesIO()
@@ -939,6 +1028,7 @@ def render_carousel(post, cfg):
         pages.append(cta_slide(post, cfg, len(pages) + 1, total))
     else:
         pages.append(closing(post, cfg, total))
+    decorate_inner(pages, post, cfg)
     out = []
     for img in pages:
         buf = io.BytesIO()
