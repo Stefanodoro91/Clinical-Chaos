@@ -485,5 +485,33 @@
       "Prinsen, C. A. C., Mokkink, L. B., Bouter, L. M., Alonso, J., Patrick, D. L., de Vet, H. C. W., & Terwee, C. B. (2018). COSMIN guideline for systematic reviews of patient-reported outcome measures. Quality of Life Research, 27(5), 1147–1157. https://doi.org/10.1007/s11136-018-1798-3"
     ],
     "cover": "published_images/2026-10-28-eae4ddb5/slide-1.jpg"
+  },
+  "checklist-consort-flow": {
+    "id": "checklist-consort-flow",
+    "date": "2026-10-29",
+    "title": "Can readers trace every patient in your trial?",
+    "category": "Reporting & publication",
+    "takeaway": "Report the flow of all participants, stage by stage, with reasons for every exclusion.",
+    "points": [
+      {
+        "heading": "What the item asks",
+        "body": "Report how many people were assessed, randomised, treated, lost and analysed, in each group: a flow diagram is strongly recommended.",
+        "source": "Schulz et al., 2010"
+      },
+      {
+        "heading": "Why it matters",
+        "body": "Losses after randomisation can bias results. A trial that randomised 120 but analysed 80 has a story the reader must see.",
+        "source": "Schulz et al., 2010"
+      },
+      {
+        "heading": "How to comply",
+        "body": "Build the flow diagram from your screening log before writing: numbers at every stage, with reasons for every exclusion.",
+        "source": "Schulz et al., 2010"
+      }
+    ],
+    "references": [
+      "Schulz, K. F., Altman, D. G., & Moher, D. (2010). CONSORT 2010 statement: Updated guidelines for reporting parallel group randomised trials. BMJ, 340, c332. https://doi.org/10.1136/bmj.c332"
+    ],
+    "cover": "published_images/2026-10-29-checklist-consort-flow/slide-1.jpg"
   }
 }

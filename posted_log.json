@@ -499,5 +499,16 @@
     "facebook_id": "2569897223521550",
     "threads_id": "18130614529765872",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3myzb5bleb42m"
+  },
+  {
+    "date": "2026-10-29",
+    "time": "2026-10-29T12:33:00+00:00",
+    "id": "checklist-consort-flow",
+    "title": "Can readers trace every patient in your trial?",
+    "source": "Rubrica Checklist",
+    "media_id": "18451908619127314",
+    "facebook_id": "1277022912171972_122112569151432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3myzbitth5q2t",
+    "threads_id": "17941186017382321"
   }
 ]
