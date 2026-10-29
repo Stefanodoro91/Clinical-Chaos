@@ -211,72 +211,89 @@ CUBE_V2 = False        # impostato da render_carousel (config «cube_v2»)
 
 
 def cube_texture_v2(img, seed, accent, dark, keep_out=(), density=1.0):
-    """Cubetti armoniosi: gruppi di 1–4 quadratini mai sovrapposti tra loro né a testo, logo o immagini (le zone
-    occupate si leggono dai pixel già disegnati, più i rettangoli `keep_out`), distanziati da un margine, tutti della
-    stessa famiglia di dimensioni, più fitti ai bordi e con qualche cubetto negli angoli liberi. `density` = quantità
-    (1 = copertine, ~0.35 = slide interne)."""
+    """Cubetti sparsi in modo libero: dimensioni molto varie (da puntini a quadrati grandi), gruppi irregolari di
+    1–4 quadratini con leggere variazioni di colore e di posizione, più fitti ai bordi e con qualche cubetto negli
+    angoli liberi. Si evitano solo le sovrapposizioni: con testo, logo e immagini già disegnati (letti dai pixel, più i
+    rettangoli `keep_out`) e tra cubetti. `density` = quantità (1 = copertine, ~0.3 = slide interne)."""
     import random
     import numpy as np
     rnd = random.Random(f"{seed}")
-    arr = np.asarray(img.convert("RGB"), dtype=np.int16)
-    sample = arr[::6, ::6].reshape(-1, 3).astype(np.int32)
+    arr = np.asarray(img.convert("RGB"), dtype=np.int32)
+    sample = arr[::6, ::6].reshape(-1, 3)
     keys, counts = np.unique(sample[:, 0] * 65536 + sample[:, 1] * 256 + sample[:, 2], return_counts=True)
     top = int(keys[counts.argmax()])
-    bg = np.array([top >> 16, (top >> 8) & 255, top & 255], dtype=np.int16)
+    bg = np.array([top >> 16, (top >> 8) & 255, top & 255], dtype=np.int32)
     ink = np.abs(arr - bg).sum(axis=2) > 36                       # pixel diversi dallo sfondo = contenuto
-    C = 22                                                         # lato cella della griglia di occupazione
-    gh, gw = H // C + 1, W // C + 1
-    pad = np.zeros((gh * C, gw * C), dtype=bool)
+    Q = 4                                                          # risoluzione della mappa di occupazione (px)
+    gh, gw = H // Q + 1, W // Q + 1
+    pad = np.zeros((gh * Q, gw * Q), dtype=bool)
     pad[:H, :W] = ink
-    occ = pad.reshape(gh, C, gw, C).any(axis=(1, 3))
+    occ = pad.reshape(gh, Q, gw, Q).any(axis=(1, 3))
     for k in keep_out:
-        occ[max(0, int(k[1]) // C):int(k[3]) // C + 1, max(0, int(k[0]) // C):int(k[2]) // C + 1] = True
-    occ[:2, :] = True                                              # barra d'accento in alto
-    grown = occ.copy()                                             # margine di una cella attorno al contenuto
-    grown[1:, :] |= occ[:-1, :]; grown[:-1, :] |= occ[1:, :]
-    grown[:, 1:] |= occ[:, :-1]; grown[:, :-1] |= occ[:, 1:]
+        occ[max(0, int(k[1]) // Q):int(k[3]) // Q + 1, max(0, int(k[0]) // Q):int(k[2]) // Q + 1] = True
+    occ[:5, :] = True                                              # barra d'accento in alto
+    m = 4                                                          # margine minimo dal contenuto: 16 px
+    grown = occ.copy()
+    for _ in range(m):
+        g2 = grown.copy()
+        g2[1:, :] |= grown[:-1, :]; g2[:-1, :] |= grown[1:, :]
+        g2[:, 1:] |= grown[:, :-1]; g2[:, :-1] |= grown[:, 1:]
+        grown = g2
     a = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
-    cols = ([(42, 64, 88, 255), (31, 92, 90, 255), (120, 135, 150, 130), a + (100,)] if dark else
-            [(201, 214, 223, 255), (176, 196, 210, 220), a + (115,), (14, 34, 51, 45)])
-    sizes = rnd.choice([(12, 18), (14, 20), (16, 22)]) if density >= 0.6 else rnd.choice([(10, 14), (12, 16)])             # una sola famiglia di dimensioni per immagine
+    bases = ([(42, 64, 88, 255), (31, 92, 90, 255), (120, 135, 150, 130), a + (100,)] if dark else
+             [(201, 214, 223, 255), (176, 196, 210, 220), a + (115,), (14, 34, 51, 45)])
     d = ImageDraw.Draw(img, "RGBA")
-    shapes = [[(0, 0)], [(0, 0), (1, 0)], [(0, 0), (0, 1)], [(0, 0), (1, 0), (0, 1)], [(0, 0), (1, 0), (0, 1), (1, 1)]]
     taken = grown.copy()
 
-    def try_place(cx, cy):
-        s = rnd.choice(sizes)
-        shape = rnd.choice(shapes)
-        fw = (max(dx for dx, _ in shape) + 1) * (s + 4)
-        fh = (max(dy for _, dy in shape) + 1) * (s + 4)
-        x, y = cx * C + rnd.randint(0, C - 1), cy * C + rnd.randint(0, C - 1)
-        if x + fw >= W - 8 or y + fh >= H - 8 or x < 8 or y < 8:
+    def tint(col):                                                 # lieve variazione di tinta e trasparenza
+        j = rnd.randint(-14, 14)
+        return (max(0, min(255, col[0] + j)), max(0, min(255, col[1] + j + rnd.randint(-6, 6))),
+                max(0, min(255, col[2] + j)), max(40, min(255, col[3] + rnd.randint(-25, 25))))
+
+    def try_place(x, y):
+        s0 = rnd.choice([9, 12, 16, 20, 26, 34, 44]) if density >= 0.6 else rnd.choice([8, 11, 14, 18, 24])
+        n = rnd.choice([1, 1, 1, 2, 2, 3, 4])
+        cells, gap = [], rnd.randint(2, 5)
+        cx, cy = 0, 0
+        for _ in range(n):                                         # gruppo irregolare: ogni cubetto ha dimensione propria
+            sz = max(7, int(s0 * rnd.uniform(0.55, 1.15)))
+            cells.append((cx, cy, sz))
+            if rnd.random() < 0.5:
+                cx += sz + gap
+                cy += rnd.randint(-gap, gap) * 2
+            else:
+                cy += sz + gap
+                cx += rnd.randint(-gap, gap) * 2
+        x0 = min(c[0] for c in cells); y0 = min(c[1] for c in cells)
+        x1 = max(c[0] + c[2] for c in cells); y1 = max(c[1] + c[2] for c in cells)
+        bx0, by0, bx1, by1 = x + x0, y + y0, x + x1, y + y1
+        if bx0 < 6 or by0 < 6 or bx1 > W - 6 or by1 > H - 6:
             return False
-        c0, c1, r0, r1 = (x - C) // C, (x + fw + C) // C, (y - C) // C, (y + fh + C) // C
+        r0, r1, c0, c1 = (by0 - 8) // Q, (by1 + 8) // Q, (bx0 - 8) // Q, (bx1 + 8) // Q
         if taken[max(0, r0):r1 + 1, max(0, c0):c1 + 1].any():
             return False
-        col = rnd.choice(cols)
-        for dx, dy in shape:
-            d.rectangle((x + dx * (s + 4), y + dy * (s + 4), x + dx * (s + 4) + s, y + dy * (s + 4) + s), fill=col)
+        base = rnd.choice(bases)
+        for ox, oy, sz in cells:
+            d.rectangle((x + ox, y + oy, x + ox + sz, y + oy + sz), fill=tint(base))
         taken[max(0, r0):r1 + 1, max(0, c0):c1 + 1] = True
         return True
 
     # 1) qualche cubetto negli angoli liberi
-    corners = [(1, 2), (gw - 7, 2), (1, gh - 8), (gw - 7, gh - 8)]
-    for cx, cy in corners:
+    for (x, y) in [(18, 40), (W - 130, 40), (18, H - 150), (W - 130, H - 150)]:
         if rnd.random() < 0.55 + 0.3 * density:
-            for _ in range(12):
-                if try_place(cx + rnd.randint(0, 4), cy + rnd.randint(0, 4)):
+            for _ in range(14):
+                if try_place(x + rnd.randint(0, 100), y + rnd.randint(0, 100)):
                     break
     # 2) riempimento casuale degli spazi liberi, più fitto verso i bordi
-    target = int(round(34 * density * (1.7 if density >= 0.6 else 1)))
+    target = int(round(26 * density * (1.5 if density >= 0.6 else 1.4)))
     placed = 0
-    for _ in range(900):
+    for _ in range(1500):
         if placed >= target:
             break
-        cx = rnd.choice([rnd.randint(0, 3), rnd.randint(gw - 10, gw - 1), rnd.randint(0, gw - 1)]) \
-            if rnd.random() < 0.7 else rnd.randint(0, gw - 1)
-        cy = rnd.randint(2, gh - 3)
-        if not taken[cy, min(cx, gw - 1)] and try_place(cx, cy):
+        x = rnd.choice([rnd.randint(0, 110), rnd.randint(W - 240, W - 10), rnd.randint(0, W)]) \
+            if rnd.random() < 0.7 else rnd.randint(0, W)
+        y = rnd.randint(30, H - 30)
+        if try_place(x, y):
             placed += 1
 
 
