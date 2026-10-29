@@ -485,5 +485,19 @@
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "official_source": "NIH Guide RFA-FD-25-020",
     "grant_title": "Clinical Studies of Orphan Products Addressing Unmet Needs of Rare Diseases"
+  },
+  {
+    "date": "2026-10-29",
+    "time": "2026-10-29T12:23:39+00:00",
+    "id": "reel-eae4ddb5",
+    "title": "Reflective vs. Formative Models in Scale Testing",
+    "source": "COSMIN.pdf",
+    "kind": "reel",
+    "reel_of": "eae4ddb5",
+    "media_id": "18138526579628215",
+    "seconds": 25.9,
+    "facebook_id": "2569897223521550",
+    "threads_id": "18130614529765872",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3myzb5bleb42m"
   }
 ]
