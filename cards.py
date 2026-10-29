@@ -275,7 +275,7 @@ def cube_texture_v2(img, seed, accent, dark, keep_out=(), density=1.0):
         base = rnd.choice(bases)
         for ox, oy, sz in cells:
             d.rectangle((x + ox, y + oy, x + ox + sz, y + oy + sz), fill=tint(base))
-        taken[max(0, r0):r1 + 1, max(0, c0):c1 + 1] = True
+        taken[max(0, r0 - 6):r1 + 7, max(0, c0 - 6):c1 + 7] = True      # respiro di ~24 px attorno a ogni gruppo
         return True
 
     # 1) qualche cubetto negli angoli liberi
@@ -285,7 +285,7 @@ def cube_texture_v2(img, seed, accent, dark, keep_out=(), density=1.0):
                 if try_place(x + rnd.randint(0, 100), y + rnd.randint(0, 100)):
                     break
     # 2) riempimento casuale degli spazi liberi, più fitto verso i bordi
-    target = int(round(26 * density * (1.5 if density >= 0.6 else 1.4)))
+    target = int(round(20 * density * (1.5 if density >= 0.6 else 1.4)))
     placed = 0
     for _ in range(1500):
         if placed >= target:

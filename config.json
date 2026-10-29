@@ -50,5 +50,6 @@
   "facebook_format": "single",
   "bluesky_images": 1,
   "backfill_per_run": 1,
-  "rubrics": true
+  "rubrics": true,
+  "cube_v2": true
 }
