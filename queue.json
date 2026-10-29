@@ -918,5 +918,134 @@
     "source_hint": "pages 2-3",
     "id": "8db520f3",
     "source": "Reliability.pdf"
+  },
+  {
+    "title": "Why Two Definitions of Test Fairness Conflict",
+    "title_highlight": "Test Fairness Conflict",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Two Ways to Define a Fair Test",
+        "body": "Researchers define test fairness either by measurement invariance across groups or by equal prediction regressions for an outcome.",
+        "image_prompt": "A researcher holding two blueprint diagrams, comparing a balance scale on the left with a target board on the right under bright light.",
+        "photo_query": "researcher analyzing documents",
+        "highlight": "measurement invariance",
+        "source": "Cleary, 1968"
+      },
+      {
+        "heading": "The Measurement Invariance View",
+        "body": "Measurement invariance requires identical measurement models across groups, ensuring items function the same at equal latent ability.",
+        "image_prompt": "Two diverse silhouettes standing next to an identical vertical measuring rod, casting identical shadows on a plain studio wall.",
+        "photo_query": "measuring height scale",
+        "highlight": "identical measurement models",
+        "source": "Meredith, 1993"
+      },
+      {
+        "heading": "The Prediction Invariance View",
+        "body": "Under Cleary's view, a fair test requires identical regression lines when predicting an outcome from test scores across different groups.",
+        "image_prompt": "A large open ledger showing two parallel taut strings stretching toward a circular bullseye mark on the opposite page.",
+        "photo_query": "",
+        "highlight": "identical regression lines",
+        "source": "Cleary, 1968"
+      },
+      {
+        "heading": "The Mathematical Conflict",
+        "body": "When latent trait distributions differ across groups, measurement invariance and predictive invariance mathematically cannot hold together.",
+        "image_prompt": "Two interlocking gear wheels clashing and jamming against each other on a polished wooden workbench, surrounded by measuring calipers.",
+        "photo_query": "",
+        "highlight": "mathematically cannot hold together",
+        "source": "Millsap, 1997"
+      },
+      {
+        "heading": "Fairness Demands a Value Choice",
+        "body": "Because mathematics cannot satisfy both conditions at once, choosing a definition of fairness requires an explicit moral value judgment.",
+        "image_prompt": "A researcher standing between two diverging pathways, holding a brass balance scale while looking thoughtfully at an open compass on a table.",
+        "photo_query": "",
+        "highlight": "requires an explicit moral value judgment",
+        "source": "Borsboom et al., 2008"
+      }
+    ],
+    "takeaway": "When group distributions differ, measurement invariance and predictive fairness cannot coexist; you must make a value choice.",
+    "takeaway_highlight": "cannot coexist",
+    "references": [
+      "Borsboom, D., Romeijn, J. W., & Wicherts, J. M. (2008). Measurement invariance versus selection invariance: Is fair selection possible?. Psychological Methods, 13(2), 75–98. https://doi.org/10.1037/1082-989x.13.2.75",
+      "Cleary, T. A. (1968). TEST BIAS: PREDICTION OF GRADES OF NEGRO AND WHITE STUDENTS IN INTEGRATED COLLEGES. Journal of Educational Measurement, 5(2), 115–124. https://doi.org/10.1111/j.1745-3984.1968.tb00613.x",
+      "Meredith, W. (1993). Measurement Invariance, Factor Analysis and Factorial Invariance. Psychometrika, 58(4), 525–543. https://doi.org/10.1007/bf02294825",
+      "Millsap, R. E. (1997). Invariance in measurement and prediction: Their relationship in the single-factor case. Psychological Methods, 2(3), 248–260. https://doi.org/10.1037/1082-989x.2.3.248",
+      "Wijsen, L. D., Borsboom, D., & Alexandrova, A. (2022). Values in psychometrics. Perspectives on Psychological Science, 17(3), 788–804."
+    ],
+    "caption": "Can a test achieve measurement invariance and predictive fairness together? Mathematical proofs say no.\n\nWhen evaluating clinical scales or educational assessments, we often assume 'fairness' is a single objective standard.\n\nIn reality, two primary psychometric definitions exist: measurement invariance (the scale measures the trait identically across groups) and prediction invariance (test scores predict external outcomes identically).\n\nMillsap (1997) and Borsboom et al. (2008) showed that whenever underlying group distributions differ, these two definitions are mathematically incompatible. Satisfying one guarantees violating the other.\n\nWhich definition of test fairness does your research team prioritize when validating instruments across diverse groups?",
+    "hashtags": [
+      "#Psychometrics",
+      "#MeasurementInvariance",
+      "#TestValidity"
+    ],
+    "source_hint": "pages 9–10",
+    "id": "faf07ef5",
+    "source": "Psichometry.pdf"
+  },
+  {
+    "title": "The Four Values Hidden in Psychometrics",
+    "title_highlight": "Four Values Hidden",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "The Illusion of Value Freedom",
+        "body": "Psychometrics presents itself as pure statistical technique, but its mathematical formulas rest on deep non-epistemic value choices.",
+        "image_prompt": "A researcher peeling back a large sheet of graph paper covered in mathematical formulas to reveal glowing ethical scales underneath.",
+        "photo_query": "",
+        "highlight": "non-epistemic value choices",
+        "source": "Wijsen et al., 2022"
+      },
+      {
+        "heading": "1. Differences Are Quantitative",
+        "body": "Treating abilities as numbers assumes human differences are of degree, not kind—a moral stance asserting that in essence, we are all equal.",
+        "image_prompt": "A line of diverse human figures standing along a horizontal ruler, each cast with a soft light showing varying heights but identical posture.",
+        "photo_query": "",
+        "highlight": "we are all equal",
+        "source": "Wijsen et al., 2022"
+      },
+      {
+        "heading": "2. Objectivity as Invariance",
+        "body": "Psychometric objectivity aims to eliminate human judgment, demanding that comparisons remain invariant under exchanging raters or items.",
+        "image_prompt": "Two identical mechanical scales balancing stone weights, with human hands placed behind their backs away from the brass trays.",
+        "photo_query": "",
+        "highlight": "eliminate human judgment",
+        "source": "Rasch, 1977"
+      },
+      {
+        "heading": "3. Item Fairness Over System Equity",
+        "body": "Fairness is framed narrowly as differential item functioning, evaluating whether a specific item behaves identically across subgroups.",
+        "image_prompt": "A large magnifying glass examining a single printed survey question while overlooking a long disorderly queue of test takers.",
+        "photo_query": "",
+        "highlight": "differential item functioning",
+        "source": "Mellenbergh, 1989"
+      },
+      {
+        "heading": "4. Practical Utility Above Truth",
+        "body": "Psychometricians act like engineers: models prioritize data reduction and practical prediction over uncovering true causal mechanisms.",
+        "image_prompt": "An engineer tightening bolts on a functional bridge mechanism while ignoring an abstract conceptual drawing floating in the sky above.",
+        "photo_query": "",
+        "highlight": "practical prediction",
+        "source": "Sijtsma, 2006"
+      }
+    ],
+    "takeaway": "Psychometrics is not a neutral mathematical toolkit; its core models encode explicit moral and epistemic value judgments.",
+    "takeaway_highlight": "encode explicit moral",
+    "references": [
+      "Mellenbergh, G. J. (1989). Item bias and item response theory. International Journal of Educational Research, 13(2), 127–143. https://doi.org/10.1016/0883-0355(89)90002-5",
+      "Rasch, G. (1977). On Specific Objectivity an Attempt at Formalizing the Request for Generality and validity of Scientific Statements. Danish Yearbook of Philosophy, 14(1), 58–94. https://doi.org/10.1163/24689300-01401006",
+      "Sijtsma, K. (2006). Psychometrics in Psychological Research: Role Model or Partner in Science?. Psychometrika, 71(3), 451–455. https://doi.org/10.1007/s11336-006-1497-9",
+      "Wijsen, L. D., Borsboom, D., & Alexandrova, A. (2022). Values in psychometrics. Perspectives on Psychological Science, 17(3), 788–804."
+    ],
+    "caption": "Think psychometrics is just neutral statistics? Its mathematical formulas encode four deep value commitments.\n\nContemporary psychometrics cultivates an image of value freedom through complex statistical modeling and technocratic rationality.\n\nYet as Wijsen, Borsboom, and Alexandrova (2022) demonstrate, every psychometric model makes foundational value bets.\n\nAssuming human traits are quantitative rather than qualitative encodes equality of kind. Defining objectivity as measurement invariance removes human judgment. Measuring item bias via differential item functioning frames fairness strictly within the test. And prioritizing prediction over explanation treats psychometrics as engineering rather than basic science.\n\nHow often does your research team reflect on the implicit values embedded in your measurement tools?",
+    "hashtags": [
+      "#Psychometrics",
+      "#ResearchMethodology",
+      "#MeasurementTheory"
+    ],
+    "source_hint": "pages 1–14",
+    "id": "08285143",
+    "source": "Psichometry.pdf"
   }
 ]
