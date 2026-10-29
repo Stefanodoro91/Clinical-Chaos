@@ -1,0 +1,14 @@
+{
+ "workflow": "Post giornaliero ricerca clinica",
+ "quota_day": "2026-10-29",
+ "consumo": {
+  "copione reel|gemini-flash-latest": {
+   "richieste": 1,
+   "ingresso": 239,
+   "uscita": 111,
+   "ragionamento": 1872,
+   "respinte": 0,
+   "versione": "gemini-3.8-flash"
+  }
+ }
+}
