@@ -243,8 +243,8 @@ def candidates(grants, posted, verified, cfg, today=None):
         fam = lambda g: verified.get(g["id"], {}).get("programme_family") or programme_family(g)
         if recent:                                   # mai lo stesso programma due giorni di fila (regola rigida)
             out = [g for g in out if fam(g) != recent[-1]]
-        fresh = [g for g in out if fam(g) not in recent]
-        out = fresh or out                           # possibilmente nessun programma degli ultimi 3 post
+        # (29/10, approvato) solo la regola rigida: mai lo stesso programma due volte di fila; per il resto
+        # si ordina per pertinenza e scadenza, senza escludere i programmi degli ultimi 3 bandi
         if out:
             return sorted(out, key=lambda g: (0 if verified[g["id"]].get("italy") == "yes" else 1,
                                               RELEVANCE_ORDER[g["rilevanza"]], next_due(g, verified[g["id"]], today)))
