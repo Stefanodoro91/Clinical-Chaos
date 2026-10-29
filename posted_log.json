@@ -465,5 +465,25 @@
     "facebook_id": "1277022912171972_122112236151432698",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3myxfzcae572q",
     "threads_id": "18095537291556030"
+  },
+  {
+    "date": "2026-10-29",
+    "time": "2026-10-29T11:50:31+00:00",
+    "id": "grant-GG-RFA-FD-25-020",
+    "title": "Planning a rare disease trial? Support for orphan product studies",
+    "source": "GrantFinder",
+    "media_id": "17899692066394574",
+    "facebook_id": "1277022912171972_122112551955432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3myz756ijao24",
+    "threads_id": "17939786943389364",
+    "kind": "grant",
+    "grant_id": "GG-RFA-FD-25-020",
+    "url": "https://www.grants.gov/search-results-detail/360008",
+    "deadline": "2027-05-18",
+    "funder": "Food and Drug Administration",
+    "summary": "This funding opportunity supports clinical trials evaluating the safety and/or efficacy of orphan products to address unmet needs in rare diseases, aiming to support new indications or label changes. Eligible applicants include higher education institutions, non-profits, for-profit organizations, governments, and foreign entities. The initiative seeks to increase approved treatments for rare diseases through efficient, collaborative clinical research.",
+    "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+    "official_source": "NIH Guide RFA-FD-25-020",
+    "grant_title": "Clinical Studies of Orphan Products Addressing Unmet Needs of Rare Diseases"
   }
 ]
