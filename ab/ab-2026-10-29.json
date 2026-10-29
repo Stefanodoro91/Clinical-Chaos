@@ -1,0 +1,14 @@
+{
+ "date": "2026-10-29",
+ "grants": [
+  {
+   "id": "EU-HORIZON-HLTH-2027-01-DISEASE-07",
+   "error": "HTTPSConnectionPool(host='generativelanguage.googleapis.com', port=443): Read timed out. (read timeout=300)"
+  },
+  {
+   "id": "GG-PAR-25-180",
+   "error": "Gemini non disponibile: gemini-flash-latest 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on th"
+  }
+ ],
+ "positions": []
+}
