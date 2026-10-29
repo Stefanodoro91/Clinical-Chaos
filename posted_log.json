@@ -510,5 +510,24 @@
     "facebook_id": "1277022912171972_122112569151432698",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3myzbitth5q2t",
     "threads_id": "17941186017382321"
+  },
+  {
+    "date": "2026-10-29",
+    "time": "2026-10-29T12:36:24+00:00",
+    "id": "positions-2026-10-29",
+    "title": "5 open academic positions this week",
+    "source": "Academic positions",
+    "media_id": "18099119069428159",
+    "facebook_id": "1277022912171972_122112570369432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3myzboktok22t",
+    "threads_id": "18138075823642634",
+    "kind": "positions",
+    "position_ids": [
+      "POS-bd097df12856",
+      "POS-21b942b6ea23",
+      "POS-149809c508d2",
+      "POS-c16c363ea720",
+      "POS-a4edb533a70d"
+    ]
   }
 ]
