@@ -529,5 +529,25 @@
       "POS-c16c363ea720",
       "POS-a4edb533a70d"
     ]
+  },
+  {
+    "date": "2026-10-30",
+    "time": "2026-10-30T11:53:52+00:00",
+    "id": "grant-GG-PAR-24-325",
+    "title": "Partnering with industry? Support for bioengineering tools",
+    "source": "GrantFinder",
+    "media_id": "18061499201799296",
+    "facebook_id": "1277022912171972_122112966471432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mz3psagchj2n",
+    "threads_id": "18231851773330454",
+    "kind": "grant",
+    "grant_id": "GG-PAR-24-325",
+    "url": "https://www.grants.gov/search-results-detail/357019",
+    "deadline": "2027-01-27",
+    "funder": "NIH – US National Institutes of Health",
+    "summary": "This funding opportunity solicits applications from research partnerships formed by academic and industrial investigators to accelerate the development and adoption of promising bioengineering tools and technologies addressing important biomedical problems. The goal is to establish robust, well-characterized solutions fulfilling unmet needs within five to ten years. Eligible applicant organizations include higher education institutions, non-profits, for-profit organizations, and foreign entities.",
+    "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+    "official_source": "NIH Guide PAR-24-325",
+    "grant_title": "Bioengineering Partnerships with Industry (U01 Clinical Trial Optional)"
   }
 ]
