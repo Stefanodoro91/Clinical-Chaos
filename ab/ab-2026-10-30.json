@@ -1,0 +1,14 @@
+{
+ "date": "2026-10-30",
+ "grants": [
+  {
+   "id": "GG-PA-25-253",
+   "error": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
+  },
+  {
+   "id": "GG-PA-24-191",
+   "error": "Gemini non disponibile: gemini-flash-latest 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on th"
+  }
+ ],
+ "positions": []
+}
