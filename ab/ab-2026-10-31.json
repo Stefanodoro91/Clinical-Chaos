@@ -1,0 +1,14 @@
+{
+ "date": "2026-10-31",
+ "grants": [
+  {
+   "id": "GG-PAR-25-358",
+   "error": "Gemini non disponibile: gemini-flash-latest 503: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try ag"
+  },
+  {
+   "id": "GG-PAR-24-273",
+   "error": "Gemini non disponibile: gemini-flash-latest 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on th"
+  }
+ ],
+ "positions": []
+}
