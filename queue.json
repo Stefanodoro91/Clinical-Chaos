@@ -1147,5 +1147,50 @@
     "source_hint": "page 7",
     "id": "5ae5644c",
     "source": "Study designs.pdf"
+  },
+  {
+    "title": "Central vs. Incidental Clustering in Propensity Scores",
+    "title_highlight": "Central vs. Incidental Clustering",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Recognizing Clustering Nature",
+        "body": "Before conducting propensity score analysis with clustered data, recognize whether clustering is central or incidental.",
+        "image_prompt": "a researcher looking through a magnifying glass at a large cluster of simple figures connected by lines, sorting them into distinct groups",
+        "photo_query": "researchers meeting whiteboard",
+        "highlight": "central or incidental",
+        "source": "Thoemmes & West, 2011"
+      },
+      {
+        "heading": "Clustering as a Central Feature",
+        "body": "When clustering is central, treatment implementation and assignment mechanisms may vary across clusters, like hospitals.",
+        "image_prompt": "three distinct buildings with simple figures inside each, showing different arrows pointing toward different pill bottles",
+        "photo_query": "hospitals health system building",
+        "highlight": "clustering is central",
+        "source": "Thoemmes & West, 2011"
+      },
+      {
+        "heading": "Clustering as an Incidental Feature",
+        "body": "With incidental clustering, treatment implementation is identical across clusters grouped simply by coincidence.",
+        "image_prompt": "a large group of simple figures in a single large room, all walking toward identical pill bottles in an orderly line",
+        "photo_query": "group of people room",
+        "highlight": "",
+        "source": "Thoemmes & West, 2011"
+      }
+    ],
+    "takeaway": "Always identify if your data clustering is central or incidental before choosing a propensity score strategy.",
+    "takeaway_highlight": "central or incidental",
+    "references": [
+      "Thoemmes, F. J., & West, S. G. (2011). The Use of Propensity Scores for Nonrandomized Designs With Clustered Data. Multivariate Behavioral Research, 46(3), 514–543. https://doi.org/10.1080/00273171.2011.569395"
+    ],
+    "caption": "Are you treating clustered data correctly in your propensity scores? Know the difference between central and incidental…\n\nWhen working with multilevel observational data, ignoring the nature of your clusters can introduce severe bias. Central clustering means treatment mechanisms vary, while incidental means they remain identical across groups. Being explicit guides your choice of estimands and confounding adjustments.\n\nHow do you handle cluster structures in your current studies? Share your approach below.",
+    "hashtags": [
+      "#ObservationalStudies",
+      "#CausalInference",
+      "#Biostatistics"
+    ],
+    "source_hint": "pages 2-3",
+    "id": "9959bfe9",
+    "source": "Propensity score.pdf"
   }
 ]
