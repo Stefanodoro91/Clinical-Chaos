@@ -558,6 +558,8 @@
     "source": "Critical appraisal",
     "media_id": "18125046746478700",
     "facebook_id": "1277022912171972_122113467711432698",
-    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mz6pehqfjo2t"
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mz6pehqfjo2t",
+    "threads_id": "18450181708122101",
+    "backfill": "2026-10-31"
   }
 ]
