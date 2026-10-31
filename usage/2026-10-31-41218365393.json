@@ -23,6 +23,30 @@
    "uscita": 0,
    "ragionamento": 0,
    "respinte": 0
+  },
+  "riscrittura anti-copia|gemini-flash-lite-latest": {
+   "richieste": 1,
+   "ingresso": 256,
+   "uscita": 128,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "revisione slide|gemini-flash-lite-latest": {
+   "richieste": 1,
+   "ingresso": 311,
+   "uscita": 9,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "scelta immagini|gemini-flash-lite-latest": {
+   "richieste": 2,
+   "ingresso": 4958,
+   "uscita": 180,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
   }
  }
 }
