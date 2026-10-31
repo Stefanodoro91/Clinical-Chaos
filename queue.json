@@ -1047,5 +1047,218 @@
     "source_hint": "pages 1–14",
     "id": "08285143",
     "source": "Psichometry.pdf"
+  },
+  {
+    "title": "Why Case-Control Studies Cannot Prove Causality",
+    "title_highlight": "Cannot Prove Causality",
+    "category": "Study design",
+    "slides": [
+      {
+        "heading": "What is a Case-Control Study?",
+        "body": "Case-control studies compare subjects with a disease to those without to look for differences in past risk factors.",
+        "image_prompt": "two groups of simple figures standing side by side, one group holding red tags representing disease and the other holding blue tags",
+        "photo_query": "researchers reviewing patient files medical charts",
+        "highlight": "compare subjects with a disease",
+        "source": ""
+      },
+      {
+        "heading": "Hypothesis Testing, Not Proof",
+        "body": "These studies can suggest a causal relationship between an exposure and an outcome, but they cannot definitively prove it.",
+        "image_prompt": "a magnifying glass hovering over two document folders with question marks and directional arrows pointing between them",
+        "photo_query": "data analysis charts documents",
+        "highlight": "suggest a causal relationship",
+        "source": "Schlesselman, 1982"
+      },
+      {
+        "heading": "The Vulnerability of Recall Bias",
+        "body": "Subjects with disease are likely to remember the presence of risk factors compared to healthy subjects, creating bias.",
+        "image_prompt": "a simple figure tapping their head with a thought bubble showing a faded calendar and medical pills",
+        "photo_query": "patient consultation memory recall",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "The Challenge of Selecting Controls",
+        "body": "Matching controls to cases based on age, sex, and status helps identify risk factors without confounding differences.",
+        "image_prompt": "a pair of balancing scales holding identical geometric shapes representing matched case and control groups",
+        "photo_query": "balancing scales research data",
+        "highlight": "",
+        "source": "Celentano & Szklo, 2019"
+      }
+    ],
+    "takeaway": "Case-control studies identify potential risk factors efficiently, but they cannot prove causality.",
+    "takeaway_highlight": "cannot prove causality",
+    "references": [
+      "Celentano, D. D., & Szklo, M. (2019). Gordis epidemiology (6th ed.).",
+      "Schlesselman, J. J. (1982). Case-control studies: Design, conduct, and analysis. Oxford University Press."
+    ],
+    "caption": "Can a case-control study prove that an exposure caused a disease?\n\nCase-control designs are efficient for studying rare diseases and exploring potential etiologies. However, because they rely on retrospective data, they are uniquely vulnerable to recall bias and selection issues. Proper matching of cases and controls is essential to minimize confounding factors. What strategies do you use to select controls in your retrospective studies?",
+    "hashtags": [
+      "#CaseControl",
+      "#Epidemiology",
+      "#StudyDesign"
+    ],
+    "source_hint": "pages 2-3",
+    "id": "62ac279d",
+    "source": "Study designs.pdf"
+  },
+  {
+    "title": "Block vs. Stratified Randomization in Trials",
+    "title_highlight": "Block vs. Stratified Randomization",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "The Purpose of Randomization",
+        "body": "Randomization prevents bias due to subject selection and ensures comparability between groups prior to the intervention.",
+        "image_prompt": "a crowd of simple figures split evenly by a coin flip into two separate colored groups",
+        "photo_query": "randomized clinical trial sorting",
+        "highlight": "prevents bias due to subject selection",
+        "source": ""
+      },
+      {
+        "heading": "Simple Randomization Risk",
+        "body": "Simple randomization uses constant probability like a coin flip, but it can cause severe group imbalances in small trials.",
+        "image_prompt": "a coin flipping in the air above an uneven pile of pill bottles on a table",
+        "photo_query": "flipping coin decision",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Balancing via Block Randomization",
+        "body": "Block randomization classifies subjects into blocks to balance the number of subjects allocated to each intervention group.",
+        "image_prompt": "four small boxes containing two red and two blue tokens arranged in neat rows",
+        "photo_query": "organized data blocks research",
+        "highlight": "balance the number of subjects",
+        "source": "Suresh, 2011"
+      },
+      {
+        "heading": "Controlling Covariates with Strata",
+        "body": "Stratified randomization defines subjects based on covariates like age, enabling higher comparability and efficient analysis.",
+        "image_prompt": "stacked sorting trays dividing simple figures into distinct categories by height and age",
+        "photo_query": "stratified sampling research data",
+        "highlight": "",
+        "source": "Suresh, 2011"
+      }
+    ],
+    "takeaway": "Choose block randomization for group balance and stratified randomization to control key covariates.",
+    "takeaway_highlight": "balance and stratified randomization",
+    "references": [
+      "Suresh, K. (2011). An overview of randomization techniques: An unbiased assessment of outcome in clinical research."
+    ],
+    "caption": "Does your trial design risk severe group imbalances due to small sample sizes?\n\nSimple randomization works well in large trials, but smaller studies often suffer from baseline imbalances. Block randomization ensures equal group sizes over time, while stratified randomization addresses key prognostic covariates like age. How do you handle covariate balancing in your clinical trial protocols?",
+    "hashtags": [
+      "#Randomization",
+      "#ClinicalTrials",
+      "#Biostatistics"
+    ],
+    "source_hint": "page 6",
+    "id": "e1236d92",
+    "source": "Study designs.pdf"
+  },
+  {
+    "title": "Why Triple-Blinding Is So Difficult to Design",
+    "title_highlight": "",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "The Core Purpose of Blinding",
+        "body": "Blinding intentionally withholds allocation information to decrease influence associated with knowing group assignments.",
+        "image_prompt": "a patient and an investigator both wearing blindfolds while seated across a table from each other",
+        "photo_query": "blindfolded clinical trial concept",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Single vs. Double-Blinded Studies",
+        "body": "In single-blinded studies, participants are unaware of allocation. In double-blinded studies, both participants and investigators are unaware.",
+        "image_prompt": "two identical pill bottles placed beside a single blindfold on a wooden table",
+        "photo_query": "double blind study placebo",
+        "highlight": "",
+        "source": "Karanicolas et al., 2010"
+      },
+      {
+        "heading": "The Standard of Triple-Blinding",
+        "body": "In triple-blinded studies, participants, investigators, and data analysts all remain unaware of the group allocation.",
+        "image_prompt": "three simple figures sitting at a desk with blurred documents and a locked container",
+        "photo_query": "research team meeting analysis",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "The Cost of Rigorous Blinding",
+        "body": "Triple-blinded studies exclude confounding effects from group knowledge, but they are far more difficult and expensive to design.",
+        "image_prompt": "a heavy balance scale weighing a pile of gold coins against a closed secure folder",
+        "photo_query": "clinical trial cost analysis",
+        "highlight": "more difficult and expensive to design",
+        "source": ""
+      }
+    ],
+    "takeaway": "Triple-blinding eliminates allocation bias across all stakeholders but demands immense resources.",
+    "takeaway_highlight": "Triple-blinding eliminates allocation bias",
+    "references": [
+      "Karanicolas, P. J., Farrokhyar, F., & Bhandari, M. (2010). Practical tips for surgical research: Blinding: Who, what, when, why, how?"
+    ],
+    "caption": "Are data analysts in your clinical trial blinded to group allocations?\n\nBlinding protects study validity by shielding participants, investigators, and analysts from group awareness. While single and double-blinding are common, triple-blinding adds an extra layer of protection against observer and analysis bias. What are the main barriers to implementing triple-blinding in your research field?",
+    "hashtags": [
+      "#ClinicalResearch",
+      "#ResearchEthics",
+      "#Methodology"
+    ],
+    "source_hint": "page 6",
+    "id": "393e0a94",
+    "source": "Study designs.pdf"
+  },
+  {
+    "title": "Understanding the Four Phases of FDA Drug Trials",
+    "title_highlight": "",
+    "category": "GCP & regulation",
+    "slides": [
+      {
+        "heading": "Phase I: Determining a Safe Dose",
+        "body": "Phase I trials use small samples of normal volunteers or patients to test toxicity and adverse events.",
+        "image_prompt": "a small group of simple figures standing near a magnifying glass examining a single vial",
+        "photo_query": "phase 1 clinical trial safety",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Phase II: Evaluating Early Efficacy",
+        "body": "Phase II trials involve slightly larger patient samples to evaluate dose safety, preliminary efficacy, and response measures.",
+        "image_prompt": "a clipboard showing an upward trending line graph next to a small group of medical containers",
+        "photo_query": "clinical trial phase 2 data",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Phase III: Definitive Trials",
+        "body": "Phase III trials are large, randomized controlled trials conducted to prove efficacy and establish drug safety definitively.",
+        "image_prompt": "a large crowd of simple figures split into trial groups alongside several comparison charts",
+        "photo_query": "phase 3 clinical trial large cohort",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Phase IV: Post-Marketing Surveillance",
+        "body": "Phase IV trials evaluate long-term safety, new indications, and rare adverse events relying on voluntary reporting.",
+        "image_prompt": "a calendar with highlighted dates connected by a winding path to a report document",
+        "photo_query": "post marketing surveillance drug safety",
+        "highlight": "",
+        "source": ""
+      }
+    ],
+    "takeaway": "Drug development progresses from small safety trials to large definitive RCTs and post-market surveillance.",
+    "takeaway_highlight": "small safety trials to large",
+    "references": [
+      "Umscheid, C. A., Margolis, D. J., & Grossman, C. E. (2011). Key concepts of clinical trials: A narrative review."
+    ],
+    "caption": "How do clinical trials transition from safety testing to definitive proof of efficacy?\n\nThe journey from initial lab discovery to FDA approval requires four distinct trial phases. Each phase serves a specific methodological purpose, scaling up from safety and dosing in Phase I to large randomized controlled trials in Phase III and post-market surveillance in Phase IV. How do your research questions align with these developmental phases?",
+    "hashtags": [
+      "#DrugDevelopment",
+      "#FDA",
+      "#ClinicalTrials"
+    ],
+    "source_hint": "page 7",
+    "id": "5ae5644c",
+    "source": "Study designs.pdf"
   }
 ]
