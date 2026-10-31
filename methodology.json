@@ -513,5 +513,33 @@
       "Schulz, K. F., Altman, D. G., & Moher, D. (2010). CONSORT 2010 statement: Updated guidelines for reporting parallel group randomised trials. BMJ, 340, c332. https://doi.org/10.1136/bmj.c332"
     ],
     "cover": "published_images/2026-10-29-checklist-consort-flow/slide-1.jpg"
+  },
+  "6276a0d4": {
+    "id": "6276a0d4",
+    "date": "2026-10-31",
+    "title": "Critical Appraisal vs. Reporting Guidelines: Know the Difference",
+    "category": "Critical appraisal",
+    "takeaway": "Critical appraisal evaluates evidence quality, while reporting guidelines ensure transparent dissemination of findings.",
+    "points": [
+      {
+        "heading": "Two Distinct Sets of Tools",
+        "body": "Nurses using evidence-based practice rely on two key resources: critical appraisal tools and reporting guidelines.",
+        "source": ""
+      },
+      {
+        "heading": "Evaluating with Critical Appraisal Tools",
+        "body": "Critical appraisal tools help readers carefully and objectively evaluate research studies.",
+        "source": ""
+      },
+      {
+        "heading": "Ensuring Clarity with Reporting Guidelines",
+        "body": "Reporting guidelines provide publication checklists to ensure clear, complete, and transparent research papers.",
+        "source": ""
+      }
+    ],
+    "references": [
+      "Buccheri, R. K., & Sharifi, C. (2017). Critical Appraisal Tools and Reporting Guidelines for Evidence‐Based Practice. Worldviews on Evidence-Based Nursing, 14(6), 463–472. https://doi.org/10.1111/wvn.12258"
+    ],
+    "cover": "published_images/2026-10-31-6276a0d4/slide-1.jpg"
   }
 }
