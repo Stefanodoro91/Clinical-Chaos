@@ -338,15 +338,28 @@
   var DAY = 86400000, today = new Date(); today.setHours(0, 0, 0, 0);
   function norm(t) { return (t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
   cards.forEach(function (c) { c._text = norm(c.dataset.text); });
+  function inRegion(c, where) {
+    if (!where) return true;
+    if (where === "italy") return c.dataset.italy === "yes";
+    return c.dataset.region === where || (where !== "International & intercontinental" && c.dataset.region === "International & intercontinental");
+  }
+  function inArea(c, area) { return !area || (" " + c.dataset.area + " ").indexOf(" " + area + " ") !== -1; }
+  ["where", "area"].forEach(function (n) {
+    if (!form[n]) return;
+    Array.prototype.forEach.call(form[n].options, function (o) {
+      if (!o.value) return;
+      var k = cards.filter(function (c) { return n === "where" ? inRegion(c, o.value) : inArea(c, o.value); }).length;
+      o.textContent += " (" + k + ")";
+      if (!k) o.disabled = true;
+    });
+  });
   function apply(save) {
     var val = function (n) { return form[n] ? form[n].value : ""; };
     var q = norm(form.q.value).trim(), where = val("where"), time = val("time"), area = val("area"),
         words = q ? q.split(/\s+/) : [], shown = 0;
     cards.forEach(function (c) {
       var ok = words.every(function (w) { return c._text.indexOf(w) !== -1; });
-      if (ok && where === "italy") ok = c.dataset.italy === "yes";
-      else if (ok && where) ok = c.dataset.region === where || (where !== "International & intercontinental" && c.dataset.region === "International & intercontinental");
-      if (ok && area) ok = (" " + c.dataset.area + " ").indexOf(" " + area + " ") !== -1;
+      if (ok) ok = inRegion(c, where) && inArea(c, area);
       if (ok && time) {
         var d = c.dataset.deadline ? (new Date(c.dataset.deadline + "T00:00:00") - today) / DAY : null;
         ok = d !== null && (time === "lt30" ? d < 30 : d >= parseInt(time.slice(2), 10));
