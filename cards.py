@@ -381,7 +381,7 @@ def poster_pill(d, label, x, y, fill, text):
 def extra_pills(d, post, x, y, bg, ink):
     """Pill aggiuntive dopo quella principale: rubrica (es. CHECKLIST) e avviso idoneità dei bandi
     (es. US-BASED TEAMS ONLY). Fondo del tema e testo in inchiostro, per distinguerle dalla principale."""
-    labels = [l for l in (post.get("eligibility_flag"), post.get("rubric")) if l]   # l'avviso ha la precedenza
+    labels = [l for l in (post.get("eligibility_flag"), post.get("rubric"), post.get("area_label")) if l]   # l'avviso ha la precedenza
     pf = font("Bold", 28)
     for label in labels:
         pw = d.textlength(label.upper(), font=pf) + 52

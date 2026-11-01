@@ -231,6 +231,8 @@ def pick_next(queue, posted, prefer_doi=False):
     for pool in pools:
         if not pool:
             continue
+        if CONFIG.get("areas_posting"):
+            pool = rubrics.area_balance(pool, posted)      # prima l'area meno uscita negli ultimi 30 giorni
         if prefer_doi:
             with_doi = [i for i in pool if any("doi" in str(r).lower() for r in i.get("references") or [])]
             if with_doi:
@@ -816,6 +818,12 @@ def main():
             if saturday:
                 post["rubric"] = "Clinical Insights"   # sabato: un articolo, una lezione (slide «Based on»)
             post = quality_gate(post, drive, queue)
+    if kind == "research" and CONFIG.get("areas_posting") and not post.get("area"):
+        area = rubrics.area_of(post)
+        if area:
+            post["area"] = area
+            post["area_label"] = rubrics.AREA_NAMES[area]
+            post["caption"] += f"\n\nOpen calls in this area: {grants.site_url(CONFIG, 'calls')}?area={area}"
     if kind == "research" and CONFIG.get("review_slides", True) and post.get("rubric") != "Checklist":
         content.review_slides(post)              # ogni slide un concetto, comprensibile da sola
     if kind == "research" and CONFIG.get("source_slide"):
@@ -923,6 +931,7 @@ def main():
     posted.append({"date": today, "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                    "id": post["id"], "title": post["title"],
                    "source": post["source"], "media_id": media_id, "facebook_id": fb_id,
+                   **({"area": post["area"]} if post.get("area") else {}),
                    **({"bluesky_uri": bsky_uri} if bsky_uri else {}), **({"threads_id": threads_id} if threads_id else {}),
                    **({"kind": "positions", "position_ids": post["position_ids"]} if post.get("kind") == "positions" else {}),
                    **({"kind": "announcement"} if post.get("kind") == "announcement" else {}),

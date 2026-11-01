@@ -8,6 +8,7 @@
   Career Path       primo lunedì del mese (slot posizioni): come leggere gli annunci, glossario dei ruoli
 """
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -287,3 +288,63 @@ def log_state():
     except OSError:
         posted = []
     return [p["id"] for p in posted if str(p.get("id", "")).startswith("checklist-")]
+
+
+# ---------------------------------------------------------------- linee scientifiche per area (stesse del filtro bandi)
+# Senza AI: l'area di un post si riconosce da parole chiave nel testo (titolo, slide, reference) e nel nome del file
+# di origine; un prefisso «[neuro] » o «neuro_» nel nome del file ha la precedenza. Il tema clinico trasversale si
+# affianca alla categoria metodologica (Statistics, Study design...), non la sostituisce.
+AREA_MAIN = ("rehab", "neuro", "engineering", "neuropsych")          # alimentano il calendario
+AREA_SECONDARY = ("msk", "paeds", "ageing", "onco", "genetics")      # a rotazione, circa un post ogni due settimane
+AREA_KEYWORDS = {
+    "rehab": ("rehabilitation", "physiotherap", "physical therapy", "occupational therapy", "functional recovery",
+              "barthel", "fugl-meyer", "gait training", "motor recovery"),
+    "neuro": ("stroke", "neurolog", "parkinson", "multiple sclerosis", "epilep", "dementia", "alzheimer", "migraine",
+              "neurodegener", "spinal cord", "als "),
+    "engineering": ("wearable", "robot", "exoskeleton", "medical device", "sensor", "biomedical engineering",
+                    "digital health", "telerehab", "brain-computer", "neuroprosthe"),
+    "neuropsych": ("cognitive", "neuropsycholog", "mini-mental", "moca", "memory", "psychometric", "scale validation",
+                   "executive function", "quality of life"),
+    "msk": ("orthopaed", "orthoped", "fracture", "osteoarthritis", "low back pain", "musculoskeletal", "physiatr",
+            "arthroplasty", "tendon"),
+    "paeds": ("paediatric", "pediatric", "children", "cerebral palsy", "neonat", "adolescent"),
+    "ageing": ("older adults", "elderly", "geriatric", "frailty", "falls", "sarcopenia", "ageing", "aging"),
+    "onco": ("oncolog", "cancer", "tumour", "tumor", "chemotherap", "haematolog", "hematolog", "survival analysis"),
+    "genetics": ("rare disease", "genetic", "genomic", "orphan", "variant", "newborn screening"),
+}
+AREA_NAMES = {"rehab": "Rehabilitation", "neuro": "Neurology", "engineering": "Biomedical engineering",
+              "neuropsych": "Neuropsychology", "msk": "Orthopaedics & physiatry", "paeds": "Paediatrics",
+              "ageing": "Ageing", "onco": "Oncology", "genetics": "Rare diseases & genetics"}
+
+
+def area_of(post):
+    """Area scientifica del post, oppure None se il testo non ne indica una con chiarezza (nessuna etichetta)."""
+    src = str(post.get("source", "")).lower()
+    m = re.match(r"\s*(?:\[(\w+)\]|(\w+)_)", src)
+    tag = (m.group(1) or m.group(2)) if m else None
+    if tag in AREA_NAMES:
+        return tag
+    text = " ".join([post.get("title", ""), post.get("takeaway", "")] +
+                    [f"{s.get('heading', '')} {s.get('body', '')}" for s in post.get("slides", [])] +
+                    [str(r) for r in post.get("references") or []]).lower() + " "
+    scores = {a: sum(text.count(k) for k in kws) for a, kws in AREA_KEYWORDS.items()}
+    best = max(scores, key=scores.get)
+    return best if scores[best] >= 3 else None
+
+
+def area_balance(pool, posted, days=30):
+    """Dal pool, i post la cui area è meno uscita negli ultimi `days` giorni (le aree principali pesano il doppio
+    delle secondarie). I post senza area restano neutri. Restituisce il pool riordinato, senza scartare nessuno."""
+    from datetime import datetime, timedelta, timezone
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    seen = {}
+    for p in posted:
+        if p.get("area") and p.get("time") and datetime.fromisoformat(p["time"]) >= since:
+            seen[p["area"]] = seen.get(p["area"], 0) + 1
+
+    def need(i):
+        a = i.get("area") or area_of(i)
+        if not a:
+            return 1.0
+        return seen.get(a, 0) / (2 if a in AREA_MAIN else 1)
+    return sorted(pool, key=need)          # sorted è stabile: a parità resta l'ordine della coda
