@@ -1112,6 +1112,7 @@ PAGE = """<!doctype html>
   form.filters input, form.filters select {{ font: 500 15px Inter, system-ui, sans-serif; color: var(--text); background: var(--bg);
                        border: 1px solid var(--muted); border-radius: 10px; padding: 10px 12px; width: 100%; }}
   form.filters input:focus-visible, form.filters select:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 1px; }}
+  form.filters .hint {{ grid-column: 1 / -1; margin: 0; font-size: 12px; color: var(--muted); }}
   form.filters .status {{ grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 10px;
                          font-size: 14px; color: var(--soft); }}
   form.filters button {{ background: transparent; color: var(--text); border: 1px solid var(--muted); border-radius: 999px;
@@ -1434,6 +1435,7 @@ def filters_form(entries):
     <label>Area<select name="area"><option value="">All areas</option>{area_opts}</select></label>
     <label>Deadline<select name="time"><option value="">Any deadline</option><option value="lt30">Closing within 30 days</option>
       <option value="ge30">At least 30 days left</option><option value="ge60">At least 60 days left</option><option value="ge90">At least 90 days left</option></select></label>
+    <p class="hint">International calls are included under every region; a call can belong to up to three areas.</p>
     <div class="status"><span class="count" aria-live="polite">{len(entries)} open calls</span><button type="reset" hidden>Clear filters</button></div>
   </form>
 """
@@ -1450,15 +1452,28 @@ FILTER_SCRIPT = """
   var DAY = 86400000, today = new Date(); today.setHours(0, 0, 0, 0);
   function norm(t) { return (t || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, ""); }
   cards.forEach(function (c) { c._text = norm(c.dataset.text); });
+  function inRegion(c, where) {
+    if (!where) return true;
+    if (where === "italy") return c.dataset.italy === "yes";
+    return c.dataset.region === where || (where !== "International & intercontinental" && c.dataset.region === "International & intercontinental");
+  }
+  function inArea(c, area) { return !area || (" " + c.dataset.area + " ").indexOf(" " + area + " ") !== -1; }
+  ["where", "area"].forEach(function (n) {
+    if (!form[n]) return;
+    Array.prototype.forEach.call(form[n].options, function (o) {
+      if (!o.value) return;
+      var k = cards.filter(function (c) { return n === "where" ? inRegion(c, o.value) : inArea(c, o.value); }).length;
+      o.textContent += " (" + k + ")";
+      if (!k) o.disabled = true;
+    });
+  });
   function apply(save) {
     var val = function (n) { return form[n] ? form[n].value : ""; };
     var q = norm(form.q.value).trim(), where = val("where"), time = val("time"), area = val("area"),
         words = q ? q.split(/\\s+/) : [], shown = 0;
     cards.forEach(function (c) {
       var ok = words.every(function (w) { return c._text.indexOf(w) !== -1; });
-      if (ok && where === "italy") ok = c.dataset.italy === "yes";
-      else if (ok && where) ok = c.dataset.region === where || (where !== "International & intercontinental" && c.dataset.region === "International & intercontinental");
-      if (ok && area) ok = (" " + c.dataset.area + " ").indexOf(" " + area + " ") !== -1;
+      if (ok) ok = inRegion(c, where) && inArea(c, area);
       if (ok && time) {
         var d = c.dataset.deadline ? (new Date(c.dataset.deadline + "T00:00:00") - today) / DAY : null;
         ok = d !== null && (time === "lt30" ? d < 30 : d >= parseInt(time.slice(2), 10));
@@ -1633,7 +1648,7 @@ def og_tags(cfg, title, description, path):
             f'<meta name="twitter:card" content="summary_large_image">')
 
 
-AREA_LABELS = {"rehab": "Rehabilitation", "clinical": "Clinical research", "engineering": "Clinical & biomedical engineering",
+AREA_LABELS = {"rehab": "Rehabilitation", "engineering": "Clinical & biomedical engineering",
                "neuro": "Neurology", "neuropsych": "Neuropsychology", "msk": "Physiatry & orthopaedics",
                "rheum": "Rheumatology", "paeds": "Paediatrics", "radiology": "Radiology & imaging", "ageing": "Ageing & geriatrics",
                "onco": "Oncology & haematology", "genetics": "Clinical genetics & rare diseases", "open": "Open topic"}
@@ -1645,8 +1660,6 @@ def areas(g):
     out = []
     if mg & {"Ictus", "Parkinson", "Invecchiamento", "Tecnologie riabilitazione", "Altre malattie e riabilitazione"}:
         out.append("rehab")
-    if "Ricerca clinica" in mg:
-        out.append("clinical")
     for group, key in (("Neurologia", "neuro"), ("Ictus", "neuro"), ("Parkinson", "neuro"), ("Fisiatria e ortopedia", "msk"),
                        ("Neuropsicologia", "neuropsych"), ("Reumatologia", "rheum"), ("Pediatria", "paeds"),
                        ("Radiologia e imaging", "radiology"), ("Invecchiamento", "ageing"), ("Oncologia ed ematologia", "onco"),
@@ -1655,9 +1668,10 @@ def areas(g):
             out.append(key)
     if mg & {"Ingegneria clinica", "Tecnologie riabilitazione"}:
         out.append("engineering")
-    if "Ricerca sanitaria a tema libero" in mg:
+    if "Ricerca sanitaria a tema libero" in mg and not out:
         out.append("open")
-    return out or ["rehab"]
+    # al massimo 3 aree (le prime sono le più specifiche); senza area riconosciuta: tema libero, mai «riabilitazione»
+    return out[:3] or ["open"]
 
 
 def card_anchor(grant_id):
