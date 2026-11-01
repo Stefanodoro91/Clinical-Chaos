@@ -561,5 +561,19 @@
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mz6pehqfjo2t",
     "threads_id": "18450181708122101",
     "backfill": "2026-10-31"
+  },
+  {
+    "date": "2026-11-01",
+    "time": "2026-11-01T17:11:45+00:00",
+    "id": "reel-grant-GG-PAR-24-325",
+    "title": "Partnering with industry? Support for bioengineering tools",
+    "source": "GrantFinder",
+    "kind": "reel",
+    "reel_of": "grant-GG-PAR-24-325",
+    "media_id": "18120660227081786",
+    "seconds": 17.2,
+    "facebook_id": "1705123097875885",
+    "threads_id": "18498891259104193",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mzbcmkzhtx2t"
   }
 ]
