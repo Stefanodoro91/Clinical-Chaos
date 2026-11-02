@@ -703,6 +703,24 @@ def crosspost_reel(video, caption, title, link, entry, name):
     return entry
 
 
+def upload_preview(path, name):
+    """Copia l'anteprima nella cartella Drive «Anteprime» (dentro la cartella del materiale), per vederla dal telefono."""
+    try:
+        import music
+        from googleapiclient.http import MediaFileUpload
+        drive = music._drive()
+        root = os.environ["GDRIVE_FOLDER_ID"]
+        folder = music._folder(drive, root, "Anteprime")
+        if not folder:
+            folder = drive.files().create(body={"name": "Anteprime", "mimeType": "application/vnd.google-apps.folder",
+                                                "parents": [root]}, fields="id", supportsAllDrives=True).execute()["id"]
+        f = drive.files().create(body={"name": name, "parents": [folder]}, media_body=MediaFileUpload(str(path), resumable=True),
+                                 fields="id", supportsAllDrives=True).execute()
+        print(f"::notice title=Anteprima su Drive::{name} (id {f['id']})")
+    except Exception as e:
+        print(f"::warning title=Anteprima non copiata su Drive::{str(e)[:200]}")
+
+
 def reel_announcement_run(posted):
     """Reel speciale scritto a mano in reel_announcement.json, pubblicato una sola volta."""
     import reels
@@ -725,7 +743,8 @@ def reel_announcement_run(posted):
     print(f"Reel speciale: {spec['id']} ({seconds} s)\n--- Didascalia ---\n{caption}")
     if DRY_RUN:
         (PREVIEW_DIR / "reel-caption.txt").write_text(caption, encoding="utf-8")
-        print("Modalità prova: reel non pubblicato. Anteprima nell'artifact 'preview'.")
+        upload_preview(video, f"{spec['id']}.mp4")
+        print("Modalità prova: reel non pubblicato. Anteprima nell'artifact 'preview' e in Drive «Anteprime».")
         return
     title = spec["slides"][0].get("title", "")
     link = CONFIG.get("links_page_url") or grants.site_url(CONFIG, "")
