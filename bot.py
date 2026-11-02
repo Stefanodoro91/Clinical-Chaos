@@ -704,19 +704,19 @@ def crosspost_reel(video, caption, title, link, entry, name):
 
 
 def upload_preview(path, name):
-    """Copia l'anteprima nella cartella Drive «Anteprime» (dentro la cartella del materiale), per vederla dal telefono."""
+    """Copia l'anteprima su Drive sovrascrivendo «reel-anteprima.mp4» nella cartella «Anteprime»: il file è
+    dell'utente (gli account di servizio non hanno spazio proprio), il bot ne cambia solo il contenuto."""
     try:
         import music
         from googleapiclient.http import MediaFileUpload
         drive = music._drive()
-        root = os.environ["GDRIVE_FOLDER_ID"]
-        folder = music._folder(drive, root, "Anteprime")
-        if not folder:
-            folder = drive.files().create(body={"name": "Anteprime", "mimeType": "application/vnd.google-apps.folder",
-                                                "parents": [root]}, fields="id", supportsAllDrives=True).execute()["id"]
-        f = drive.files().create(body={"name": name, "parents": [folder]}, media_body=MediaFileUpload(str(path), resumable=True),
-                                 fields="id", supportsAllDrives=True).execute()
-        print(f"::notice title=Anteprima su Drive::{name} (id {f['id']})")
+        fid = CONFIG.get("preview_file_id")
+        if not fid:
+            print("::warning title=Anteprima::preview_file_id mancante in config")
+            return
+        drive.files().update(fileId=fid, media_body=MediaFileUpload(str(path), mimetype="video/mp4", resumable=True),
+                             supportsAllDrives=True).execute()
+        print(f"::notice title=Anteprima su Drive::{name} → Anteprime/reel-anteprima.mp4")
     except Exception as e:
         print(f"::warning title=Anteprima non copiata su Drive::{str(e)[:200]}")
 
