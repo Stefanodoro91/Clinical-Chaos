@@ -1142,7 +1142,7 @@ def decorate_inner(pages, post, cfg):
     return pages
 
 
-def free_band(img, top_min=330, bottom=H - 175, min_h=300):
+def free_band(img, top_min=330, bottom=H - 175, min_h=150):
     """Spazio vuoto sotto il testo di una slide: (y0, y1) se c'è almeno `min_h` px liberi, altrimenti None.
     Il testo si riconosce dalle righe con molti pixel diversi dal fondo (i cubetti sparsi non contano)."""
     import numpy as np
@@ -1151,7 +1151,7 @@ def free_band(img, top_min=330, bottom=H - 175, min_h=300):
     diff = (np.abs(a[:, MARGIN:W - MARGIN] - bg).sum(axis=2) > 60).sum(axis=1)
     rows = [y for y in range(top_min - 150, bottom) if diff[y] > 45]
     last = max(rows) if rows else top_min - 150
-    y0, y1 = last + 50, bottom
+    y0, y1 = last + 30, bottom
     return (y0, y1) if y1 - y0 >= min_h else None
 
 
