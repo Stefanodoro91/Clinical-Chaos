@@ -88,8 +88,9 @@ def music(path, seconds, seed=None, mood="Classica", track=None):
     """Musica del reel: un brano della libreria su Drive (diverso ogni giorno), o la base generata in music.py."""
     import music as _music
     from datetime import date
-    if seed is None:
-        seed = date.today().toordinal()                   # rotazione quotidiana dei brani
+    if seed is None:                                      # rotazione quotidiana dei brani (anche nelle anteprime future)
+        import os
+        seed = (date.fromisoformat(os.environ["PREVIEW_DATE"]) if os.environ.get("PREVIEW_DATE") else date.today()).toordinal()
     return _music.for_video(path, seconds, seed, mood=mood, track=track)
 
 

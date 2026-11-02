@@ -625,6 +625,8 @@ def reel_run(posted):
     print(f"Reel da: {p['title']} ({kind}, musica {style['music']}, {len(slides)} slide, {seconds} s)\n--- Didascalia ---\n{caption}")
     if DRY_RUN:
         (PREVIEW_DIR / "reel-caption.txt").write_text(caption, encoding="utf-8")
+        (PREVIEW_DIR / "reel.json").write_text(json.dumps({"reel_of": p["id"], "title": p["title"], "kind": kind,
+                                                           "music": style["music"], "seconds": seconds}), encoding="utf-8")
         print("Modalità prova: reel non pubblicato. Anteprima nell'artifact 'preview'.")
         return
     if SIMULATE:
@@ -919,7 +921,7 @@ def main():
             rubrics.apply_tips(post)               # rubrica quindicinale: consigli di candidatura
             print("Rubrica Before you apply: consigli di candidatura in coda al carosello")
     else:
-        files_waiting = ingest(drive, queue)
+        files_waiting = 0 if os.environ.get("SKIP_INGEST") else ingest(drive, queue)
         before = len(queue)
         queue[:] = drop_repeats(queue, posted_real)
         if len(queue) != before and not DRY_RUN:
@@ -961,6 +963,10 @@ def main():
         for i, img in enumerate(slides, start=1):
             (PREVIEW_DIR / f"slide-{i}.jpg").write_bytes(img)
         (PREVIEW_DIR / "caption.txt").write_text(caption, encoding="utf-8")
+        (PREVIEW_DIR / "post.json").write_text(json.dumps({k: v for k, v in post.items() if k != "slides"} |
+                                                          {"slides": [{"heading": s.get("heading", ""), "body": s.get("body", "")}
+                                                                      for s in post.get("slides", [])]},
+                                                          ensure_ascii=False, default=str), encoding="utf-8")
         # anteprima dei formati per social: Facebook (immagine singola + testo lungo), Bluesky e Threads (testo breve)
         import social
         plink = grants.site_url(CONFIG, {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",

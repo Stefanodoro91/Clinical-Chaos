@@ -18,10 +18,10 @@ def paused(cfg=None):
     return bool((cfg or _cfg()).get("social_paused"))
 
 
-def upload(path, key, mimetype, cfg=None):
-    """Sovrascrive il file Drive di config «preview_files»[key] con il contenuto di `path`."""
+def upload(path, key, mimetype, cfg=None, file_id=None):
+    """Sovrascrive il file Drive di config «preview_files»[key] (o `file_id`) con il contenuto di `path`."""
     cfg = cfg or _cfg()
-    fid = (cfg.get("preview_files") or {}).get(key)
+    fid = file_id or (cfg.get("preview_files") or {}).get(key)
     if not fid:
         print(f"::warning title=Anteprima::nessun file Drive per «{key}» in config preview_files")
         return False
@@ -30,7 +30,7 @@ def upload(path, key, mimetype, cfg=None):
         from googleapiclient.http import MediaFileUpload
         music._drive().files().update(fileId=fid, media_body=MediaFileUpload(str(path), mimetype=mimetype, resumable=True),
                                       supportsAllDrives=True).execute()
-        print(f"::notice title=Anteprima su Drive::{key} aggiornata (Anteprime)")
+        print(f"::notice title=Anteprima su Drive::{key or fid} aggiornata (Anteprime)")
         return True
     except Exception as e:
         print(f"::warning title=Anteprima non copiata su Drive::{key}: {str(e)[:200]}")

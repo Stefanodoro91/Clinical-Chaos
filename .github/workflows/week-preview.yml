@@ -1,0 +1,44 @@
+name: Settimana di prova su Drive
+
+# Prepara tutte le uscite di una settimana (week_preview.json) come se il bot pubblicasse e le salva su Drive
+# (Anteprime/Settimana …). Non pubblica e non salva niente nel repository.
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Solo alcune uscite (numeri separati da virgola, vuoto = tutte)"
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  week:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Installa dipendenze
+        run: |
+          pip install -r requirements.txt
+          which ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+      - name: Prepara la settimana
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GDRIVE_DONE_FOLDER_ID: ${{ secrets.GDRIVE_DONE_FOLDER_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ONLY: ${{ inputs.only }}
+        run: python tools/week_preview.py
+      - name: Riepilogo
+        if: always()
+        run: cat week_report.txt || true

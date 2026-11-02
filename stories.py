@@ -353,7 +353,7 @@ def main():
     simulate = bool(cfg.get("social_paused")) and not dry      # social in pausa: la storia va solo su Drive
     if simulate:
         dry = True
-    today = date.today()
+    today = date.fromisoformat(os.environ["PREVIEW_DATE"]) if os.environ.get("PREVIEW_DATE") else date.today()
     log = load_log()
     if not dry and os.environ.get("GITHUB_EVENT_NAME") == "schedule" and any(e.get("date") == today.isoformat() for e in log):
         print("Storia di oggi già pubblicata: salto.")
@@ -383,7 +383,7 @@ def main():
         return
     if dry:
         print("Modalità prova: storia non pubblicata (anteprima negli artifact).")
-        return
+        return out, kind, data
     entry = {"date": today.isoformat(), "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "kind": kind}
     entry["music"] = music.LAST_TRACK.get("name", "")
     for key in ("grant_id", "family"):
