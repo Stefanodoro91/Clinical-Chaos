@@ -1,0 +1,45 @@
+name: Confronto modelli AI (revisione)
+on:
+  workflow_dispatch:
+    inputs:
+      ids:
+        description: "id dei post della coda (vuoto = primi con fonti diverse)"
+        default: ""
+      n:
+        description: "quanti post"
+        default: "2"
+      full:
+        description: "1 = prova anche la catena completa sul primo post"
+        default: "1"
+permissions:
+  contents: read
+jobs:
+  bakeoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Confronto
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GDRIVE_DONE_FOLDER_ID: ${{ secrets.GDRIVE_DONE_FOLDER_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          BAKEOFF_IDS: ${{ inputs.ids }}
+          BAKEOFF_N: ${{ inputs.n }}
+          BAKEOFF_FULL: ${{ inputs.full }}
+          DRY_RUN: "true"
+        run: python tools/ai_bakeoff.py
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bakeoff
+          path: bakeoff.md
+          if-no-files-found: ignore

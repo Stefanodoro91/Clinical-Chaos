@@ -69,6 +69,7 @@ def git(*args):
 
 
 content.THINKING = dict(CONFIG.get("gemini_thinking") or {})
+content.ROUTE_OVERRIDES = dict(CONFIG.get("ai_routes") or {})
 content.CHECK_CAP = int(CONFIG.get("gemini_daily_cap_checks", 34))   # oltre: verifiche ferme, quota lasciata ai post
 positions.TEXT_CHARS = int(CONFIG.get("positions_text_chars") or positions.TEXT_CHARS)
 
@@ -263,7 +264,7 @@ def pick_next(queue, posted, prefer_doi=False):
     recent = {p.get("source") for p in posted
               if (p.get("kind") or "research") == "research" and p.get("time")
               and datetime.fromisoformat(p["time"]) >= week_ago}
-    last_source = posted[-1]["source"] if posted else None
+    last_source = next((p.get("source") for p in reversed(posted) if (p.get("kind") or "research") == "research"), None)
     pools = ([i for i in queue if i.get("source") not in recent],
              [i for i in queue if i.get("source") != last_source], queue)
     for pool in pools:
@@ -295,31 +296,50 @@ def source_material(drive, name):
 
 def quality_gate(post, drive, queue):
     """Controlli di qualità prima della pubblicazione di un post di metodologia: frasi copiate dalla fonte
-    riscritte (rilevazione senza AI), riferimenti dai metadati Crossref, e post concreto (almeno un numero,
-    un esempio o un'azione pratica). Un post che resta generico viene saltato e si prova il successivo in
-    coda (fino a 3); se nessuno passa, esce il migliore disponibile con un avviso."""
+    riscritte (rilevazione senza AI), revisione incrociata a due AI sulla fonte (content.cross_review: un revisore
+    di un'altra famiglia critica ogni frase, Gemini fa da arbitro, il revisore ridà i voti), riferimenti dai
+    metadati Crossref e post concreto. Un post respinto o generico viene saltato e si prova il successivo in coda
+    (fino a 3). Se nessuno passa la revisione, oggi il post di metodologia non esce (None)."""
+    rubric = post.get("rubric")
+    best_generic = None
     for _ in range(3):
         material = source_material(drive, post.get("source", ""))
+        rejected = False
         if material:
             content.rewrite_copied(post, material)
-            if CONFIG.get("verify_source", True):          # fatti e coerenza interna/esterna rispetto alla fonte
-                content.verify_against_source(post, material)
-        content.fix_references(post)
-        missing = content.concreteness(post)
-        if missing and material:
-            print(f"  Post generico (manca: {', '.join(missing)}): provo ad arricchirlo dal materiale")
-            if content.enrich(post, material):
-                missing = []
-        if not missing:
-            return post
-        nxt = (next((q for q in queue if q is not post and q.get("source") != post.get("source")), None)
-               or next((q for q in queue if q is not post), None))
+            rev = content.cross_review(post, material) if CONFIG.get("cross_review", True) else {"passed": None}
+            post["review"] = {k: rev.get(k) for k in ("passed", "scores", "critic", "arbiter", "fixed", "removed", "notes")}
+            if rev.get("passed") is None and CONFIG.get("verify_source", True):
+                content.verify_against_source(post, material)      # nessun revisore indipendente: controllo di Gemini
+            rejected = rev.get("passed") is False
+        if not rejected:
+            content.fix_references(post)
+            missing = content.concreteness(post)
+            if missing and material:
+                print(f"  Post generico (manca: {', '.join(missing)}): provo ad arricchirlo dal materiale")
+                if content.enrich(post, material):
+                    missing = []
+            if not missing:
+                if rubric:
+                    post["rubric"] = rubric
+                return post
+            best_generic = best_generic or post
+            print(f"::warning title=Post generico saltato::«{post['title']}» senza numeri, esempi o azioni concrete")
+        else:
+            print(f"::warning title=Post respinto dalla revisione::«{post['title']}»: "
+                  + "; ".join((post["review"].get("notes") or [])[:3])[:400])
+        nxt = (next((q for q in queue if q is not post and q.get("source") != post.get("source")
+                     and not (q.get("review") or {}).get("passed") is False), None)
+               or next((q for q in queue if q is not post and not (q.get("review") or {}).get("passed") is False), None))
         if nxt is None:
             break
-        print(f"::warning title=Post generico saltato::«{post['title']}» senza numeri, esempi o azioni concrete")
         post = nxt
-    print("::warning title=Post generico pubblicato::nessun post abbastanza concreto in coda: esce il migliore disponibile")
-    return post
+    if best_generic is not None:
+        print("::warning title=Post generico pubblicato::nessun post abbastanza concreto in coda: esce il migliore che ha passato la revisione")
+        if rubric:
+            best_generic["rubric"] = rubric
+        return best_generic
+    return None
 
 
 def build_caption(post):
@@ -942,13 +962,20 @@ def main():
             if saturday:
                 post["rubric"] = "Clinical Insights"   # sabato: un articolo, una lezione (slide «Based on»)
             post = quality_gate(post, drive, queue)
+            if post is None:
+                notify("Nessun post di metodologia oggi",
+                       "Tre post della coda sono stati respinti dalla revisione incrociata (fonte, contesto, take home "
+                       "message). Controlla il log del run: i motivi sono elencati per ogni post.")
+                print("::warning title=Nessun post di metodologia::nessun post ha passato la revisione incrociata")
+                return
     if kind == "research" and CONFIG.get("areas_posting") and not post.get("area"):
         area = rubrics.area_of(post)
         if area:
             post["area"] = area
             post["area_label"] = rubrics.AREA_NAMES[area]
             post["caption"] += f"\n\nOpen calls in this area: {grants.site_url(CONFIG, 'calls')}?area={area}"
-    if kind == "research" and CONFIG.get("review_slides", True) and post.get("rubric") != "Checklist":
+    if (kind == "research" and CONFIG.get("review_slides", True) and post.get("rubric") != "Checklist"
+            and not (post.get("review") or {}).get("passed")):
         content.review_slides(post)              # ogni slide un concetto, comprensibile da sola
     if kind == "research" and CONFIG.get("source_slide"):
         import sources

@@ -666,8 +666,10 @@ def _what_it_funds(summary):
 REEL_SCRIPT_PROMPT = """Turn this Instagram carousel about research methodology into the script of a ~25-second reel
 for clinical researchers. Use ONLY the content below: no new facts, numbers, studies or claims.
 - hook: max 8 words, a curiosity hook built on the title (a question or a crisp claim).
-- beats: exactly 3, the most useful points, each with title (max 6 words) and line (max 14 words, plain language).
-- takeaway: the message to remember, max 14 words.
+- beats: exactly 3, the most useful points in the carousel's logical order, each with title (max 6 words) and line
+  (max 14 words, plain language). Each line must be a complete, precise statement on its own: name the subject (no
+  "this", "it"), keep the qualifiers of the carousel, never shorten a claim into something stronger or wrong.
+- takeaway: the take-home message, max 14 words, specific and faithful to the carousel's takeaway.
 
 Title: {title}
 Points:

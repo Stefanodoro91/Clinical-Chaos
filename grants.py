@@ -87,7 +87,7 @@ VERIFY_VERSION = 3          # 2 = scadenze dal testo ufficiale e requisiti del c
 def checked(v):
     """Scadenze della voce affidabili con le regole attuali (le date NIH della versione 2 vanno rilette)."""
     ver = (v or {}).get("version", 1)
-    if str((v or {}).get("model", "")).startswith("groq"):
+    if str((v or {}).get("model", "")).startswith(("groq", "openrouter")):
         return False                 # verificato con il ripiego (Gemini esaurito): si rifà con Gemini prima dei post
     return ver >= VERIFY_VERSION or (ver == 2 and not str(v.get("official_source", "")).startswith("NIH Guide"))
 
@@ -100,6 +100,11 @@ STRICT ACCURACY RULES:
   eligibility rules or requirements that are not in it.
 - Do not write the deadline, amounts, the funder or the eligible countries in the slides: they are added
   separately from verified data.
+- Keep every qualifier of the official text about who can apply and what is funded (career stage and how it is
+  defined, mandatory partners, type of organisation, excluded activities): never make the call sound open to more
+  people or projects than it is.
+- Each sentence must make sense on its own, as a screenshot: name what is funded and for whom (never "it", "this
+  programme", "the applicants" without saying who).
 
 Write IN ENGLISH:
 - title: the cover hook, max 70 characters: say who the call is for and what it funds, phrased so the right
@@ -116,7 +121,9 @@ Write IN ENGLISH:
   targets (e.g. "stroke rehabilitation therapy", "clinical trial nurse patient"),
   and highlight: its key idea, 2-6 words copied EXACTLY from its body.
 - coverage: funding coverage in a few words (e.g. "Fully funded"), or "" if not stated.
-- takeaway: one sentence on why this call is worth a look, max 120 characters.
+- takeaway: one sentence, max 120 characters, saying concretely which researcher should apply and with what kind of
+  project, from the official text (e.g. "Planning a multicentre stroke rehab RCT? This call funds the pilot phase").
+  Never generic ("Worth a look", "Don't miss it").
 - takeaway_highlight: 2-5 words copied EXACTLY from the takeaway.
 - hook: the FIRST line of the caption, max 120 characters: tell the right researchers, in plain words, why
   this call is for them (e.g. "Running a pilot rehabilitation trial? This call funds exactly that.").
@@ -944,6 +951,18 @@ def build_post(g, v, cfg, recent_titles=()):
     slides = slides[:2]
     if len(slides) < 2 or not out.get("title"):
         raise RuntimeError(f"Testo del bando incompleto per {g['id']}")
+    review = None
+    if cfg.get("cross_review", True):
+        # revisione incrociata sul testo ufficiale: precisione su scopo e destinatari, frasi comprensibili da sole
+        draft = {"title": content._clip(out["title"], 90), "title_highlight": out.get("title_highlight", ""),
+                 "slides": slides, "takeaway": out.get("takeaway", ""), "takeaway_highlight": out.get("takeaway_highlight", ""),
+                 "hook": out.get("hook", ""), "caption": out.get("caption", "")}
+        writer = "google" if not content.LAST_MODEL.startswith("openrouter") else content._family_of_last()
+        review = content.cross_review(draft, text, kind="grant", writer_family=writer)
+        if review.get("passed") is False:
+            raise RuntimeError(f"Post del bando {g['id']} respinto dalla revisione: " + "; ".join(review.get("notes", [])[:3])[:300])
+        out.update({k: draft[k] for k in ("title", "title_highlight", "takeaway", "takeaway_highlight", "hook", "caption")})
+        slides = draft["slides"]
 
     deadline = next_due(g, v)
     if not deadline:
@@ -1003,6 +1022,7 @@ def build_post(g, v, cfg, recent_titles=()):
         "caption": caption, "hashtags": ["#ResearchFunding", "#GrantOpportunity"] + tags[:10],
         "summary": v.get("summary", ""), "italy_evidence": v.get("italy_evidence", ""), "official_title": v.get("title", ""),
         "official_source": v.get("official_source", ""), "source": "GrantFinder", "source_hint": g.get("fonte", ""),
+        "review": {k: (review or {}).get(k) for k in ("passed", "scores", "critic", "arbiter", "fixed", "notes")} if review else None,
     }
 
 

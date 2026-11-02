@@ -48,7 +48,15 @@ STRICT ACCURACY RULES (this audience will notice mistakes):
 
 POST DESIGN:
 - One clear concept per post; produce as many posts as the material genuinely supports (0-{max_posts}),
-  each different from the others.
+  each different from the others. Fewer excellent posts are better than many thin ones.
+- Build each post as ONE argument: the slides follow a logical order (the problem or misconception → why it
+  matters, with the mechanism, an example or a number from the material → how to do it right) and lead to the
+  takeaway. No slide may be a loose fact that the reader cannot connect to the title.
+- Every sentence must be true and complete ON ITS OWN: name the subject (never "this", "it", "these patients",
+  "the study", "the authors" without saying which), keep the condition under which a claim holds (population,
+  design, threshold), keep the qualifiers of the material ("may", "in RCTs", "at least", "only"), and give numbers
+  with their unit and comparison. Use exact methodological language: risk vs odds, association vs causation,
+  statistical vs clinical significance, efficacy vs effectiveness; never "proves".
 - title: a sharp hook, max 70 characters (e.g. a common misconception, a question, a crisp claim).
 - slides: 3 to 5 slides (the carousel adds cover and a final takeaway slide: 5–7 slides in total), each with heading (max 55 characters), body (max 140 characters: few words, large type,
   plain language for professionals, concrete, no fluff) and image_prompt.
@@ -72,7 +80,9 @@ POST DESIGN:
 - source (per slide): short citation "Surname, Year" or "Surname et al., Year" ONLY if the slide's
   content comes from a study or paper cited in the material and listed in references; otherwise "".
 - title_highlight: 1-4 words copied EXACTLY from the title, the most important part of the hook.
-- takeaway: the single sentence to remember, max 130 characters.
+- takeaway: the take-home message, max 130 characters: one specific, true statement that follows from the slides and
+  that a researcher can act on (name the method, check, threshold or decision). Never "X is important", never a
+  vague exhortation, never the title restated.
 - takeaway_highlight: 2-5 words copied EXACTLY from the takeaway.
 - references: the papers, guidelines or books CITED IN THE MATERIAL that support this post, in APA 7
   style (Author, A. A., & Author, B. B. (Year). Title in sentence case. Journal Name, volume(issue),
@@ -553,124 +563,228 @@ def _groq_call(key, model, system, prompt_text, temperature, task):
     return None
 
 
-OPENROUTER_MODELS = [m.strip() for m in (os.environ.get("OPENROUTER_MODELS") or "google/gemini-2.0-flash-exp:free").split(",") if m.strip()]
+# ---------------------------------------------------------------- instradamento dei modelli per attività
+# Ogni attività ha la sua catena di modelli «fornitore:modello», scelta per specializzazione:
+#   - Gemini legge PDF e immagini e ha il contesto più lungo, ma Flash risponde solo poche volte al giorno
+#     (quota gratuita): lo si tiene per scrivere i post e per l'arbitraggio sulla fonte;
+#   - un revisore di un'ALTRA famiglia (gpt-oss su Groq, Nemotron su OpenRouter) critica ogni post: un modello
+#     non si corregge da solo, due modelli diversi si controllano a vicenda;
+#   - le verifiche ad alto volume restano dove la quota regge.
+# «gemini:main» e «gemini:lite» seguono GEMINI_MODEL e GEMINI_FALLBACK (anche quando li cambia il confronto A/B).
+# La config «ai_routes» sovrascrive le catene: {"critica": ["groq:openai/gpt-oss-120b", ...]}.
+OR_STRONG = os.environ.get("OPENROUTER_STRONG") or "nvidia/nemotron-3-ultra-550b-a55b:free"
+GEMMA = os.environ.get("GEMMA_MODEL") or "gemma-4-31b-it"
+GROQ_STRONG = "openai/gpt-oss-120b"
+
+ROUTES = {
+    # scrittura dai file (PDF, slide): solo Gemini, che legge i documenti
+    "nuovi post da Drive": ["gemini:main", "gemini:lite"],
+    # scrittura del post di un bando dal testo ufficiale: Flash, poi un modello grande con contesto lungo
+    "post bando": ["gemini:main", f"openrouter:{OR_STRONG}", "gemini:lite"],
+    # revisore indipendente (famiglia diversa da chi scrive): ragionamento forte, quota ampia
+    "critica": [f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}", f"gemini:{GEMMA}"],
+    # arbitro: decide sulle correzioni del revisore rileggendo la fonte (Gemini, che ha scritto il post)
+    "arbitro": ["gemini:main", "gemini:lite", f"openrouter:{OR_STRONG}"],
+    # copione dei reel: testo breve da un carosello già verificato
+    "copione reel": ["gemini:lite", f"groq:{GROQ_STRONG}", "gemini:main"],
+    # giudizio sulle immagini (serve un modello che vede): mai sprecare Flash
+    "scelta immagini": ["gemini:lite", f"gemini:{GEMMA}"],
+    # doppioni: confronto logico tra titoli
+    "controllo doppioni": [f"groq:{GROQ_STRONG}", "gemini:lite"],
+}
+DEFAULT_ROUTE = ["gemini:main", "gemini:lite", f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}"]
+# attività il cui testo finisce nei post: se l'ultimo modello disponibile è un ripiego debole, meglio fermarsi
+WRITING_TASKS = {"nuovi post da Drive", "post bando", "scelta immagini"}
 
 
-def _openrouter_json(prompt_text, schema, temperature=0.5, task="altro"):
-    """Chiama OpenRouter (Gemini 2.0 Flash free o altro modello configurato) come riserva finale.
-    Usa l'API compatibile OpenAI con JSON mode. Restituisce None se la chiave manca o tutti i modelli falliscono."""
-    key = os.environ.get("OPENROUTER_API_KEY")
-    if not key:
-        return None
-    schema_str = json.dumps(schema, ensure_ascii=False)
-    system = (
-        "Rispondi SOLO con un oggetto JSON valido che rispetti esattamente questo schema JSON Schema: "
-        + schema_str
-        + "\nNessun testo prima o dopo il JSON."
-    )
-    for model in OPENROUTER_MODELS:
-        body = {
-            "model": model,
-            "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt_text}],
-            "temperature": temperature,
-            "response_format": {"type": "json_object"},
-        }
-        for attempt in range(3):
-            try:
-                r = requests.post(
-                    "https://openrouter.ai/api/v1/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {key}",
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": "https://clinicalresearchchaos.com",
-                        "X-Title": "Clinical Research Chaos",
-                    },
-                    json=body, timeout=120,
-                )
-                if r.status_code == 429 or r.status_code >= 500:
-                    time.sleep(30 * (attempt + 1))
-                    continue
-                if r.status_code in (400, 404):
-                    print(f"  OpenRouter: modello {model} non disponibile ({r.status_code})")
-                    break
-                if not r.ok:
-                    print(f"::warning title=OpenRouter non disponibile::{model} {r.status_code}: {r.text[:200]}")
-                    break
-                text = r.json()["choices"][0]["message"]["content"]
-                result = json.loads(text)
-                record_usage(task, f"openrouter-{model.split('/')[-1]}", status="ok")
-                globals()["LAST_MODEL"] = f"openrouter-{model.split('/')[-1]}"
-                return result
-            except Exception as e:
-                print(f"  OpenRouter eccezione: {e}")
-                return None
-    return None
+class ModelUnavailable(Exception):
+    """Modello senza quota, assente o non adatto alla richiesta: si passa al successivo della catena."""
 
 
-def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
-    """Chiede a Gemini una risposta JSON conforme allo schema e la restituisce già decodificata.
-    `thinking` ("minimal", "low", "medium", "high") limita il ragionamento interno dei modelli Gemini 3.
-    Se Gemini è esaurito, le richieste di solo testo passano a Groq, poi a OpenRouter (Gemini 2.0 Flash free)."""
+def route_for(task):
+    base = task.split(" [", 1)[0]                  # «verifica bandi [A]» del confronto A/B → «verifica bandi»
+    chain = (ROUTE_OVERRIDES.get(base) or ROUTES.get(base) or DEFAULT_ROUTE)
+    out = []
+    for spec in chain:
+        provider, model = spec.split(":", 1)
+        if provider == "gemini":
+            model = {"main": GEMINI_MODEL, "lite": GEMINI_FALLBACK}.get(model, model)
+        out.append((provider, model))
+    return list(dict.fromkeys(out))
+
+
+ROUTE_OVERRIDES = {}       # da config «ai_routes» (bot.py)
+
+
+def _extract_json(text):
+    """JSON da una risposta testuale (anche dentro ```json … ``` o preceduto da ragionamento)."""
+    text = (text or "").strip()
+    try:
+        return json.loads(text)
+    except ValueError:
+        pass
+    m = re.search(r"```(?:json)?\s*(\{.*\})\s*```", text, re.S)
+    if m:
+        return json.loads(m.group(1))
+    start, end = text.find("{"), text.rfind("}")
+    if start >= 0 and end > start:
+        return json.loads(text[start:end + 1])
+    raise ValueError("risposta senza JSON")
+
+
+def _schema_instruction(schema):
+    return ("Reply ONLY with one valid JSON object that follows exactly this JSON Schema (types are written in capitals, "
+            "e.g. OBJECT = object, STRING = string): " + json.dumps(schema, ensure_ascii=False)
+            + "\nNo text before or after the JSON.")
+
+
+def _gemini_one(model, parts, schema, temperature, task, thinking):
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
-        raise RuntimeError("GEMINI_API_KEY mancante")
-    config = {"temperature": temperature, "responseMimeType": "application/json", "responseSchema": schema}
-    thinking = thinking or THINKING.get(task)
-    if thinking:
-        config["thinkingConfig"] = {"thinkingLevel": thinking}
+        raise ModelUnavailable("GEMINI_API_KEY mancante")
+    if model in _EXHAUSTED:
+        raise ModelUnavailable(f"{model}: quota del giorno finita")
+    gemma = model.startswith("gemma")
+    if gemma:                                      # Gemma: niente schema né modalità JSON, lo schema va nel testo
+        config = {"temperature": temperature}
+        parts = [{"text": _schema_instruction(schema)}] + list(parts)
+    else:
+        config = {"temperature": temperature, "responseMimeType": "application/json", "responseSchema": schema}
+        thinking = thinking or THINKING.get(task)
+        if thinking:
+            config["thinkingConfig"] = {"thinkingLevel": thinking}
     body = {"contents": [{"parts": parts}], "generationConfig": config}
-    last_error = None
-    # quando la quota del modello principale finisce si passa a quello più leggero (quota separata)
-    for model in dict.fromkeys([GEMINI_MODEL, GEMINI_FALLBACK]):
-        if model in _EXHAUSTED:
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+    for attempt in range(3):
+        r = requests.post(url, headers={"x-goog-api-key": key}, json=body, timeout=300)
+        if r.status_code == 429 or r.status_code >= 500:
+            record_usage(task, model, status="respinta")
+            if quota_exhausted(r):
+                _EXHAUSTED.add(model)              # quota giornaliera finita: inutile riprovare questo modello
+                raise ModelUnavailable(f"{model}: quota del giorno finita")
+            time.sleep(min(60, (retry_delay(r) or 20 * (attempt + 1)) + 2))
             continue
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-        for attempt in range(3):
-            r = requests.post(url, headers={"x-goog-api-key": key}, json=body, timeout=300)
-            if r.status_code == 429 or r.status_code >= 500:
-                last_error = f"{model} {r.status_code}: {r.text[:300]}"
-                record_usage(task, model, status="respinta")
-                if quota_exhausted(r):
-                    _EXHAUSTED.add(model)     # quota giornaliera finita: inutile riprovare questo modello
-                    break
-                time.sleep(min(60, (retry_delay(r) or 20 * (attempt + 1)) + 2))
-                continue
-            if not r.ok:
-                raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:500]}")
-            data = r.json()
-            record_usage(task, model, data)
-            globals()["LAST_MODEL"] = data.get("modelVersion") or model
-            text = "".join(p.get("text", "") for p in data["candidates"][0]["content"]["parts"] if not p.get("thought"))
-            return json.loads(text)
-        print(f"  Gemini {model} non disponibile, provo il modello di riserva.")
-    # ── Ripiego: Groq, solo per richieste di solo testo e mai per scrivere i post ──────────────
-    # (PDF e immagini non passano a Groq; i testi dei post restano a Gemini). Le verifiche fatte con Groq
-    # sono segnate e vengono rifatte con Gemini prima di finire in un post.
-    text_only = all("text" in p for p in parts)
-    if text_only and task not in NO_FALLBACK_TASKS:
-        prompt_text = _parts_to_text(parts)
-        if os.environ.get("GROQ_API_KEY"):
-            print(f"  Gemini esaurito per «{task}», provo Groq…")
-            result = _groq_json(prompt_text, schema, temperature, task)
-            if result is not None:
-                global LAST_MODEL
-                LAST_MODEL = globals().get("LAST_GROQ", "groq")
-                return result
-        if os.environ.get("OPENROUTER_API_KEY"):
-            print(f"  Groq non disponibile per «{task}», provo OpenRouter…")
-            result = _openrouter_json(prompt_text, schema, temperature, task)
-            if result is not None:
-                return result
-    raise RuntimeError(f"Gemini non disponibile: {last_error}")
+        if r.status_code in (400, 404) and ("not found" in r.text.lower() or "not supported" in r.text.lower()):
+            raise ModelUnavailable(f"{model} {r.status_code}: {r.text[:200]}")
+        if not r.ok:
+            raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:500]}")
+        data = r.json()
+        record_usage(task, model, data)
+        globals()["LAST_MODEL"] = data.get("modelVersion") or model
+        text = "".join(p.get("text", "") for p in data["candidates"][0]["content"]["parts"] if not p.get("thought"))
+        return _extract_json(text) if gemma else json.loads(text)
+    raise ModelUnavailable(f"{model}: troppe richieste")
+
+
+def _openai_compatible(url, key, model, label, prompt_text, schema, temperature, task, extra=None, headers=None):
+    """Chiamata in stile OpenAI (Groq, OpenRouter) con risposta JSON."""
+    body = {"model": model, "temperature": temperature,
+            "messages": [{"role": "system", "content": _schema_instruction(schema)},
+                         {"role": "user", "content": prompt_text}],
+            "response_format": {"type": "json_object"}, **(extra or {})}
+    for attempt in range(3):
+        try:
+            r = requests.post(url, headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json",
+                                            **(headers or {})}, json=body, timeout=240)
+        except requests.RequestException as e:
+            raise ModelUnavailable(f"{label} {model}: {str(e)[:120]}")
+        if r.status_code == 400 and "response_format" in r.text and "response_format" in body:
+            body.pop("response_format")            # alcuni modelli non hanno la modalità JSON: basta lo schema nel testo
+            continue
+        if r.status_code in (400, 404) and any(w in r.text for w in ("model_not_found", "decommissioned", "not a valid model",
+                                                                       "No endpoints found", "does not exist")):
+            raise ModelUnavailable(f"{label} {model}: modello assente")
+        if r.status_code in (402, 413):
+            raise ModelUnavailable(f"{label} {model} {r.status_code}: {r.text[:160]}")
+        if r.status_code == 429:
+            record_usage(task, f"{label}-{model.split('/')[-1]}", status="respinta")
+            if "per day" in r.text.lower() or "free-models-per-day" in r.text or "tokens per day" in r.text.lower() or attempt == 2:
+                raise ModelUnavailable(f"{label} {model}: quota finita")
+            time.sleep(25 * (attempt + 1))
+            continue
+        if r.status_code >= 500:
+            time.sleep(15 * (attempt + 1))
+            continue
+        if not r.ok:
+            raise ModelUnavailable(f"{label} {model} {r.status_code}: {r.text[:200]}")
+        data = r.json()
+        msg = (data.get("choices") or [{}])[0].get("message") or {}
+        result = _extract_json(msg.get("content") or "")
+        u = USAGE.setdefault(f"{task}|{label}-{model.split('/')[-1]}",
+                             {"richieste": 0, "ingresso": 0, "uscita": 0, "ragionamento": 0, "respinte": 0})
+        usage = data.get("usage") or {}
+        u["richieste"] += 1
+        u["ingresso"] += int(usage.get("prompt_tokens") or 0)
+        u["uscita"] += int(usage.get("completion_tokens") or 0)
+        globals()["LAST_MODEL"] = f"{label}-{model.split('/')[-1]}"
+        return result
+    raise ModelUnavailable(f"{label} {model}: non risponde")
+
+
+def call_model(provider, model, parts, schema, temperature=0.3, task="altro", thinking=None):
+    """Una richiesta a un modello preciso. Solleva ModelUnavailable se va provato il successivo."""
+    if provider == "gemini":
+        return _gemini_one(model, parts, schema, temperature, task, thinking)
+    if not all("text" in p for p in parts):
+        raise ModelUnavailable(f"{provider} non legge PDF o immagini")
+    text = _parts_to_text(parts)
+    if provider == "groq":
+        key = os.environ.get("GROQ_API_KEY")
+        if not key:
+            raise ModelUnavailable("GROQ_API_KEY mancante")
+        extra = {"reasoning_effort": GROQ_REASONING.get(task.split(" [", 1)[0], "medium")} if "gpt-oss" in model else None
+        return _openai_compatible("https://api.groq.com/openai/v1/chat/completions", key, model, "groq", text, schema,
+                                  temperature, task, extra)
+    if provider == "openrouter":
+        key = os.environ.get("OPENROUTER_API_KEY")
+        if not key:
+            raise ModelUnavailable("OPENROUTER_API_KEY mancante")
+        return _openai_compatible("https://openrouter.ai/api/v1/chat/completions", key, model, "openrouter", text, schema,
+                                  temperature, task, headers={"HTTP-Referer": "https://clinicalresearchchaos.com",
+                                                              "X-Title": "Clinical Research Chaos"})
+    raise ModelUnavailable(f"fornitore sconosciuto: {provider}")
+
+
+GROQ_REASONING = {"critica": "high", "controllo doppioni": "low"}
+
+
+def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None, exclude_family=None):
+    """Risposta JSON conforme allo schema dal primo modello disponibile della catena dell'attività (ROUTES).
+    `exclude_family` («google», «openai», «nvidia»…) salta i modelli di quella famiglia: il revisore non deve
+    essere della stessa famiglia di chi ha scritto. Il nome resta per compatibilità con il resto del bot."""
+    errors = []
+    for provider, model in route_for(task):
+        if exclude_family and family(provider, model) == exclude_family:
+            continue
+        try:
+            out = call_model(provider, model, parts, schema, temperature, task, thinking)
+            if errors:
+                print(f"  «{task}»: risposto da {provider}:{model} (prima: {'; '.join(e[:70] for e in errors)})")
+            return out
+        except ModelUnavailable as e:
+            errors.append(str(e))
+        except ValueError as e:                    # JSON non valido: si prova il modello successivo
+            errors.append(f"{model}: JSON non valido ({str(e)[:60]})")
+    raise RuntimeError(f"Gemini non disponibile per «{task}»: {' | '.join(e[:150] for e in errors)}")
+
+
+def family(provider, model):
+    m = model.lower()
+    if m.startswith("gemini") or m.startswith("gemma") or m.startswith("google/"):
+        return "google"
+    if "gpt-oss" in m or m.startswith("openai/"):
+        return "openai"
+    if "nemotron" in m or m.startswith("nvidia/"):
+        return "nvidia"
+    if "qwen" in m:
+        return "alibaba"
+    if "llama" in m:
+        return "meta"
+    return m.split("/")[0]
 
 
 def groq_json(prompt_text, schema, temperature=0.0, task="altro"):
-    """Interfaccia pubblica per Groq: task logici veloci (es. controllo doppioni).
-    Se GROQ_API_KEY non è disponibile, ricade su gemini_json con parts testuali."""
-    result = _groq_json(prompt_text, schema, temperature, task)
-    if result is not None:
-        return result
-    # fallback: usa Gemini con il solo testo
+    """Richiesta di solo testo per attività logiche veloci (es. controllo doppioni): segue la catena dell'attività."""
     return gemini_json([{"text": prompt_text}], schema, temperature, task)
 
 
@@ -973,3 +1087,269 @@ def verify_against_source(post, material):
     if drop and len(slides) - len(drop) >= 3:
         post["slides"] = [s for i, s in enumerate(slides) if i not in drop]
     return len(issues)
+
+
+# ---------------------------------------------------------------- revisione incrociata tra due AI
+# 1. un revisore di un'altra famiglia (non quella che ha scritto) critica ogni frase rispetto alla fonte:
+#    fuori contesto, imprecisa, non supportata, vuota; e giudica filo logico e take home message;
+# 2. Gemini fa da arbitro: rilegge la fonte e accetta, corregge o respinge ogni correzione proposta;
+# 3. il revisore ridà i voti al post corretto: sotto soglia il post non esce (si passa al successivo).
+_STOP = set("the a an and or of to in on for with by at from as is are be was were it this that these those your you "
+            "can not no but if than then into over under more most less what which who how why when where".split())
+
+
+def relevant_excerpt(material, post, max_chars=14000):
+    """I brani della fonte che parlano di ciò che dice il post (non solo l'inizio del documento): paragrafi
+    ordinati per parole in comune con il post, rimessi nell'ordine originale."""
+    material = material or ""
+    if len(material) <= max_chars:
+        return material
+    words = {w for w in _simple(" ".join(t for _, t in _texts_of(post)) + " " + post.get("title", "")).split()
+             if len(w) > 3 and w not in _STOP}
+    chunks, buf = [], ""
+    for para in re.split(r"\n\s*\n|(?<=[.!?])\s{2,}", material):
+        buf = f"{buf}\n{para}".strip() if len(buf) < 700 else buf
+        if len(buf) >= 700:
+            chunks.append(buf)
+            buf = ""
+    if buf:
+        chunks.append(buf)
+    scored = sorted(range(len(chunks)), key=lambda i: -len(words & set(_simple(chunks[i]).split())))
+    keep, size = set(), 0
+    for i in scored:
+        if size + len(chunks[i]) > max_chars:
+            continue
+        keep.add(i)
+        size += len(chunks[i])
+    return "\n[…]\n".join(chunks[i] for i in sorted(keep))
+
+
+CRITIC_PROMPT = """You are a senior clinical research methodologist and science editor. You did NOT write this {kind}:
+your job is to stop anything imprecise or out of context from reaching an audience of researchers and health
+professionals, who will notice every mistake.
+
+Read the SOURCE excerpts and the whole post first, then judge every sentence.
+
+Flag a sentence when it is:
+- "out_of_context": it only makes sense inside the source or next to another slide: a dangling reference ("this",
+  "these patients", "the trial", "step 3", "the authors", "the guideline"), a claim stripped of the condition,
+  population or design under which it holds, a detail cut off from the reasoning that gives it meaning, or a number
+  without unit, group or comparison.
+- "imprecise": loose or wrong technical wording (risk vs odds, statistical vs clinical significance, association vs
+  causation, "proves", "always", "never"), a finding generalised beyond its population or design, a qualifier of the
+  source dropped ("may", "in adults", "in RCTs", "only", "at least"), or a definition that is not the accepted one.
+- "unsupported": a factual claim that is neither in the SOURCE nor a standard textbook definition (invented numbers,
+  studies, authors, rules, dates).
+- "empty": generic filler a researcher cannot use ("X is crucial", "plan carefully", "it matters").
+{extra_rules}
+Then judge the post as a whole:
+- thread: it must teach ONE idea, with slides in a logical order (e.g. problem → why it matters → how to do it right)
+  that leads to the takeaway. Flag a slide that is off the thread, repeats another, or contradicts another.
+- takeaway: it must be a real take-home message: true according to the SOURCE, following from the slides, specific
+  (names the method, decision, threshold or check) and useful to a researcher tomorrow. "X is important", a vague
+  exhortation or a restated title is NOT a take-home message.
+
+Scores 1-5 (5 = publishable as is): accuracy, context, coherence, takeaway.
+For each problem give: where ("title", "hook", "caption", "takeaway" or "slide N" as numbered below), kind (one of the
+four above, or "thread"/"takeaway"), quote (the exact sentence), why (one line), and the fix: replacement text for that
+whole field, faithful to the SOURCE, with no new facts, within the limits (title ≤ 70 characters, slide heading ≤ 55,
+slide body ≤ 160, takeaway ≤ 130, hook ≤ 120, caption ≤ 600). For a slide give heading and body. If the only honest
+fix is to remove a slide, leave heading and body empty and say so in why.
+Do not flag style preferences, and do not flag clearly framed teaching examples ("imagine a trial of 120 patients").
+verdict: "publish" (all scores ≥ 4 and no accuracy problem), "fix" (real problems that your fixes solve) or "reject"
+(the post cannot be made accurate and useful from this SOURCE).
+
+POST
+{post}
+
+SOURCE ({source_label}):
+{source}"""
+
+CRITIC_SCHEMA = {"type": "OBJECT", "properties": {
+    "scores": {"type": "OBJECT", "properties": {"accuracy": {"type": "INTEGER"}, "context": {"type": "INTEGER"},
+                                                "coherence": {"type": "INTEGER"}, "takeaway": {"type": "INTEGER"}},
+               "required": ["accuracy", "context", "coherence", "takeaway"]},
+    "issues": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {
+        "where": {"type": "STRING"}, "kind": {"type": "STRING"}, "quote": {"type": "STRING"}, "why": {"type": "STRING"},
+        "heading": {"type": "STRING"}, "body": {"type": "STRING"}, "text": {"type": "STRING"}},
+        "required": ["where", "kind", "why"]}},
+    "verdict": {"type": "STRING", "enum": ["publish", "fix", "reject"]}},
+    "required": ["scores", "issues", "verdict"]}
+
+GRANT_RULES = """- for a funding call, also "imprecise": eligibility, scope or requirements that lose a qualifier of the official
+  text (who can apply, career-stage definitions, mandatory partners or countries, what is NOT funded), or a slide that
+  lets someone believe they are eligible when the text restricts it. Deadlines, amounts and countries are NOT in the
+  slides on purpose: do not ask for them.
+"""
+
+ARBITER_PROMPT = """You wrote this {kind} for researchers and health professionals. An independent reviewer (a different
+AI) flagged the problems below and proposed fixes. Check every proposed fix against the SOURCE and decide:
+- "accept": the problem is real and the fix is faithful to the SOURCE;
+- "edit": the problem is real but the fix is wrong, adds a fact or loses meaning: write your own corrected text;
+- "reject": the original is correct according to the SOURCE (say why in one line).
+- for a slide the reviewer wants removed: "accept" removes it, "reject" keeps it.
+Rules for any text you write: no fact that is not in the SOURCE; same length limits (title ≤ 70 characters, slide
+heading ≤ 55, slide body ≤ 160, takeaway ≤ 130, hook ≤ 120, caption ≤ 600); every slide makes sense on its own, as a
+screenshot, without referring to other slides or to the source; spell out acronyms the first time.
+Finally write the takeaway of the post as fixed: one sentence (≤ 130 characters), the real take-home message, specific,
+true according to the SOURCE, useful to a researcher; and takeaway_highlight: 2-5 words copied exactly from it.
+
+POST
+{post}
+
+REVIEWER'S ISSUES
+{issues}
+
+SOURCE ({source_label}):
+{source}"""
+
+ARBITER_SCHEMA = {"type": "OBJECT", "properties": {
+    "decisions": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {
+        "id": {"type": "INTEGER"}, "decision": {"type": "STRING", "enum": ["accept", "edit", "reject"]},
+        "heading": {"type": "STRING"}, "body": {"type": "STRING"}, "text": {"type": "STRING"},
+        "reason": {"type": "STRING"}}, "required": ["id", "decision"]}},
+    "takeaway": {"type": "STRING"}, "takeaway_highlight": {"type": "STRING"}},
+    "required": ["decisions", "takeaway"]}
+
+REVIEW_THRESHOLDS = {"accuracy": 4, "context": 4, "coherence": 3, "takeaway": 3}
+REVIEW_CHARS = 14000        # brani della fonte dati al revisore (Groq gratuito: pochi token al minuto)
+ARBITER_CHARS = 40000       # Gemini legge molto di più
+
+
+def _post_listing(post):
+    lines = [f"Title: {post.get('title', '')}", "Slides:"]
+    lines += [f"{i + 1}. {s.get('heading', '')} — {s.get('body', '')}" for i, s in enumerate(post.get("slides") or [])]
+    lines.append(f"Takeaway: {post.get('takeaway', '')}")
+    if post.get("hook"):
+        lines.append(f"Hook (first caption line): {post['hook']}")
+    if post.get("caption"):
+        lines.append(f"Caption: {post['caption']}")
+    return "\n".join(lines)
+
+
+def _family_of_last():
+    m = LAST_MODEL.lower()
+    if m.startswith("groq-"):
+        return family("groq", m[5:])
+    if m.startswith("openrouter-"):
+        return family("openrouter", m[11:])
+    return family("gemini", m)
+
+
+def _critique(post, source, kind, label, writer_family):
+    prompt = CRITIC_PROMPT.format(kind=kind, extra_rules=GRANT_RULES if kind == "funding-call carousel" else "",
+                                  post=_post_listing(post), source_label=label,
+                                  source=relevant_excerpt(source, post, REVIEW_CHARS))
+    out = gemini_json([{"text": prompt}], CRITIC_SCHEMA, 0.1, task="critica", exclude_family=writer_family)
+    return out, LAST_MODEL, _family_of_last()
+
+
+def _passes(scores, verdict):
+    return verdict != "reject" and all(int((scores or {}).get(k) or 0) >= v for k, v in REVIEW_THRESHOLDS.items())
+
+
+def _where(where, post):
+    """(«slide», indice) | («title», None) | …, oppure None se il campo non esiste."""
+    w = (where or "").strip().lower()
+    m = re.match(r"slide\s*(\d+)", w)
+    if m:
+        i = int(m.group(1)) - 1
+        return ("slide", i) if 0 <= i < len(post.get("slides") or []) else None
+    for f in ("title", "takeaway", "hook", "caption"):
+        if w.startswith(f):
+            return (f, None) if f in post or f in ("title", "takeaway") else None
+    return None
+
+
+def _apply(post, field, idx, heading, body, text, removals):
+    if field == "slide":
+        if not (heading or body):
+            removals.add(idx)
+            return
+        sl = post["slides"][idx]
+        body = _clip(body or sl.get("body", ""), 170)
+        post["slides"][idx] = {**sl, "heading": _clip(heading or sl.get("heading", ""), 70), "body": body,
+                               "highlight": exact_phrase(sl.get("highlight"), body)}
+    elif text:
+        limit = {"title": 90, "takeaway": 160, "hook": 125, "caption": 1200}[field]
+        post[field] = _clip(text, limit)
+        if field == "title":
+            post["title_highlight"] = exact_phrase(post.get("title_highlight"), post["title"], 4)
+        if field == "takeaway":
+            post["takeaway_highlight"] = exact_phrase(post.get("takeaway_highlight"), post["takeaway"], 5)
+
+
+def cross_review(post, source, kind="research", writer_family="google"):
+    """Revisione a due AI (vedi sopra). Corregge il post sul posto e restituisce un riepilogo:
+    {"passed": bool|None, "scores": {...}, "critic": modello, "arbiter": modello, "fixed": n, "removed": n, "notes": [...]}.
+    passed = None se nessun revisore indipendente era disponibile (il bot ricade sui controlli di Gemini)."""
+    label = "official text of the call" if kind == "grant" else "teaching material the post was built from"
+    kname = "funding-call carousel" if kind == "grant" else "educational carousel"
+    report = {"passed": None, "scores": {}, "critic": "", "arbiter": "", "fixed": 0, "removed": 0, "notes": []}
+    if not source or not post.get("slides"):
+        return report
+    try:
+        crit, critic_model, critic_family = _critique(post, source, kname, label, writer_family)
+    except Exception as e:
+        print(f"  Revisore indipendente non disponibile ({str(e)[:160]})")
+        return report
+    report.update(critic=critic_model, scores=crit.get("scores") or {})
+    issues = [x for x in crit.get("issues") or [] if _where(x.get("where"), post)]
+    print(f"  Revisione ({critic_model}): {crit.get('verdict')} {report['scores']}, {len(issues)} problemi")
+    for x in issues:
+        print(f"    - {x.get('where')} [{x.get('kind')}]: {(x.get('why') or '')[:150]}")
+        report["notes"].append(f"{x.get('where')} [{x.get('kind')}]: {(x.get('why') or '')[:200]}")
+    if crit.get("verdict") == "publish" and not issues and _passes(report["scores"], "publish"):
+        report["passed"] = True
+        return report
+    if crit.get("verdict") == "reject":
+        report["passed"] = False
+        return report
+    if issues:
+        listing = "\n".join(
+            f"[{n}] {x['where']} ({x.get('kind')}): “{(x.get('quote') or '')[:240]}” — {x.get('why', '')[:240]}\n"
+            f"    proposed fix: " + (f"heading: {x.get('heading', '')} | body: {x.get('body', '')}"
+                                     if _where(x["where"], post)[0] == "slide" else (x.get("text") or x.get("body") or ""))
+            + ("" if (x.get("heading") or x.get("body") or x.get("text")) else " (remove)")
+            for n, x in enumerate(issues))
+        prompt = ARBITER_PROMPT.format(kind=kname, post=_post_listing(post), issues=listing, source_label=label,
+                                       source=relevant_excerpt(source, post, ARBITER_CHARS))
+        try:
+            arb = gemini_json([{"text": prompt}], ARBITER_SCHEMA, 0.2, task="arbitro", exclude_family=critic_family)
+            report["arbiter"] = LAST_MODEL
+        except Exception as e:
+            print(f"  Arbitro non disponibile ({str(e)[:160]}): il post non esce senza una seconda verifica")
+            report["passed"] = False
+            report["notes"].append("arbitro non disponibile")
+            return report
+        removals = set()
+        for d in arb.get("decisions") or []:
+            n = d.get("id")
+            if not isinstance(n, int) or not (0 <= n < len(issues)) or d.get("decision") == "reject":
+                continue
+            field, idx = _where(issues[n]["where"], post)
+            x = issues[n] if d["decision"] == "accept" else d
+            _apply(post, field, idx, x.get("heading"), x.get("body"), x.get("text") or x.get("body"), removals)
+            report["fixed"] += 1
+            print(f"    ✓ {issues[n]['where']}: {d['decision']}" + (f" ({d.get('reason', '')[:90]})" if d.get("reason") else ""))
+        if removals and len(post["slides"]) - len(removals) >= (2 if kind == "grant" else 3):
+            post["slides"] = [s for i, s in enumerate(post["slides"]) if i not in removals]
+            report["removed"] = len(removals)
+        if arb.get("takeaway"):
+            post["takeaway"] = _clip(arb["takeaway"], 160)
+            post["takeaway_highlight"] = exact_phrase(arb.get("takeaway_highlight"), post["takeaway"], 5)
+    # controllo finale del revisore sul post corretto
+    try:
+        final, _, _ = _critique(post, source, kname, label, writer_family)
+    except Exception as e:
+        print(f"  Controllo finale non disponibile ({str(e)[:120]}): vale il primo giudizio")
+        report["passed"] = _passes(report["scores"], crit.get("verdict")) and report["fixed"] > 0
+        return report
+    report["scores"] = final.get("scores") or {}
+    report["passed"] = _passes(report["scores"], final.get("verdict"))
+    left = [x for x in final.get("issues") or [] if x.get("kind") in ("unsupported", "imprecise", "out_of_context")]
+    print(f"  Controllo finale: {final.get('verdict')} {report['scores']}, {len(left)} problemi residui → "
+          f"{'esce' if report['passed'] else 'NON esce'}")
+    for x in left:
+        report["notes"].append(f"residuo {x.get('where')} [{x.get('kind')}]: {(x.get('why') or '')[:200]}")
+    return report
