@@ -688,7 +688,8 @@ def _openai_compatible(url, key, model, label, prompt_text, schema, temperature,
                                             **(headers or {})}, json=body, timeout=240)
         except requests.RequestException as e:
             raise ModelUnavailable(f"{label} {model}: {str(e)[:120]}")
-        if r.status_code == 400 and "response_format" in r.text and "response_format" in body:
+        if r.status_code == 400 and "response_format" in body and any(
+                w in r.text for w in ("response_format", "json_validate_failed", "Failed to validate")):
             body.pop("response_format")            # alcuni modelli non hanno la modalità JSON: basta lo schema nel testo
             continue
         if r.status_code in (400, 404) and any(w in r.text for w in ("model_not_found", "decommissioned", "not a valid model",
@@ -1106,10 +1107,15 @@ def relevant_excerpt(material, post, max_chars=14000):
         return material
     words = {w for w in _simple(" ".join(t for _, t in _texts_of(post)) + " " + post.get("title", "")).split()
              if len(w) > 3 and w not in _STOP}
+    # blocchi di ~800 caratteri tagliati a fine frase (i PDF spesso non hanno righe vuote tra i paragrafi)
+    sentences = re.split(r"(?<=[.!?;:])\s+|\n\s*\n", material)
     chunks, buf = [], ""
-    for para in re.split(r"\n\s*\n|(?<=[.!?])\s{2,}", material):
-        buf = f"{buf}\n{para}".strip() if len(buf) < 700 else buf
-        if len(buf) >= 700:
+    for sent in sentences:
+        while len(sent) > 1200:                    # frase lunghissima (tabelle, testo senza punteggiatura)
+            chunks.append(sent[:1200])
+            sent = sent[1200:]
+        buf = f"{buf} {sent}".strip()
+        if len(buf) >= 800:
             chunks.append(buf)
             buf = ""
     if buf:
