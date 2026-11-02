@@ -7,7 +7,7 @@
    "ingresso": 8166,
    "uscita": 2824,
    "ragionamento": 0,
-   "respinte": 3,
+   "respinte": 4,
    "versione": "gemini-3.8-flash"
   },
   "nuovi post da Drive|gemini-flash-lite-latest": {
@@ -17,6 +17,13 @@
    "ragionamento": 0,
    "respinte": 0,
    "versione": "gemini-3.5-flash-lite"
+  },
+  "controllo doppioni|groq-gpt-oss-120b": {
+   "richieste": 1,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 0
   }
  }
 }

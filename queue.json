@@ -943,59 +943,6 @@
     "source": "Study designs.pdf"
   },
   {
-    "title": "Block vs. Stratified Randomization in Trials",
-    "title_highlight": "Block vs. Stratified Randomization",
-    "category": "Randomization & blinding",
-    "slides": [
-      {
-        "heading": "The Purpose of Randomization",
-        "body": "Randomization prevents bias due to subject selection and ensures comparability between groups prior to the intervention.",
-        "image_prompt": "a crowd of simple figures split evenly by a coin flip into two separate colored groups",
-        "photo_query": "randomized clinical trial sorting",
-        "highlight": "prevents bias due to subject selection",
-        "source": ""
-      },
-      {
-        "heading": "Simple Randomization Risk",
-        "body": "Simple randomization uses constant probability like a coin flip, but it can cause severe group imbalances in small trials.",
-        "image_prompt": "a coin flipping in the air above an uneven pile of pill bottles on a table",
-        "photo_query": "flipping coin decision",
-        "highlight": "",
-        "source": ""
-      },
-      {
-        "heading": "Balancing via Block Randomization",
-        "body": "Block randomization classifies subjects into blocks to balance the number of subjects allocated to each intervention group.",
-        "image_prompt": "four small boxes containing two red and two blue tokens arranged in neat rows",
-        "photo_query": "organized data blocks research",
-        "highlight": "balance the number of subjects",
-        "source": "Suresh, 2011"
-      },
-      {
-        "heading": "Controlling Covariates with Strata",
-        "body": "Stratified randomization defines subjects based on covariates like age, enabling higher comparability and efficient analysis.",
-        "image_prompt": "stacked sorting trays dividing simple figures into distinct categories by height and age",
-        "photo_query": "stratified sampling research data",
-        "highlight": "",
-        "source": "Suresh, 2011"
-      }
-    ],
-    "takeaway": "Choose block randomization for group balance and stratified randomization to control key covariates.",
-    "takeaway_highlight": "balance and stratified randomization",
-    "references": [
-      "Suresh, K. (2011). An overview of randomization techniques: An unbiased assessment of outcome in clinical research."
-    ],
-    "caption": "Does your trial design risk severe group imbalances due to small sample sizes?\n\nSimple randomization works well in large trials, but smaller studies often suffer from baseline imbalances. Block randomization ensures equal group sizes over time, while stratified randomization addresses key prognostic covariates like age. How do you handle covariate balancing in your clinical trial protocols?",
-    "hashtags": [
-      "#Randomization",
-      "#ClinicalTrials",
-      "#Biostatistics"
-    ],
-    "source_hint": "page 6",
-    "id": "e1236d92",
-    "source": "Study designs.pdf"
-  },
-  {
     "title": "Why Triple-Blinding Is So Difficult to Design",
     "title_highlight": "",
     "category": "Randomization & blinding",
