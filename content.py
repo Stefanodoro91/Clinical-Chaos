@@ -576,24 +576,33 @@ OR_STRONG = os.environ.get("OPENROUTER_STRONG") or "nvidia/nemotron-3-ultra-550b
 GEMMA = os.environ.get("GEMMA_MODEL") or "gemma-4-31b-it"
 GROQ_STRONG = "openai/gpt-oss-120b"
 
+# Sonda del 2/11/2026 con le chiavi del bot: ogni modello Gemini ha una quota gratuita giornaliera SUA. Ruotando tra
+# versioni dello stesso livello (3.8 → 3.6 → 3.5 Flash) la quota si moltiplica senza scendere di qualità; i Pro
+# (gemini-pro-latest, 3.1-pro-preview) rispondono con quota zero nel piano gratuito; 2.5 non è più disponibile;
+# per le verifiche Flash e 3.5 Flash hanno dato gli stessi dati del Flash di riferimento, Qwen/gpt-oss su Groq sbagliano
+# Italia e paesi ammessi su un bando su tre: Groq solo come ultima riserva.
+FLASH_ALT = ["gemini:gemini-3.6-flash", "gemini:gemini-3.5-flash"]
+LITE_ALT = ["gemini:gemini-3.1-flash-lite"]
+VERIFY_CHAIN = ["gemini:main"] + FLASH_ALT + ["gemini:lite"] + LITE_ALT + [f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}"]
+
 ROUTES = {
-    # scrittura dai file (PDF, slide): solo Gemini, che legge i documenti
-    "nuovi post da Drive": ["gemini:main", "gemini:lite"],
-    # scrittura del post di un bando dal testo ufficiale: Flash, poi un modello grande con contesto lungo
-    "post bando": ["gemini:main", f"openrouter:{OR_STRONG}", "gemini:lite"],
-    # revisore indipendente (famiglia diversa da chi scrive): ragionamento forte, quota ampia
+    # scrittura dai file (PDF, slide): solo Gemini, che legge i documenti; più versioni Flash prima di arrendersi
+    "nuovi post da Drive": ["gemini:main"] + FLASH_ALT + ["gemini:gemini-3-flash-preview", "gemini:lite"],
+    # scrittura del post di un bando dal testo ufficiale: Flash e sue varianti, poi un modello grande con contesto lungo
+    "post bando": ["gemini:main"] + FLASH_ALT + [f"openrouter:{OR_STRONG}", "gemini:lite"],
+    # revisore indipendente (famiglia diversa da chi scrive)
     # (confronto del 2/11: Nemotron Ultra il più rigoroso ma lento; Qwen su Groq veloce e valido; gpt-oss spesso senza JSON)
     "critica": [f"openrouter:{OR_STRONG}", "groq:qwen/qwen3.8-27b", f"groq:{GROQ_STRONG}", f"gemini:{GEMMA}"],
     # arbitro: decide sulle correzioni del revisore rileggendo la fonte (Gemini, che ha scritto il post)
-    "arbitro": ["gemini:main", "gemini:lite", f"openrouter:{OR_STRONG}"],
+    "arbitro": ["gemini:main"] + FLASH_ALT + ["gemini:lite", f"openrouter:{OR_STRONG}"],
     # copione dei reel: testo breve da un carosello già verificato
-    "copione reel": ["gemini:lite", f"groq:{GROQ_STRONG}", "gemini:main"],
+    "copione reel": ["gemini:lite"] + LITE_ALT + [f"groq:{GROQ_STRONG}", "gemini:main"],
     # giudizio sulle immagini (serve un modello che vede): mai sprecare Flash
-    "scelta immagini": ["gemini:lite", f"gemini:{GEMMA}"],
+    "scelta immagini": ["gemini:lite"] + LITE_ALT + [f"gemini:{GEMMA}"],
     # doppioni: confronto logico tra titoli
-    "controllo doppioni": [f"groq:{GROQ_STRONG}", "gemini:lite"],
+    "controllo doppioni": [f"groq:{GROQ_STRONG}", "gemini:lite"] + LITE_ALT,
 }
-DEFAULT_ROUTE = ["gemini:main", "gemini:lite", f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}"]
+DEFAULT_ROUTE = VERIFY_CHAIN          # verifiche di bandi e posizioni, fatti, revisione slide, arricchimento, anti-copia
 # attività il cui testo finisce nei post: se l'ultimo modello disponibile è un ripiego debole, meglio fermarsi
 WRITING_TASKS = {"nuovi post da Drive", "post bando", "scelta immagini"}
 
