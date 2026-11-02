@@ -167,6 +167,26 @@ def _wrap(d, text, fnt, max_w):
     return cards.wrap(d, text, fnt, max_w)
 
 
+_PHOTOS = {}
+
+
+def _photo(query):
+    """Prima foto Pixabay per la ricerca (in memoria: la stessa schermata si disegna più volte nei reel animati)."""
+    if not query:
+        return None
+    if query not in _PHOTOS:
+        try:
+            import images
+            found = images.pixabay_photos(query, 1, 900, 500)
+            _PHOTOS[query] = found[0][0] if found else None
+            if found and len(found[0]) > 1:
+                print(f"Foto per «{query}»: {found[0][1:]}")
+        except Exception as e:
+            print(f"::warning title=Foto del reel::{query}: {str(e)[:160]}")
+            _PHOTOS[query] = None
+    return _PHOTOS[query]
+
+
 def story_frame(slide, cfg, index, total, accent, cubes=True):
     """Slide 1080×1920 per i reel di annuncio: copertina chiara, punti numerati scuri, chiusura con il logo."""
     cards.EDITORIAL = bool(cfg.get("design_v3"))
@@ -208,14 +228,7 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
             for line in _wrap(d, slide["body"], fb, W - 2 * M)[:3]:
                 d.text((M, y), line, font=fb, fill=fg)
                 y += 62
-        photo = None
-        if slide.get("photo_query"):
-            try:
-                import images
-                found = images.pixabay_photos(slide["photo_query"], 1, 900, 500)
-                photo = found[0][0] if found else None
-            except Exception:
-                photo = None
+        photo = _photo(slide.get("photo_query"))
         if photo is not None:
             y += 50
             ph = min(H - 260 - y, 640)
@@ -224,6 +237,8 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
                 mask = Image.new("L", pic.size, 0)
                 ImageDraw.Draw(mask).rounded_rectangle((0, 0, pic.width - 1, pic.height - 1), radius=32, fill=255)
                 img.paste(pic, (M, y), mask)
+                if cards.EDITORIAL:
+                    d.rounded_rectangle((M, y, W - M, y + ph), radius=32, outline=accent, width=4)
     elif kind == "cover":
         inkc = "#0A0A0A" if mono else DARK_TEXT
         if cards.EDITORIAL:                          # logo v3 nel colore del tipo
@@ -337,8 +352,10 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
         fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 92, 60, W - 2 * M, 420, 1.12)
         fb = cards.font("Regular", 50)
         body_lines = _wrap(d, slide.get("body", ""), fb, W - 2 * M)
-        block = 190 + len(lines) * size * 1.12 + 60 + len(body_lines) * 50 * 1.42
-        top = max(300, int((H - block) / 2) - 60)          # contenuto centrato in verticale
+        photo = _photo(slide.get("photo_query"))
+        ph = 560 if photo is not None else 0
+        block = 190 + len(lines) * size * 1.12 + 60 + len(body_lines) * 50 * 1.42 + (ph + 60 if ph else 0)
+        top = max(260, int((H - block) / 2) - 60)          # contenuto centrato in verticale
         num = slide.get("number", "")
         if num == "→":                       # il serif non ha la freccia: si disegna nel colore del tipo
             ay = top + 95
@@ -351,8 +368,17 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
             d.text((M, y), line, font=fnt, fill=fg)
             y += int(size * 1.12)
         y += 60
-        cards.draw_rich(d, slide.get("body", ""), slide.get("highlight", ""), fb, 50, M, y, W - 2 * M, c["muted_text"],
-                        1.42, accent, mark_text=c["background"])
+        y = cards.draw_rich(d, slide.get("body", ""), slide.get("highlight", ""), fb, 50, M, y, W - 2 * M, c["muted_text"],
+                            1.42, accent, mark_text=c["background"])
+        if photo is not None:                  # foto pertinente sotto il testo, con contorno nel colore del tipo
+            y = int(y) + 60
+            ph = min(ph, H - 260 - y)
+            if ph > 250:
+                pic = ImageOps.fit(photo.convert("RGB"), (W - 2 * M, ph), Image.LANCZOS)
+                mask = Image.new("L", pic.size, 0)
+                ImageDraw.Draw(mask).rounded_rectangle((0, 0, pic.width - 1, pic.height - 1), radius=32, fill=255)
+                img.paste(pic, (M, y), mask)
+                d.rounded_rectangle((M, y, W - M, y + ph), radius=32, outline=accent, width=4)
     # avanzamento in basso, nel colore del tipo
     yb = H - 190
     seg = (W - 2 * M - (total - 1) * 12) / total

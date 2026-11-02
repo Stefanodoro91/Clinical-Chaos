@@ -717,7 +717,10 @@ def reel_announcement_run(posted):
         return
     PREVIEW_DIR.mkdir(exist_ok=True)
     video = PREVIEW_DIR / "reel.mp4"
-    seconds = reels.build_story_reel(spec, video, CONFIG)       # musica: Musica/Aziendale (poi Speciale, Funky)
+    if spec.get("animated"):                  # scritte animate, brano scelto nella libreria (es. Funky)
+        seconds = reels.animated_reel(spec, video, CONFIG, mood=spec.get("mood") or "Funky", track=spec.get("music_track"))
+    else:
+        seconds = reels.build_story_reel(spec, video, CONFIG)       # musica: Musica/Aziendale (poi Speciale, Funky)
     caption = f"{spec['caption']}\n\n{' '.join(spec.get('hashtags', []))}".strip()
     print(f"Reel speciale: {spec['id']} ({seconds} s)\n--- Didascalia ---\n{caption}")
     if DRY_RUN:

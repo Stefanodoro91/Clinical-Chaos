@@ -1,61 +1,81 @@
 {
-  "id": "reel-2026-10-milestone-v2",
-  "accent": "#3DD9C1",
-  "caption": "Your research radar just got bigger.\n\n174 open funding calls (153 already checked on the official text, 54 open to applicants from any country), 80+ academic positions in 16 countries.\n\nEverything is in one link: calls by region and deadline, PhD, postdoc and faculty positions, and our methodology library.\n\nBig research, translated into small practical pieces. Link in bio.",
+  "id": "reel-2026-11-lines",
+  "animated": true,
+  "mood": "Funky",
+  "music_track": "ikoliks_aj-funky-funky-music-614582.mp3",
+  "accent": "#6EC1FF",
+  "caption": "What we publish, in 30 seconds.\n\nMethodology made practical, one reporting checklist item every Thursday, one paper and one lesson every Saturday, open funding calls checked on the official text, academic positions every Monday, plus daily stories and reels.\n\nAll free, all in one place: link in bio.",
   "hashtags": [
     "#ClinicalResearch",
+    "#ResearchMethodology",
     "#ResearchFunding",
     "#AcademicJobs",
-    "#ResearchMethodology",
-    "#Rehabilitation"
+    "#EvidenceBasedPractice"
   ],
   "slides": [
     {
       "type": "cover",
-      "kicker": "MILESTONE",
-      "title": "Your research radar just got bigger",
-      "highlight": "just got bigger",
-      "body": "Funding calls, academic jobs and research methods, checked for you.",
-      "bg": "#FF7A59",
-      "accent": "#FFFFFF",
-      "mark": "#FFFFFF"
+      "accent": "#6EC1FF",
+      "kicker": "WHAT WE PUBLISH",
+      "title": "Clinical research, in six lines",
+      "highlight": "six lines",
+      "body": "Methods, science, funding, careers and stories: every week, checked at the source."
+    },
+    {
+      "type": "point",
+      "accent": "#6EC1FF",
+      "number": "01",
+      "title": "Methodology",
+      "body": "Tue & Wed evening: one method, made practical, with references.",
+      "highlight": "made practical",
+      "photo_query": "scientist analyzing research data"
+    },
+    {
+      "type": "point",
+      "accent": "#6EC1FF",
+      "number": "02",
+      "title": "Checklist",
+      "body": "Every Thursday: one reporting item from CONSORT, PRISMA, STROBE and more.",
+      "highlight": "one reporting item"
+    },
+    {
+      "type": "point",
+      "accent": "#5FD0F2",
+      "number": "03",
+      "title": "Clinical Insights",
+      "body": "Saturday: one paper, one lesson for your next study.",
+      "highlight": "one paper, one lesson"
     },
     {
       "type": "stat",
-      "bg": "#FFB547",
-      "accent": "#0E2233",
-      "kicker": "Open calls",
+      "accent": "#FFB547",
+      "kicker": "04 · FUNDING CALLS",
       "number": "174",
-      "title": "Open funding calls",
-      "body": "153 already checked on the official text. 54 open to applicants from any country.",
-      "photo_query": "scientist laboratory research"
+      "title": "open calls, checked on the official text",
+      "body": "Four days a week at lunchtime. Every other Friday: Before you apply.",
+      "photo_query": "researcher laboratory grant"
     },
     {
       "type": "stat",
-      "bg": "#A78BFA",
-      "accent": "#0E2233",
-      "kicker": "Academic positions",
-      "number": "80+",
-      "title": "Academic positions",
-      "body": "PhD, postdoc, clinical fellowships and faculty posts in 16 countries."
+      "accent": "#8B5CF6",
+      "kicker": "05 · ACADEMIC POSITIONS",
+      "number": "78",
+      "title": "open PhD, post-doc and faculty roles",
+      "body": "Every Monday. First Monday of the month: Career Path."
     },
     {
-      "type": "image",
-      "kicker": "One link",
-      "title": "All in one link",
-      "body": "Calls, positions and methods: clinicalresearchchaos.com",
-      "frame": "card",
-      "images": [
-        "assets/reel-milestone/home-link.png"
-      ]
+      "type": "point",
+      "accent": "#6EC1FF",
+      "number": "06",
+      "title": "Stories & reels",
+      "body": "Weekday stories at 9:31, reels on Wednesday, Friday and Sunday.",
+      "highlight": "Weekday stories"
     },
     {
       "type": "closing",
-      "title": "Big research, translated into small practical pieces.",
+      "accent": "#6EC1FF",
+      "title": "All free, all in one place",
       "body": "Link in bio"
     }
-  ],
-  "music_track": "bombinsound-awards-ceremony-action-version-2-537847.mp3",
-  "mood": "Cerimony|Ceremony|Aziendale",
-  "rain": true
+  ]
 }
