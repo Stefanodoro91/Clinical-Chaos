@@ -16,6 +16,20 @@ Trasforma il tuo materiale didattico (slide, PDF, documenti, appunti) in carosel
 
 Con il piano gratuito, Google può usare i contenuti inviati a Gemini per migliorare i suoi modelli, e possono leggerli anche revisori umani. Usa solo materiale didattico che potresti pubblicare. **Mai** dati di pazienti o partecipanti, dati di studi non pubblicati, protocolli riservati o materiale coperto da accordi di riservatezza con sponsor.
 
+## Logo (v3, dal 2/11/2026)
+
+Fonte: canvas «Clinical Research Chaos – Logo» (artboard *SocialCategories* e *Symbol*, variante compatta).
+Disegnato in vettoriale da `logo.py`, nel colore del tipo di post:
+
+- simbolo a cubetti: cubetti principali bianchi (fondo scuro) o navy `#15233A` (fondo chiaro), cubetti d'accento
+  nel colore del tipo e nella sua tinta scura;
+- «CLINICAL RESEARCH» in Inter Bold spaziato, nel colore del tipo;
+- «Chaos» in Inter ExtraBold, con la «o» a sasso (anello inclinato di -20°) nel colore del tipo.
+
+Colori: metodologia azzurro (`#88B0F8` su nero), scienza blu petrolio (`#1880A0` su bianco), bandi giallo
+(`#F8B048`), posizioni violetto (`#8858F0`). Caroselli, Facebook, Bluesky, storie e reel lo usano con
+`design_v3`; i PNG pronti per ogni tipo sono in `assets/logo-v3/`.
+
 ## Configurazione
 
 Se hai già configurato AminHimalaya, è lo stesso procedimento: puoi riusare il progetto Google Cloud e lo stesso account di servizio. Servono però un **nuovo account Instagram**, una nuova pagina Facebook e un nuovo repository.

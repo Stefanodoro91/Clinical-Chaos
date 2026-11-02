@@ -228,6 +228,9 @@ def paste_logo(img, name, x, y, height=None, width=None):
         if not height:
             ref = logo_v3(name, 200)
             height = width * ref.height / ref.width
+        if "wordmark" in name:             # nel logo v3 la scritta è alta quasi quanto il simbolo: stessa linea mediana
+            h2 = height * 1.3
+            y, height = y + height / 2 - h2 / 2, h2
         lg = logo_v3(name, height)
         img.paste(lg, (int(x), int(y)), lg)
         return lg.size
