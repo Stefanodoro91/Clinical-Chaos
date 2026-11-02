@@ -1298,7 +1298,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     other_html = "\n".join(other_parts) or '    <p class="empty">No other calls right now.</p>'
     nav = [f'<a href="#italy">Open to Italy <b>{len(italy)}</b></a>']
     nav += [f'<a href="#{slug(r)}">{escape(r)} <b>{len(by_region[r])}</b></a>' for r in REGIONS if by_region[r]]
-    c = cfg["colors"]
+    c = site_palette(cfg)
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
                        accent=cfg.get("grant_accent", "#FFB547"), nav="".join(nav),
@@ -1411,7 +1411,7 @@ def social_links(cfg):
 def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
     from html import escape
     today = today or date.today()
-    c = cfg["colors"]
+    c = site_palette(cfg)
     calls_line = f"{n_calls} open calls worldwide" + (f" · {n_italy} open to Italian institutions" if n_italy else "")
     jobs_line = f"{n_positions} open PhD, post-doc and faculty positions" if n_positions else "PhD, post-doc and faculty positions"
     return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"], social=social_links(cfg),
@@ -1822,9 +1822,22 @@ DECOR = """
 """
 
 
+SITE_MONO = False      # impostato da bot.py (config «mono»): sito in nero con azzurrino per metodologia
+
+
+def site_palette(cfg):
+    """Colori del sito: quelli del config, oppure (config «mono») nero e grigi con azzurrino come colore base."""
+    c = cfg["colors"]
+    if cfg.get("mono"):
+        return {**c, "background": "#0A0A0A", "muted": "#8A8A8A", "muted_text": "#CFCFCF", "accent": "#6EC1FF"}
+    return c
+
+
 def add_decor(html):
     """Aggiunge prima di </body> la decorazione animata ai lati (cascata di quadratini) e, se la pagina ha
     pulsanti «Share», il menu di condivisione."""
+    if SITE_MONO:
+        html = html.replace("#15304A", "#161616").replace("#2A4058", "#2E2E2E")
     if "crc-rain" not in html:
         html = html.replace("</body>", DECOR + "</body>", 1)
     if 'class="share"' in html and "crc-share-menu" not in html:

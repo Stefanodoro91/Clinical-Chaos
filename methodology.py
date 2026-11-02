@@ -194,7 +194,7 @@ def build_page(data, cfg, today=None):
     </article>""")
         parts += ["    </div>", "  </section>"]
         sections.append("\n".join(parts))
-    c = cfg["colors"]
+    c = grants.site_palette(cfg)
     cat_opts = "".join(f'<option value="{_slug(k)}">{escape(k)}</option>' for k in sorted(cats))
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"], cat_opts=cat_opts,

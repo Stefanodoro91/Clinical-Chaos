@@ -13,8 +13,39 @@ FONTS = Path(__file__).resolve().parent / "fonts"
 _font_cache = {}
 
 
-MONO, HL = False, None   # bianco e nero (config «mono»): HL = colore speciale del tipo di post, solo per le evidenziazioni
+MONO, HL, SCIENCE = False, None, False   # bianco e nero (config «mono»): HL = colore speciale del tipo di post, solo per le evidenziazioni
 EDITORIAL = False      # impostato da render_carousel (config «design_v3»): stile editoriale da rivista scientifica
+
+
+AZURES = ["#6EC1FF", "#7AB8FF", "#5FD0F2", "#8AB4FF", "#66C7E8"]     # azzurrini: uno per post, stabile
+
+
+def post_line(post):
+    """Linea del post: grant, positions, science (Clinical Insights), methods (metodologia e Checklist), special."""
+    k = post.get("kind")
+    if k in ("grant", "positions"):
+        return k
+    if k:
+        return "special"
+    return "science" if post.get("rubric") == "Clinical Insights" else "methods"
+
+
+def azure_for(post):
+    import hashlib
+    return AZURES[int(hashlib.md5(str(post.get("id") or post.get("title")).encode()).hexdigest(), 16) % len(AZURES)]
+
+
+def _mix(hexc, to, f):
+    a = [int(hexc.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4)]
+    return tuple(int(a[i] + (to[i] - a[i]) * f) for i in range(3))
+
+
+def _hl_tints(dark, alpha):
+    """Quattro tinte dei cubetti nel colore del tipo di post (HL): scure e sature su fondo nero, chiare su fondo bianco."""
+    base = tuple(int(HL.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    if dark:
+        return [_mix(HL, (10, 10, 10), 0.72) + (alpha,), _mix(HL, (10, 10, 10), 0.55) + (alpha,), base + (130,), base + (100,)]
+    return [_mix(HL, (255, 255, 255), 0.45) + (alpha,), _mix(HL, (255, 255, 255), 0.25) + (220,), base + (170,), base + (110,)]
 
 
 def _ld():
@@ -34,13 +65,18 @@ def hlc(dark, fallback):
     """Colore delle parole chiave nei titoli (su fondo scuro o chiaro)."""
     if not (MONO and HL):
         return fallback
-    return HL if dark else DARK_ACCENT.get(HL, HL)
+    if dark:
+        return HL
+    import colorsys
+    r, g, b = (int(HL.lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    h, l, sat = colorsys.rgb_to_hls(r, g, b)         # stesso colore, più scuro e saturo: leggibile su fondo bianco
+    return "#%02x%02x%02x" % tuple(int(v * 255) for v in colorsys.hls_to_rgb(h, 0.38, max(sat, 0.75)))
 
 
 def pill_colors(c, dark):
     """(fondo, testo) delle etichette: nel bianco e nero seguono il tema della copertina."""
     if MONO and not dark:
-        return c["background"], "#FFFFFF"
+        return c["background"], "#FFFFFF"        # fondo chiaro: etichetta nera con testo bianco
     return c["accent"], c["background"]
 
 
@@ -169,12 +205,6 @@ def paste_logo(img, name, x, y, height=None, width=None):
         ratio = (height / logo.height) if height else (width / logo.width)
         _logo_cache[key] = logo.resize((round(logo.width * ratio), round(logo.height * ratio)), Image.LANCZOS)
     logo = _logo_cache[key]
-    if MONO:                                   # bianco e nero: logo in scala di grigi, trasparenza invariata
-        key2 = key + ("gray",)
-        if key2 not in _logo_cache:
-            a = logo.getchannel("A")
-            _logo_cache[key2] = Image.merge("RGBA", (*(logo.convert("L"),) * 3, a))
-        logo = _logo_cache[key2]
     img.paste(logo, (int(x), int(y)), logo)
     return logo.size
 
@@ -231,11 +261,11 @@ def light_canvas(cfg, index, total):
 
 def canvas(cfg, index, total):
     c = cfg["colors"]
-    img = Image.new("RGB", (W, H), c["background"])
+    img = Image.new("RGB", (W, H), "#FFFFFF" if SCIENCE else c["background"])
     d = ImageDraw.Draw(img)
     d.rectangle((0, 0, W, 14), fill=c["accent"])
     if EDITORIAL and index > 1:
-        editorial_chrome(d, cfg, True, c)
+        editorial_chrome(d, cfg, not SCIENCE, c)
     # piè di pagina: handle a sinistra, numero slide a destra
     foot = font("SemiBold", 30)
     d.text((MARGIN, H - 110), cfg["handle"], font=foot, fill=c["muted"])
@@ -300,9 +330,8 @@ def cube_texture_v2(img, seed, accent, dark, keep_out=(), density=1.0):
     a = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
     bases = ([(42, 64, 88, 255), (31, 92, 90, 255), (120, 135, 150, 130), a + (100,)] if dark else
              [(201, 214, 223, 255), (176, 196, 210, 220), a + (115,), (14, 34, 51, 45)])
-    if MONO:
-        bases = ([(46, 46, 46, 255), (72, 72, 72, 255), (130, 130, 130, 120), a + (90,)] if dark else
-                 [(205, 205, 205, 255), (178, 178, 178, 210), a + (60,), (10, 10, 10, 40)])
+    if MONO and HL:
+        bases = _hl_tints(dark, 255)
     d = ImageDraw.Draw(img, "RGBA")
     taken = grown.copy()
 
@@ -368,9 +397,8 @@ def cube_texture(img, seed, accent, dark, keep_out=(), density=1.0):
     a = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
     cols = ([(42, 64, 88, 255), (31, 92, 90, 255), (120, 135, 150, 120), a + (95,)] if dark else
             [(201, 214, 223, 255), (176, 196, 210, 200), a + (110,), (14, 34, 51, 40)])
-    if MONO:
-        cols = ([(46, 46, 46, 255), (72, 72, 72, 255), (130, 130, 130, 120), a + (90,)] if dark else
-                [(205, 205, 205, 255), (178, 178, 178, 200), a + (60,), (10, 10, 10, 40)])
+    if MONO and HL:
+        cols = _hl_tints(dark, 255)
     placed = 0
     for _ in range(400):
         if placed >= 44:
@@ -1092,15 +1120,21 @@ MONO_COLORS = {"background": "#0A0A0A", "accent": "#F2F2F2", "text": "#FFFFFF", 
 def set_mono(cfg):
     """Imposta il bianco e nero (config «mono»): palette di grigi per tutto, e come colore speciale l'accento
     del tipo di post (HL), usato solo per le evidenziazioni del testo."""
-    global MONO, HL, PAPER, INK_MUTED
+    global MONO, HL, PAPER, INK_MUTED, SCIENCE
     MONO = bool(cfg.get("mono"))
     HL = cfg["colors"]["accent"] if MONO else None
-    PAPER, INK_MUTED = ("#F2F2F2", "#666666") if MONO else ("#F3F6F9", "#5B7186")
+    SCIENCE = bool(MONO and cfg.get("_science"))
+    PAPER, INK_MUTED = ("#FFFFFF" if SCIENCE else "#F2F2F2", "#666666") if MONO else ("#F3F6F9", "#5B7186")
 
 
 def mono_cfg(cfg):
     """Config con la palette di grigi; l'accento originale resta in HL (chiamare set_mono prima)."""
-    return {**cfg, "colors": {**cfg["colors"], **MONO_COLORS}} if cfg.get("mono") else cfg
+    if not cfg.get("mono"):
+        return cfg
+    cols = {**cfg["colors"], **MONO_COLORS}
+    if cfg.get("_science"):             # Scienza: nero su bianco (il fondo scuro resta per le targhette interne)
+        cols.update(text="#0A0A0A", muted_text="#3A3A3A", muted="#767676", accent="#0A0A0A")
+    return {**cfg, "colors": cols}
 
 
 def render_carousel(post, cfg):
@@ -1114,7 +1148,14 @@ def render_carousel(post, cfg):
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": post["accent"]}}
     if post.get("kind") == "positions":
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("positions_accent", "#A78BFA")}}
-    set_mono(cfg)                         # bianco e nero: da qui l'accento del tipo resta solo in HL
+    if cfg.get("mono"):                   # una palette per linea: azzurrino (metodologia e scienza), giallo, violetto
+        line = post_line(post)
+        if line in ("methods", "science"):
+            cfg = {**cfg, "colors": {**cfg["colors"], "accent": azure_for(post)},
+                   "cover_theme": "light" if line == "science" else "dark", "_science": line == "science"}
+        else:
+            cfg = {**cfg, "cover_theme": "dark", "_science": False}
+    set_mono(cfg)                         # da qui l'accento del tipo resta in HL (evidenziazioni, cubetti)
     cfg = mono_cfg(cfg)
     if post.get("kind") == "positions":   # raccolta settimanale di posizioni: senza illustrazioni AI
         jobs = post.get("jobs", [])

@@ -27,6 +27,7 @@ import rubrics
 
 ROOT = Path(__file__).resolve().parent
 CONFIG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
+grants.SITE_MONO = bool(CONFIG.get("mono"))
 QUEUE_FILE = ROOT / "queue.json"
 POSTED_FILE = ROOT / "posted_log.json"
 SOURCES_FILE = ROOT / "sources_log.json"

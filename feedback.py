@@ -119,7 +119,7 @@ PAGE = """<!doctype html>
 
 def build_page(cfg, today=None):
     from datetime import date
-    c = cfg["colors"]
+    c = grants.site_palette(cfg)
     key = (cfg.get("feedback_key") or "").strip()
     return PAGE.format(brand=escape(cfg["brand_name"]), brand_plain=escape(cfg["brand_name"], quote=True),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], accent=c["accent"],
@@ -212,7 +212,7 @@ FEEDS = """<!doctype html>
 
 
 def build_feeds_page(cfg):
-    c = cfg["colors"]
+    c = grants.site_palette(cfg)
     return FEEDS.format(brand=escape(cfg["brand_name"]), bg=c["background"], muted=c["muted"], soft=c["muted_text"],
                         accent=c["accent"], ig=cfg["handle"].lstrip("@"), handle=escape(cfg["handle"]),
                         calls_url=escape(grants.site_url(cfg, "feed-calls.xml"), quote=True),

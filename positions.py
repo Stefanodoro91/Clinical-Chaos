@@ -835,7 +835,7 @@ def build_page(archive, posted, cfg, today=None):
             parts.append("    </div>")
         parts.append("  </section>")
         sections.append("\n".join(parts))
-    c = cfg["colors"]
+    c = grants.site_palette(cfg)
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
                        accent=cfg.get("positions_accent", "#A78BFA"), nav="".join(nav),
@@ -958,7 +958,7 @@ def job_jsonld(k, v, d):
 def job_pages(archive, cfg, today=None):
     """{nome file: html} con una pagina per ogni posizione aperta in pagina."""
     today = today or date.today()
-    c = cfg["colors"]
+    c = grants.site_palette(cfg)
     out = {}
     for k, v, d in active(archive, today):
         slug = job_slug(k, v)
