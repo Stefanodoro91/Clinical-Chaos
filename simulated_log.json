@@ -1,0 +1,26 @@
+[
+  {
+    "date": "2026-11-02",
+    "time": "2026-11-02T16:04:04+00:00",
+    "id": "40cb2ae7",
+    "title": "Why Even One Outlier Destroys the Mean",
+    "source": "Parametric vs non parametric.pdf",
+    "simulated": true,
+    "points": [
+      {
+        "heading": "The Mean Has Zero Breakdown",
+        "body": "The sample mean is defined as the sum of observations divided by n. If any single observation gets arbitrarily large, the mean becomes arbitrarily large. So the mean fails entirely when even one extreme value is present."
+      },
+      {
+        "heading": "The Median Survives Extremes",
+        "body": "The median is the central value in a distribution where equal numbers of values lie above and below. If a minority of observations go to infinity, the median will not be arbitrarily bad. Its breakdown point is one half."
+      },
+      {
+        "heading": "When Is the Mean Actually Good?",
+        "body": "The mean is a good estimator only if the data have zero outliers, no skewness, and unimodality. The median is far more insensitive to these departures."
+      }
+    ],
+    "takeaway": "Even a single outlier makes the sample mean completely arbitrary, giving it a breakdown point of zero.",
+    "category": "Statistics"
+  }
+]

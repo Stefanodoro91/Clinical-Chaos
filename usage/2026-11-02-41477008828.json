@@ -16,6 +16,45 @@
    "ragionamento": 0,
    "respinte": 0,
    "versione": "gemini-3.5-flash-lite"
+  },
+  "controllo doppioni|groq-gpt-oss-120b": {
+   "richieste": 1,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "riscrittura anti-copia|gemini-flash-lite-latest": {
+   "richieste": 1,
+   "ingresso": 321,
+   "uscita": 196,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "verifica fatti|gemini-flash-lite-latest": {
+   "richieste": 1,
+   "ingresso": 2967,
+   "uscita": 9,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "revisione slide|gemini-flash-lite-latest": {
+   "richieste": 1,
+   "ingresso": 394,
+   "uscita": 110,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "scelta immagini|gemini-flash-lite-latest": {
+   "richieste": 3,
+   "ingresso": 7494,
+   "uscita": 354,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
   }
  }
 }
