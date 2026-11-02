@@ -22,5 +22,21 @@
     ],
     "takeaway": "Even a single outlier makes the sample mean completely arbitrary, giving it a breakdown point of zero.",
     "category": "Statistics"
+  },
+  {
+    "date": "2026-11-02",
+    "time": "2026-11-02T17:46:35+00:00",
+    "id": "positions-2026-11-02",
+    "title": "5 open academic positions this week",
+    "source": "Academic positions",
+    "simulated": true,
+    "kind": "positions",
+    "position_ids": [
+      "POS-44c964850256",
+      "POS-59c61a2cb18e",
+      "POS-d5d4ce3dfd65",
+      "POS-8bbe81003073",
+      "POS-b7dc5d6c1f64"
+    ]
   }
 ]
