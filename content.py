@@ -582,7 +582,8 @@ ROUTES = {
     # scrittura del post di un bando dal testo ufficiale: Flash, poi un modello grande con contesto lungo
     "post bando": ["gemini:main", f"openrouter:{OR_STRONG}", "gemini:lite"],
     # revisore indipendente (famiglia diversa da chi scrive): ragionamento forte, quota ampia
-    "critica": [f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}", f"gemini:{GEMMA}"],
+    # (confronto del 2/11: Nemotron Ultra il più rigoroso ma lento; Qwen su Groq veloce e valido; gpt-oss spesso senza JSON)
+    "critica": [f"openrouter:{OR_STRONG}", "groq:qwen/qwen3.8-27b", f"groq:{GROQ_STRONG}", f"gemini:{GEMMA}"],
     # arbitro: decide sulle correzioni del revisore rileggendo la fonte (Gemini, che ha scritto il post)
     "arbitro": ["gemini:main", "gemini:lite", f"openrouter:{OR_STRONG}"],
     # copione dei reel: testo breve da un carosello già verificato
@@ -1147,6 +1148,9 @@ Flag a sentence when it is:
 - "unsupported": a factual claim that is neither in the SOURCE nor a standard textbook definition (invented numbers,
   studies, authors, rules, dates).
 - "empty": generic filler a researcher cannot use ("X is crucial", "plan carefully", "it matters").
+- direction and scale words ("higher", "lower", "better", "worse", "more", "less") when the SOURCE does not say whether
+  they mean higher or lower function/risk/score: never choose a reading; keep the SOURCE's own wording, or flag the
+  sentence as "imprecise" and propose a fix that avoids the ambiguous word.
 {extra_rules}
 Then judge the post as a whole:
 - thread: it must teach ONE idea, with slides in a logical order (e.g. problem → why it matters → how to do it right)
@@ -1194,7 +1198,8 @@ AI) flagged the problems below and proposed fixes. Check every proposed fix agai
 - "edit": the problem is real but the fix is wrong, adds a fact or loses meaning: write your own corrected text;
 - "reject": the original is correct according to the SOURCE (say why in one line).
 - for a slide the reviewer wants removed: "accept" removes it, "reject" keeps it.
-Rules for any text you write: no fact that is not in the SOURCE; same length limits (title ≤ 70 characters, slide
+Rules for any text you write: no fact that is not in the SOURCE; never flip or resolve the direction of an effect or scale
+("higher" → "less disabled") unless the SOURCE states it explicitly: when the SOURCE is ambiguous, keep its wording; same length limits (title ≤ 70 characters, slide
 heading ≤ 55, slide body ≤ 160, takeaway ≤ 130, hook ≤ 120, caption ≤ 600); every slide makes sense on its own, as a
 screenshot, without referring to other slides or to the source; spell out acronyms the first time.
 Finally write the takeaway of the post as fixed: one sentence (≤ 130 characters), the real take-home message, specific,
