@@ -340,21 +340,21 @@ def poster_theme(post, cfg):
 CUBE_V2 = False        # impostato da render_carousel (config «cube_v2»)
 
 
-def cube_texture_v2(img, seed, accent, dark, keep_out=(), density=1.0):
-    """Cubetti sparsi in modo libero: dimensioni molto varie (da puntini a quadrati grandi), gruppi irregolari di
-    1–4 quadratini con leggere variazioni di colore e di posizione, più fitti ai bordi e con qualche cubetto negli
-    angoli liberi. Si evitano solo le sovrapposizioni: con testo, logo e immagini già disegnati (letti dai pixel, più i
-    rettangoli `keep_out`) e tra cubetti. `density` = quantità (1 = copertine, ~0.3 = slide interne)."""
-    import random
+GLOW = True            # strisciate luminose (config «glow»), impostato da render_carousel e dalle altre uscite
+_Q = 4                 # risoluzione della mappa di occupazione (px)
+
+
+def occupancy(img, keep_out=()):
+    """Mappa (a celle di 4 px) delle zone occupate: pixel diversi dallo sfondo (testo, logo, immagini) e rettangoli
+    `keep_out`, allargata di 16 px di margine. True = occupato."""
     import numpy as np
-    rnd = random.Random(f"{seed}")
     arr = np.asarray(img.convert("RGB"), dtype=np.int32)
     sample = arr[::6, ::6].reshape(-1, 3)
     keys, counts = np.unique(sample[:, 0] * 65536 + sample[:, 1] * 256 + sample[:, 2], return_counts=True)
     top = int(keys[counts.argmax()])
     bg = np.array([top >> 16, (top >> 8) & 255, top & 255], dtype=np.int32)
     ink = np.abs(arr - bg).sum(axis=2) > 36                       # pixel diversi dallo sfondo = contenuto
-    Q = 4                                                          # risoluzione della mappa di occupazione (px)
+    Q = _Q
     gh, gw = H // Q + 1, W // Q + 1
     pad = np.zeros((gh * Q, gw * Q), dtype=bool)
     pad[:H, :W] = ink
@@ -362,13 +362,199 @@ def cube_texture_v2(img, seed, accent, dark, keep_out=(), density=1.0):
     for k in keep_out:
         occ[max(0, int(k[1]) // Q):int(k[3]) // Q + 1, max(0, int(k[0]) // Q):int(k[2]) // Q + 1] = True
     occ[:5, :] = True                                              # barra d'accento in alto
-    m = 4                                                          # margine minimo dal contenuto: 16 px
     grown = occ.copy()
-    for _ in range(m):
+    for _ in range(4):                                             # margine minimo dal contenuto: 16 px
         g2 = grown.copy()
         g2[1:, :] |= grown[:-1, :]; g2[:-1, :] |= grown[1:, :]
         g2[:, 1:] |= grown[:, :-1]; g2[:, :-1] |= grown[:, 1:]
         grown = g2
+    return grown
+
+
+def _mixrgb(c, to, k):
+    return tuple(int(c[i] + (to[i] - c[i]) * k) for i in range(3))
+
+
+def glow_streaks(img, seed, accent, dark, grown=None, keep_out=(), density=1.0):
+    """2–3 strisciate di pulviscolo luminoso (stile bokeh dorato) che colano nella pagina e riempiono le zone
+    più vuote e più scure: polvere fine, scintille con alone, cerchi sfocati, qualche lampo a croce e cubetti
+    quadrati mescolati alle particelle. Il percorso sceglie le zone con più spazio libero; nulla copre testo,
+    logo o immagini (la mappa `grown` viene da `occupancy`). Colori: quello del tipo di post, la sua tinta chiara,
+    bianco caldo. Su fondo chiaro: particelle scure e più discrete."""
+    import math
+    import random
+    import numpy as np
+    from PIL import ImageChops, ImageFilter
+    if not GLOW:
+        return img
+    rnd = random.Random(f"glow-{seed}")
+    if grown is None:
+        grown = occupancy(img, keep_out)
+    Q = _Q
+    acc = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    k = max(0.35, min(1.0, 0.45 + 0.55 * density))               # intensità: copertine piene, slide interne più leggere
+    n_streaks = 3 if density >= 0.6 else 2
+    free = ~grown
+    ch, cw = (free.shape[0] // 4) * 4, (free.shape[1] // 4) * 4
+    fc = free[:ch, :cw].reshape(ch // 4, 4, cw // 4, 4).mean(axis=(1, 3))          # celle di 16 px: quota di spazio libero
+    r = 6                                                          # raggio di valutazione: ~100 px
+    cs = np.pad(fc, ((r + 1, r), (r + 1, r))).cumsum(0).cumsum(1)
+    loc = (cs[2 * r + 1:, 2 * r + 1:] - cs[:-2 * r - 1, 2 * r + 1:] - cs[2 * r + 1:, :-2 * r - 1]
+           + cs[:-2 * r - 1, :-2 * r - 1])[:fc.shape[0], :fc.shape[1]] / float((2 * r + 1) ** 2)
+    gy, gx = np.mgrid[0:fc.shape[0], 0:fc.shape[1]]
+
+    def bez(t, p0, p1, p2, p3):
+        u = 1 - t
+        return (u ** 3 * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t ** 3 * p3[0],
+                u ** 3 * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t ** 3 * p3[1])
+
+    paths, weight = [], np.ones_like(loc)
+    ts = np.linspace(0, 1, 70)
+    for _ in range(n_streaks):
+        best, best_s = None, -1
+        for _ in range(90):
+            if rnd.random() < 0.5:
+                p0 = (-60, rnd.uniform(0.05, 0.95) * H); p3 = (W + 60, rnd.uniform(0.05, 0.95) * H)
+            else:
+                p0 = (rnd.uniform(0.05, 0.95) * W, -60); p3 = (rnd.uniform(0.05, 0.95) * W, H + 60)
+            if rnd.random() < 0.3:
+                p0, p3 = p3, p0
+            p1 = (rnd.uniform(0.05, 0.95) * W, rnd.uniform(0.05, 0.95) * H)
+            p2 = (rnd.uniform(0.05, 0.95) * W, rnd.uniform(0.05, 0.95) * H)
+            pts = [bez(t, p0, p1, p2, p3) for t in ts]
+            inside = [(x, y) for x, y in pts if 0 <= x < W and 0 <= y < H]
+            if len(inside) < 40:
+                continue
+            sc = np.mean([loc[min(loc.shape[0] - 1, int(y) // 16), min(loc.shape[1] - 1, int(x) // 16)]
+                          * weight[min(loc.shape[0] - 1, int(y) // 16), min(loc.shape[1] - 1, int(x) // 16)]
+                          for x, y in inside]) * (len(inside) / len(pts)) ** 0.5
+            if sc > best_s:
+                best, best_s = (p0, p1, p2, p3), sc
+        if best is None:
+            continue
+        paths.append(best)
+        for t in ts:                                               # le strisce successive stanno lontane da questa
+            x, y = bez(t, *best)
+            d2 = ((gx * 16 + 8 - x) ** 2 + (gy * 16 + 8 - y) ** 2) / (2 * 230.0 ** 2)
+            weight *= 1 - 0.85 * np.exp(-d2)
+
+    light = (255, 244, 214)
+    if dark:
+        palette = [acc, acc, _mixrgb(acc, (255, 255, 255), 0.5), _mixrgb(acc, (255, 255, 255), 0.5), light, light]
+        cubes_pal = [_mixrgb(acc, (0, 0, 0), 0.25), acc, _mixrgb(acc, (255, 255, 255), 0.35)]
+    else:
+        deep = _mixrgb(acc, (0, 0, 0), 0.35)
+        palette = [deep, acc, acc, _mixrgb(acc, (0, 0, 0), 0.55)]
+        cubes_pal = [acc, deep]
+    bok_pal = ([acc, acc, _mixrgb(acc, (255, 255, 255), 0.25), light] if dark else palette)   # cerchi più saturi, non grigi
+    sharp = Image.new("RGBA", (W, H), (0, 0, 0, 0)); sd = ImageDraw.Draw(sharp)
+    bok_s = Image.new("RGBA", (W, H), (0, 0, 0, 0)); bs = ImageDraw.Draw(bok_s)
+    bok_b = Image.new("RGBA", (W, H), (0, 0, 0, 0)); bb = ImageDraw.Draw(bok_b)
+    haze = Image.new("L", (W, H), 0); hd = ImageDraw.Draw(haze)
+
+    def blocked(x, y, rad):
+        r0, r1 = max(0, int(y - rad) // Q), int(y + rad) // Q + 1
+        c0, c1 = max(0, int(x - rad) // Q), int(x + rad) // Q + 1
+        return grown[r0:r1, c0:c1].any()
+
+    for (p0, p1, p2, p3) in paths:
+        wd = rnd.uniform(0.11, 0.19) * W                             # larghezza della strisciata
+        sigma = wd / 2.3
+        phases = [rnd.uniform(0, 6.28) for _ in range(3)]
+        samples = [bez(t, p0, p1, p2, p3) for t in np.linspace(0, 1, 160)]
+        length = sum(math.dist(samples[i], samples[i + 1]) for i in range(159))
+        hd.line(samples, fill=int(70 * k), width=int(wd * 1.5), joint="curve")
+        n = int(length / 1500 * 1000 * k)
+        for _ in range(n):
+            t = min(1.0, max(0.0, rnd.betavariate(1.5, 1.5)))
+            dens = 0.55 + 0.45 * math.sin(t * 9 + phases[0]) * math.sin(t * 5 + phases[1])  # grumi più densi e radure
+            if rnd.random() > dens:
+                continue
+            x, y = bez(t, p0, p1, p2, p3)
+            xe, ye = bez(min(1, t + 0.01), p0, p1, p2, p3)
+            dx, dy = xe - x, ye - y
+            nrm = math.hypot(dx, dy) or 1
+            off = rnd.gauss(0, sigma)
+            x += -dy / nrm * off + rnd.gauss(0, 10); y += dx / nrm * off + rnd.gauss(0, 10)
+            if not (8 < x < W - 8 and 8 < y < H - 8):
+                continue
+            core = max(0.15, 1 - abs(off) / (2.2 * sigma))             # più vivo al centro della strisciata
+            roll = rnd.random()
+            col = rnd.choice(palette)
+            if roll < 0.085:                                           # cubetto quadrato, in mezzo alle particelle
+                sz = rnd.choice([6, 8, 10, 13, 17, 22])
+                if blocked(x, y, sz + 6):
+                    continue
+                cc = rnd.choice(cubes_pal)
+                sd.rectangle((x, y, x + sz, y + sz), fill=cc + (int(rnd.uniform(90, 200) * (0.5 + core / 2)),))
+            elif roll < 0.60:                                          # polvere fine
+                rad = rnd.uniform(0.9, 2.0)
+                if blocked(x, y, 6):
+                    continue
+                sd.ellipse((x - rad, y - rad, x + rad, y + rad), fill=col + (int(rnd.uniform(130, 255) * (0.45 + core / 2)),))
+            elif roll < 0.82:                                          # scintilla con alone
+                rad = rnd.uniform(2.0, 4.2)
+                if blocked(x, y, 14):
+                    continue
+                sd.ellipse((x - rad, y - rad, x + rad, y + rad), fill=col + (int(rnd.uniform(190, 255)),))
+            elif roll < 0.94:                                          # bokeh piccolo (cerchio morbido con bordo leggero)
+                rad = rnd.uniform(6, 15)
+                if blocked(x, y, rad + 4):
+                    continue
+                a = int(rnd.uniform(35, 95) * k * (0.5 + core / 2))
+                bc = rnd.choice(bok_pal)
+                bs.ellipse((x - rad, y - rad, x + rad, y + rad), fill=bc + (a,), outline=bc + (min(255, a + 40),), width=1)
+            elif roll < 0.985:                                         # bokeh grande, molto sfocato
+                rad = rnd.uniform(20, 46)
+                if blocked(x, y, rad + 6):
+                    continue
+                bb.ellipse((x - rad, y - rad, x + rad, y + rad), fill=rnd.choice(bok_pal) + (int(rnd.uniform(22, 55) * k),))
+            elif dark:                                                 # lampo a croce
+                ln = rnd.uniform(12, 26)
+                if blocked(x, y, ln + 4):
+                    continue
+                cc = col + (230,)
+                sd.line((x - ln, y, x + ln, y), fill=cc, width=1)
+                sd.line((x, y - ln, x, y + ln), fill=cc, width=1)
+                sd.ellipse((x - 2.5, y - 2.5, x + 2.5, y + 2.5), fill=(255, 255, 255, 255))
+
+    # maschera morbida delle zone libere: niente alone su testo, logo e immagini
+    soft = np.kron((~grown).astype(np.uint8) * 255, np.ones((Q, Q), dtype=np.uint8))[:H, :W]
+    soft = Image.fromarray(soft).filter(ImageFilter.GaussianBlur(12))
+    base = img.convert("RGBA")
+    haze_col = acc if dark else _mixrgb(acc, (0, 0, 0), 0.3)
+    haze = haze.filter(ImageFilter.GaussianBlur(80))
+    haze_soft = soft.point(lambda v: 120 + v * 135 // 255)          # la nebbia passa anche dietro il testo (leggera): niente riquadro nero
+    haze = ImageChops.multiply(haze.point(lambda v: int(v * (0.8 if dark else 0.3))), haze_soft)
+    layer = Image.new("RGBA", (W, H), haze_col + (0,)); layer.putalpha(haze)
+    base = Image.alpha_composite(base, layer)
+    for lay, blur in ((bok_b, 7), (bok_s, 2.2)):
+        lay = lay.filter(ImageFilter.GaussianBlur(blur))
+        lay.putalpha(ImageChops.multiply(lay.getchannel("A"), soft))
+        base = Image.alpha_composite(base, lay)
+    if dark:                                                       # alone attorno alle particelle vive (luce che sfuma)
+        halo = sharp.filter(ImageFilter.GaussianBlur(5))
+        halo.putalpha(ImageChops.multiply(halo.getchannel("A").point(lambda v: min(255, int(v * 1.5))), soft))
+        base = Image.alpha_composite(base, halo)
+    sharp.putalpha(ImageChops.multiply(sharp.getchannel("A"), soft.point(lambda v: 255 if v > 200 else 0)))
+    base = Image.alpha_composite(base, sharp)
+    img.paste(base.convert("RGB"))
+    return img
+
+
+def cube_texture_v2(img, seed, accent, dark, keep_out=(), density=1.0, glow=None):
+    """Cubetti sparsi in modo libero: dimensioni molto varie (da puntini a quadrati grandi), gruppi irregolari di
+    1–4 quadratini con leggere variazioni di colore e di posizione, più fitti ai bordi e con qualche cubetto negli
+    angoli liberi. Si evitano solo le sovrapposizioni: con testo, logo e immagini già disegnati (letti dai pixel, più i
+    rettangoli `keep_out`) e tra cubetti. `density` = quantità (1 = copertine, ~0.3 = slide interne).
+    Prima si stendono le strisciate luminose (glow_streaks), che riempiono le zone vuote; i cubetti si mescolano."""
+    import random
+    import numpy as np
+    rnd = random.Random(f"{seed}")
+    Q = _Q
+    grown = occupancy(img, keep_out)
+    if GLOW if glow is None else glow:
+        glow_streaks(img, seed, HL if (MONO and HL) else accent, dark, grown=grown, density=density)
     a = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
     bases = ([(42, 64, 88, 255), (31, 92, 90, 255), (120, 135, 150, 130), a + (100,)] if dark else
              [(201, 214, 223, 255), (176, 196, 210, 220), a + (115,), (14, 34, 51, 45)])
@@ -429,10 +615,10 @@ def cube_texture_v2(img, seed, accent, dark, keep_out=(), density=1.0):
             placed += 1
 
 
-def cube_texture(img, seed, accent, dark, keep_out=(), density=1.0):
+def cube_texture(img, seed, accent, dark, keep_out=(), density=1.0, glow=None):
     """Gruppi di 1–4 cubetti sparsi, più fitti ai bordi, mai sopra le zone di testo (`keep_out`: rettangoli)."""
     if CUBE_V2:
-        return cube_texture_v2(img, seed, accent, dark, keep_out, density)
+        return cube_texture_v2(img, seed, accent, dark, keep_out, density, glow)
     import random
     rnd = random.Random(seed)
     d = ImageDraw.Draw(img, "RGBA")
@@ -1155,9 +1341,10 @@ def cta_slide(post, cfg, index, total):
 def facebook_single(post, cfg):
     """Facebook: immagine singola che riassume il post (il testo lungo va nella didascalia). Con design_v3 nello
     stesso stile dei caroselli: bianco e nero (la Scienza su bianco), titolo serif, passi nel colore del tipo."""
-    global CUBE_V2, EDITORIAL, RUBRIC_FOOT
+    global CUBE_V2, EDITORIAL, RUBRIC_FOOT, GLOW
     EDITORIAL = bool(cfg.get("design_v3"))
     CUBE_V2 = bool(cfg.get("cube_v2"))
+    GLOW = bool(cfg.get("glow", True))
     RUBRIC_FOOT = None
     if EDITORIAL:
         cfg = style_cfg(post, cfg)
@@ -1220,8 +1407,9 @@ def _accent(post, cfg):
 
 def single_cover(post, cfg):
     """Copertina come immagine singola (Bluesky): senza «Swipe» e senza numero di pagina. JPEG in byte."""
-    global CUBE_V2, EDITORIAL, RUBRIC_FOOT
+    global CUBE_V2, EDITORIAL, RUBRIC_FOOT, GLOW
     CUBE_V2 = bool(cfg.get("cube_v2"))
+    GLOW = bool(cfg.get("glow", True))
     EDITORIAL = bool(cfg.get("design_v3"))
     RUBRIC_FOOT = RUBRIC_STYLE.get(post.get("rubric")) if EDITORIAL else None
     cfg = style_cfg(post, cfg)
@@ -1355,8 +1543,9 @@ def style_cfg(post, cfg):
 
 def render_carousel(post, cfg):
     """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
-    global CUBE_V2, EDITORIAL, RUBRIC_FOOT
+    global CUBE_V2, EDITORIAL, RUBRIC_FOOT, GLOW
     CUBE_V2 = bool(cfg.get("cube_v2"))
+    GLOW = bool(cfg.get("glow", True))
     EDITORIAL = bool(cfg.get("design_v3"))
     RUBRIC_FOOT = RUBRIC_STYLE.get(post.get("rubric")) if EDITORIAL else None
     cfg = style_cfg(post, cfg)

@@ -154,25 +154,35 @@ def weekly_frame(t, data, pt):
 
 
 def _with_cubes(draw, data, pt, accent, cfg, seed):
+    """Cubetti e strisciate luminose nelle parti vuote, calcolati sul fotogramma finale e fatti entrare in dissolvenza."""
     import numpy as np
     final = draw(SECONDS - 0.1, data, pt)
     old = (cards.MONO, cards.HL, cards.H)
     cards.MONO, cards.HL, cards.H = bool(cfg.get("mono")), accent, H     # il modulo delle schede lavora su 1350 px: qui la storia è 1920
-    textured = final.copy()
+    base = final.copy()
+    glow_on = bool(cfg.get("glow", True))
+    textured = None
     try:
-        cards.cube_texture(textured, f"story-{seed}-{data.get('hook', '')}", accent, True, keep_out=[(0, H - 260, W, H)], density=1.8)
+        if glow_on:                       # le strisciate evitano il testo da sole (margine e maschera morbida)
+            cards.glow_streaks(base, f"story-{seed}-{data.get('hook', '')}", accent, True,
+                               keep_out=[(0, H - 260, W, H)], density=1.2)
+        textured = base.copy()
+        cards.cube_texture(textured, f"story-{seed}-{data.get('hook', '')}", accent, True, keep_out=[(0, H - 260, W, H)],
+                           density=1.8, glow=False)
     finally:
         cards.MONO, cards.HL, cards.H = old
-    a, b = np.asarray(final, dtype=np.int16), np.asarray(textured, dtype=np.int16)
-    mask = np.abs(a - b).sum(axis=2) > 0
+    a0, a, b = (np.asarray(x, dtype=np.int16) for x in (final, base, textured))
+    gmask = np.abs(a - a0).sum(axis=2) > 0                    # strisciate: già lontane dal testo
+    mask = np.abs(b - a).sum(axis=2) > 0                      # cubetti
     try:                                  # scarta i cubetti troppo vicini al testo (si ritaglierebbero tra le lettere)
         from scipy import ndimage
-        near = ndimage.binary_dilation(np.abs(a - np.array(pt.bg, dtype=np.int16)).sum(axis=2) > 40, iterations=22)
+        near = ndimage.binary_dilation(np.abs(a0 - np.array(pt.bg, dtype=np.int16)).sum(axis=2) > 40, iterations=22)
         lab, n = ndimage.label(mask)
         bad = np.unique(lab[near & mask])
         mask &= ~np.isin(lab, bad[bad > 0])
     except ImportError:
         pass
+    mask |= gmask
     layer = np.asarray(textured)
 
     def wrapped(t, d, p):
