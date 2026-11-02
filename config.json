@@ -55,5 +55,13 @@
   "photo_bonus": 1,
   "design_v3": true,
   "mono": true,
-  "preview_file_id": "1JSrccM2tkwrNUUS6y4sCtFYtJXaiB3um"
+  "preview_file_id": "1JSrccM2tkwrNUUS6y4sCtFYtJXaiB3um",
+  "social_paused": true,
+  "preview_files": {
+    "research": "1VucwbxCWM6-Tr9fVbPKCHYWaN286MMGg",
+    "grant": "1f9dXABTOlPbww6Kjw8FhTtUSXN554Prh",
+    "positions": "12RnQUdL4KMCQ9RybQ33Zsf3Ct1rpBjR4",
+    "story": "1yNWSYN_e_2XP4V7lDfPAzZl3tUtsy1vS",
+    "reel": "1TId-IlevYajm3u110YlzO6BXEnR-S0ZS"
+  }
 }

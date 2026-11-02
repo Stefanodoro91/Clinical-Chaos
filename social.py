@@ -13,6 +13,14 @@ BSKY = "https://bsky.social/xrpc"
 THREADS = "https://graph.threads.net/v1.0"
 
 
+
+def _social_guard():
+    """Sicura: con i social in pausa (config «social_paused») nessuna pubblicazione può partire, da nessun percorso."""
+    import json as _json
+    from pathlib import Path as _P
+    if _json.loads((_P(__file__).resolve().parent / "config.json").read_text(encoding="utf-8")).get("social_paused"):
+        raise RuntimeError("social in pausa (config social_paused): pubblicazione bloccata")
+
 def _strip_tags(text):
     return re.sub(r"(\s#\w+)+\s*$", "", re.sub(r"\n#\w+(\s#\w+)*", "", text)).strip()
 
@@ -99,6 +107,7 @@ def bluesky_enabled():
 def publish_bluesky(image_paths, post, link, max_images=1):
     """Post con la prima slide (o fino a 4 immagini) e link cliccabile alla pagina del sito. Restituisce l'URI.
     Su Bluesky i caroselli non esistono: la prima slide più il link al sito è il formato più efficace."""
+    _social_guard()
     s = requests.post(f"{BSKY}/com.atproto.server.createSession", timeout=30,
                       json={"identifier": os.environ["BLUESKY_HANDLE"], "password": os.environ["BLUESKY_APP_PASSWORD"]})
     s.raise_for_status()
@@ -157,6 +166,7 @@ def _threads_ready(cid):
 
 def publish_threads(image_urls, post, link):
     """Carosello su Threads con le stesse slide (URL pubblici) e testo breve. Restituisce l'id del post."""
+    _social_guard()
     user = os.environ["THREADS_USER_ID"]
     children = []
     for u in list(image_urls)[:10]:
@@ -189,6 +199,7 @@ def reel_text(title, caption, link, limit):
 
 def publish_threads_video(video_url, text):
     """Video su Threads da un URL pubblico (mp4). Restituisce l'id del post."""
+    _social_guard()
     user = os.environ["THREADS_USER_ID"]
     c = _threads("POST", f"{user}/threads", media_type="VIDEO", video_url=video_url, text=text)["id"]
     for _ in range(60):                       # i video richiedono qualche minuto di elaborazione
@@ -205,6 +216,7 @@ def publish_threads_video(video_url, text):
 
 def publish_bluesky_video(video_path, text, link, alt=""):
     """Video su Bluesky con il servizio video ufficiale (app.bsky.video), poi il post con link cliccabile."""
+    _social_guard()
     s = requests.post(f"{BSKY}/com.atproto.server.createSession", timeout=30,
                       json={"identifier": os.environ["BLUESKY_HANDLE"], "password": os.environ["BLUESKY_APP_PASSWORD"]})
     s.raise_for_status()

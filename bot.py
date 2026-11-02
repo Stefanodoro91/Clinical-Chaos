@@ -40,11 +40,22 @@ HOME_FILE = ROOT / "docs" / "index.html"   # pagina iniziale del link in bio: du
 
 GRAPH_VERSION = os.environ.get("GRAPH_API_VERSION") or "v23.0"
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
+SIM_NAME = "simulated_log.json"            # social in pausa: contenuti preparati ma non pubblicati (config social_paused)
+SIMULATE = bool(CONFIG.get("social_paused")) and not DRY_RUN
+SIM_FILE = ROOT / SIM_NAME
 MAX_CAPTION_CHARS = 2200
 MAX_HASHTAGS = 5          # limite di Instagram (dicembre 2025): oltre, meno portata
 
 
 # ---------------------------------------------------------------- utilità
+
+def _social_guard():
+    """Sicura: con i social in pausa (config «social_paused») nessuna pubblicazione può partire, da nessun percorso."""
+    import json as _json
+    from pathlib import Path as _P
+    if _json.loads((_P(__file__).resolve().parent / "config.json").read_text(encoding="utf-8")).get("social_paused"):
+        raise RuntimeError("social in pausa (config social_paused): pubblicazione bloccata")
+
 def load(path, default):
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
 
@@ -370,6 +381,7 @@ def alt_texts(post, n):
 
 
 def publish_carousel(image_urls, caption, alts=None):
+    _social_guard()
     user = os.environ["IG_USER_ID"]
     children = []
     for i, url in enumerate(image_urls):
@@ -406,6 +418,7 @@ def facebook_caption(caption, kind=None):
 
 def publish_facebook(image_urls, caption, kind=None, alts=None):
     """Pubblica le stesse slide sulla Pagina Facebook come un unico post con più foto. Restituisce l'id del post."""
+    _social_guard()
     page_id = os.environ.get("FB_PAGE_ID")
     token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
     base = f"https://graph.facebook.com/{GRAPH_VERSION}/{page_id}"
@@ -451,6 +464,7 @@ def facebook_text(post, caption, kind=None, link=""):
 
 def publish_facebook_single(image_url, message):
     """Facebook: un'immagine con testo lungo (per il pubblico della Pagina rende più del carosello). Restituisce l'id del post."""
+    _social_guard()
     page_id = os.environ.get("FB_PAGE_ID")
     token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
     r = requests.post(f"https://graph.facebook.com/{GRAPH_VERSION}/{page_id}/photos",
@@ -474,6 +488,7 @@ def wait_until_public(url):
 
 def publish_reel(video_path, caption):
     """Reel su Instagram con caricamento diretto del video (upload «resumable»): nessun hosting esterno."""
+    _social_guard()
     user, token = os.environ["IG_USER_ID"], os.environ["IG_ACCESS_TOKEN"]
     c = ig("POST", f"{user}/media", media_type="REELS", upload_type="resumable", caption=caption, share_to_feed="true")
     data = Path(video_path).read_bytes()
@@ -521,6 +536,8 @@ def reel_spec(kind, p, cfg=None):
             m = load(ROOT / "methodology.json", [])
             items = m if isinstance(m, list) else list(m.values())
             entry = next((x for x in items if x.get("id") == p.get("id")), None)
+            if entry is None and p.get("points"):          # post simulato (social in pausa): i punti sono nel registro
+                entry = p
             return reels.research_spec(entry, cfg) if entry and entry.get("points") else None
         if kind == "grant":
             import grants
@@ -610,6 +627,18 @@ def reel_run(posted):
         (PREVIEW_DIR / "reel-caption.txt").write_text(caption, encoding="utf-8")
         print("Modalità prova: reel non pubblicato. Anteprima nell'artifact 'preview'.")
         return
+    if SIMULATE:
+        import drive_preview
+        drive_preview.upload(video, "reel", "video/mp4", CONFIG)
+        sims = load(SIM_FILE, [])
+        sims.append({"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                     "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "id": f"reel-{p['id']}"[:60],
+                     "title": p["title"], "source": p.get("source", ""), "kind": "reel", "reel_of": p["id"],
+                     "seconds": seconds, "simulated": True})
+        save(SIM_FILE, sims)
+        commit_and_push([SIM_NAME], f"Reel simulato (social in pausa): {p['title'][:60]}")
+        print("::notice title=Reel simulato::salvato su Drive, non pubblicato")
+        return
     try:
         media_id = publish_reel(video, caption)
     except Exception as e:
@@ -632,6 +661,7 @@ def reel_run(posted):
 
 def publish_facebook_reel(video_path, caption):
     """Reel sulla Pagina Facebook (API video_reels: avvio, caricamento diretto, pubblicazione)."""
+    _social_guard()
     page = os.environ["FB_PAGE_ID"]
     token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
     url = f"https://graph.facebook.com/{GRAPH_VERSION}/{page}/video_reels"
@@ -703,6 +733,36 @@ def crosspost_reel(video, caption, title, link, entry, name):
     return entry
 
 
+def simulate_post(post, kind, slides, caption):
+    """Social in pausa: il carosello si prepara come per uscire (slide salvate, PDF con didascalia su Drive) e si
+    registra in simulated_log.json, senza pubblicare e senza toccare coda, libreria e registro dei post."""
+    import drive_preview
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in post["id"])
+    folder = IMAGES_DIR / f"{today}-{safe}"
+    folder.mkdir(parents=True, exist_ok=True)
+    rel = []
+    for i, img in enumerate(slides, start=1):          # servono ai reel simulati dei giorni dopo
+        (folder / f"slide-{i}.jpg").write_bytes(img)
+        rel.append((folder / f"slide-{i}.jpg").relative_to(ROOT).as_posix())
+    PREVIEW_DIR.mkdir(exist_ok=True)
+    pdf = PREVIEW_DIR / "carousel.pdf"
+    drive_preview.carousel_pdf(slides, caption, pdf)
+    drive_preview.upload(pdf, {"grant": "grant", "positions": "positions"}.get(kind, "research"), "application/pdf", CONFIG)
+    entry = {"date": today, "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "id": post["id"],
+             "title": post["title"], "source": post.get("source", ""), "simulated": True,
+             **({"kind": kind} if kind in ("grant", "positions") else {}),
+             **({"grant_id": post.get("grant_id"), "deadline": post.get("deadline_iso")} if kind == "grant" else {}),
+             **({"position_ids": post.get("position_ids", [])} if kind == "positions" else {}),
+             **({"points": [{"heading": s.get("heading", ""), "body": s.get("body", "")} for s in post.get("slides", [])],
+                 "takeaway": post.get("takeaway", ""), "category": post.get("category", "")} if kind == "research" else {})}
+    sims = load(SIM_FILE, [])
+    sims.append(entry)
+    save(SIM_FILE, sims)
+    commit_and_push(rel + [SIM_NAME], f"Post simulato (social in pausa): {post['title'][:60]}")
+    print(f"::notice title=Post simulato::{post['title'][:80]} → Drive Anteprime, non pubblicato")
+
+
 def upload_preview(path, name):
     """Copia l'anteprima su Drive sovrascrivendo «reel-anteprima.mp4» nella cartella «Anteprime»: il file è
     dell'utente (gli account di servizio non hanno spazio proprio), il bot ne cambia solo il contenuto."""
@@ -733,6 +793,8 @@ def reel_announcement_run(posted):
     if crosspost_only and not done:
         print("::notice title=Reel::il reel speciale non è ancora uscito su Instagram: niente da ripubblicare")
         return
+    if SIMULATE and not crosspost_only:
+        print("::notice title=Reel speciale::social in pausa: solo anteprima su Drive")
     PREVIEW_DIR.mkdir(exist_ok=True)
     video = PREVIEW_DIR / "reel.mp4"
     if spec.get("animated"):                  # scritte animate, brano scelto nella libreria (es. Funky)
@@ -741,7 +803,7 @@ def reel_announcement_run(posted):
         seconds = reels.build_story_reel(spec, video, CONFIG)       # musica: Musica/Aziendale (poi Speciale, Funky)
     caption = f"{spec['caption']}\n\n{' '.join(spec.get('hashtags', []))}".strip()
     print(f"Reel speciale: {spec['id']} ({seconds} s)\n--- Didascalia ---\n{caption}")
-    if DRY_RUN:
+    if DRY_RUN or SIMULATE:
         (PREVIEW_DIR / "reel-caption.txt").write_text(caption, encoding="utf-8")
         upload_preview(video, f"{spec['id']}.mp4")
         print("Modalità prova: reel non pubblicato. Anteprima nell'artifact 'preview' e in Drive «Anteprime».")
@@ -790,6 +852,10 @@ def schedule_delay_hours():
 
 def main():
     posted = load(POSTED_FILE, [])
+    posted_real = posted
+    if SIMULATE:                       # social in pausa: i contenuti già simulati contano come usciti (niente doppioni)
+        posted = posted + load(SIM_FILE, [])
+        print("::notice title=Social in pausa::contenuti preparati e salvati su Drive (Anteprime), niente pubblicazione")
     late = schedule_delay_hours()
     if late is not None and late > 3:
         # un post fuori orario rende poco: il recupero entro 3 ore lo fa il guardiano (tools/watchdog.py)
@@ -855,7 +921,7 @@ def main():
     else:
         files_waiting = ingest(drive, queue)
         before = len(queue)
-        queue[:] = drop_repeats(queue, posted)
+        queue[:] = drop_repeats(queue, posted_real)
         if len(queue) != before and not DRY_RUN:
             save(QUEUE_FILE, queue)
             commit_and_push([QUEUE_FILE.name], "Coda: tolti i post doppioni")
@@ -869,7 +935,8 @@ def main():
                 print("Coda vuota.")
                 sys.exit(1)
             saturday = rubrics_on and rome_now.weekday() == 5
-            post = pick_next(queue, posted, prefer_doi=saturday)
+            sim_ids = {p.get("id") for p in posted} if SIMULATE else set()
+            post = pick_next([q for q in queue if q["id"] not in sim_ids] or queue, posted, prefer_doi=saturday)
             if saturday:
                 post["rubric"] = "Clinical Insights"   # sabato: un articolo, una lezione (slide «Based on»)
             post = quality_gate(post, drive, queue)
@@ -907,6 +974,8 @@ def main():
         (PREVIEW_DIR / "queue.json").write_text(json.dumps(queue, indent=2, ensure_ascii=False), encoding="utf-8")
         print("Modalità prova: niente pubblicato. Anteprima nell'artifact 'preview'.")
         return
+    if SIMULATE:
+        return simulate_post(post, kind, slides, caption)
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     safe_id = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in post["id"])
@@ -1266,6 +1335,9 @@ CORRECTIONS_FILE = ROOT / "corrections.json"
 def corrections():
     """Rettifiche dei post già pubblicati (corrections.json): un commento sotto il post Instagram e una riga
     di correzione in testa al post Facebook. Ogni rettifica si fa una volta sola (campo «done»)."""
+    if SIMULATE:
+        print("::notice title=Rettifiche::social in pausa: nessun commento pubblicato")
+        return
     items = load(CORRECTIONS_FILE, [])
     posted = {p.get("id"): p for p in load(POSTED_FILE, [])}
     token = os.environ["IG_ACCESS_TOKEN"]
@@ -1347,6 +1419,9 @@ def backfill_social():
     con il formato di ciascuno (Bluesky: prima slide + link; Threads: carosello + testo breve). Pochi per giro,
     per non inondare i profili; i post di metodologia sempre, i bandi solo se mancano almeno 14 giorni alla scadenza."""
     import social, methodology
+    if SIMULATE:
+        print("::notice title=Arretrati social::social in pausa: niente ripubblicazioni")
+        return
     posted = load(POSTED_FILE, [])
     methods = methodology.load()
     corrected = {c.get("post_id") for c in load(ROOT / "corrections.json", [])}      # post rettificati: non si ripubblicano

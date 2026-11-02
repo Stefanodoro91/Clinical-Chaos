@@ -24,6 +24,14 @@ W, H, M, FPS, SECONDS = 1080, 1920, 90, 30, 12.0
 font, fit = cards.font, cards.fit
 
 
+
+def _social_guard():
+    """Sicura: con i social in pausa (config «social_paused») nessuna pubblicazione può partire, da nessun percorso."""
+    import json as _json
+    from pathlib import Path as _P
+    if _json.loads((_P(__file__).resolve().parent / "config.json").read_text(encoding="utf-8")).get("social_paused"):
+        raise RuntimeError("social in pausa (config social_paused): pubblicazione bloccata")
+
 def _hx(h):
     h = h.lstrip("#")
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
@@ -286,6 +294,7 @@ def weekly_data(grants_list, verified, archive, today=None):
 
 # ---------------------------------------------------------------- pubblicazione (video caricato direttamente)
 def publish_instagram(video_path):
+    _social_guard()
     user, token = os.environ["IG_USER_ID"], os.environ["IG_ACCESS_TOKEN"]
     base = f"https://graph.facebook.com/{GRAPH_VERSION}"
     r = requests.post(f"{base}/{user}/media", data={"media_type": "STORIES", "upload_type": "resumable",
@@ -315,6 +324,7 @@ def publish_instagram(video_path):
 
 
 def publish_facebook(video_path):
+    _social_guard()
     page = os.environ["FB_PAGE_ID"]
     token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
     url = f"https://graph.facebook.com/{GRAPH_VERSION}/{page}/video_stories"
@@ -340,6 +350,9 @@ def main():
     dry = os.environ.get("DRY_RUN", "true").lower() != "false"
     kind = os.environ.get("STORY_KIND") or "auto"
     cfg = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
+    simulate = bool(cfg.get("social_paused")) and not dry      # social in pausa: la storia va solo su Drive
+    if simulate:
+        dry = True
     today = date.today()
     log = load_log()
     if not dry and os.environ.get("GITHUB_EVENT_NAME") == "schedule" and any(e.get("date") == today.isoformat() for e in log):
@@ -363,6 +376,11 @@ def main():
     out.parent.mkdir(exist_ok=True)
     render(kind, data, out, cfg, seed=today.toordinal())
     print(f"::notice title=Storia pronta::{kind} | {json.dumps({k: v for k, v in data.items() if k != 'rows'}, ensure_ascii=False)[:400]}")
+    if simulate:
+        import drive_preview
+        drive_preview.upload(out, "story", "video/mp4", cfg)
+        print("::notice title=Storia simulata::social in pausa: salvata su Drive (Anteprime), non pubblicata")
+        return
     if dry:
         print("Modalità prova: storia non pubblicata (anteprima negli artifact).")
         return
