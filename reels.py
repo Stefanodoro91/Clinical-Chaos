@@ -15,44 +15,81 @@ W, H = 1080, 1920
 FPS = 30
 
 
+def _cubes(img, seed, accent, dark, cfg, keep_out=(), density=0.8):
+    """Cubetti del brand sul fotogramma (il colore del tipo nel bianco e nero): si adatta l'altezza di cards."""
+    old = (cards.MONO, cards.HL, cards.H, cards.CUBE_V2)
+    cards.MONO, cards.HL, cards.H, cards.CUBE_V2 = bool(cfg.get("mono")), accent, H, True   # v2: evita il testo dai pixel
+    try:
+        cards.cube_texture(img, seed, accent, dark, keep_out=list(keep_out), density=density)
+    finally:
+        cards.MONO, cards.HL, cards.H, cards.CUBE_V2 = old
+    return img
+
+
 def frame(slide_path, cfg, index, total, accent):
-    """Una slide del carosello dentro il formato verticale: fascia alta con il marchio, fascia bassa con l'invito."""
-    if cfg.get("mono"):
-        cfg = {**cfg, "colors": {**cfg["colors"], "background": "#0A0A0A", "accent": "#F2F2F2", "muted": "#8A8A8A"}}
-        accent = "#F2F2F2"
+    """Una slide del carosello dentro il formato verticale: testata editoriale, slide su scheda arrotondata
+    con contorno nel colore del tipo, cubetti nelle fasce libere, avanzamento e invito al carosello completo."""
+    v3 = bool(cfg.get("design_v3"))
+    mono = bool(cfg.get("mono"))
+    if mono:
+        cfg = {**cfg, "colors": {**cfg["colors"], "background": "#0A0A0A", "muted": "#8A8A8A"}}
+        if not v3:
+            cfg = {**cfg, "colors": {**cfg["colors"], "accent": "#F2F2F2"}}
+            accent = "#F2F2F2"
     c = cfg["colors"]
     img = Image.new("RGB", (W, H), c["background"])
     d = ImageDraw.Draw(img)
+    cards.EDITORIAL = v3
     sw, sh = 960, 1200                     # margini laterali: lo zoom non taglia mai il testo della slide
     slide = Image.open(slide_path).convert("RGB").resize((sw, sh), Image.LANCZOS)
     top = (H - sh) // 2 - 20
-    img.paste(slide, ((W - sw) // 2, top))
-    # fascia alta: marchio
+    sx = (W - sw) // 2
+    # fascia alta: filetto e marchio (testata da rivista nello stile editoriale)
     d.rectangle([0, 0, W, 10], fill=accent)
     f_small = cards.font("Bold", 30)
     brand = cfg.get("brand_name", "").upper()
     tw = d.textlength(brand, font=f_small)
-    d.text(((W - tw) / 2, 120), brand, font=f_small, fill=c["accent"])
+    d.text(((W - tw) / 2, 112), brand, font=f_small, fill=accent if v3 else c["accent"])
+    if v3:
+        rule = "#2E2E2E" if mono else "#2A4058"
+        d.line((sx, 190, (W - tw) / 2 - 36, 190), fill=rule, width=2)
+        d.line(((W + tw) / 2 + 36, 190, sx + sw, 190), fill=rule, width=2)
+    # la slide su scheda arrotondata
+    if v3:
+        pic = slide.copy()
+        mask = Image.new("L", (sw, sh), 0)
+        ImageDraw.Draw(mask).rounded_rectangle((0, 0, sw - 1, sh - 1), radius=36, fill=255)
+        img.paste(pic, (sx, top), mask)
+        d.rounded_rectangle((sx, top, sx + sw, top + sh), radius=36, outline=accent, width=4)
+    else:
+        img.paste(slide, (sx, top))
     # fascia bassa: avanzamento e invito al carosello completo
     y = top + sh + 60
     seg = (W - 160 - (total - 1) * 12) / total
     for i in range(total):
         x0 = 80 + i * (seg + 12)
-        d.rounded_rectangle([x0, y, x0 + seg, y + 8], radius=4, fill=accent if i <= index else ("#2E2E2E" if cfg.get("mono") else "#2A4058"))
+        d.rounded_rectangle([x0, y, x0 + seg, y + 8], radius=4, fill=accent if i <= index else ("#2E2E2E" if mono else "#2A4058"))
     msg = "Full carousel on our profile"
-    f_msg = cards.font("SemiBold", 34)
+    f_msg = cards.font("SerifItalic" if v3 else "SemiBold", 38 if v3 else 34)
     tw = d.textlength(msg, font=f_msg)
     d.text(((W - tw) / 2, y + 40), msg, font=f_msg, fill="#FFFFFF")
     handle = cfg.get("handle", "")
     f_h = cards.font("Regular", 30)
     tw = d.textlength(handle, font=f_h)
-    d.text(((W - tw) / 2, y + 92), handle, font=f_h, fill=c["muted_text"])
+    d.text(((W - tw) / 2, y + 96), handle, font=f_h, fill=c["muted_text"])
+    if v3:                                 # cubetti nelle fasce libere, mai sopra la slide o le scritte
+        _cubes(img, f"reel-{index}-{total}", accent, True, cfg,
+               keep_out=[(sx - 20, top - 20, sx + sw + 20, top + sh + 20), (60, y - 20, W - 60, y + 150),
+                         ((W - 700) / 2, 90, (W + 700) / 2, 210)], density=0.7)
     return img
 
 
-def music(path, seconds, seed=0, mood="Classica", track=None):
-    """Base strumentale originale (lo-fi con batteria, basso, accordi e melodia): vedi music.py."""
+def music(path, seconds, seed=None, mood="Classica", track=None):
+    """Musica del reel: un brano della libreria su Drive (diverso ogni giorno), o la base generata in music.py."""
     import music as _music
+    from datetime import date
+    if seed is None:
+        seed = date.today().toordinal()                   # rotazione quotidiana dei brani
     return _music.for_video(path, seconds, seed, mood=mood, track=track)
 
 
@@ -92,7 +129,7 @@ def build_reel(slide_paths, out_path, cfg, accent=None, per_slide=4.6, edge=2.8,
             cmd += ["-i", str(wav)]
         cmd += ["-filter_complex", graph, "-map", f"[{last}]"]
         if with_music:
-            cmd += ["-map", f"{total}:a", "-c:a", "aac", "-b:a", "128k", "-ar", "44100"]
+            cmd += ["-map", f"{total}:a", "-c:a", "aac", "-b:a", "160k", "-ar", "44100"]
         cmd += ["-c:v", "libx264", "-preset", "medium", "-crf", "21", "-pix_fmt", "yuv420p", "-r", str(FPS),
                 "-movflags", "+faststart", "-t", f"{duration:.2f}", str(out_path)]
         subprocess.run(cmd, check=True)
@@ -182,6 +219,7 @@ def story_frame(slide, cfg, index, total, accent):
                 ImageDraw.Draw(mask).rounded_rectangle((0, 0, pic.width - 1, pic.height - 1), radius=32, fill=255)
                 img.paste(pic, (M, y), mask)
     elif kind == "cover":
+        inkc = "#0A0A0A" if mono else DARK_TEXT
         logo = Image.open(ROOT / "docs" / "logo-horizontal.png").convert("RGBA")
         lw = 560
         logo = logo.resize((lw, int(logo.height * lw / logo.width)), Image.LANCZOS)
@@ -191,17 +229,23 @@ def story_frame(slide, cfg, index, total, accent):
         if kick:
             f = cards.font("Bold", 34)
             tw = d.textlength(kick, font=f)
-            d.rounded_rectangle([M, y, M + tw + 48, y + 66], radius=33, outline=DARK_TEXT, width=3)
-            d.text((M + 24, y + 13), kick, font=f, fill=DARK_TEXT)
+            if cards.EDITORIAL:                      # etichetta piena nel colore del tipo, come nei caroselli
+                a_rgb = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+                a_ink = "#0A0A0A" if (0.299 * a_rgb[0] + 0.587 * a_rgb[1] + 0.114 * a_rgb[2]) / 255 > 0.55 else "#FFFFFF"
+                d.rounded_rectangle([M, y, M + tw + 48, y + 66], radius=33, fill=accent)
+                d.text((M + 24, y + 13), kick, font=f, fill=a_ink)
+            else:
+                d.rounded_rectangle([M, y, M + tw + 48, y + 66], radius=33, outline=inkc, width=3)
+                d.text((M + 24, y + 13), kick, font=f, fill=inkc)
             y += 130
         fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 112, 70, W - 2 * M, 620, 1.12)
-        y = cards.draw_rich(d, " ".join(lines), slide.get("highlight", ""), fnt, size, M, y, W - 2 * M, DARK_TEXT,
+        y = cards.draw_rich(d, " ".join(lines), slide.get("highlight", ""), fnt, size, M, y, W - 2 * M, inkc,
                             1.12, slide.get("mark") or accent, half=True)
         if slide.get("body"):
             fb = cards.font("Regular", 44)
             y += 50
             for line in _wrap(d, slide["body"], fb, W - 2 * M):
-                d.text((M, y), line, font=fb, fill="#3D5266" if not slide.get("bg") else DARK_TEXT)
+                d.text((M, y), line, font=fb, fill=("#3A3A3A" if mono else "#3D5266") if not slide.get("bg") else inkc)
                 y += 62
     elif kind == "image":
         # schermata con immagini (schermate del sito in un telefono, oppure copertine affiancate)
@@ -278,7 +322,13 @@ def story_frame(slide, cfg, index, total, accent):
         body_lines = _wrap(d, slide.get("body", ""), fb, W - 2 * M)
         block = 190 + len(lines) * size * 1.12 + 60 + len(body_lines) * 50 * 1.42
         top = max(300, int((H - block) / 2) - 60)          # contenuto centrato in verticale
-        d.text((M, top), slide.get("number", ""), font=cards.font(cards.H_("ExtraBold"), 150), fill=accent)
+        num = slide.get("number", "")
+        if num == "→":                       # il serif non ha la freccia: si disegna nel colore del tipo
+            ay = top + 95
+            d.line((M + 4, ay, M + 140, ay), fill=accent, width=16)
+            d.polygon([(M + 140, ay - 36), (M + 206, ay), (M + 140, ay + 36)], fill=accent)
+        else:
+            d.text((M, top), num, font=cards.font(cards.H_("ExtraBold"), 150), fill=accent)
         y = top + 210
         for line in lines:
             d.text((M, y), line, font=fnt, fill=fg)
@@ -286,16 +336,20 @@ def story_frame(slide, cfg, index, total, accent):
         y += 60
         cards.draw_rich(d, slide.get("body", ""), slide.get("highlight", ""), fb, 50, M, y, W - 2 * M, c["muted_text"],
                         1.42, accent, mark_text=c["background"])
-    # avanzamento in basso
+    # avanzamento in basso, nel colore del tipo
     yb = H - 190
     seg = (W - 2 * M - (total - 1) * 12) / total
+    done_c = accent if cards.EDITORIAL else bar
     for i in range(total):
         x0 = M + i * (seg + 12)
         d.rounded_rectangle([x0, yb, x0 + seg, yb + 8], radius=4,
-                            fill=bar if i <= index else (("#CFCFCF" if light else "#2E2E2E") if mono else ("#C9D6DF" if light else "#2A4058")))
+                            fill=done_c if i <= index else (("#CFCFCF" if light else "#2E2E2E") if mono else ("#C9D6DF" if light else "#2A4058")))
     if kind != "closing":
         f_h = cards.font("SemiBold", 32)
         d.text((M, yb + 40), cfg.get("handle", ""), font=f_h, fill="#5B7186" if light else c["muted_text"])
+    if cards.EDITORIAL and kind != "image":    # cubetti negli spazi liberi (i pixel già disegnati si evitano da soli)
+        _cubes(img, f"{kind}-{index}-{slide.get('title', '')[:24]}", accent, not light, cfg,
+               keep_out=[(0, yb - 30, W, H), (0, 0, W, 30)], density=0.8 if kind in ("cover", "closing") else 0.55)
     return img
 
 
@@ -383,7 +437,7 @@ def rain_reel(imgs, lengths, out_path, cfg, accent, fade=0.5, mood="Cerimony", t
         p.wait()
         music(wav, duration, mood=mood, track=track)
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(silent), "-i", str(wav), "-c:v", "copy",
-                        "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-shortest", "-movflags", "+faststart",
+                        "-c:a", "aac", "-b:a", "160k", "-ar", "44100", "-shortest", "-movflags", "+faststart",
                         str(out_path)], check=True)
     return round(duration, 1)
 
