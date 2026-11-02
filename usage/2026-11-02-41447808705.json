@@ -3,11 +3,12 @@
  "quota_day": "2026-11-02",
  "consumo": {
   "nuovi post da Drive|gemini-flash-latest": {
-   "richieste": 0,
-   "ingresso": 0,
-   "uscita": 0,
+   "richieste": 1,
+   "ingresso": 8166,
+   "uscita": 2824,
    "ragionamento": 0,
-   "respinte": 3
+   "respinte": 3,
+   "versione": "gemini-3.8-flash"
   },
   "nuovi post da Drive|gemini-flash-lite-latest": {
    "richieste": 1,

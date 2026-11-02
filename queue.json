@@ -1190,5 +1190,173 @@
     "source_hint": "sections 4.1 and 10.2",
     "id": "4a7cd16f",
     "source": "AI.pdf"
+  },
+  {
+    "title": "Why Grounded Theory Collects and Analyzes at Once",
+    "title_highlight": "Grounded Theory",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "No Hypothesis to Test",
+        "body": "Grounded theory is used when there is no pre-existing theory to guide your question. You must let the data speak for themselves.",
+        "image_prompt": "A researcher standing before an empty chalkboard, holding an open notebook and listening to a patient speaking across a table.",
+        "photo_query": "researcher interview patient",
+        "highlight": "let the data speak",
+        "source": "Grossoehme, 2014"
+      },
+      {
+        "heading": "The Iterative Cycle",
+        "body": "Unlike linear designs, data collection and analysis happen simultaneously. Early transcripts are coded immediately to inform future interviews.",
+        "image_prompt": "A looping circular arrow connecting a voice audio recorder to a set of written notes and highlighted pages.",
+        "photo_query": "audio recorder notebook desk",
+        "highlight": "collection and analysis happen simultaneously",
+        "source": "Rafuls & Moon, 1996"
+      },
+      {
+        "heading": "Revising the Interview Guide",
+        "body": "Initial codes reveal which questions work and which do not. Researchers adapt the interview guide to pursue unexpected, emerging ideas.",
+        "image_prompt": "A document with questions where several lines are crossed out with a pencil and replaced with new handwritten notes.",
+        "photo_query": "editing notes paper pen",
+        "highlight": "adapt the interview guide",
+        "source": "Charmaz, 2006"
+      },
+      {
+        "heading": "Sampling Until Saturation",
+        "body": "Data collection stops when categories reach saturation, meaning no new information is being learned from additional participant interviews.",
+        "image_prompt": "A transparent glass jar filled completely to the brim with folded notes, unable to hold any more paper.",
+        "photo_query": "",
+        "highlight": "no new information is being learned",
+        "source": "Morse, 1995"
+      }
+    ],
+    "takeaway": "Grounded theory is an iterative cycle where simultaneous analysis shapes ongoing interview questions until saturation.",
+    "takeaway_highlight": "iterative cycle",
+    "references": [
+      "Charmaz, K. (2006). Constructing grounded theory. Sage Publications.",
+      "Grossoehme, D. H. (2014). Overview of Qualitative Research. Journal of Health Care Chaplaincy, 20(3), 109–122. https://doi.org/10.1080/08854726.2014.925660",
+      "Morse, J. M. (1995). The Significance of Saturation. Qualitative Health Research, 5(2), 147–149. https://doi.org/10.1177/104973239500500201",
+      "Rafuls, S. E., & Moon, S. M. (1996). Grounded theory methodology in family therapy research. In D. H. Sprenkle & S. M. Moon (Eds.), Research methods in family therapy. Guilford Press."
+    ],
+    "caption": "Still waiting to finish data collection before analyzing interviews? Grounded theory demands the opposite.\n\nIn quantitative trials, changing protocol questions mid-study is a fatal flaw. In grounded theory, it is the core method.\n\nBy analyzing transcripts after just 3-4 interviews, investigators identify emerging concepts and revise their interview guide to explore unanticipated areas.\n\nSampling continues iteratively until thematic saturation is reached—when incoming interviews yield no new insights.\n\nHave you ever adapted an interview guide during an active qualitative study?",
+    "hashtags": [
+      "#QualitativeResearch",
+      "#GroundedTheory",
+      "#StudyDesign"
+    ],
+    "source_hint": "pages 5-6",
+    "id": "9cd8bee3",
+    "source": "Qualitative Research.pdf"
+  },
+  {
+    "title": "How to Build Rigor in Qualitative Research",
+    "title_highlight": "Build Rigor",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Validity vs Reliability",
+        "body": "Validity reflects whether findings truly portray the phenomenon. Reliability means another researcher can trace your exact decisions.",
+        "image_prompt": "A balance scale holding a detailed written report on one tray and an accurate weight measure on the other.",
+        "photo_query": "old brass balance scale",
+        "highlight": "truly portray the phenomenon",
+        "source": "Grossoehme, 2014"
+      },
+      {
+        "heading": "The Research Diary",
+        "body": "Document research decisions as they happen. An audit trail of sampling choices and question revisions establishes study reliability.",
+        "image_prompt": "An open leather-bound journal with dated procedural notes resting next to an audio recorder and pen.",
+        "photo_query": "open journal pen desk",
+        "highlight": "Document research decisions",
+        "source": "Swinton & Mowat, 2006"
+      },
+      {
+        "heading": "Member Checking",
+        "body": "Once themes are synthesized, present the final model back to participants. They verify whether the interpretation accurately reflects their lived experience.",
+        "image_prompt": "A researcher presenting a conceptual diagram on paper to two seated participants who examine and point at it.",
+        "photo_query": "researchers meeting discussion",
+        "highlight": "present the final model back",
+        "source": "Charmaz, 2005"
+      },
+      {
+        "heading": "Multi-Coder Discrepancies",
+        "body": "Coding qualitative transcripts in a team minimizes individual bias. Pre-specify rules for resolving coding discrepancies from the outset.",
+        "image_prompt": "Two researchers sitting side-by-side reviewing the same document with different colored highlighters comparing marks.",
+        "photo_query": "colleagues reviewing paper documents",
+        "highlight": "resolving coding discrepancies",
+        "source": "Grossoehme, 2014"
+      }
+    ],
+    "takeaway": "Qualitative rigor relies on audit trails in research diaries, multi-investigator coding, and participant member checking.",
+    "takeaway_highlight": "audit trails in research diaries",
+    "references": [
+      "Charmaz, K. (2005). Grounded theory in the 21st century. In N. K. Denzin & Y. S. Lincoln (Eds.), The SAGE handbook of qualitative research (pp. 507–535). Sage Publications.",
+      "Grossoehme, D. H. (2014). Overview of Qualitative Research. Journal of Health Care Chaplaincy, 20(3), 109–122. https://doi.org/10.1080/08854726.2014.925660",
+      "Swinton, J., & Mowat, H. (2006). Practical theology and qualitative research."
+    ],
+    "caption": "Think qualitative research lacks rigor? Methodological validity requires systematic verification steps.\n\nSkeptics often mistake qualitative analysis for subjective storytelling. In reality, establishing trustworthiness requires strict methodological checks.\n\nValidity is enhanced when participants review models through member checking to confirm their experiences are portrayed accurately.\n\nReliability is proven when investigators log every fork in the road inside an explicit research diary.\n\nHow does your team document analytical decisions to maintain an audit trail?",
+    "hashtags": [
+      "#QualitativeResearch",
+      "#ResearchRigor",
+      "#Methodology"
+    ],
+    "source_hint": "pages 2-3",
+    "id": "f38a90c7",
+    "source": "Qualitative Research.pdf"
+  },
+  {
+    "title": "Three Pillars of Qualitative Health Research",
+    "title_highlight": "Qualitative Health Research",
+    "category": "Study design",
+    "slides": [
+      {
+        "heading": "Ethnography: The Insider View",
+        "body": "Ethnography explores a group's conceptual world from the inside. It relies on direct observation and interviews to explain a lived culture.",
+        "image_prompt": "An observer sitting quietly in a clinic waiting room taking field notes while families and nurses interact.",
+        "photo_query": "hospital waiting room people",
+        "highlight": "from the inside",
+        "source": "Sobo, 2009"
+      },
+      {
+        "heading": "Phenomenology: Meaning of Experience",
+        "body": "Phenomenology examines what a specific experience means to a group. It prioritizes deep, rich descriptions over broad generalizability.",
+        "image_prompt": "An interviewer listening attentively across a small table to a patient speaking with hand gestures.",
+        "photo_query": "consultation room interview doctor",
+        "highlight": "what a specific experience means",
+        "source": "Boss, Dahl, & Kaplan, 1996"
+      },
+      {
+        "heading": "Grounded Theory: Building Models",
+        "body": "Grounded theory constructs theoretical models directly from empirical data when no existing hypothesis exists in the literature.",
+        "image_prompt": "Several individual quotation cards being organized into structured hierarchical categories on a board.",
+        "photo_query": "sticky notes organization board",
+        "highlight": "constructs theoretical models",
+        "source": "Charmaz, 2005"
+      },
+      {
+        "heading": "Purposive Sampling",
+        "body": "Unlike quantitative trials targeting representative samples, qualitative studies deliberately recruit participants with rich experience.",
+        "image_prompt": "A researcher selecting specific puzzle pieces from a diverse set to build an intricate target pattern.",
+        "photo_query": "",
+        "highlight": "deliberately recruit participants",
+        "source": "Newfield et al., 1996"
+      }
+    ],
+    "takeaway": "Match your qualitative question to the right method: culture to ethnography, meaning to phenomenology, theory to grounded theory.",
+    "takeaway_highlight": "Match your qualitative question",
+    "references": [
+      "Boss, P., Dahl, C., & Kaplan, L. (1996). The use of phenomenology for family therapy research. In D. H. Sprenkle & S. M. Moon (Eds.), Research methods in family therapy (pp. 83–106). Guilford Press.",
+      "Charmaz, K. (2005). Grounded theory in the 21st century. In N. K. Denzin & Y. S. Lincoln (Eds.), The SAGE handbook of qualitative research (pp. 507–535). Sage Publications.",
+      "Grossoehme, D. H. (2014). Overview of Qualitative Research. Journal of Health Care Chaplaincy, 20(3), 109–122. https://doi.org/10.1080/08854726.2014.925660",
+      "Newfield, N., Sells, S. P., Smith, T. E., Newfield, S., & Newfield, F. (1996). Ethnographic research methods. In D. H. Sprenkle & S. M. Moon (Eds.), Research methods in family therapy (pp. 25–63). The Guilford Press.",
+      "Sobo, E. J. (2009). Culture and meaning in health services research. Left Coast Press."
+    ],
+    "caption": "Ethnography, phenomenology, or grounded theory? Choosing the wrong qualitative design ruins your data.\n\nQualitative inquiry is not a generic catch-all. Each methodology answers a distinct clinical question.\n\nEthnography captures cultural rules through direct observation. Phenomenology digs into the deep personal meaning of an illness. Grounded theory builds explanatory models from scratch.\n\nSelecting the right design ensures your sampling strategy and interview guides yield actionable insights.\n\nWhich qualitative framework best fits your current research question?",
+    "hashtags": [
+      "#StudyDesign",
+      "#Phenomenology",
+      "#Ethnography"
+    ],
+    "source_hint": "pages 3-8",
+    "id": "278421ec",
+    "source": "Qualitative Research.pdf"
   }
 ]
