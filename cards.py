@@ -1124,29 +1124,55 @@ def cta_slide(post, cfg, index, total):
 
 
 def facebook_single(post, cfg):
-    """Facebook: immagine singola che riassume il post (il testo lungo va nella didascalia)."""
+    """Facebook: immagine singola che riassume il post (il testo lungo va nella didascalia). Con design_v3 nello
+    stesso stile dei caroselli: bianco e nero (la Scienza su bianco), titolo serif, passi nel colore del tipo."""
+    global CUBE_V2, EDITORIAL, RUBRIC_FOOT
+    EDITORIAL = bool(cfg.get("design_v3"))
+    CUBE_V2 = bool(cfg.get("cube_v2"))
+    RUBRIC_FOOT = None
+    if EDITORIAL:
+        cfg = style_cfg(post, cfg)
     c = cfg["colors"]
     navy, accent = c["background"], c["accent"]
-    img = Image.new("RGB", (W, H), navy)
+    light = EDITORIAL and SCIENCE
+    bg = "#FFFFFF" if light else navy
+    ink = c["text"] if EDITORIAL else "#FFFFFF"
+    dark = not light
+    hl = hlc(dark, accent) if EDITORIAL else accent
+    img = Image.new("RGB", (W, H), bg)
     d = ImageDraw.Draw(img)
     d.rectangle((0, 0, W, 14), fill=accent)
-    sym = paste_logo(img, "logo-symbol-light", MARGIN, 90, height=110)
+    sym = paste_logo(img, "logo-symbol" if light else "logo-symbol-light", MARGIN, 90, height=110)
     if sym:
-        paste_logo(img, "logo-wordmark-light", MARGIN + sym[0] + 20, 100, height=80)
-    d.text((MARGIN, 290), post.get("category", "Research methods").upper(), font=font("Bold", 34), fill=accent)
-    fnt, lines, size = fit(d, post["title"], "ExtraBold", 84, 54, W - 2 * MARGIN, 330, 1.1)
-    y = draw_lines(d, lines, fnt, size, MARGIN, 350, "#FFFFFF", 1.1) + 50
+        paste_logo(img, "logo-wordmark" if light else "logo-wordmark-light", MARGIN + sym[0] + 20, 100, height=80)
+    cat = post.get("category", "Research methods").upper()
+    if EDITORIAL:
+        pw = poster_pill(d, cat, MARGIN, 280, *pill_colors(c, dark))
+        extra_pills(d, post, MARGIN + pw + 16, 280, bg, ink)
+        top = 380
+    else:
+        d.text((MARGIN, 290), cat, font=font("Bold", 34), fill=accent)
+        top = 350
+    fnt, lines, size = fit(d, post["title"], H_("ExtraBold"), 84, 54, W - 2 * MARGIN, 330, 1.1)
+    if EDITORIAL:
+        y = draw_rich(d, post["title"], post.get("title_highlight") or "", fnt, size, MARGIN, top, W - 2 * MARGIN, ink,
+                      1.1, HLC(c), half=True) + 50
+    else:
+        y = draw_lines(d, lines, fnt, size, MARGIN, top, "#FFFFFF", 1.1) + 50
     steps = [s["heading"] for s in post.get("slides", [])][:4]
-    room = (H - 170 - y) / max(1, len(steps))
+    room = (H - 190 - y) / max(1, len(steps))
     for n, head in enumerate(steps, 1):
-        d.rounded_rectangle((MARGIN, y, MARGIN + 80, y + 80), radius=40, fill=accent)
-        nf = font("ExtraBold", 46)
-        d.text((MARGIN + 40 - d.textlength(str(n), font=nf) / 2, y + 12), str(n), font=nf, fill=navy)
-        hf, hl, hs = fit(d, head, "Bold", 46, 32, W - 2 * MARGIN - 120, room - 20, 1.2)
-        draw_lines(d, hl, hf, hs, MARGIN + 120, y + 8, "#FFFFFF", 1.2)
-        y += max(110, min(room, len(hl) * hs * 1.2 + 50))
+        d.rounded_rectangle((MARGIN, y, MARGIN + 80, y + 80), radius=40, fill=hl if EDITORIAL else accent)
+        nf = font(H_("ExtraBold"), 46)
+        d.text((MARGIN + 40 - d.textlength(str(n), font=nf) / 2, y + 8), str(n), font=nf, fill=bg if EDITORIAL else navy)
+        hf, hl_, hs = fit(d, head, "Bold", 46, 32, W - 2 * MARGIN - 120, room - 20, 1.2)
+        draw_lines(d, hl_, hf, hs, MARGIN + 120, y + 8, ink, 1.2)
+        y += max(110, min(room, len(hl_) * hs * 1.2 + 50))
     site = cfg.get("links_page_url", "").replace("https://", "").rstrip("/")
-    d.text((MARGIN, H - 110), site, font=font("SemiBold", 36), fill=c["muted_text"])
+    d.text((MARGIN, H - 110), site, font=font("SemiBold", 36), fill=(c["muted"] if EDITORIAL else c["muted_text"]))
+    if EDITORIAL:
+        cube_texture(img, f"fb-{post.get('id') or post['title']}", c["accent"], dark, keep_out=[(MARGIN - 20, H - 150, W - MARGIN, H - 40)],
+                     density=0.5)
     buf = io.BytesIO()
     img.save(buf, "JPEG", quality=92, optimize=True)
     return buf.getvalue()
@@ -1165,7 +1191,11 @@ def _accent(post, cfg):
 
 def single_cover(post, cfg):
     """Copertina come immagine singola (Bluesky): senza «Swipe» e senza numero di pagina. JPEG in byte."""
-    cfg = _accent(post, cfg)
+    global CUBE_V2, EDITORIAL, RUBRIC_FOOT
+    CUBE_V2 = bool(cfg.get("cube_v2"))
+    EDITORIAL = bool(cfg.get("design_v3"))
+    RUBRIC_FOOT = RUBRIC_STYLE.get(post.get("rubric")) if EDITORIAL else None
+    cfg = style_cfg(post, cfg)
     kind = post.get("kind")
     img = (grant_cover if kind == "grant" else positions_cover if kind == "positions" else cover)(post, cfg, None)
     buf = io.BytesIO()
@@ -1273,12 +1303,8 @@ def mono_cfg(cfg):
     return {**cfg, "colors": cols}
 
 
-def render_carousel(post, cfg):
-    """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
-    global CUBE_V2, EDITORIAL, RUBRIC_FOOT
-    CUBE_V2 = bool(cfg.get("cube_v2"))
-    EDITORIAL = bool(cfg.get("design_v3"))
-    RUBRIC_FOOT = RUBRIC_STYLE.get(post.get("rubric")) if EDITORIAL else None
+def style_cfg(post, cfg):
+    """Palette del tipo di post (accento, bianco e nero, tema) e flag di stile: la stessa per caroselli, Bluesky e Facebook."""
     if post.get("kind") == "grant":   # i bandi hanno un colore d'accento proprio, per riconoscerli a colpo d'occhio
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("grant_accent", "#FFB547")}}
     if post.get("accent"):   # post speciali (annunci): colore d'accento proprio
@@ -1294,6 +1320,16 @@ def render_carousel(post, cfg):
             cfg = {**cfg, "cover_theme": "dark", "_science": False}
     set_mono(cfg)                         # da qui l'accento del tipo resta in HL (evidenziazioni, cubetti)
     cfg = mono_cfg(cfg)
+    return cfg
+
+
+def render_carousel(post, cfg):
+    """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
+    global CUBE_V2, EDITORIAL, RUBRIC_FOOT
+    CUBE_V2 = bool(cfg.get("cube_v2"))
+    EDITORIAL = bool(cfg.get("design_v3"))
+    RUBRIC_FOOT = RUBRIC_STYLE.get(post.get("rubric")) if EDITORIAL else None
+    cfg = style_cfg(post, cfg)
     if post.get("kind") == "positions":   # raccolta settimanale di posizioni: senza illustrazioni AI
         jobs = post.get("jobs", [])
         total = len(jobs) + 2 + bool(post.get("facts"))
