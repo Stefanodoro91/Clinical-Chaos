@@ -838,3 +838,18 @@ def enrich(post, material):
             post["slides"][i] = {**post["slides"][i], "heading": _clip(f["heading"], 70), "body": body,
                                  "highlight": exact_phrase(post["slides"][i].get("highlight"), body)}
     return not concreteness(post)
+
+
+def license_status(text):
+    """Licenza di un articolo, letta dal testo (senza AI): («ok», etichetta) se riutilizzabile con attribuzione
+    (CC BY, CC BY-SA, CC0, pubblico dominio); («blocked», etichetta) se vieta le opere derivate o l'uso
+    commerciale (NC, ND); («unknown», "") se il testo non dichiara nessuna licenza."""
+    import re
+    t = re.sub(r"\s+", " ", (text or "").lower())
+    if re.search(r"non-?commercial|noncommercial|by-nc|cc by-nc|\bnc-nd\b|noderiv|no derivativ|by-nd|cc by-nd", t):
+        return "blocked", "CC con vincolo NC/ND"
+    if re.search(r"creative commons attribution(?! non)|\bcc[- ]by\b|cc by 4\.0|cc0|public domain|creativecommons\.org/licenses/by/", t):
+        return "ok", "CC BY"
+    if re.search(r"all rights reserved|©\s*\d{4}\s+elsevier|reproduction.{0,40}prohibited", t):
+        return "blocked", "tutti i diritti riservati"
+    return "unknown", ""

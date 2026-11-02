@@ -155,6 +155,17 @@ def ingest(drive, queue, limit=None):
         print(f"Leggo il materiale: {f['name']}")
         try:
             part = content.material_part(drive, f)
+            if f.get("parent") != inbox:         # materiale clinico («Clinica…»): solo articoli con licenza riutilizzabile
+                status, label = content.license_status(content.material_text(part))
+                if status != "ok":
+                    why = label or "nessuna licenza dichiarata nel testo"
+                    print(f"::warning title=Articolo ignorato per licenza::{f['name']}: {why}")
+                    sources.append({"drive_id": f["id"], "name": f["name"], "posts": 0, "note": f"ignorato: {why}",
+                                    "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")})
+                    if not DRY_RUN:
+                        save(SOURCES_FILE, sources)
+                        commit_and_push([SOURCES_FILE.name], f"Articolo ignorato per licenza: {f['name']}")
+                    continue
             published = [x["title"] for x in load(POSTED_FILE, [])] + [x["title"] for x in queue]
             posts = content.generate_posts(part, f["name"], CONFIG["brand_name"],
                                            int(CONFIG.get("max_posts_per_file", 12)), published)
