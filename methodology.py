@@ -103,6 +103,17 @@ PAGE = """<!doctype html>
                         padding: 6px 12px; font: 600 13px Inter, system-ui, sans-serif; cursor: pointer; }}
   @media (max-width: 520px) {{ form.filters {{ grid-template-columns: 1fr; }} }}
   .nomatch {{ color: var(--soft); background: var(--card); border-radius: 18px; padding: 18px 20px; font-size: 15px; }}
+  .tools {{ margin: 6px 0 4px; }}
+  .tools h2 {{ font-size: 21px; font-weight: 800; margin: 26px 0 4px; color: var(--accent); }}
+  .tools .sub {{ color: var(--soft); font-size: 14px; margin: 0 0 12px; }}
+  .tools .row {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }}
+  .tools a.tool {{ display: block; background: var(--card); border-radius: 16px; padding: 16px; text-decoration: none; color: var(--text);
+                  border: 1px solid transparent; }}
+  .tools a.tool:hover, .tools a.tool:focus-visible {{ border-color: var(--accent); }}
+  .tools .k {{ font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }}
+  .tools .t {{ display: block; font-size: 17px; font-weight: 800; margin: 4px 0; line-height: 1.25; }}
+  .tools .d {{ display: block; font-size: 13px; color: var(--soft); }}
+  @media (max-width: 620px) {{ .tools .row {{ grid-template-columns: 1fr; }} }}
   [hidden] {{ display: none !important; }}
   footer {{ color: var(--muted); font-size: 13px; margin-top: 36px; }}
   footer a {{ color: var(--teal); }}
@@ -121,6 +132,7 @@ PAGE = """<!doctype html>
     <label>Topic<select name="area"><option value="">All topics</option>{cat_opts}</select></label>
     <div class="status"><span class="count" aria-live="polite">{n} topics</span><button type="reset" hidden>Clear filters</button></div>
   </form>
+{tools}
 {sections}
   <footer>
     Educational content for researchers and health professionals; always refer to the original references.<br>
@@ -146,6 +158,28 @@ PAGE = """<!doctype html>
 </body>
 </html>
 """
+
+
+TOOLS = [("Protocol draft", "Draft your protocol", "Step-by-step protocol drafting for your study design.", "protocol"),
+         ("Reporting", "Reporting guidelines", "The right checklist for your design: CONSORT, STROBE, PRISMA and more.", "reporting"),
+         ("Clinical appraisal", "Appraise the evidence", "Critical appraisal tools matched to each study design.", "appraisal")]
+
+
+def tools_block(cfg):
+    """Link agli strumenti per disegno di studio (config «tools_url», oppure «tools_urls» con un link per strumento)."""
+    base = (cfg.get("tools_url") or "").strip()
+    urls = cfg.get("tools_urls") or {}
+    cards_ = []
+    for kicker, title, desc, key in TOOLS:
+        url = (urls.get(key) or base).strip()
+        if url:
+            cards_.append(f'<a class="tool" href="{escape(url, quote=True)}" rel="noopener"><span class="k">{kicker}</span>'
+                          f'<span class="t">{title} &rarr;</span><span class="d">{desc}</span></a>')
+    if not cards_:
+        return ""
+    return ('<section class="tools" id="tools"><h2>Tools by study design</h2>'
+            '<p class="sub">Draft the protocol, report it properly and appraise the evidence, for every study design.</p>'
+            f'<div class="row">{"".join(cards_)}</div></section>')
 
 
 def build_page(data, cfg, today=None):
@@ -198,6 +232,6 @@ def build_page(data, cfg, today=None):
     cat_opts = "".join(f'<option value="{_slug(k)}">{escape(k)}</option>' for k in sorted(cats))
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"], cat_opts=cat_opts,
-                       n=len(data), sections="\n".join(sections), updated=grants._fmt_date(today),
+                       n=len(data), tools=tools_block(cfg), sections="\n".join(sections), updated=grants._fmt_date(today),
                        og=grants.og_tags(cfg, f"Methodology library · {cfg['brand_name']}",
                                          "Practical clinical research methodology: key points and references.", "methodology"))

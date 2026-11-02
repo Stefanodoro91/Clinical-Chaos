@@ -1833,11 +1833,37 @@ def site_palette(cfg):
     return c
 
 
+EDITORIAL_SITE = """<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style id="crc-editorial">
+  /* stile editoriale dei post (design_v3): titoli serif, testata da rivista, schede con filetto, etichette piene */
+  h1, h2, h3, .t, .big, .num {font-family: "Source Serif 4", Georgia, serif !important; letter-spacing: -.01em;}
+  h1 {font-weight: 800; font-size: clamp(30px, 6vw, 40px); line-height: 1.1;}
+  .bar {height: 10px !important;}
+  main::before {content: attr(data-brand); display: block;}
+  .badge {border-radius: 999px; letter-spacing: .08em;}
+  section > h2, .tools h2 {border-bottom: 1px solid #2E2E2E; padding-bottom: 6px;}
+  .method, .job, .call, .card, form.filters, .nomatch, a.tool {background: #0F0F0F !important; border: 1px solid #2E2E2E !important;
+      border-radius: 14px !important; box-shadow: none !important;}
+  .method, .job, .call {border-left-color: var(--accent) !important;}
+  a.tool:hover, a.tool:focus-visible {border-color: var(--accent) !important;}
+  .take, .intro {font-family: "Source Serif 4", Georgia, serif; font-size: 17px !important; line-height: 1.5;}
+  details summary, .k {letter-spacing: .04em;}
+  .refs {border-top-color: #2E2E2E !important;}
+  footer {border-top: 1px solid #2E2E2E; padding-top: 14px;}
+  footer, .date {font-family: "Source Serif 4", Georgia, serif; font-style: italic;}
+  mark, .hl {background: var(--accent); color: #0A0A0A; padding: 0 .15em;}
+</style>
+"""
+
+
 def add_decor(html):
     """Aggiunge prima di </body> la decorazione animata ai lati (cascata di quadratini) e, se la pagina ha
     pulsanti «Share», il menu di condivisione."""
     if SITE_MONO:
         html = html.replace("#15304A", "#161616").replace("#2A4058", "#2E2E2E")
+        if "crc-editorial" not in html:
+            html = html.replace("</head>", EDITORIAL_SITE + "</head>", 1)
     if "crc-rain" not in html:
         html = html.replace("</body>", DECOR + "</body>", 1)
     if 'class="share"' in html and "crc-share-menu" not in html:
