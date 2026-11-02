@@ -52,5 +52,7 @@
   "backfill_per_run": 1,
   "rubrics": true,
   "cube_v2": true,
-  "photo_bonus": 1
+  "photo_bonus": 1,
+  "design_v3": true,
+  "mono": true
 }
