@@ -129,6 +129,7 @@ def _wrap(d, text, fnt, max_w):
 
 def story_frame(slide, cfg, index, total, accent):
     """Slide 1080×1920 per i reel di annuncio: copertina chiara, punti numerati scuri, chiusura con il logo."""
+    cards.EDITORIAL = bool(cfg.get("design_v3"))
     c = cfg["colors"]
     kind = slide.get("type", "point")
     accent = slide.get("accent") or accent
@@ -144,10 +145,10 @@ def story_frame(slide, cfg, index, total, accent):
         # numero grande su fondo colorato (es. bandi in giallo, posizioni in lilla), con foto facoltativa
         d.text((M, 170), (slide.get("kicker") or "").upper(), font=cards.font("Bold", 34), fill=fg)
         y = 240
-        big = cards.font("ExtraBold", 230)
+        big = cards.font(cards.H_("ExtraBold"), 230)
         d.text((M, y), slide.get("number", ""), font=big, fill=fg)
         y += 280
-        fnt, lines, size = cards.fit(d, slide["title"], "ExtraBold", 92, 60, W - 2 * M, 220, 1.08)
+        fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 92, 60, W - 2 * M, 220, 1.08)
         for line in lines:
             d.text((M, y), line, font=fnt, fill=fg)
             y += int(size * 1.08)
@@ -186,7 +187,7 @@ def story_frame(slide, cfg, index, total, accent):
             d.rounded_rectangle([M, y, M + tw + 48, y + 66], radius=33, outline=DARK_TEXT, width=3)
             d.text((M + 24, y + 13), kick, font=f, fill=DARK_TEXT)
             y += 130
-        fnt, lines, size = cards.fit(d, slide["title"], "ExtraBold", 112, 70, W - 2 * M, 620, 1.12)
+        fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 112, 70, W - 2 * M, 620, 1.12)
         y = cards.draw_rich(d, " ".join(lines), slide.get("highlight", ""), fnt, size, M, y, W - 2 * M, DARK_TEXT,
                             1.12, slide.get("mark") or accent, half=True)
         if slide.get("body"):
@@ -199,7 +200,7 @@ def story_frame(slide, cfg, index, total, accent):
         # schermata con immagini (schermate del sito in un telefono, oppure copertine affiancate)
         f_lab = cards.font("Bold", 30)
         d.text((M, 170), (slide.get("kicker") or cfg.get("brand_name", "")).upper(), font=f_lab, fill=accent)
-        fnt, lines, size = cards.fit(d, slide["title"], "ExtraBold", 84, 56, W - 2 * M, 230, 1.1)
+        fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 84, 56, W - 2 * M, 230, 1.1)
         y = 230
         for line in lines:
             d.text((M, y), line, font=fnt, fill=fg)
@@ -253,7 +254,7 @@ def story_frame(slide, cfg, index, total, accent):
         word = word.resize((ww, int(word.height * ww / word.width)), Image.LANCZOS)
         img.paste(word, ((W - ww) // 2, 740), word)
         y = 740 + word.height + 120
-        for text, f, col in ((slide.get("title", ""), cards.font("ExtraBold", 66), "#FFFFFF"),
+        for text, f, col in ((slide.get("title", ""), cards.font(cards.H_("ExtraBold"), 66), "#FFFFFF"),
                              (slide.get("body", ""), cards.font("SemiBold", 46), accent),
                              (cfg.get("handle", ""), cards.font("Regular", 40), c["muted_text"])):
             for line in _wrap(d, text, f, W - 2 * M):
@@ -265,12 +266,12 @@ def story_frame(slide, cfg, index, total, accent):
         f_lab = cards.font("Bold", 30)
         brand = cfg.get("brand_name", "").upper()
         d.text((M, 150), brand, font=f_lab, fill=c["accent"])
-        fnt, lines, size = cards.fit(d, slide["title"], "ExtraBold", 92, 60, W - 2 * M, 420, 1.12)
+        fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 92, 60, W - 2 * M, 420, 1.12)
         fb = cards.font("Regular", 50)
         body_lines = _wrap(d, slide.get("body", ""), fb, W - 2 * M)
         block = 190 + len(lines) * size * 1.12 + 60 + len(body_lines) * 50 * 1.42
         top = max(300, int((H - block) / 2) - 60)          # contenuto centrato in verticale
-        d.text((M, top), slide.get("number", ""), font=cards.font("ExtraBold", 150), fill=accent)
+        d.text((M, top), slide.get("number", ""), font=cards.font(cards.H_("ExtraBold"), 150), fill=accent)
         y = top + 210
         for line in lines:
             d.text((M, y), line, font=fnt, fill=fg)

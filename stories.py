@@ -69,7 +69,7 @@ def countdown_frame(t, data, pt):
     y = int(max(y + 90, yy + 20))
     n = int(round(data["days"] * _ease(t, 0.6, 1.4)))
     a = _ease(t, 0.6)
-    big = font("ExtraBold", 250)
+    big = font(cards.H_("ExtraBold"), 250)
     d.text((M, y), str(n), font=big, fill=pt.mix(pt.accent, a))
     unit = "day" if data["days"] == 1 else "days"
     ux = M + d.textlength(str(data["days"]), font=big) + 40
@@ -114,13 +114,13 @@ def weekly_frame(t, data, pt):
         cards.paste_logo(img, "logo-symbol-light", M, 320, height=110)
         cards.paste_logo(img, "logo-wordmark-light", M + 130, 330, height=84)
     y = 500
-    hf, hl, hs = fit(d, data["hook"], "ExtraBold", 112, 70, W - 2 * M, 280, 1.05)
+    hf, hl, hs = fit(d, data["hook"], cards.H_("ExtraBold"), 112, 70, W - 2 * M, 280, 1.05)
     a = _ease(t, 0.4)
     for ln in hl:
         d.text((M, y + (1 - a) * 30), ln, font=hf, fill=pt.mix("#FFFFFF", a))
         y += hs * 1.05
     y = int(y + 50)
-    numf = font("ExtraBold", 128)
+    numf = font(cards.H_("ExtraBold"), 128)
     lx = M + max(d.textlength(str(r[0]), font=numf) for r in data["rows"]) + 40
     for i, (num, label, col) in enumerate(data["rows"]):
         a = _ease(t, 1.6 + i * 0.8)
@@ -147,6 +147,7 @@ def weekly_frame(t, data, pt):
 def render(kind, data, out_path, cfg, seed=0):
     """Scrive l'mp4 della storia e restituisce il percorso. kind = «countdown» oppure «weekly»."""
     accent = cfg.get("grant_accent", "#FFB547") if kind == "countdown" else cfg["colors"]["accent"]
+    cards.EDITORIAL = bool(cfg.get("design_v3"))
     pt = _Painter(cfg, accent)
     draw = countdown_frame if kind == "countdown" else weekly_frame
     out_path = Path(out_path)

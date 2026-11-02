@@ -438,10 +438,32 @@ def extra_pills(d, post, x, y, bg, ink):
     return x
 
 
+def photo_cover(post, cfg, total, pic, img, d, dark, ink, acc):
+    """Copertina con foto a tutta larghezza in alto (stile Science): logo su targhetta, etichette a cavallo
+    tra foto e titolo, titolo serif sotto."""
+    c = cfg["colors"]
+    band = 560
+    img.paste(ImageOps.fit(pic.convert("RGB"), (W, band), Image.LANCZOS), (0, 14))
+    d.rounded_rectangle((MARGIN - 30, 50, MARGIN + 470, 190), radius=24, fill=c["background"])
+    paste_logo(img, "logo-symbol-light", MARGIN - 14, 60, height=120)
+    paste_logo(img, "logo-wordmark-light", MARGIN + 118, 76, height=88)
+    py = band - 28
+    pw = poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, py, c["accent"], c["background"])
+    extra_pills(d, post, MARGIN + pw + 16, py, c["background"] if dark else "#FFFFFF", ink)
+    poster_title(d, post["title"], post.get("title_highlight"), MARGIN, py + 100, W - 2 * MARGIN,
+                 H - 300 - (py + 100), ink, acc, start=96, minimum=52)
+    if total:
+        d.text((MARGIN, H - 240), "Swipe  →", font=font("ExtraBold", 46), fill=acc)
+    return img
+
+
 def poster_cover(post, cfg, total):
     """Copertina poster dei post di metodologia (e speciali)."""
     c = cfg["colors"]
     img, d, dark, ink, acc = poster_base(post, cfg, total)
+    pic = images.COVER_CACHE.get(post.get("id")) if EDITORIAL else None
+    if pic is not None:                  # stile editoriale: foto grande in alto (regola in render_carousel)
+        return photo_cover(post, cfg, total, pic, img, d, dark, ink, acc)
     lh = poster_logo(img, d, cfg, dark)
     top = 80 + lh + 50
     pw = poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, top, c["accent"], c["background"])
@@ -477,6 +499,7 @@ def poster_grant_cover(post, cfg, total, picture=None):
         y += 100
     if post.get("funder"):
         ff, fl, fs = fit(d, post["funder"], "SemiBold", 34, 26, W - 2 * MARGIN, 84, 1.25)
+        keep.append((MARGIN - 20, y - 10, W - MARGIN + 20, y + len(fl) * fs * 1.25 + 10))
         y = draw_lines(d, fl, ff, fs, MARGIN, y, c["muted_text"] if dark else INK_MUTED, 1.25) + 16
     box_top, box_h = H - 420, 150
     end = poster_title(d, post["title"], post.get("title_highlight"), MARGIN, y, W - 2 * MARGIN, box_top - y - 30,
@@ -487,7 +510,8 @@ def poster_grant_cover(post, cfg, total, picture=None):
                             fill=c["accent"] if dark else c["background"])
         lab = c["background"] if dark else c["accent"]
         d.text((MARGIN + 44, box_top + 22), "DEADLINE", font=font("Bold", 28), fill=lab)
-        d.text((MARGIN + 44, box_top + 58), post["deadline"].upper(), font=poster_font(70),
+        d.text((MARGIN + 44, box_top + 58), post["deadline"] if EDITORIAL else post["deadline"].upper(),
+               font=font("SerifExtraBold", 62) if EDITORIAL else poster_font(70),
                fill=c["background"] if dark else "#FFFFFF")
         keep.append((MARGIN - 20, box_top - 20, W - MARGIN + 20, box_top + box_h + 20))
     cube_texture(img, post.get("id") or post["title"], c["accent"], dark, keep_out=keep)
@@ -1060,6 +1084,9 @@ def render_carousel(post, cfg):
     used = 0
     if post.get("kind") == "grant" and cfg.get("grant_cover_photo") and post.get("id") not in images.COVER_CACHE:
         images.cover_photo(post, cfg)          # foto vera per la copertina del bando (se Pixabay ne ha una adatta)
+    if (EDITORIAL and not post.get("kind") and cfg.get("cover_photo_methods", True) and post.get("id") not in images.COVER_CACHE
+            and (post.get("area") or post.get("rubric") == "Clinical Insights")):
+        images.cover_photo(post, cfg)          # regola: foto in copertina solo per post di un'area clinica o Clinical Insights
     pages = [grant_cover(post, cfg, total) if post.get("kind") == "grant" else cover(post, cfg, total)]
     facts_first = has_facts and post.get("facts_first")
     if has_numbers:                                          # post speciali: i numeri subito dopo la copertina
