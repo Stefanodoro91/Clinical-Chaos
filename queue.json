@@ -41,54 +41,6 @@
     "source": "Critical appraisal"
   },
   {
-    "title": "Why the Barthel Index Misses Stroke Recovery",
-    "title_highlight": "Barthel Index Misses",
-    "category": "Endpoints & outcomes",
-    "slides": [
-      {
-        "heading": "The Ceiling Effect Problem",
-        "body": "Many outcome measures in neurological rehabilitation suffer from floor or ceiling effects, which limit the ability to detect change.",
-        "image_prompt": "a group of simple figures trying to jump and hitting an invisible low ceiling above them, with one figure holding a clipboard",
-        "highlight": "floor or ceiling effects",
-        "source": "Hobart et al., 2001"
-      },
-      {
-        "heading": "High Scores, Residual Deficits",
-        "body": "Individuals may achieve high scores on the Barthel index but have residual deficits in gait, upper extremity recovery, driving, and physical functioning.",
-        "image_prompt": "a patient holding a high scoring grade document while stumbling with a cane and dropping car keys",
-        "highlight": "residual deficits in gait",
-        "source": ""
-      },
-      {
-        "heading": "Insensitive to Change",
-        "body": "The Barthel index has a ceiling effect and will not be sensitive to important clinical changes in stroke recovery.",
-        "image_prompt": "a measuring scale with a pointer stuck at the maximum top position while a patient walks past with difficulty",
-        "highlight": "",
-        "source": "Balu, 2009"
-      }
-    ],
-    "takeaway": "Scales with ceiling effects fail to detect vital clinical changes in stroke recovery.",
-    "takeaway_highlight": "ceiling effects fail",
-    "references": [
-      "Balu, S. (2009). Differences in psychometric properties, cut-off scores, and outcomes between the Barthel Index and Modified Rankin Scale in pharmacotherapy-based stroke trials: systematic literature review. Current Medical Research and Opinion, 25(6), 1329–1341. https://doi.org/10.1185/03007990902875877",
-      "Hobart, J. C., Lamping, D. L., Freeman, J. A., Langdon, D. W., McLellan, D. L., Greenwood, R. J., & Thompson, A. J. (2001). Evidence-based measurement: which disability scale for neurologic rehabilitation? Neurology, 57(4), 639–644."
-    ],
-    "caption": "Choosing outcome measures in neurological research is fraught with hidden traps. When an assessment tool like the Barthel index hits a ceiling, patients with lingering impairments in mobility or arm function look completely recovered on paper. How do you account for hidden functional deficits in your clinical trials?",
-    "hashtags": [
-      "#ClinicalTrials",
-      "#ResearchMethods",
-      "#StrokeRecovery",
-      "#Biostatistics",
-      "#OutcomeMeasures",
-      "#ClinicalResearch",
-      "#Neurology",
-      "#ResearchDesign"
-    ],
-    "source_hint": "pages 2-3",
-    "id": "249b5f0b",
-    "source": "Stroke Outcomes"
-  },
-  {
     "title": "Why Proxy Assessors Bias Quality of Life Data",
     "title_highlight": "Proxy Assessors Bias",
     "category": "Bias & confounding",
