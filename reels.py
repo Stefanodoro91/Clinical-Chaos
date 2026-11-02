@@ -188,10 +188,15 @@ def story_frame(slide, cfg, index, total, accent):
     d.rectangle([0, 0, W, 14], fill=bar)
     if kind == "stat":
         # numero grande su fondo colorato (es. bandi in giallo, posizioni in lilla), con foto facoltativa
-        d.text((M, 170), (slide.get("kicker") or "").upper(), font=cards.font("Bold", 34), fill=fg)
-        y = 240
+        kcol = accent if cards.EDITORIAL else fg             # etichetta e numero nel colore del tipo
+        if cards.EDITORIAL:                                    # numero grande centrato meglio in verticale
+            y0 = 420
+        else:
+            y0 = 170
+        d.text((M, y0), (slide.get("kicker") or "").upper(), font=cards.font("Bold", 34), fill=kcol)
+        y = y0 + 70
         big = cards.font(cards.H_("ExtraBold"), 230)
-        d.text((M, y), slide.get("number", ""), font=big, fill=fg)
+        d.text((M, y), slide.get("number", ""), font=big, fill=kcol)
         y += 280
         fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 92, 60, W - 2 * M, 220, 1.08)
         for line in lines:
@@ -328,7 +333,7 @@ def story_frame(slide, cfg, index, total, accent):
     else:
         f_lab = cards.font("Bold", 30)
         brand = cfg.get("brand_name", "").upper()
-        d.text((M, 150), brand, font=f_lab, fill=c["accent"])
+        d.text((M, 150), brand, font=f_lab, fill=accent if cards.EDITORIAL else c["accent"])
         fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 92, 60, W - 2 * M, 420, 1.12)
         fb = cards.font("Regular", 50)
         body_lines = _wrap(d, slide.get("body", ""), fb, W - 2 * M)
