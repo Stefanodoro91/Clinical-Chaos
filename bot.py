@@ -1380,8 +1380,73 @@ def backfill_social():
         print("::notice title=Arretrati social::nessun post da ripubblicare")
 
 
+def repost_social():
+    """Ripubblica su Facebook e Bluesky (con la grafica nuova) post già usciti: REPOST_IDS = id separati da virgola.
+    Le immagini singole si ricreano dai dati salvati (libreria metodologia, registro dei bandi) e si salvano accanto alle slide."""
+    import social, methodology
+    ids = [i.strip() for i in (os.environ.get("REPOST_IDS") or "").split(",") if i.strip()]
+    posted = load(POSTED_FILE, [])
+    methods = methodology.load()
+    sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    for p in posted:
+        if p["id"] not in ids:
+            continue
+        if p.get("kind") == "grant":
+            d = grants._date(p.get("deadline"))
+            post = {"kind": "grant", "id": p["id"], "grant_id": p.get("grant_id", ""), "title": p["title"], "funder": p.get("funder", ""),
+                    "deadline": grants._fmt_date(d) if d else "", "slides": [], "takeaway": ""}
+            caption = f"{p['title']}\n\nNext deadline: {grants._fmt_date(d) if d else ''}.\n\n{p.get('summary', '')}"
+            link = grants.site_url(CONFIG, "calls#" + grants.card_anchor(p.get("grant_id", "")))
+            kind = "grant"
+        else:
+            m = methods.get(p["id"])
+            if not m:
+                print(f"::warning title=Ripubblicazione::{p['id']} non è nella libreria metodologia: salto")
+                continue
+            post = {"id": p["id"], "title": m["title"], "category": m.get("category", "Research methods"),
+                    "slides": [{"heading": x["heading"], "body": x["body"]} for x in m.get("points", [])],
+                    "takeaway": m.get("takeaway", ""), "references": m.get("references", [])}
+            heads = " · ".join(x["heading"] for x in m.get("points", []))
+            caption = f"{m['title']}\n\n{m.get('takeaway', '')}\n\nKey points: {heads}"
+            link = grants.site_url(CONFIG, f"methodology#m-{p['id']}")
+            kind = "research"
+        safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in p["id"])
+        folder = IMAGES_DIR / f"{p['date']}-{safe}"
+        folder.mkdir(parents=True, exist_ok=True)
+        single = folder / "cover-single.jpg"
+        single.write_bytes(cards.single_cover(post, CONFIG))
+        rels = [single.relative_to(ROOT).as_posix()]
+        fb_path = None
+        if kind == "research":
+            fb_path = folder / "facebook.jpg"
+            fb_path.write_bytes(cards.facebook_single(post, CONFIG))
+            rels.append(fb_path.relative_to(ROOT).as_posix())
+        sha = commit_and_push(rels, f"Immagini social nel nuovo design: {p['title'][:50]}")
+        base = f"https://raw.githubusercontent.com/{os.environ['GITHUB_REPOSITORY']}/{sha}/"
+        fb_url = base + (rels[-1])
+        wait_until_public(fb_url)
+        if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID"):
+            try:
+                p["facebook_id"] = publish_facebook_single(fb_url, facebook_text({**post, "caption": caption}, caption, None if kind == "research" else kind, link))
+                print(f"::notice title=Facebook (nuovo design)::{p['title'][:60]} → {p['facebook_id']}")
+            except Exception as e:
+                print(f"::warning title=Facebook non ripubblicato::{str(e)[:300]}")
+        if social.bluesky_enabled():
+            try:
+                p["bluesky_uri"] = social.publish_bluesky([single], {**post, "caption": caption}, link, max_images=1)
+                print(f"::notice title=Bluesky (nuovo design)::{p['title'][:60]} → {p['bluesky_uri']}")
+            except Exception as e:
+                print(f"::warning title=Bluesky non ripubblicato::{str(e)[:300]}")
+        p["reposted"] = datetime.now(timezone.utc).date().isoformat()
+        save(POSTED_FILE, posted)
+        commit_and_push([POSTED_FILE.name], f"Ripubblicato nel nuovo design: {p['title'][:60]}")
+        time.sleep(30)
+
+
 if __name__ == "__main__":
-    if "--status" in sys.argv:
+    if "--repost" in sys.argv:
+        repost_social()
+    elif "--status" in sys.argv:
         status()
     elif "--restart" in sys.argv:
         restart()
