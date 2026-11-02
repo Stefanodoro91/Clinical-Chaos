@@ -33,6 +33,7 @@ jobs:
           GDRIVE_DONE_FOLDER_ID: ${{ secrets.GDRIVE_DONE_FOLDER_ID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}

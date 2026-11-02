@@ -92,6 +92,7 @@ jobs:
           GDRIVE_DONE_FOLDER_ID: ${{ secrets.GDRIVE_DONE_FOLDER_ID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           CF_DEPLOY_HOOK: ${{ secrets.CF_DEPLOY_HOOK }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}

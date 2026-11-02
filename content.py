@@ -553,10 +553,64 @@ def _groq_call(key, model, system, prompt_text, temperature, task):
     return None
 
 
+OPENROUTER_MODELS = [m.strip() for m in (os.environ.get("OPENROUTER_MODELS") or "google/gemini-2.0-flash-exp:free").split(",") if m.strip()]
+
+
+def _openrouter_json(prompt_text, schema, temperature=0.5, task="altro"):
+    """Chiama OpenRouter (Gemini 2.0 Flash free o altro modello configurato) come riserva finale.
+    Usa l'API compatibile OpenAI con JSON mode. Restituisce None se la chiave manca o tutti i modelli falliscono."""
+    key = os.environ.get("OPENROUTER_API_KEY")
+    if not key:
+        return None
+    schema_str = json.dumps(schema, ensure_ascii=False)
+    system = (
+        "Rispondi SOLO con un oggetto JSON valido che rispetti esattamente questo schema JSON Schema: "
+        + schema_str
+        + "\nNessun testo prima o dopo il JSON."
+    )
+    for model in OPENROUTER_MODELS:
+        body = {
+            "model": model,
+            "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt_text}],
+            "temperature": temperature,
+            "response_format": {"type": "json_object"},
+        }
+        for attempt in range(3):
+            try:
+                r = requests.post(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {key}",
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": "https://clinicalresearchchaos.com",
+                        "X-Title": "Clinical Research Chaos",
+                    },
+                    json=body, timeout=120,
+                )
+                if r.status_code == 429 or r.status_code >= 500:
+                    time.sleep(30 * (attempt + 1))
+                    continue
+                if r.status_code in (400, 404):
+                    print(f"  OpenRouter: modello {model} non disponibile ({r.status_code})")
+                    break
+                if not r.ok:
+                    print(f"::warning title=OpenRouter non disponibile::{model} {r.status_code}: {r.text[:200]}")
+                    break
+                text = r.json()["choices"][0]["message"]["content"]
+                result = json.loads(text)
+                record_usage(task, f"openrouter-{model.split('/')[-1]}", status="ok")
+                globals()["LAST_MODEL"] = f"openrouter-{model.split('/')[-1]}"
+                return result
+            except Exception as e:
+                print(f"  OpenRouter eccezione: {e}")
+                return None
+    return None
+
+
 def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
     """Chiede a Gemini una risposta JSON conforme allo schema e la restituisce già decodificata.
     `thinking` ("minimal", "low", "medium", "high") limita il ragionamento interno dei modelli Gemini 3.
-    Se Gemini è esaurito, le richieste di solo testo (non la scrittura dei post) passano a Groq."""
+    Se Gemini è esaurito, le richieste di solo testo passano a Groq, poi a OpenRouter (Gemini 2.0 Flash free)."""
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         raise RuntimeError("GEMINI_API_KEY mancante")
@@ -593,13 +647,20 @@ def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None):
     # (PDF e immagini non passano a Groq; i testi dei post restano a Gemini). Le verifiche fatte con Groq
     # sono segnate e vengono rifatte con Gemini prima di finire in un post.
     text_only = all("text" in p for p in parts)
-    if text_only and task not in NO_FALLBACK_TASKS and os.environ.get("GROQ_API_KEY"):
-        print(f"  Gemini esaurito per «{task}», provo Groq…")
-        result = _groq_json(_parts_to_text(parts), schema, temperature, task)
-        if result is not None:
-            global LAST_MODEL
-            LAST_MODEL = globals().get("LAST_GROQ", "groq")
-            return result
+    if text_only and task not in NO_FALLBACK_TASKS:
+        prompt_text = _parts_to_text(parts)
+        if os.environ.get("GROQ_API_KEY"):
+            print(f"  Gemini esaurito per «{task}», provo Groq…")
+            result = _groq_json(prompt_text, schema, temperature, task)
+            if result is not None:
+                global LAST_MODEL
+                LAST_MODEL = globals().get("LAST_GROQ", "groq")
+                return result
+        if os.environ.get("OPENROUTER_API_KEY"):
+            print(f"  Groq non disponibile per «{task}», provo OpenRouter…")
+            result = _openrouter_json(prompt_text, schema, temperature, task)
+            if result is not None:
+                return result
     raise RuntimeError(f"Gemini non disponibile: {last_error}")
 
 
