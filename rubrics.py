@@ -210,7 +210,8 @@ def checklist_post(posted):
     caption = (f"{item['hook']}\n\nOne reporting-checklist item at a time, every Thursday: what it asks, why it "
                f"matters, and how to comply in practice.\nThis week: {item['guide']}, {item['item']}.\n"
                "Which checklist item do you see ignored most often?")
-    return {"id": f"checklist-{item['slug']}", "kind": None, "rubric": "Checklist",
+    episode = 1 + sum(1 for p in posted if str(p.get("id", "")).startswith("checklist-"))
+    return {"id": f"checklist-{item['slug']}", "kind": None, "rubric": "Checklist", "rubric_no": episode,
             "title": item["title"], "title_highlight": item["title_highlight"],
             "category": item["category"], "slides": slides,
             "takeaway": item["takeaway"], "takeaway_highlight": item["takeaway_highlight"],

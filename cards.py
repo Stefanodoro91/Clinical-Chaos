@@ -249,6 +249,10 @@ def editorial_chrome(d, cfg, dark, c, n=None):
     acc = c["accent"] if dark else DARK_ACCENT.get(c["accent"], c["background"])
     kf = font("Bold", 24)
     d.text((MARGIN, 38), cfg["brand_name"].upper(), font=kf, fill=HLT(dark, acc) or acc)
+    if RUBRIC_FOOT:                        # nome di sezione della rubrica, a destra nella testata
+        tf = font("SerifItalic", 30)
+        tg = RUBRIC_FOOT["tagline"]
+        d.text((W - MARGIN - d.textlength(tg, font=tf), 32), tg, font=tf, fill=ink)
     d.line((MARGIN, 84, W - MARGIN, 84), fill=rule, width=2)
     d.line((MARGIN, H - 134, W - MARGIN, H - 134), fill=rule, width=2)
 
@@ -500,18 +504,56 @@ def poster_pill(d, label, x, y, fill, text):
     return pw
 
 
+RUBRIC_STYLE = {   # identità delle rubriche: motivo nella pill della copertina e motto nel piè di pagina
+    "Checklist": {"motif": "check", "tagline": "The weekly methods check"},
+    "Clinical Insights": {"motif": "lens", "tagline": "One paper, one lesson"},
+    "Career Path": {"motif": "steps", "tagline": "Academic roles, decoded"},
+    "Before you apply": {"motif": "arrow", "tagline": "Fixes that save a submission"},
+}
+RUBRIC_FOOT = None       # impostato da render_carousel: motto della rubrica nel piè di pagina delle slide interne
+
+
+def rubric_motif(d, kind, x, y, col, s=30):
+    """Piccolo marchio della rubrica, nel linguaggio dei cubetti del brand."""
+    w = 4 if s >= 26 else 3
+    if kind == "check":          # casella spuntata
+        d.rounded_rectangle((x, y, x + s, y + s), radius=max(4, s // 5), outline=col, width=w)
+        d.line((x + s * .22, y + s * .5, x + s * .44, y + s * .72), fill=col, width=w + 1)
+        d.line((x + s * .44, y + s * .72, x + s * .84, y + s * .24), fill=col, width=w + 1)
+    elif kind == "lens":         # il quadratino dentro il riquadro: la lezione dentro l'articolo
+        d.rounded_rectangle((x, y, x + s, y + s), radius=max(4, s // 5), outline=col, width=w)
+        u = s / 3
+        d.rectangle((x + u, y + u, x + 2 * u, y + 2 * u), fill=col)
+    elif kind == "steps":        # scala che sale
+        u = (s - 4) / 3
+        for i in range(3):
+            d.rectangle((x + i * (u + 2), y + s - (i + 1) * u, x + i * (u + 2) + u, y + s), fill=col)
+    elif kind == "arrow":        # avanti, ma solo dopo i controlli
+        u = s / 3
+        d.rectangle((x, y + u, x + u - 3, y + 2 * u), fill=col)
+        d.rectangle((x + u, y + u, x + 2 * u - 3, y + 2 * u), fill=col)
+        d.polygon([(x + 2 * u, y + u * .35), (x + s + 3, y + s / 2), (x + 2 * u, y + u * 2.65)], fill=col)
+
+
 def extra_pills(d, post, x, y, bg, ink):
     """Pill aggiuntive dopo quella principale: rubrica (es. CHECKLIST) e avviso idoneità dei bandi
     (es. US-BASED TEAMS ONLY). Fondo del tema e testo in inchiostro, per distinguerle dalla principale."""
     labels = [l for l in (post.get("eligibility_flag"), post.get("rubric"), post.get("area_label")) if l]   # l'avviso ha la precedenza
     pf = font("Bold", 28)
     for label in labels:
-        pw = d.textlength(label.upper(), font=pf) + 52
+        style = RUBRIC_STYLE.get(label)
+        text = label.upper() + (f" · Nº {post['rubric_no']}" if style and post.get("rubric_no") else "")
+        pw = d.textlength(text, font=pf) + 52 + (44 if style else 0)
         if x + pw > W - MARGIN:                  # niente pill tagliate: quelle che non entrano si saltano
             continue
         col = hlc(not SCIENCE, ink) if (MONO and HL) else ink
-        d.rounded_rectangle((x, y + 2, x + pw, y + 58), radius=28, fill=bg, outline=col, width=3)
-        d.text((x + 26, y + 13), label.upper(), font=pf, fill=col)
+        if style:                                # rubrica: pill piena nel colore del tipo, con il suo marchio
+            d.rounded_rectangle((x, y + 2, x + pw, y + 58), radius=28, fill=col)
+            rubric_motif(d, style["motif"], x + 24, y + 16, bg, s=30)
+            d.text((x + 24 + 44, y + 13), text, font=pf, fill=bg)
+        else:
+            d.rounded_rectangle((x, y + 2, x + pw, y + 58), radius=28, fill=bg, outline=col, width=3)
+            d.text((x + 26, y + 13), text, font=pf, fill=col)
         x += pw + 16
     return x
 
@@ -1233,9 +1275,10 @@ def mono_cfg(cfg):
 
 def render_carousel(post, cfg):
     """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
-    global CUBE_V2, EDITORIAL
+    global CUBE_V2, EDITORIAL, RUBRIC_FOOT
     CUBE_V2 = bool(cfg.get("cube_v2"))
     EDITORIAL = bool(cfg.get("design_v3"))
+    RUBRIC_FOOT = RUBRIC_STYLE.get(post.get("rubric")) if EDITORIAL else None
     if post.get("kind") == "grant":   # i bandi hanno un colore d'accento proprio, per riconoscerli a colpo d'occhio
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("grant_accent", "#FFB547")}}
     if post.get("accent"):   # post speciali (annunci): colore d'accento proprio
