@@ -220,15 +220,15 @@ def checklist_post(posted):
 
 # ---------------------------------------------------------------- Before you apply (venerdì, ogni due settimane)
 TIPS = [
-    ("Read the full call", "Eligibility details hide in annexes and footnotes, not in the summary page."),
-    ("Start the budget early", "Finance offices usually need 2–3 weeks before the submission deadline."),
-    ("Mirror the criteria", "Match every aim to an evaluation criterion: reviewers score against the grid."),
-    ("Ask the programme officer", "Specific questions get specific answers, and they are often decisive."),
-    ("Test your abstract", "Have a colleague outside your field read it: reviewers rarely share your niche."),
-    ("Check the formatting rules", "Page limits, fonts and attachments disqualify more proposals than science does."),
-    ("Line up support letters now", "Partners and co-applicants are slowest exactly when deadlines cluster."),
-    ("Register on the portal early", "Submission-system credentials can take days: a week before is the minimum."),
-    ("Reuse your data plan", "Funders ask for the same core data-management sections: keep a living template."),
+    ("Read the full call", "Eligibility hides in annexes and footnotes."),
+    ("Start the budget early", "Finance offices need 2–3 weeks."),
+    ("Mirror the criteria", "Match every aim to an evaluation criterion."),
+    ("Ask the programme officer", "Specific questions get decisive answers."),
+    ("Test your abstract", "Let a colleague outside your field read it."),
+    ("Check the formatting rules", "Page limits disqualify more than science does."),
+    ("Line up support letters now", "Partners are slowest when deadlines cluster."),
+    ("Register on the portal early", "Credentials can take days: sign up a week before."),
+    ("Reuse your data plan", "Keep one living data-management template."),
 ]
 
 
@@ -255,15 +255,12 @@ def apply_tips(post):
 
 # ---------------------------------------------------------------- Career Path (primo lunedì del mese)
 GLOSSARY = {
-    "Post-doc": "Fixed-term research role after the PhD, usually 1–3 years, tied to a funded project and a PI.",
-    "Research assistant / associate": "Project staff role, from bachelor's to PhD level: data collection and "
-                                      "analysis for a funded study, with little independent agenda.",
-    "Research fellow": "Researcher on a fellowship or project, often with an own funding line and growing independence.",
-    "Faculty": "Professor-track role mixing research and teaching: tenure-track in the US, lecturer to professor "
-               "in the UK, RTD then associate in Italy.",
-    "Clinical academic & fellowship": "Combines clinical duties with protected research time; usually requires a "
-                                      "health-professional qualification in that country.",
-    "PhD position": "Funded doctoral post: a salary or stipend to train by doing research, typically 3–4 years.",
+    "Post-doc": "Fixed-term role after the PhD, 1–3 years, tied to a funded project.",
+    "Research assistant / associate": "Project staff role, bachelor's to PhD level, little independent agenda.",
+    "Research fellow": "Researcher with an own funding line and growing independence.",
+    "Faculty": "Professor track: tenure-track (US), lecturer to professor (UK), RTD then associate (Italy).",
+    "Clinical academic & fellowship": "Clinical duties plus protected research time.",
+    "PhD position": "Funded doctoral post: salary or stipend, typically 3–4 years.",
 }
 
 

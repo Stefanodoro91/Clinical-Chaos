@@ -80,8 +80,12 @@ def hlc(dark, fallback):
 
 def pill_colors(c, dark):
     """(fondo, testo) delle etichette: nel bianco e nero seguono il tema della copertina."""
+    if MONO and HL:
+        if dark:
+            return HL, "#0A0A0A"                 # etichetta piena nel colore del tipo, testo nero
+        return hlc(False, HL), "#FFFFFF"
     if MONO and not dark:
-        return c["background"], "#FFFFFF"        # fondo chiaro: etichetta nera con testo bianco
+        return c["background"], "#FFFFFF"
     return c["accent"], c["background"]
 
 
@@ -505,8 +509,9 @@ def extra_pills(d, post, x, y, bg, ink):
         pw = d.textlength(label.upper(), font=pf) + 52
         if x + pw > W - MARGIN:                  # niente pill tagliate: quelle che non entrano si saltano
             continue
-        d.rounded_rectangle((x, y + 2, x + pw, y + 58), radius=28, fill=bg, outline=ink, width=3)
-        d.text((x + 26, y + 13), label.upper(), font=pf, fill=ink)
+        col = hlc(not SCIENCE, ink) if (MONO and HL) else ink
+        d.rounded_rectangle((x, y + 2, x + pw, y + 58), radius=28, fill=bg, outline=col, width=3)
+        d.text((x + 26, y + 13), label.upper(), font=pf, fill=col)
         x += pw + 16
     return x
 
@@ -625,8 +630,9 @@ def poster_positions_cover(post, cfg, total):
     for row in rows_:
         x = MARGIN
         for chip, cw in row:
-            d.rounded_rectangle((x, cy, x + cw, cy + 60), radius=30, outline=ink, width=3)
-            d.text((x + 22, cy + 11), chip, font=chip_f, fill=ink)
+            chip_c = hlc(dark, ink) if (MONO and HL) else ink
+            d.rounded_rectangle((x, cy, x + cw, cy + 60), radius=30, outline=chip_c, width=3)
+            d.text((x + 22, cy + 11), chip, font=chip_f, fill=chip_c)
             x += cw + 16
         cy += 76
     cube_texture(img, post.get("id") or post["title"], c["accent"], dark, keep_out=keep)
@@ -777,6 +783,17 @@ def numbers_slide(post, cfg, index, total):
     return img
 
 
+def key_phrase(text):
+    """Parola chiave da evidenziare in una voce breve (senza AI): un numero con la sua unità, altrimenti la prima
+    proposizione (fino alla prima virgola o ai due punti, al massimo 6 parole)."""
+    import re
+    m = re.search(r"\d[\d–\-]*\s*[A-Za-z]+(?:\s+(?:weeks|years|days|months))?", text)
+    if m:
+        return m.group(0).strip(" .,")
+    head = re.split(r"[,:;.]", text, 1)[0].split()
+    return " ".join(head[:6])
+
+
 def facts_slide(post, cfg, index, total):
     """Slide dei dati chiave (bandi): etichetta in turchese, valore in bianco, una voce sotto l'altra."""
     c = cfg["colors"]
@@ -795,7 +812,11 @@ def facts_slide(post, cfg, index, total):
     for k, lines in blocks:
         d.text((MARGIN, y), k.upper(), font=label_f, fill=c["muted"])
         y += size - 14 + 14
-        y = draw_lines(d, lines, value_f, size, MARGIN, y, c["text"], 1.3) + 34
+        if MONO and HL:
+            ph = key_phrase(" ".join(lines))
+            y = draw_rich(d, " ".join(lines), ph, value_f, size, MARGIN, y, text_w, c["text"], 1.3, HLC(c), c["background"]) + 34
+        else:
+            y = draw_lines(d, lines, value_f, size, MARGIN, y, c["text"], 1.3) + 34
     return img
 
 
@@ -941,8 +962,9 @@ def position_slide(job, number, cfg, index, total):
     img, d = canvas(cfg, index, total)
     tf = font("ExtraBold", 32)
     tw = d.textlength(job["type"].upper(), font=tf) + 48
-    d.rounded_rectangle((MARGIN, 130, MARGIN + tw, 190), radius=30, fill=c["accent"])
-    d.text((MARGIN + 24, 141), job["type"].upper(), font=tf, fill=c["background"])
+    pf_, pt_ = pill_colors(c, True)
+    d.rounded_rectangle((MARGIN, 130, MARGIN + tw, 190), radius=30, fill=pf_)
+    d.text((MARGIN + 24, 141), job["type"].upper(), font=tf, fill=pt_)
     d.text((W - MARGIN - d.textlength(f"{number:02d}", font=font("ExtraBold", 72)), 118), f"{number:02d}",
            font=font("ExtraBold", 72), fill=HLT(True, c["accent"]))
     hf, hl, hs = fit(d, job["title"], H_("Bold"), 54, 36, W - 2 * MARGIN, 200, 1.16)
@@ -960,7 +982,8 @@ def position_slide(job, number, cfg, index, total):
         last = k == "Deadline"
         vf, vl, vs = fit(d, v, "ExtraBold" if last else "SemiBold", 40 if last else 36, 26, W - 2 * MARGIN - label_w,
                          gap - 28, 1.2)
-        draw_lines(d, vl, vf, vs, MARGIN + label_w, y + 14, c["text"], 1.2)
+        draw_lines(d, vl, vf, vs, MARGIN + label_w, y + 14,
+                   (HLT(True, c["text"]) or c["text"]) if k in ("Deadline", "Position") else c["text"], 1.2)
         y += gap
     return img
 
@@ -1186,7 +1209,7 @@ def render_carousel(post, cfg):
     src = sources.META.get(post.get("id")) if (v2 and cfg.get("source_slide")) else None
     total = len(post["slides"]) + 2 + has_facts + has_numbers + bool(extra) + bool(v2 and not merge) + bool(src)
     use_images = cfg.get("ai_images", True) and not post.get("no_images")
-    max_images = int(cfg.get("max_images_per_post", 2))
+    max_images = int(cfg.get("max_images_v3", 3)) if cfg.get("design_v3") else int(cfg.get("max_images_per_post", 2))
     used = 0
     if post.get("kind") == "grant" and cfg.get("grant_cover_photo") and post.get("id") not in images.COVER_CACHE:
         images.cover_photo(post, cfg)          # foto vera per la copertina del bando (se Pixabay ne ha una adatta)
