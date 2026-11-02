@@ -1142,6 +1142,72 @@ def decorate_inner(pages, post, cfg):
     return pages
 
 
+def free_band(img, top_min=330, bottom=H - 175, min_h=300):
+    """Spazio vuoto sotto il testo di una slide: (y0, y1) se c'è almeno `min_h` px liberi, altrimenti None.
+    Il testo si riconosce dalle righe con molti pixel diversi dal fondo (i cubetti sparsi non contano)."""
+    import numpy as np
+    a = np.asarray(img.convert("RGB")).astype(int)
+    bg = a[H - 20, W // 2]
+    diff = (np.abs(a[:, MARGIN:W - MARGIN] - bg).sum(axis=2) > 60).sum(axis=1)
+    rows = [y for y in range(top_min - 150, bottom) if diff[y] > 45]
+    last = max(rows) if rows else top_min - 150
+    y0, y1 = last + 50, bottom
+    return (y0, y1) if y1 - y0 >= min_h else None
+
+
+def fill_picture(img, band, picture, accent):
+    """Incolla l'immagine nello spazio vuoto: larghezza del testo, angoli arrotondati, contorno nel colore del tipo."""
+    y0, y1 = band
+    h = int(min(y1 - y0, 600))
+    w = W - 2 * MARGIN
+    top = y0 + (y1 - y0 - h) // 2
+    pic, mask = _rounded(picture, w, h, 28)
+    img.paste(pic, (MARGIN, top), mask)
+    ImageDraw.Draw(img).rounded_rectangle((MARGIN, top, W - MARGIN, top + h), radius=28, outline=accent, width=3)
+    return img
+
+
+FILL_VISUALS = [      # (parole del testo, prompt illustrazione, ricerca foto) per le schede senza immagine
+    (("stroke", "neuro", "brain"), "a clinician and a patient doing a walking exercise in a rehabilitation gym", "stroke rehabilitation therapy"),
+    (("rehabilitation", "physio", "therapy"), "a physiotherapist helping a patient with a movement exercise", "physiotherapy rehabilitation"),
+    (("engineering", "robot", "exoskeleton", "device", "sensor"), "a wearable rehabilitation robot on a mannequin in a lab", "rehabilitation robot exoskeleton"),
+    (("grant", "budget", "proposal", "funding", "call"), "a researcher at a desk preparing a grant application with a checklist", "grant proposal writing desk"),
+    (("phd", "post-doc", "postdoc", "fellow", "faculty", "professor", "lecturer", "assistant"), "researchers collaborating in a university laboratory", "university research laboratory team"),
+    (("data", "statistic", "analysis"), "a researcher analysing charts on a laptop", "data analysis research"),
+]
+
+
+def fill_meta(text, extra=""):
+    """Slide-tipo {heading, body, image_prompt, photo_query} per un riempitivo coerente con il tema del testo."""
+    low = f"{text} {extra}".lower()
+    for words, prompt, query in FILL_VISUALS:
+        if any(w in low for w in words):
+            return {"heading": text[:80], "body": extra or text, "image_prompt": prompt, "photo_query": query}
+    return {"heading": text[:80], "body": extra or text, "image_prompt": "researchers working together in a clinical research laboratory",
+            "photo_query": "clinical research laboratory"}
+
+
+def fill_gaps(pages, metas, post, cfg):
+    """Riempie con un'immagine pertinente lo spazio vuoto delle schede (config «fill_gaps» con design_v3).
+    metas[i] = slide-tipo della pagina i, oppure None (copertina, chiusura, pagine già illustrate)."""
+    if not (cfg.get("design_v3") and cfg.get("fill_gaps", True)):
+        return pages
+    limit, used = int(cfg.get("max_fill_images", 3)), 0
+    for i, meta in enumerate(metas):
+        if meta is None or used >= limit:
+            continue
+        band = free_band(pages[i])
+        if not band:
+            continue
+        print(f"Scheda {i + 1}: spazio libero di {band[1] - band[0]} px, cerco un'immagine su «{meta.get('photo_query', '')}»")
+        pic = images.generate(dict(meta), cfg, 1024, 640)
+        if pic is None:
+            continue
+        fill_picture(pages[i], band, pic, HL if (MONO and HL) else cfg["colors"]["accent"])
+        used += 1
+    return pages
+
+
 MONO_COLORS = {"background": "#0A0A0A", "accent": "#F2F2F2", "text": "#FFFFFF", "muted_text": "#CFCFCF", "muted": "#8A8A8A"}
 
 
@@ -1193,6 +1259,9 @@ def render_carousel(post, cfg):
         if post.get("facts"):                      # rubrica Career Path: glossario dei ruoli
             pages.append(facts_slide(post, cfg, len(pages) + 1, total))
         pages.append(closing(post, cfg, total))
+        metas = [None] + [fill_meta(j.get("title", ""), f"{j.get('topic') or ''} {j.get('institution') or ''}") for j in jobs]
+        metas += [fill_meta(post.get("facts_label", "positions roles"), "phd post-doc faculty")] * bool(post.get("facts")) + [None]
+        fill_gaps(pages, metas, post, cfg)
         decorate_inner(pages, post, cfg)
         out = []
         for img in pages:
@@ -1217,11 +1286,14 @@ def render_carousel(post, cfg):
             and (post.get("area") or post.get("rubric") == "Clinical Insights")):
         images.cover_photo(post, cfg)          # regola: foto in copertina solo per post di un'area clinica o Clinical Insights
     pages = [grant_cover(post, cfg, total) if post.get("kind") == "grant" else cover(post, cfg, total)]
+    metas = [None]
     facts_first = has_facts and post.get("facts_first")
     if has_numbers:                                          # post speciali: i numeri subito dopo la copertina
         pages.append(numbers_slide(post, cfg, 2, total))
+        metas.append(None)
     if facts_first:
         pages.append(facts_slide(post, cfg, len(pages) + 1, total))
+        metas.append(fill_meta(post.get("facts_label", "key facts"), post.get("title", "")))
     for i, slide in enumerate(post["slides"], start=1):
         index = len(pages) + 1
         picture = None
@@ -1231,13 +1303,17 @@ def render_carousel(post, cfg):
             used += 1
         if picture is not None:
             pages.append(illustrated(slide, i, cfg, index, total, picture))
+            metas.append(None)
         else:
             pages.append(content(slide, i, cfg, index, total))
+            metas.append(slide)
     if has_facts and not facts_first:
         pages.append(facts_slide(post, cfg, len(pages) + 1, total))
+        metas.append(fill_meta(post.get("facts_label", "key facts"), post.get("title", "")))
     if extra:
         pages.append(facts_slide({**post, "facts": extra["rows"], "facts_label": extra["label"]},
                                  cfg, len(pages) + 1, total))
+        metas.append(fill_meta(extra.get("label", "grant tips"), "grant proposal budget funding"))
     if src:                                   # l'articolo di origine, prima del messaggio finale
         pages.append(source_slide(post, cfg, len(pages) + 1, total, src, sources.THUMBS.get(post.get("id"))))
     if v2 and merge:
@@ -1247,6 +1323,8 @@ def render_carousel(post, cfg):
         pages.append(cta_slide(post, cfg, len(pages) + 1, total))
     else:
         pages.append(closing(post, cfg, total))
+    metas += [None] * (len(pages) - len(metas))
+    fill_gaps(pages, metas, post, cfg)
     decorate_inner(pages, post, cfg)
     out = []
     for img in pages:

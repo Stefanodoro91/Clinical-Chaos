@@ -47,7 +47,7 @@
     "slides": [
       {
         "heading": "The Ceiling Effect Problem",
-        "body": "Many outcome measures in neurological rehabilitation suffer from floor or ceiling effects, which limit the ability to pick up change over time.",
+        "body": "Many outcome measures in neurological rehabilitation suffer from floor or ceiling effects, which limit the ability to detect change.",
         "image_prompt": "a group of simple figures trying to jump and hitting an invisible low ceiling above them, with one figure holding a clipboard",
         "highlight": "floor or ceiling effects",
         "source": "Hobart et al., 2001"
@@ -71,7 +71,7 @@
     "takeaway_highlight": "ceiling effects fail",
     "references": [
       "Balu, S. (2009). Differences in psychometric properties, cut-off scores, and outcomes between the Barthel Index and Modified Rankin Scale in pharmacotherapy-based stroke trials: systematic literature review. Current Medical Research and Opinion, 25(6), 1329–1341. https://doi.org/10.1185/03007990902875877",
-      "Hobart, J. C., Lamping, D. L., Freeman, J. A., Thompson, A. J., & Hobart, J. C. (2001). Evidence-based measurement: which disability scale for neurologic rehabilitation?"
+      "Hobart, J. C., Lamping, D. L., Freeman, J. A., Langdon, D. W., McLellan, D. L., Greenwood, R. J., & Thompson, A. J. (2001). Evidence-based measurement: which disability scale for neurologic rehabilitation? Neurology, 57(4), 639–644."
     ],
     "caption": "Choosing outcome measures in neurological research is fraught with hidden traps. When an assessment tool like the Barthel index hits a ceiling, patients with lingering impairments in mobility or arm function look completely recovered on paper. How do you account for hidden functional deficits in your clinical trials?",
     "hashtags": [
@@ -95,17 +95,17 @@
     "slides": [
       {
         "heading": "Who Answers the Questionnaire?",
-        "body": "Assessments may be performed by rehabilitation providers, patients, or proxies, but each respondent type introduces unique rating discrepancies.",
+        "body": "Assessments may be performed by rehabilitation providers, patients, or proxies, and their ratings can differ.",
         "image_prompt": "three simple figures representing a doctor, a patient, and a relative holding different rating documents and pointing in separate directions",
-        "highlight": "unique rating discrepancies",
-        "source": "Duncan et al., 2002"
+        "highlight": "their ratings can differ",
+        "source": ""
       },
       {
         "heading": "Proxies Overestimate Disability",
-        "body": "Proxy assessors tend to assess patients as more disabled than they appear on other measures of functional disability, especially in impaired patients.",
+        "body": "Proxy assessors tend to rate patients as more disabled than other functional measures suggest, and the gap grows with more impaired patients.",
         "image_prompt": "a relative looking at a patient through a magnifying glass and writing down a much larger disability score on a pad",
-        "highlight": "assess patients as more disabled",
-        "source": "Williams et al., 2006"
+        "highlight": "rate patients as more disabled",
+        "source": "Duncan et al., 2002; Williams et al., 2006"
       },
       {
         "heading": "The Frame of Reference Trap",
@@ -115,14 +115,14 @@
         "source": "Sneeuw et al., 2002"
       }
     ],
-    "takeaway": "Proxy and provider reporting biases heavily distort patient functional and quality of life outcomes.",
-    "takeaway_highlight": "reporting biases heavily distort",
+    "takeaway": "Proxy and provider ratings can differ from patients' own, so use the same respondent type at every follow-up.",
+    "takeaway_highlight": "use the same respondent",
     "references": [
       "Duncan, P. W., Lai, S. M., Tyler, D., Perera, S., Reker, D. M., & Studenski, S. (2002). Evaluation of Proxy Responses to the Stroke Impact Scale. Stroke, 33(11), 2593–2599. https://doi.org/10.1161/01.str.0000034395.06874.3e",
       "Sneeuw, K. C., Sprangers, M. A., & Aaronson, N. K. (2002). The role of health care providers and significant others in evaluating the quality of life of patients with chronic disease. Journal of Clinical Epidemiology, 55(11), 1130–1143. https://doi.org/10.1016/s0895-4356(02)00479-1",
       "Williams, L. S., Bakas, T., Brizendine, E., Plue, L., Tu, W., Hendrie, H., & Kroenke, K. (2006). How Valid Are Family Proxy Assessments of Stroke Patients’ Health-Related Quality of Life?. Stroke, 37(8), 2081–2085. https://doi.org/10.1161/01.str.0000230583.10311.9f"
     ],
-    "caption": "When patients cannot self-report due to cognitive or communication barriers, researchers often turn to proxy respondents or clinicians. However, studies show that family members view patients as significantly more disabled, while clinicians use entirely different reference norms. How do you handle respondent discrepancies in your studies?",
+    "caption": "When patients cannot self-report because of cognitive or communication problems, researchers turn to proxies or clinicians. Proxies tend to rate patients as more disabled, while clinicians may use a more disabled reference group. The practical rule: keep the same respondent type at every follow-up. How do you handle respondent discrepancies in your studies?",
     "hashtags": [
       "#ClinicalResearch",
       "#ResearchMethods",
@@ -147,11 +147,11 @@
         "body": "The most widely used cognitive screen is the Mini-Mental Status Exam, but this measure does not adequately represent executive function.",
         "image_prompt": "a simple figure looking at a brain puzzle with a missing central piece labeled executive function while holding a clipboard",
         "highlight": "not adequately represent executive function",
-        "source": "Folstein et al., 1975"
+        "source": ""
       },
       {
         "heading": "Missing Cognitive Impairment",
-        "body": "Due to its structural limitations, the traditional Mini-Mental Status Exam often misses significant cognitive impairment in neurological patients.",
+        "body": "The Mini-Mental Status Exam often misses significant cognitive impairment; the MoCA detected more impairment after TIA and stroke.",
         "image_prompt": "a magnifying glass scanning a cognitive test paper and highlighting a blank overlooked section",
         "highlight": "often misses significant cognitive impairment",
         "source": "Pendlebury et al., 2010"
@@ -167,8 +167,8 @@
     "takeaway": "Relying solely on the MMSE risks missing vital executive and cognitive deficits in clinical research.",
     "takeaway_highlight": "risks missing vital executive",
     "references": [
-      "Folstein, M. F., Folstein, S. E., & McHugh, P. R. (1975). \"Mini-mental state\": A practical method for grading the cognitive state of patients for the clinician.",
-      "Hachinski, V., Iadecola, C., Petersen, R. C., Breteler, M. M., Nyenhuis, D. L., Black, S. E., ... & Winblad, B. (2006). National Institute of Neurological Disorders and Stroke-Canadian Stroke Network vascular cognitive impairment harmonization standards.",
+      "Folstein, M. F., Folstein, S. E., & McHugh, P. R. (1975). \"Mini-mental state\": A practical method for grading the cognitive state of patients for the clinician. Journal of Psychiatric Research, 12(3), 189–198.",
+      "Hachinski, V., Iadecola, C., Petersen, R. C., Breteler, M. M., Nyenhuis, D. L., Black, S. E., ... & Winblad, B. (2006). National Institute of Neurological Disorders and Stroke-Canadian Stroke Network vascular cognitive impairment harmonization standards. Stroke, 37(9), 2220–2241.",
       "Pendlebury, S. T., Cuthbertson, F. C., Welch, S. J., Mehta, Z., & Rothwell, P. M. (2010). Underestimation of Cognitive Impairment by Mini-Mental State Examination Versus the Montreal Cognitive Assessment in Patients With Transient Ischemic Attack and Stroke. Stroke, 41(6), 1290–1293. https://doi.org/10.1161/strokeaha.110.579888"
     ],
     "caption": "Cognitive assessment in neurological research is notoriously tricky. While the MMSE is a ubiquitous screening tool, it lacks adequate representation for executive function, leading researchers to miss subtle yet critical cognitive deficits. What cognitive screening tools do you rely on in your protocols?",

@@ -289,6 +289,8 @@ def quality_gate(post, drive, queue):
         material = source_material(drive, post.get("source", ""))
         if material:
             content.rewrite_copied(post, material)
+            if CONFIG.get("verify_source", True):          # fatti e coerenza interna/esterna rispetto alla fonte
+                content.verify_against_source(post, material)
         content.fix_references(post)
         missing = content.concreteness(post)
         if missing and material:

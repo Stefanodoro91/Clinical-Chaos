@@ -853,3 +853,62 @@ def license_status(text):
     if re.search(r"all rights reserved|©\s*\d{4}\s+elsevier|reproduction.{0,40}prohibited", t):
         return "blocked", "tutti i diritti riservati"
     return "unknown", ""
+
+
+# ---------------------------------------------------------------- coerenza con la fonte (interna ed esterna)
+VERIFY_PROMPT = """You fact-check an educational carousel against the SOURCE text it was built from.
+Check every slide, the title and the key takeaway:
+1. EXTERNAL consistency: each claim, number, name, year and citation must be supported by the SOURCE.
+   - "contradiction": the post says the opposite of the SOURCE or states a wrong number, year, name or direction of effect;
+   - "unsupported": a factual claim that is not in the SOURCE (invented statistic, study or author);
+   - "misattributed": a finding credited to the wrong study, author or population.
+   Clearly framed teaching examples ("imagine a trial of 120 patients...") are fine: do not flag them.
+2. INTERNAL consistency: slides must not contradict each other, and the title and takeaway must match the slides.
+For each problem give the slide index (0-based; -1 for title/takeaway) and, when possible, a corrected heading and body
+(max 12 words heading, max 160 characters body) that stays faithful to the SOURCE. Return no issue if everything is sound.
+
+TITLE: {title}
+TAKEAWAY: {takeaway}
+SLIDES:
+{slides}
+
+SOURCE (excerpt):
+{source}"""
+
+VERIFY_SCHEMA = {"type": "OBJECT", "properties": {"issues": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {
+    "index": {"type": "INTEGER"}, "kind": {"type": "STRING", "enum": ["contradiction", "unsupported", "misattributed", "internal"]},
+    "problem": {"type": "STRING"}, "heading": {"type": "STRING"}, "body": {"type": "STRING"}},
+    "required": ["index", "kind", "problem"]}}}, "required": ["issues"]}
+
+
+def verify_against_source(post, material):
+    """Controllo di fatti e coerenza: Gemini confronta il post con il testo della fonte. Le slide con un errore
+    vengono corrette (se Gemini propone un testo fedele) o tolte (se restano almeno 3 slide).
+    Restituisce il numero di problemi trovati, oppure None se il controllo non è stato possibile."""
+    slides = post.get("slides") or []
+    if not slides or not material:
+        return None
+    listing = "\n".join(f"{i}. {s['heading']} — {s['body']}" for i, s in enumerate(slides))
+    try:
+        out = gemini_json([{"text": VERIFY_PROMPT.format(title=post.get("title", ""), takeaway=post.get("takeaway", ""),
+                                                         slides=listing, source=material[:30000])}],
+                          VERIFY_SCHEMA, 0.1, task="verifica fatti")
+    except Exception as e:
+        print(f"  Verifica sulla fonte non disponibile ({str(e)[:100]}): il post esce senza questo controllo")
+        return None
+    issues = [x for x in out.get("issues", []) if isinstance(x.get("index"), int)]
+    drop = set()
+    for x in issues:
+        i = x["index"]
+        print(f"  Verifica fonte, {x['kind']} (slide {i + 1 if i >= 0 else 'titolo'}): {x['problem'][:140]}")
+        if not (0 <= i < len(slides)):
+            continue
+        if x.get("heading") and x.get("body") and x["kind"] != "unsupported":
+            body = _clip(x["body"], 170)
+            slides[i] = {**slides[i], "heading": _clip(x["heading"], 70), "body": body,
+                         "highlight": exact_phrase(slides[i].get("highlight"), body)}
+        else:
+            drop.add(i)
+    if drop and len(slides) - len(drop) >= 3:
+        post["slides"] = [s for i, s in enumerate(slides) if i not in drop]
+    return len(issues)
