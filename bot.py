@@ -121,6 +121,19 @@ def list_files(drive, folder_id):
             return files
 
 
+def list_inbox(drive, inbox):
+    """File della cartella di input e delle sue sottocartelle «Clinica…» (es. «Clinica main», «Clinica ancillary»):
+    materiale clinico per area. Le altre sottocartelle (Elaborati, Musica…) restano escluse. Ogni file porta
+    la cartella in cui si trova, per poterlo spostare in «Elaborati» dopo la lettura."""
+    files = [dict(f, parent=inbox) for f in list_files(drive, inbox)]
+    resp = drive.files().list(q=f"'{inbox}' in parents and trashed = false and mimeType = 'application/vnd.google-apps.folder'",
+                              fields="files(id, name)", supportsAllDrives=True, includeItemsFromAllDrives=True).execute()
+    for sub in resp.get("files", []):
+        if sub["name"].lower().startswith("clinica"):
+            files += [dict(f, parent=sub["id"]) for f in list_files(drive, sub["id"])]
+    return sorted(files, key=lambda f: f.get("createdTime", ""))
+
+
 def move(drive, file_id, src, dst):
     drive.files().update(fileId=file_id, addParents=dst, removeParents=src,
                          fields="id", supportsAllDrives=True).execute()
@@ -131,7 +144,7 @@ def ingest(drive, queue, limit=None):
     inbox, done_folder = os.environ["GDRIVE_FOLDER_ID"], os.environ["GDRIVE_DONE_FOLDER_ID"]
     sources = load(SOURCES_FILE, [])
     seen = {s["drive_id"] for s in sources}
-    pending = [f for f in list_files(drive, inbox) if f["id"] not in seen]
+    pending = [f for f in list_inbox(drive, inbox) if f["id"] not in seen]
     limit = int(limit or CONFIG.get("max_new_files_per_run", 1))
 
     for f in pending[:limit]:
@@ -162,7 +175,7 @@ def ingest(drive, queue, limit=None):
             save(SOURCES_FILE, sources)
             commit_and_push([QUEUE_FILE.name, SOURCES_FILE.name], f"Nuovi post da {f['name']}")
             try:
-                move(drive, f["id"], inbox, done_folder)
+                move(drive, f["id"], f.get("parent", inbox), done_folder)
             except Exception as e:
                 print(f"File elaborato ma non spostato in Drive (non verrà riletto): {e}")
     return len(pending) - min(len(pending), limit)
@@ -1193,7 +1206,7 @@ def status():
     """Solo lettura: elenca i file in attesa e quelli già elaborati nelle cartelle Drive, e lo stato della coda."""
     drive = drive_service()
     seen = {s["drive_id"] for s in load(SOURCES_FILE, [])}
-    inbox = [f for f in list_files(drive, os.environ["GDRIVE_FOLDER_ID"]) if f["id"] not in seen]
+    inbox = [f for f in list_inbox(drive, os.environ["GDRIVE_FOLDER_ID"]) if f["id"] not in seen]
     done = list_files(drive, os.environ["GDRIVE_DONE_FOLDER_ID"])
     queue = load(QUEUE_FILE, [])
     lines = [f"File in attesa nella cartella Materiale: {len(inbox)}"]
