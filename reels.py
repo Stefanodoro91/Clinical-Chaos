@@ -167,7 +167,7 @@ def _wrap(d, text, fnt, max_w):
     return cards.wrap(d, text, fnt, max_w)
 
 
-def story_frame(slide, cfg, index, total, accent):
+def story_frame(slide, cfg, index, total, accent, cubes=True):
     """Slide 1080×1920 per i reel di annuncio: copertina chiara, punti numerati scuri, chiusura con il logo."""
     cards.EDITORIAL = bool(cfg.get("design_v3"))
     mono = bool(cfg.get("mono"))
@@ -364,7 +364,7 @@ def story_frame(slide, cfg, index, total, accent):
     if kind != "closing":
         f_h = cards.font("SemiBold", 32)
         d.text((M, yb + 40), cfg.get("handle", ""), font=f_h, fill="#5B7186" if light else c["muted_text"])
-    if cards.EDITORIAL and kind != "image":    # cubetti negli spazi liberi (i pixel già disegnati si evitano da soli)
+    if cubes and cards.EDITORIAL and kind != "image":    # cubetti negli spazi liberi (i pixel già disegnati si evitano da soli)
         _cubes(img, f"{kind}-{index}-{slide.get('title', '')[:24]}", accent, not light, cfg,
                keep_out=[(0, yb - 30, W, H), (0, 0, W, 30)], density=0.8 if kind in ("cover", "closing") else 0.55)
     return img
@@ -395,6 +395,156 @@ def build_story_reel(spec, out_path, cfg, mood="Cerimony|Ceremony|Aziendale|Spec
                          track=spec.get("music_track"))
     return build_reel([], out_path, cfg, accent=accent, per_slide=lengths, images=imgs,
                       mood=spec.get("mood") or mood, track=spec.get("music_track"))
+
+
+# ---------------------------------------------------------------- reel animato: scritte con effetti, musica da file
+def _bands(mask, gap=8, min_h=6):
+    """Righe di testo (y0, y1, x0, x1) da una maschera di pixel: gruppi di righe separati da almeno `gap` px vuoti."""
+    import numpy as np
+    rows = np.where(mask.any(axis=1))[0]
+    out, start, prev = [], None, None
+    for y in rows:
+        if start is None:
+            start = prev = y
+        elif y - prev > gap:
+            out.append((start, prev + 1))
+            start = y
+        prev = y
+    if start is not None:
+        out.append((start, prev + 1))
+    bands = []
+    for y0, y1 in out:
+        if y1 - y0 < min_h:
+            continue
+        cols = np.where(mask[y0:y1].any(axis=0))[0]
+        bands.append((int(y0), int(y1), int(cols.min()), int(cols.max()) + 1))
+    return bands
+
+
+def _ease_out(x):
+    x = max(0.0, min(1.0, x))
+    return 1 - (1 - x) ** 3
+
+
+def _back_out(x):
+    x = max(0.0, min(1.0, x))
+    c = 1.70158
+    return 1 + (c + 1) * (x - 1) ** 3 + c * (x - 1) ** 2
+
+
+def _slide_layers(slide, cfg, index, total, accent):
+    """Fondo (cornice, logo), righe di testo animabili e strato dei cubetti di una schermata."""
+    import numpy as np
+    blank = {k: v for k, v in slide.items() if k in ("type", "accent", "bg", "images", "frame", "photo_query")}
+    blank.update(title="", body="", kicker="", number="")
+    base = story_frame(blank, cfg, index, total, accent, cubes=False)
+    text = story_frame(slide, cfg, index, total, accent, cubes=False)
+    full = story_frame(slide, cfg, index, total, accent, cubes=True)
+    a, b, c = (np.asarray(x, dtype=np.int16) for x in (base, text, full))
+    tmask = np.abs(b - a).sum(axis=2) > 24
+    cmask = np.abs(c - b).sum(axis=2) > 0
+    return base, text, full, tmask, cmask, _bands(tmask)
+
+
+def animated_frames(slides, cfg, accent, fps=FPS, trans=0.35):
+    """Fotogrammi del reel animato: ogni riga entra con un effetto diverso (etichette in dissolvenza, numeri grandi
+    che «saltano», titoli che si scrivono da sinistra, testi che salgono), cubetti in dissolvenza, cambio di
+    schermata a spinta laterale. Restituisce (generatore di fotogrammi, durata)."""
+    import numpy as np
+    total = len(slides)
+    layers = [_slide_layers(s, cfg, i, total, s.get("accent") or accent) for i, s in enumerate(slides)]
+    lengths = [frame_seconds(s) + 0.5 for s in slides]
+    starts = np.cumsum([0] + lengths[:-1]).tolist()
+    duration = sum(lengths)
+
+    def render(i, t):
+        base, text, full, tmask, cmask, bands = layers[i]
+        out = np.asarray(base, dtype=np.float32).copy()
+        tx = np.asarray(text, dtype=np.float32)
+        fl = np.asarray(full, dtype=np.float32)
+        fade = _ease_out((t - 0.2) / 0.8)                      # cubetti
+        out[cmask] = out[cmask] * (1 - fade) + fl[cmask] * fade
+        for k, (y0, y1, x0, x1) in enumerate(bands):
+            t0 = 0.15 + k * 0.14
+            p = (t - t0) / 0.45
+            if p <= 0:
+                continue
+            h = y1 - y0
+            src = tx[y0:y1]
+            m = tmask[y0:y1].astype(np.float32)[..., None]
+            if h > 150:                                        # numero grande: entra con un rimbalzo
+                sc = 0.6 + 0.4 * _back_out(p)
+                al = _ease_out(p * 1.6)
+                crop = Image.fromarray(src.astype(np.uint8)).crop((x0, 0, x1, h))
+                mk = Image.fromarray((m[..., 0] * 255).astype(np.uint8)).crop((x0, 0, x1, h))
+                w2, h2 = max(1, int((x1 - x0) * sc)), max(1, int(h * sc))
+                crop, mk = crop.resize((w2, h2)), mk.resize((w2, h2))
+                cy = y0 + (h - h2) // 2
+                region = out[cy:cy + h2, x0:x0 + w2]
+                mm = np.asarray(mk, dtype=np.float32)[..., None] / 255 * al
+                region[:] = region * (1 - mm) + np.asarray(crop, dtype=np.float32)[:region.shape[0], :region.shape[1]] * mm
+            elif h > 55:                                       # titolo: si scrive da sinistra a destra
+                q = _ease_out(p)
+                edge = x0 + int((x1 - x0 + 40) * q)
+                cols = np.arange(out.shape[1])
+                wipe = np.clip((edge - cols) / 40.0, 0, 1)[None, :, None]
+                mm = m * wipe
+                out[y0:y1] = out[y0:y1] * (1 - mm) + src * mm
+            else:                                              # testo ed etichette: salgono e compaiono
+                q = _ease_out(p)
+                dy = int((1 - q) * 36)
+                al = q
+                ya, yb = y0 + dy, min(out.shape[0], y1 + dy)
+                mm = m[:yb - ya] * al
+                out[ya:yb] = out[ya:yb] * (1 - mm) + src[:yb - ya] * mm
+        return out
+
+    def gen():
+        for f in range(int(duration * fps)):
+            tt = f / fps
+            i = max(j for j in range(total) if starts[j] <= tt)
+            t = tt - starts[i]
+            cur = render(i, t)
+            if i > 0 and t < trans:                            # cambio di schermata: spinta da destra
+                q = _ease_out(t / trans)
+                prev = render(i - 1, lengths[i - 1])
+                shift = int(W * q)
+                frame = np.empty_like(cur)
+                frame[:, :W - shift] = prev[:, shift:]
+                frame[:, W - shift:] = cur[:, :shift]
+                cur = frame
+            yield cur.astype(np.uint8)
+    return gen, round(duration, 1)
+
+
+def animated_reel(spec, out_path, cfg, music_file=None, mood="Funky", track=None):
+    """Reel con scritte animate (vedi animated_frames). Musica: `music_file` (estratto sul ritornello) oppure la
+    libreria su Drive del genere `mood`. Restituisce la durata in secondi."""
+    import music as _music
+    accent = spec.get("accent") or cfg["colors"]["accent"]
+    gen, duration = animated_frames(spec["slides"], cfg, accent)
+    out_path = Path(out_path)
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        silent, wav = tmp / "v.mp4", tmp / "m.wav"
+        p = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
+                              "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20",
+                              "-preset", "veryfast", str(silent)], stdin=subprocess.PIPE)
+        for fr in gen():
+            p.stdin.write(fr.tobytes())
+        p.stdin.close()
+        p.wait()
+        if music_file:
+            start = _music.best_start(music_file, duration)
+            subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{start:.2f}", "-i", str(music_file),
+                            "-t", f"{duration:.2f}", "-af", f"afade=t=in:d=0.3,afade=t=out:st={duration - 1.5:.2f}:d=1.5,"
+                            "loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", "44100", "-ac", "2", str(wav)], check=True)
+        else:
+            music(wav, duration, mood=mood, track=track)
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(silent), "-i", str(wav), "-c:v", "copy",
+                        "-c:a", "aac", "-b:a", "160k", "-ar", "44100", "-shortest", "-movflags", "+faststart",
+                        str(out_path)], check=True)
+    return duration
 
 
 RAIN_COLORS = [(61, 217, 193), (20, 160, 133), (255, 255, 255), (127, 150, 171)]   # stessi colori del sito
