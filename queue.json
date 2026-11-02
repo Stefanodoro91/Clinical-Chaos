@@ -1257,5 +1257,115 @@
     "source_hint": "pages 3-8",
     "id": "278421ec",
     "source": "Qualitative Research.pdf"
+  },
+  {
+    "title": "Allocation Concealment vs. Blinding: Know the Difference",
+    "title_highlight": "Allocation Concealment vs. Blinding",
+    "category": "Randomization & blinding",
+    "slides": [
+      {
+        "heading": "Two Different Defense Lines",
+        "body": "Allocation concealment is done before treatment, whereas blinding is done at and after initiation of treatment.",
+        "image_prompt": "a doctor holding a clipboard looking at two doors marked before and after, with a glowing padlock on the first door and a blindfold on the second door",
+        "photo_query": "researcher clipboard clinical trial",
+        "highlight": "Allocation concealment is done before treatment",
+        "source": "Viera and Bangdiwala, 2007"
+      },
+      {
+        "heading": "Protecting the Randomization Sequence",
+        "body": "Allocation concealment refers to the process ensuring the person who generates the random assignment remains blind to what arm the person will be allotted.",
+        "image_prompt": "a person in a lab coat placing a sealed envelope into a locked metal box while another researcher looks away",
+        "photo_query": "clinical trial randomization envelope",
+        "highlight": "",
+        "source": "Schulz and Grimes, 2002"
+      },
+      {
+        "heading": "Stopping Selection Bias Early",
+        "body": "This strategy avoids ascertainment or selection bias caused by researchers recruiting specific categories of patients to preferred groups.",
+        "image_prompt": "a scale balancing two identical document folders, with a magnifying glass hovering over one folder revealing a hidden pencil mark",
+        "photo_query": "selection bias clinical study",
+        "highlight": "avoids ascertainment or selection bias",
+        "source": "Chan, 2003"
+      },
+      {
+        "heading": "Practical Concealment Methods",
+        "body": "Methods include central randomisation, pharmacy-controlled coded drugs, and sequentially numbered opaque sealed envelopes.",
+        "image_prompt": "a row of identical dark pill bottles with numbered tags on a clean metal lab table under bright lighting",
+        "photo_query": "clinical trial pill bottles",
+        "highlight": "sequentially numbered opaque sealed envelopes",
+        "source": "Schulz and Grimes, 2002"
+      }
+    ],
+    "takeaway": "Allocation concealment protects the sequence before assignment, while blinding protects participants and staff after it starts.",
+    "takeaway_highlight": "protects the sequence before assignment",
+    "references": [
+      "Viera, A. J., & Bangdiwala, S. I. (2007). Eliminating bias in randomized controlled trials: Importance of allocation concealment and masking.",
+      "Schulz, K. F., & Grimes, D. A. (2002). Allocation concealment in randomised trials: Defending against deciphering.",
+      "Chan, Y. H. (2003). Randomised controlled trials (RCTs) – Sample size: The magic number?"
+    ],
+    "caption": "Do you mix up allocation concealment and blinding in your clinical trials? Here is how to keep them straight 🔍\n\nMany researchers use these two terms interchangeably, but they happen at entirely different stages of a trial. Allocation concealment stops selection bias before a patient enters the study. Blinding prevents performance and detection bias once treatment is underway. Conflating them weakens trial validity. How do you implement allocation concealment in your current studies?",
+    "hashtags": [
+      "#AllocationConcealment",
+      "#ClinicalTrials",
+      "#BiasInResearch"
+    ],
+    "source_hint": "pages 4-5",
+    "id": "d6f905e9",
+    "source": "Methodology for research I.pdf"
+  },
+  {
+    "title": "Why Confounding Threatens Your Study Validity",
+    "title_highlight": "Confounding Threatens Your Study",
+    "category": "Bias & confounding",
+    "slides": [
+      {
+        "heading": "When Extra Factors distort Results",
+        "body": "Confounding occurs when outcome parameters are affected by effects of other factors not directly relevant to the research question.",
+        "image_prompt": "two simple wooden blocks connected by a taut string, with a third heavy weight pulling the string sideways and distorting the straight line",
+        "photo_query": "confounding variables research data",
+        "highlight": "",
+        "source": "Levin, 2007"
+      },
+      {
+        "heading": "A Classic Clinical Example",
+        "body": "If impact of drug on haemodynamics is studied on hypertensive patients, then diabetes mellitus would be a confounder.",
+        "image_prompt": "a medical chart showing blood pressure readings next to a glucose meter surrounded by simple geometric paper cutouts representing patients",
+        "photo_query": "hypertension diabetes medical research",
+        "highlight": "diabetes mellitus would be a confounder",
+        "source": "Prasad, 2013"
+      },
+      {
+        "heading": "Anticipating Confounders Early",
+        "body": "It becomes prudent during the designing stage for a study that all potential confounders should be carefully considered.",
+        "image_prompt": "a researcher pointing a small wooden pointer at a whiteboard covered in flowcharts and interconnected node diagrams",
+        "photo_query": "researchers planning whiteboard study",
+        "highlight": "",
+        "source": "Peat and Barton, 2005"
+      },
+      {
+        "heading": "Controlling Through Study Design",
+        "body": "Confounding can be controlled by restriction, matching in the selection of comparison groups, or statistical adjustment.",
+        "image_prompt": "a pair of identical analytical scales balancing small metal weights against each other under a magnifying glass",
+        "photo_query": "matched cohort study design",
+        "highlight": "controlled by restriction, matching",
+        "source": "Levin, 2007"
+      }
+    ],
+    "takeaway": "Identify and control potential confounders during the study design phase to prevent distorted outcome parameters.",
+    "takeaway_highlight": "during the study design phase",
+    "references": [
+      "Levin, K. A. (2007). Study design VII. Randomised controlled trials. Evid Based Dent, 8(1), 22-3.",
+      "Prasad, K. (2013). Fundamentals of Evidence Based Medicine (2nd ed.). Springer India.",
+      "Peat, J., & Barton, B. (2005). Medical Statistics: A Guide to Data Analysis and Critical Appraisal (1st ed.). Blackwell Publishing Ltd."
+    ],
+    "caption": "Are unmeasured variables secretly ruining the internal validity of your clinical study? Let us talk about confounding 📊\n\nEven a well-randomized trial can yield misleading conclusions if extraneous factors distort the outcome parameters. Recognizing these factors late in the analysis is often too late. By planning restriction, matching, or statistical adjustment upfront, you protect your findings. Which confounding factor do you struggle with most in observational studies?",
+    "hashtags": [
+      "#Confounding",
+      "#ResearchDesign",
+      "#Epidemiology"
+    ],
+    "source_hint": "pages 5-6",
+    "id": "5526e14d",
+    "source": "Methodology for research I.pdf"
   }
 ]
