@@ -363,7 +363,7 @@ def occupancy(img, keep_out=()):
         occ[max(0, int(k[1]) // Q):int(k[3]) // Q + 1, max(0, int(k[0]) // Q):int(k[2]) // Q + 1] = True
     occ[:5, :] = True                                              # barra d'accento in alto
     grown = occ.copy()
-    for _ in range(4):                                             # margine minimo dal contenuto: 16 px
+    for _ in range(7):                                             # margine minimo dal contenuto: 28 px
         g2 = grown.copy()
         g2[1:, :] |= grown[:-1, :]; g2[:-1, :] |= grown[1:, :]
         g2[:, 1:] |= grown[:, :-1]; g2[:, :-1] |= grown[:, 1:]
@@ -464,7 +464,7 @@ def glow_streaks(img, seed, accent, dark, grown=None, keep_out=(), density=1.0):
         samples = [bez(t, p0, p1, p2, p3) for t in np.linspace(0, 1, 160)]
         length = sum(math.dist(samples[i], samples[i + 1]) for i in range(159))
         hd.line(samples, fill=int(70 * k), width=int(wd * 1.5), joint="curve")
-        n = int(length / 1500 * 340 * k)
+        n = int(length / 1500 * 170 * k)
         for _ in range(n):
             t = min(1.0, max(0.0, rnd.betavariate(1.5, 1.5)))
             dens = 0.55 + 0.45 * math.sin(t * 9 + phases[0]) * math.sin(t * 5 + phases[1])  # grumi più densi e radure
@@ -481,9 +481,9 @@ def glow_streaks(img, seed, accent, dark, grown=None, keep_out=(), density=1.0):
             core = max(0.15, 1 - abs(off) / (2.2 * sigma))             # più vivo al centro della strisciata
             roll = rnd.random()
             col = rnd.choice(palette)
-            if roll < 0.06:                                            # cubetto quadrato, in mezzo alle particelle
+            if roll < 0.035:                                           # cubetto quadrato, in mezzo alle particelle
                 sz = rnd.choice([6, 8, 10, 13, 17, 22])
-                if blocked(x, y, 2):
+                if blocked(x, y, 36):
                     continue
                 cc = rnd.choice(cubes_pal)
                 sd.rectangle((x, y, x + sz, y + sz), fill=cc + (int(rnd.uniform(90, 200) * (0.5 + core / 2)),))
@@ -494,10 +494,10 @@ def glow_streaks(img, seed, accent, dark, grown=None, keep_out=(), density=1.0):
                 sd.ellipse((x - rad, y - rad, x + rad, y + rad), fill=col + (int(rnd.uniform(130, 255) * (0.45 + core / 2)),))
             elif roll < 0.82:                                          # scintilla con alone
                 rad = rnd.uniform(2.0, 4.2)
-                if blocked(x, y, 2):
+                if blocked(x, y, 30):
                     continue
                 sd.ellipse((x - rad, y - rad, x + rad, y + rad), fill=col + (int(rnd.uniform(190, 255)),))
-            elif roll < 0.94:                                          # bokeh piccolo (cerchio morbido con bordo leggero)
+            elif roll < 0.92:                                          # bokeh piccolo (cerchio morbido con bordo leggero)
                 rad = rnd.uniform(6, 15)
                 if blocked(x, y, 2):
                     continue
@@ -511,7 +511,7 @@ def glow_streaks(img, seed, accent, dark, grown=None, keep_out=(), density=1.0):
                 bb.ellipse((x - rad, y - rad, x + rad, y + rad), fill=rnd.choice(bok_pal) + (int(rnd.uniform(22, 55) * k),))
             elif dark:                                                 # lampo a croce
                 ln = rnd.uniform(12, 26)
-                if blocked(x, y, 2):
+                if blocked(x, y, ln + 30):
                     continue
                 cc = col + (230,)
                 sd.line((x - ln, y, x + ln, y), fill=cc, width=1)
@@ -519,14 +519,21 @@ def glow_streaks(img, seed, accent, dark, grown=None, keep_out=(), density=1.0):
                 sd.ellipse((x - 2.5, y - 2.5, x + 2.5, y + 2.5), fill=(255, 255, 255, 255))
 
     # maschera morbida delle zone libere: niente alone su testo, logo e immagini
-    soft = np.kron((~grown).astype(np.uint8) * 255, np.ones((Q, Q), dtype=np.uint8))[:H, :W]
-    soft = Image.fromarray(soft).filter(ImageFilter.GaussianBlur(46))      # dissolvenza ampia (~100 px) attorno al testo
-    soft = soft.point(lambda v: min(255, int(max(0, v - 40) * 255 / 175)))
+    fr = ~grown
+    for _ in range(8):                                             # altri 32 px a opacità zero attorno al contenuto
+        f2 = fr.copy()
+        f2[1:, :] &= fr[:-1, :]; f2[:-1, :] &= fr[1:, :]
+        f2[:, 1:] &= fr[:, :-1]; f2[:, :-1] &= fr[:, 1:]
+        fr = f2
+    soft = np.kron(fr.astype(np.uint8) * 255, np.ones((Q, Q), dtype=np.uint8))[:H, :W]
+    soft = Image.fromarray(soft).filter(ImageFilter.GaussianBlur(56))      # poi sfuma su ~110 px
+    lut = [int(255 * (lambda x: x * x * (3 - 2 * x))(min(1.0, max(0.0, (v - 20) / 215)))) for v in range(256)]
+    soft = soft.point(lut)                                                  # smoothstep: nessun bordo netto
     base = img.convert("RGBA")
     haze_col = acc if dark else _mixrgb(acc, (0, 0, 0), 0.3)
-    haze = haze.filter(ImageFilter.GaussianBlur(80))
-    haze_soft = soft.point(lambda v: 150 + v * 105 // 255)          # la nebbia passa anche dietro il testo (leggera): niente riquadro nero
-    haze = ImageChops.multiply(haze.point(lambda v: int(v * (0.5 if dark else 0.22))), haze_soft)
+    haze = haze.filter(ImageFilter.GaussianBlur(90))
+    haze_soft = soft                                               # la nebbia sfuma fino a sparire vicino al testo
+    haze = ImageChops.multiply(haze.point(lambda v: int(v * (0.38 if dark else 0.18))), haze_soft)
     layer = Image.new("RGBA", (W, H), haze_col + (0,)); layer.putalpha(haze)
     base = Image.alpha_composite(base, layer)
     for lay, blur in ((bok_b, 7), (bok_s, 2.2)):
@@ -605,6 +612,8 @@ def cube_texture_v2(img, seed, accent, dark, keep_out=(), density=1.0, glow=None
                     break
     # 2) riempimento casuale degli spazi liberi, più fitto verso i bordi
     target = int(round(20 * density * (1.5 if density >= 0.6 else 1.4)))
+    if GLOW if glow is None else glow:
+        target = int(round(target * 0.55))                         # le strisciate portano già cubetti: meno sparsi
     placed = 0
     for _ in range(1500):
         if placed >= target:
