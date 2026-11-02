@@ -1,6 +1,6 @@
 name: Post giornaliero ricerca clinica
 # Il tipo compare nel nome anche per i run pianificati: il guardiano (tools/watchdog.py) li distingue così.
-run-name: "Post ${{ github.event_name == 'schedule' && format('{0} (pianificato)', ((github.event.schedule == '23 11 * * 1,2,4,5' || github.event.schedule == '23 12 * * 1,2,4,5') && 'grant' || ((github.event.schedule == '23 17 * * 1' || github.event.schedule == '23 18 * * 1') && 'positions' || ((github.event.schedule == '23 11 * * 3' || github.event.schedule == '23 12 * * 3' || github.event.schedule == '47 16 * * 0' || github.event.schedule == '47 17 * * 0') && 'reel' || 'research')))) || inputs.post_type }}${{ inputs.dry_run == true && ' (prova)' || '' }}"
+run-name: "Post ${{ github.event_name == 'schedule' && format('{0} (pianificato)', ((github.event.schedule == '23 11 * * 1,2,4,5' || github.event.schedule == '23 12 * * 1,2,4,5') && 'grant' || ((github.event.schedule == '23 17 * * 1' || github.event.schedule == '23 18 * * 1') && 'positions' || ((github.event.schedule == '23 11 * * 3' || github.event.schedule == '23 12 * * 3' || github.event.schedule == '23 14 * * 5' || github.event.schedule == '23 15 * * 5' || github.event.schedule == '47 16 * * 0' || github.event.schedule == '47 17 * * 0') && 'reel' || 'research')))) || inputs.post_type }}${{ inputs.dry_run == true && ' (prova)' || '' }}"
 
 on:
   # Calendario (ora italiana; GitHub può partire con qualche minuto di ritardo), uguale su Instagram, Facebook,
@@ -12,8 +12,8 @@ on:
   #                «Clinical Insights» il sabato (post con articolo citabile e slide «Based on»)
   #   posizioni    lun 18:23  (inizio settimana, quando si cercano opportunità)
   #                rubrica «Career Path» il primo lunedì del mese (glossario dei ruoli)
-  #   reel         mer 12:23 e dom 17:47, a rotazione: metodologia (classica), bando (rock), posizioni (funky),
-  #                speciale (aziendale); attivi con config reels_auto = true
+  #   reel         mer 12:23, ven 15:23 e dom 17:47, a rotazione: metodologia (classica), bando (rock),
+  #                posizioni (funky), speciale (aziendale); attivi con config reels_auto = true
   # Le rubriche si spengono con config rubrics = false.
   # Storie: workflow stories.yml (lun-ven 9:31).
   # Minuti «dispari» apposta: allo scoccare dell'ora e della mezz'ora GitHub è più carico e i run pianificati
@@ -25,6 +25,7 @@ on:
     - cron: "47 15 * * 6"         # metodologia, sabato 16:47 a Roma
     - cron: "23 17 * * 1"         # posizioni, lunedì 18:23 a Roma
     - cron: "23 11 * * 3"         # reel, mercoledì 12:23 a Roma
+    - cron: "23 14 * * 5"         # reel, venerdì 15:23 a Roma
     - cron: "47 16 * * 0"         # reel, domenica 17:47 a Roma
     # riserve un'ora dopo: GitHub a volte salta o ritarda i run pianificati; se il post è già uscito, il run salta da solo
     - cron: "23 12 * * 1,2,4,5"   # riserva bando, 13:23 a Roma
@@ -32,6 +33,7 @@ on:
     - cron: "47 16 * * 6"         # riserva metodologia, sabato 17:47 a Roma
     - cron: "23 18 * * 1"         # riserva posizioni, lunedì 19:23 a Roma
     - cron: "23 12 * * 3"         # riserva reel, mercoledì 13:23 a Roma
+    - cron: "23 15 * * 5"         # riserva reel, venerdì 16:23 a Roma
     - cron: "47 17 * * 0"         # riserva reel, domenica 18:47 a Roma
   workflow_dispatch:
     inputs:
@@ -107,7 +109,7 @@ jobs:
           POSITIONS_PER_POST: ${{ inputs.positions_count }}
           REEL_SOURCE: ${{ inputs.reel_source }}
           SCHEDULE: ${{ github.event.schedule }}
-          POST_TYPE: ${{ github.event_name == 'schedule' && ((github.event.schedule == '23 11 * * 1,2,4,5' || github.event.schedule == '23 12 * * 1,2,4,5') && 'grant' || ((github.event.schedule == '23 17 * * 1' || github.event.schedule == '23 18 * * 1') && 'positions' || ((github.event.schedule == '23 11 * * 3' || github.event.schedule == '23 12 * * 3' || github.event.schedule == '47 16 * * 0' || github.event.schedule == '47 17 * * 0') && 'reel' || 'research'))) || inputs.post_type || 'research' }}
+          POST_TYPE: ${{ github.event_name == 'schedule' && ((github.event.schedule == '23 11 * * 1,2,4,5' || github.event.schedule == '23 12 * * 1,2,4,5') && 'grant' || ((github.event.schedule == '23 17 * * 1' || github.event.schedule == '23 18 * * 1') && 'positions' || ((github.event.schedule == '23 11 * * 3' || github.event.schedule == '23 12 * * 3' || github.event.schedule == '23 14 * * 5' || github.event.schedule == '23 15 * * 5' || github.event.schedule == '47 16 * * 0' || github.event.schedule == '47 17 * * 0') && 'reel' || 'research'))) || inputs.post_type || 'research' }}
         run: python bot.py
 
       - name: Salva anteprima (solo in modalità prova)

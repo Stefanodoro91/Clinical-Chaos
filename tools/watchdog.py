@@ -24,6 +24,7 @@ API = f"https://api.github.com/repos/{REPO}"
 H = {"Authorization": f"Bearer {os.environ.get('GITHUB_TOKEN', '')}", "Accept": "application/vnd.github+json"}
 # (tipo, giorni 0=lun, ora, minuto): stesso calendario dei workflow, in ora italiana
 CALENDAR = [("story", (0, 1, 2, 3, 4), 9, 31), ("grant", (0, 1, 3, 4), 12, 23), ("reel", (2,), 12, 23),
+            ("reel", (4,), 15, 23),
             ("positions", (0,), 18, 23), ("research", (1, 2, 3), 18, 47), ("research", (5,), 16, 47),
             ("reel", (6,), 17, 47)]
 GRACE = timedelta(minutes=15)       # GitHub parte spesso con qualche minuto di ritardo: lo si aspetta un po'
