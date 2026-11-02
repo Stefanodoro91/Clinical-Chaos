@@ -1145,5 +1145,50 @@
     "source_hint": "pages 2-3",
     "id": "9959bfe9",
     "source": "Propensity score.pdf"
+  },
+  {
+    "title": "Why AI Fails in Clinical Trial Recruitment",
+    "title_highlight": "AI Fails",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "The Recruitment Bottleneck",
+        "body": "Eighty percent of clinical trials experience significant recruitment delays, and 37% of sites fail to recruit a single participant.",
+        "image_prompt": "a clinical trial site with empty chairs, a frustrated researcher looking at a zero enrollment sign on a clipboard",
+        "photo_query": "clinical trial recruitment empty chairs researcher",
+        "highlight": "significant recruitment delays",
+        "source": "Olawade et al., 2026"
+      },
+      {
+        "heading": "The Customization Trap",
+        "body": "Integrating AI matching systems into electronic medical record systems costs hundreds of thousands of dollars per instance and requires extensive customisation.",
+        "image_prompt": "a computer monitor displaying error codes, surrounded by expensive dollar bills and tangled cables",
+        "photo_query": "electronic medical record computer error codes",
+        "highlight": "extensive customisation",
+        "source": "Olawade et al., 2026"
+      },
+      {
+        "heading": "Hidden Implementation Costs",
+        "body": "Each electronic medical record implementation requires unique adjustments for local clinical terminology, laboratory units, and reporting styles.",
+        "image_prompt": "a magnifying glass examining different medical coding documents on a desk",
+        "photo_query": "medical records review desk documents",
+        "highlight": "local clinical terminology",
+        "source": "Olawade et al., 2026"
+      }
+    ],
+    "takeaway": "AI tools for patient recruitment face heavy customisation barriers and high integration costs.",
+    "takeaway_highlight": "heavy customisation barriers",
+    "references": [
+      "Olawade, D. B., Fidelis, S. C., Marinze, S., Egbon, E., Osunmakinde, A., & Osborne, A. (2026). Artificial intelligence in clinical trials: A comprehensive review of opportunities, challenges, and future directions. International Journal of Medical Informatics, 206, 106141. https://doi.org/10.1016/j.ijmedinf.2025.106141"
+    ],
+    "caption": "Are AI recruitment tools too expensive for standard clinical trials?\n\nArtificial intelligence promises faster patient recruitment, but real-world deployment reveals steep financial and technical obstacles. Electronic medical record systems require unique configurations for local clinical terminology and coding standards. What has been your experience with trial recruitment technology? Let us know in the comments.",
+    "hashtags": [
+      "#PatientRecruitment",
+      "#ClinicalTrials",
+      "#HealthTech"
+    ],
+    "source_hint": "sections 4.1 and 10.2",
+    "id": "4a7cd16f",
+    "source": "AI.pdf"
   }
 ]
