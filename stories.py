@@ -34,6 +34,7 @@ class _Painter:
         self.bg = _hx(cfg["colors"]["background"])
         self.soft = cfg["colors"]["muted_text"]
         self.accent = accent
+        self.neutral = "#F2F2F2" if cfg.get("_mono") else accent    # barre e pulsanti: grigi nel bianco e nero
 
     def mix(self, col, a):
         c = _hx(col)
@@ -49,14 +50,14 @@ def _cta(d, pt, y, text, a):
     f = font("ExtraBold", 46)
     w = d.textlength(text, font=f) + 110
     x = (W - w) / 2
-    d.rounded_rectangle((x, y, x + w, y + 108), radius=54, fill=pt.mix(pt.accent, a))
+    d.rounded_rectangle((x, y, x + w, y + 108), radius=54, fill=pt.mix(pt.neutral, a))
     d.text((x + 55, y + 26), text, font=f, fill=pt.bg)
 
 
 def countdown_frame(t, data, pt):
     img = Image.new("RGB", (W, H), pt.bg)
     d = ImageDraw.Draw(img)
-    d.rectangle((0, 0, W * min(1, t / SECONDS), 14), fill=pt.accent)          # avanza con la storia
+    d.rectangle((0, 0, W * min(1, t / SECONDS), 14), fill=pt.neutral)          # avanza con la storia
     y = 330
     a = _ease(t, 0.1)
     pulse = 0.55 + 0.45 * abs(((t * 1.6) % 2) - 1)
@@ -108,7 +109,7 @@ def countdown_frame(t, data, pt):
 def weekly_frame(t, data, pt):
     img = Image.new("RGB", (W, H), pt.bg)
     d = ImageDraw.Draw(img)
-    d.rectangle((0, 0, W * min(1, t / SECONDS), 14), fill=pt.accent)
+    d.rectangle((0, 0, W * min(1, t / SECONDS), 14), fill=pt.neutral)
     a = _ease(t, 0.1)
     if a > 0.3:
         cards.paste_logo(img, "logo-symbol-light", M, 320, height=110)
@@ -148,7 +149,8 @@ def render(kind, data, out_path, cfg, seed=0):
     """Scrive l'mp4 della storia e restituisce il percorso. kind = «countdown» oppure «weekly»."""
     accent = cfg.get("grant_accent", "#FFB547") if kind == "countdown" else cfg["colors"]["accent"]
     cards.EDITORIAL = bool(cfg.get("design_v3"))
-    pt = _Painter(cfg, accent)
+    pcfg = {**cfg, "colors": {**cfg["colors"], "background": "#0A0A0A", "muted_text": "#CFCFCF"}, "_mono": True} if cfg.get("mono") else cfg
+    pt = _Painter(pcfg, accent)
     draw = countdown_frame if kind == "countdown" else weekly_frame
     out_path = Path(out_path)
     silent = out_path.with_suffix(".silent.mp4")

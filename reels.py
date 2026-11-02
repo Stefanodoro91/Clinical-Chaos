@@ -17,6 +17,9 @@ FPS = 30
 
 def frame(slide_path, cfg, index, total, accent):
     """Una slide del carosello dentro il formato verticale: fascia alta con il marchio, fascia bassa con l'invito."""
+    if cfg.get("mono"):
+        cfg = {**cfg, "colors": {**cfg["colors"], "background": "#0A0A0A", "accent": "#F2F2F2", "muted": "#8A8A8A"}}
+        accent = "#F2F2F2"
     c = cfg["colors"]
     img = Image.new("RGB", (W, H), c["background"])
     d = ImageDraw.Draw(img)
@@ -35,7 +38,7 @@ def frame(slide_path, cfg, index, total, accent):
     seg = (W - 160 - (total - 1) * 12) / total
     for i in range(total):
         x0 = 80 + i * (seg + 12)
-        d.rounded_rectangle([x0, y, x0 + seg, y + 8], radius=4, fill=accent if i <= index else "#2A4058")
+        d.rounded_rectangle([x0, y, x0 + seg, y + 8], radius=4, fill=accent if i <= index else ("#2E2E2E" if cfg.get("mono") else "#2A4058"))
     msg = "Full carousel on our profile"
     f_msg = cards.font("SemiBold", 34)
     tw = d.textlength(msg, font=f_msg)
@@ -130,17 +133,21 @@ def _wrap(d, text, fnt, max_w):
 def story_frame(slide, cfg, index, total, accent):
     """Slide 1080×1920 per i reel di annuncio: copertina chiara, punti numerati scuri, chiusura con il logo."""
     cards.EDITORIAL = bool(cfg.get("design_v3"))
+    mono = bool(cfg.get("mono"))
+    if mono:
+        cfg = {**cfg, "colors": {**cfg["colors"], "background": "#0A0A0A"}}
     c = cfg["colors"]
     kind = slide.get("type", "point")
     accent = slide.get("accent") or accent
-    bg = slide.get("bg") or (LIGHT_BG if kind == "cover" else c["background"])
+    bg = slide.get("bg") or (("#F2F2F2" if mono else LIGHT_BG) if kind == "cover" else c["background"])
     rgb = tuple(int(bg.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
     light = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 > 0.55       # fondo chiaro: testo scuro
-    fg = DARK_TEXT if light else "#FFFFFF"
+    fg = ("#0A0A0A" if mono else DARK_TEXT) if light else "#FFFFFF"
     img = Image.new("RGB", (W, H), bg)
     d = ImageDraw.Draw(img)
     M = 96
-    d.rectangle([0, 0, W, 14], fill=accent)
+    bar = "#F2F2F2" if mono else accent          # barre in grigio nel bianco e nero: il colore resta solo al testo
+    d.rectangle([0, 0, W, 14], fill=bar)
     if kind == "stat":
         # numero grande su fondo colorato (es. bandi in giallo, posizioni in lilla), con foto facoltativa
         d.text((M, 170), (slide.get("kicker") or "").upper(), font=cards.font("Bold", 34), fill=fg)
@@ -285,7 +292,7 @@ def story_frame(slide, cfg, index, total, accent):
     for i in range(total):
         x0 = M + i * (seg + 12)
         d.rounded_rectangle([x0, yb, x0 + seg, yb + 8], radius=4,
-                            fill=accent if i <= index else ("#C9D6DF" if light else "#2A4058"))
+                            fill=bar if i <= index else (("#CFCFCF" if light else "#2E2E2E") if mono else ("#C9D6DF" if light else "#2A4058")))
     if kind != "closing":
         f_h = cards.font("SemiBold", 32)
         d.text((M, yb + 40), cfg.get("handle", ""), font=f_h, fill="#5B7186" if light else c["muted_text"])

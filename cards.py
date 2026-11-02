@@ -13,7 +13,35 @@ FONTS = Path(__file__).resolve().parent / "fonts"
 _font_cache = {}
 
 
+MONO, HL = False, None   # bianco e nero (config «mono»): HL = colore speciale del tipo di post, solo per le evidenziazioni
 EDITORIAL = False      # impostato da render_carousel (config «design_v3»): stile editoriale da rivista scientifica
+
+
+def _ld():
+    return "#2E2E2E" if MONO else "#2A4058"
+
+
+def _ll():
+    return "#CFCFCF" if MONO else "#C9D6DF"
+
+
+def HLC(c):
+    """Colore delle evidenziazioni di testo: quello del tipo di post nel bianco e nero, altrimenti l'accento."""
+    return HL if (MONO and HL) else c["accent"]
+
+
+def hlc(dark, fallback):
+    """Colore delle parole chiave nei titoli (su fondo scuro o chiaro)."""
+    if not (MONO and HL):
+        return fallback
+    return HL if dark else DARK_ACCENT.get(HL, HL)
+
+
+def pill_colors(c, dark):
+    """(fondo, testo) delle etichette: nel bianco e nero seguono il tema della copertina."""
+    if MONO and not dark:
+        return c["background"], "#FFFFFF"
+    return c["accent"], c["background"]
 
 
 def H_(weight):
@@ -141,6 +169,12 @@ def paste_logo(img, name, x, y, height=None, width=None):
         ratio = (height / logo.height) if height else (width / logo.width)
         _logo_cache[key] = logo.resize((round(logo.width * ratio), round(logo.height * ratio)), Image.LANCZOS)
     logo = _logo_cache[key]
+    if MONO:                                   # bianco e nero: logo in scala di grigi, trasparenza invariata
+        key2 = key + ("gray",)
+        if key2 not in _logo_cache:
+            a = logo.getchannel("A")
+            _logo_cache[key2] = Image.merge("RGBA", (*(logo.convert("L"),) * 3, a))
+        logo = _logo_cache[key2]
     img.paste(logo, (int(x), int(y)), logo)
     return logo.size
 
@@ -172,7 +206,7 @@ def logo_mark(img, d, x, y, size, fg, bg, cfg):
 def editorial_chrome(d, cfg, dark, c, n=None):
     """Testata da rivista: nome in maiuscoletto con filetto sotto, e filetto sopra il piè di pagina."""
     ink = c["muted"] if dark else INK_MUTED
-    rule = "#2A4058" if dark else "#C9D4DE"
+    rule = ("#2E2E2E" if dark else "#CFCFCF") if MONO else ("#2A4058" if dark else "#C9D4DE")
     acc = c["accent"] if dark else DARK_ACCENT.get(c["accent"], c["background"])
     kf = font("Bold", 24)
     d.text((MARGIN, 38), cfg["brand_name"].upper(), font=kf, fill=acc)
@@ -266,6 +300,9 @@ def cube_texture_v2(img, seed, accent, dark, keep_out=(), density=1.0):
     a = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
     bases = ([(42, 64, 88, 255), (31, 92, 90, 255), (120, 135, 150, 130), a + (100,)] if dark else
              [(201, 214, 223, 255), (176, 196, 210, 220), a + (115,), (14, 34, 51, 45)])
+    if MONO:
+        bases = ([(46, 46, 46, 255), (72, 72, 72, 255), (130, 130, 130, 120), a + (90,)] if dark else
+                 [(205, 205, 205, 255), (178, 178, 178, 210), a + (60,), (10, 10, 10, 40)])
     d = ImageDraw.Draw(img, "RGBA")
     taken = grown.copy()
 
@@ -331,6 +368,9 @@ def cube_texture(img, seed, accent, dark, keep_out=(), density=1.0):
     a = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
     cols = ([(42, 64, 88, 255), (31, 92, 90, 255), (120, 135, 150, 120), a + (95,)] if dark else
             [(201, 214, 223, 255), (176, 196, 210, 200), a + (110,), (14, 34, 51, 40)])
+    if MONO:
+        cols = ([(46, 46, 46, 255), (72, 72, 72, 255), (130, 130, 130, 120), a + (90,)] if dark else
+                [(205, 205, 205, 255), (178, 178, 178, 200), a + (60,), (10, 10, 10, 40)])
     placed = 0
     for _ in range(400):
         if placed >= 44:
@@ -448,10 +488,10 @@ def photo_cover(post, cfg, total, pic, img, d, dark, ink, acc):
     paste_logo(img, "logo-symbol-light", MARGIN - 14, 60, height=120)
     paste_logo(img, "logo-wordmark-light", MARGIN + 118, 76, height=88)
     py = band - 28
-    pw = poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, py, c["accent"], c["background"])
+    pw = poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, py, *pill_colors(c, dark))
     extra_pills(d, post, MARGIN + pw + 16, py, c["background"] if dark else "#FFFFFF", ink)
     poster_title(d, post["title"], post.get("title_highlight"), MARGIN, py + 100, W - 2 * MARGIN,
-                 H - 300 - (py + 100), ink, acc, start=96, minimum=52)
+                 H - 300 - (py + 100), ink, hlc(dark, acc), start=96, minimum=52)
     if total:
         d.text((MARGIN, H - 240), "Swipe  →", font=font("ExtraBold", 46), fill=acc)
     return img
@@ -466,7 +506,7 @@ def poster_cover(post, cfg, total):
         return photo_cover(post, cfg, total, pic, img, d, dark, ink, acc)
     lh = poster_logo(img, d, cfg, dark)
     top = 80 + lh + 50
-    pw = poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, top, c["accent"], c["background"])
+    pw = poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, top, *pill_colors(c, dark))
     extra_pills(d, post, MARGIN + pw + 16, top, c["background"] if dark else "#FFFFFF", ink)
     title_top = top + 110
     end = poster_title(d, post["title"], post.get("title_highlight"), MARGIN, title_top, W - 2 * MARGIN,
@@ -486,14 +526,14 @@ def poster_grant_cover(post, cfg, total, picture=None):
     if picture is not None:
         band = 470
         img.paste(ImageOps.fit(picture.convert("RGB"), (W, band), Image.LANCZOS), (0, 14))
-        pw = poster_pill(d, "OPEN CALL", MARGIN, band - 30, c["accent"], c["background"])
+        pw = poster_pill(d, "OPEN CALL", MARGIN, band - 30, *pill_colors(c, dark))
         extra_pills(d, post, MARGIN + pw + 16, band - 30, c["background"] if dark else "#FFFFFF", ink)
         y = band + 60
         keep.append((0, 0, W, band + 40))
     else:
         lh = poster_logo(img, d, cfg, dark)
         y = 80 + lh + 50
-        pw = poster_pill(d, "OPEN CALL", MARGIN, y, c["accent"], c["background"])
+        pw = poster_pill(d, "OPEN CALL", MARGIN, y, *pill_colors(c, dark))
         extra_pills(d, post, MARGIN + pw + 16, y, c["background"] if dark else "#FFFFFF", ink)
         keep.append((MARGIN - 20, y - 10, W - MARGIN + 20, y + 70))
         y += 100
@@ -526,7 +566,7 @@ def poster_positions_cover(post, cfg, total):
     img, d, dark, ink, acc = poster_base(post, cfg, total)
     lh = poster_logo(img, d, cfg, dark)
     y = 80 + lh + 50
-    pw = poster_pill(d, "ACADEMIC POSITIONS", MARGIN, y, c["accent"], c["background"])
+    pw = poster_pill(d, "ACADEMIC POSITIONS", MARGIN, y, *pill_colors(c, dark))
     extra_pills(d, post, MARGIN + pw + 16, y, c["background"] if dark else "#FFFFFF", ink)
     d.text((MARGIN, y + 86), f"Week of {post.get('week', '')}", font=font("SemiBold", 36),
            fill=c["muted_text"] if dark else INK_MUTED)
@@ -580,7 +620,7 @@ def cover(post, cfg, total):
     title_top = pill_top + 110
     fnt, lines, size = fit(d, post["title"], H_("ExtraBold"), 124, 64, W - 2 * MARGIN, H - 320 - title_top, 1.08)
     phrase = post.get("title_highlight") or (lines[-1] if lines else "")
-    draw_rich(d, post["title"], phrase, fnt, size, MARGIN, title_top, W - 2 * MARGIN, navy, 1.08, c["accent"], half=True)
+    draw_rich(d, post["title"], phrase, fnt, size, MARGIN, title_top, W - 2 * MARGIN, navy, 1.08, HLC(c), half=True)
     if total:
         d.text((MARGIN, H - 240), "Swipe  →", font=font("ExtraBold", 46), fill=DARK_ACCENT.get(c["accent"], navy))
     return img
@@ -620,7 +660,7 @@ def grant_cover(post, cfg, total):
     fnt, lines, size = fit(d, post["title"], H_("ExtraBold"), 88 if picture is None else 72, 44, W - 2 * MARGIN,
                            box_top - y - (60 if picture is None else 36), 1.15)
     phrase = post.get("title_highlight") or (lines[-1] if lines else "")
-    draw_rich(d, post["title"], phrase, fnt, size, MARGIN, y, W - 2 * MARGIN, navy, 1.15, c["accent"], half=True)
+    draw_rich(d, post["title"], phrase, fnt, size, MARGIN, y, W - 2 * MARGIN, navy, 1.15, HLC(c), half=True)
     if post.get("deadline"):
         d.rounded_rectangle((MARGIN, box_top, W - MARGIN, box_top + box_h), radius=28, fill=navy)
         d.text((MARGIN + 50, box_top + 26), "DEADLINE", font=font("Bold", 30), fill=c["accent"])
@@ -642,7 +682,7 @@ def content(slide, number, cfg, index, total):
     d.text((MARGIN, top), f"{number:02d}", font=font(H_("ExtraBold"), 120), fill=c["accent"])
     y = draw_lines(d, hl, hf, hs, MARGIN, top + 180, c["text"], 1.15) + 44
     draw_rich(d, slide["body"], slide.get("highlight"), bf, bs, MARGIN, y, W - 2 * MARGIN,
-              c["muted_text"], 1.4, c["accent"], c["background"])
+              c["muted_text"], 1.4, HLC(c), c["background"])
     source_line(d, slide, cfg)
     return img
 
@@ -677,7 +717,7 @@ def illustrated(slide, number, cfg, index, total, picture):
     d.rounded_rectangle((MARGIN, int(y), W - MARGIN, int(y) + pic_h), radius=28, outline=c["accent"], width=3)
 
     draw_rich(d, slide["body"], slide.get("highlight"), bf, bs, MARGIN, y + pic_h + 40, text_w,
-              c["muted_text"], 1.4, c["accent"], c["background"])
+              c["muted_text"], 1.4, HLC(c), c["background"])
     source_line(d, slide, cfg)
     return img
 
@@ -700,7 +740,7 @@ def numbers_slide(post, cfg, index, total):
         ny = y + (num_f.size * 1.0 - block) / 2 + 6
         draw_lines(d, ll, lf, ls, MARGIN + col, ny, c["text"], 1.25)
         if i < len(rows) - 1:
-            d.line((MARGIN, y + step_h - 14, W - MARGIN, y + step_h - 14), fill="#24405A", width=2)
+            d.line((MARGIN, y + step_h - 14, W - MARGIN, y + step_h - 14), fill=_ld(), width=2)
     return img
 
 
@@ -776,7 +816,7 @@ def closing(post, cfg, total):
     card_top = H - 660
     fnt, lines, size = fit(d, post["takeaway"], H_("ExtraBold"), 72, 44, W - 2 * MARGIN, card_top - 240 - 50, 1.2)
     draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 240, W - 2 * MARGIN,
-              navy, 1.2, c["accent"], half=True)
+              navy, 1.2, HLC(c), half=True)
     d.rounded_rectangle((MARGIN, card_top, W - MARGIN, card_top + 500), radius=32, fill=navy)
     sym = paste_logo(img, "logo-symbol-light", MARGIN + 30, card_top + 22, height=140)
     if sym:
@@ -797,7 +837,7 @@ def closing(post, cfg, total):
     cf, cl, cs = fit(d, cta, "Regular", 28, 22, W - 2 * MARGIN - 100, 40, 1.2)
     d.text((MARGIN + 50, card_top + 345), cl[0], font=cf, fill=c["muted_text"])
     # dove trovarci: Instagram e Facebook con lo stesso nome
-    d.line((MARGIN + 50, card_top + 400, W - MARGIN - 50, card_top + 400), fill="#2A4560", width=2)
+    d.line((MARGIN + 50, card_top + 400, W - MARGIN - 50, card_top + 400), fill=_ld(), width=2)
     sy = card_top + 425
     x = MARGIN + 50
     # icone ufficiali (Simple Icons, CC0) dei profili attivi: Bluesky e Threads solo se configurati
@@ -831,7 +871,7 @@ def positions_cover(post, cfg, total):
     d.text((MARGIN, 396), f"Week of {post.get('week', '')}", font=font("SemiBold", 36), fill=INK_MUTED)
     fnt, lines, size = fit(d, post["title"], H_("ExtraBold"), 100, 60, W - 2 * MARGIN, 420, 1.12)
     draw_rich(d, post["title"], post.get("title_highlight"), fnt, size, MARGIN, 470, W - 2 * MARGIN, navy, 1.12,
-              c["accent"], half=True)
+              HLC(c), half=True)
     counts = {}
     for j in post.get("jobs", []):
         t = SHORT_TYPE.get(j["type"], j["type"])
@@ -882,7 +922,7 @@ def position_slide(job, number, cfg, index, total):
     room = H - 170 - y
     gap = min(150, room / max(1, len(rows_)))
     for k, v in rows_:
-        d.line((MARGIN, y, W - MARGIN, y), fill="#2A4058", width=2)
+        d.line((MARGIN, y, W - MARGIN, y), fill=_ld(), width=2)
         d.text((MARGIN, y + 20), k.upper(), font=font("Bold", 26), fill=c["accent"])
         last = k == "Deadline"
         vf, vl, vs = fit(d, v, "ExtraBold" if last else "SemiBold", 40 if last else 36, 26, W - 2 * MARGIN - label_w,
@@ -942,10 +982,10 @@ def rule_slide(post, cfg, index, total, with_cta=False):
     room = H - 300 - (250 if not with_cta else 560)
     fnt, lines, size = fit(d, post["takeaway"], H_("ExtraBold"), 100 if not with_cta else 88, 52, W - 2 * MARGIN, room, 1.12)
     draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 260, W - 2 * MARGIN,
-              navy, 1.12, c["accent"], half=True)
+              navy, 1.12, HLC(c), half=True)
     if with_cta:
         y = H - 560
-        d.line((MARGIN, y, W - MARGIN, y), fill="#C9D6DF", width=3)
+        d.line((MARGIN, y, W - MARGIN, y), fill=_ll(), width=3)
         qf, ql, qs = fit(d, _question(post), "SemiBold", 40, 30, W - 2 * MARGIN, 110, 1.25)
         draw_lines(d, ql, qf, qs, MARGIN, y + 36, navy, 1.25)
         y += 190
@@ -1046,6 +1086,23 @@ def decorate_inner(pages, post, cfg):
     return pages
 
 
+MONO_COLORS = {"background": "#0A0A0A", "accent": "#F2F2F2", "text": "#FFFFFF", "muted_text": "#CFCFCF", "muted": "#8A8A8A"}
+
+
+def set_mono(cfg):
+    """Imposta il bianco e nero (config «mono»): palette di grigi per tutto, e come colore speciale l'accento
+    del tipo di post (HL), usato solo per le evidenziazioni del testo."""
+    global MONO, HL, PAPER, INK_MUTED
+    MONO = bool(cfg.get("mono"))
+    HL = cfg["colors"]["accent"] if MONO else None
+    PAPER, INK_MUTED = ("#F2F2F2", "#666666") if MONO else ("#F3F6F9", "#5B7186")
+
+
+def mono_cfg(cfg):
+    """Config con la palette di grigi; l'accento originale resta in HL (chiamare set_mono prima)."""
+    return {**cfg, "colors": {**cfg["colors"], **MONO_COLORS}} if cfg.get("mono") else cfg
+
+
 def render_carousel(post, cfg):
     """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
     global CUBE_V2, EDITORIAL
@@ -1055,8 +1112,11 @@ def render_carousel(post, cfg):
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("grant_accent", "#FFB547")}}
     if post.get("accent"):   # post speciali (annunci): colore d'accento proprio
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": post["accent"]}}
-    if post.get("kind") == "positions":   # raccolta settimanale di posizioni: senza illustrazioni AI
+    if post.get("kind") == "positions":
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("positions_accent", "#A78BFA")}}
+    set_mono(cfg)                         # bianco e nero: da qui l'accento del tipo resta solo in HL
+    cfg = mono_cfg(cfg)
+    if post.get("kind") == "positions":   # raccolta settimanale di posizioni: senza illustrazioni AI
         jobs = post.get("jobs", [])
         total = len(jobs) + 2 + bool(post.get("facts"))
         pages = [positions_cover(post, cfg, total)]
