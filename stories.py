@@ -196,9 +196,27 @@ def _with_cubes(draw, data, pt, accent, cfg, seed):
     return wrapped
 
 
+RX_SCHOLARSHIP = re.compile(r"scholarship|fellowship|studentship|bursar|stipend|doctoral|ph\.?d\b|postdoc|post-doc|"
+                            r"master|undergraduate|exchange programme", re.I)
+
+
+def is_scholarship(data):
+    """Borse di studio e di ricerca per persone (scholarship, fellowship, dottorato…): colore dell'accademia."""
+    return bool(RX_SCHOLARSHIP.search(f"{data.get('programme', '')} {data.get('title', '')}"))
+
+
+def story_accent(kind, data, cfg):
+    """Bandi nel colore dei bandi, scholarship nel colore dell'accademia (posizioni); settimanale nel colore del brand."""
+    if kind != "countdown":
+        return cfg["colors"]["accent"]
+    if data.get("scholarship"):
+        return cfg.get("positions_accent", "#8B5CF6")
+    return cfg.get("grant_accent", "#FFB547")
+
+
 def render(kind, data, out_path, cfg, seed=0):
     """Scrive l'mp4 della storia e restituisce il percorso. kind = «countdown» oppure «weekly»."""
-    accent = cfg.get("grant_accent", "#FFB547") if kind == "countdown" else cfg["colors"]["accent"]
+    accent = story_accent(kind, data, cfg)
     cards.EDITORIAL = bool(cfg.get("design_v3"))
     cards.LOGO_ACCENT = accent                     # logo v3 nel colore del tipo (giallo bandi, violetto posizioni…)
     pcfg = {**cfg, "colors": {**cfg["colors"], "background": "#0A0A0A", "muted_text": "#CFCFCF"}, "_mono": True} if cfg.get("mono") else cfg
@@ -284,22 +302,35 @@ def countdown_data(grants_list, verified, log, today=None):
             "hook": rnd.choice(HOOKS_SOON if days <= 12 else HOOKS_LATER), "days": days,
             "programme": grants.content._clip(v.get("programme") or grants.funder_line(g), 60),
             "title": grants.content._clip(title, 110), "deadline_label": label,
-            "deadline": grants._fmt_date(d) + (f" ({note})" if note else ""), "open_to": where}
+            "deadline": grants._fmt_date(d) + (f" ({note})" if note else ""), "open_to": where,
+            "scholarship": is_scholarship({"programme": v.get("programme") or "", "title": title})}
 
 
-def weekly_data(grants_list, verified, archive, today=None):
-    """Numeri della settimana, contati sugli stessi dati delle pagine del sito."""
+def weekly_data(grants_list, verified, archive, today=None, cfg=None):
+    """Numeri della settimana, contati sugli stessi dati delle pagine del sito (bandi: page_entries verificate;
+    posizioni: positions.active). Colori: bandi nel colore dei bandi, posizioni nel colore dell'accademia."""
     today = today or date.today()
+    cfg = cfg or {}
+    gold, violet = cfg.get("grant_accent", "#FFB547"), cfg.get("positions_accent", "#8B5CF6")
     entries = [e for e in grants.page_entries(grants_list, verified, today) if e[1]]       # solo bandi verificati
     soon = [e for e in entries if e[2] and (e[2] - today).days <= 30]
     jobs = positions.active(archive, today)
     new_jobs = [j for j in jobs if (today - (grants._date(j[1].get("first_seen")) or today)).days <= 7]
-    rows = [(len(entries), "funding calls open, checked on the official text", "#FFB547"),
-            (len(soon), "calls closing in the next 30 days", "#FF8A65")]
-    rows.append((len(new_jobs), "new academic positions this week", "#3DD9C1") if new_jobs
-                else (len(jobs), "open academic positions", "#3DD9C1"))
+    one = lambda n, a, b: a if n == 1 else b
+    rows = [(len(entries), one(len(entries), "funding call open, checked on the official text",
+                               "funding calls open, checked on the official text"), gold),
+            (len(soon), one(len(soon), "call closing in the next 30 days", "calls closing in the next 30 days"),
+             _shade_hex(gold))]
+    rows.append((len(new_jobs), one(len(new_jobs), "new academic position this week", "new academic positions this week"), violet)
+                if new_jobs else (len(jobs), one(len(jobs), "open academic position", "open academic positions"), violet))
     return {"hook": "Your research week in 12 seconds", "rows": [r for r in rows if r[0] > 0],
             "note": "Funding and jobs in clinical research, rehabilitation and biomedical engineering."}
+
+
+def _shade_hex(h):
+    """Variante più calda e più scura del colore dei bandi (per le scadenze in arrivo)."""
+    r, g, b = _hx(h)
+    return "#%02X%02X%02X" % (min(255, int(r * 1.0)), int(g * 0.72), int(b * 0.8))
 
 
 # ---------------------------------------------------------------- pubblicazione (video caricato direttamente)
@@ -373,7 +404,7 @@ def main():
     grants_list = grants.fetch(cfg)
     verified = grants.load_verified()
     if kind == "weekly":
-        data = weekly_data(grants_list, verified, positions.load_archive(), today)
+        data = weekly_data(grants_list, verified, positions.load_archive(), today, cfg)
         if len(data["rows"]) < 2:
             print("::notice title=Storia::numeri della settimana insufficienti: nessuna storia")
             return

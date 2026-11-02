@@ -1235,7 +1235,7 @@ def position_slide(job, number, cfg, index, total):
     d.text((W - MARGIN - d.textlength(f"{number:02d}", font=font("ExtraBold", 72)), 118), f"{number:02d}",
            font=font("ExtraBold", 72), fill=HLT(True, c["accent"]))
     hf, hl, hs = fit(d, job["title"], H_("Bold"), 54, 36, W - 2 * MARGIN, 200, 1.16)
-    y = draw_lines(d, hl, hf, hs, MARGIN, 236, HLT(True, c["text"]) or c["text"], 1.16) + 40
+    y = draw_lines(d, hl, hf, hs, MARGIN, 236, c["text"], 1.16) + 40            # titolo bianco
     rows_ = [("University", job.get("institution")), ("Position", job.get("type")),
              ("Topic", job.get("topic") or job.get("area_label")), ("SSD", job.get("ssd")),
              ("Duration", job.get("duration")), ("Location", job.get("place")), ("Deadline", job.get("deadline"))]
@@ -1250,7 +1250,7 @@ def position_slide(job, number, cfg, index, total):
         vf, vl, vs = fit(d, v, "ExtraBold" if last else "SemiBold", 40 if last else 36, 26, W - 2 * MARGIN - label_w,
                          gap - 28, 1.2)
         draw_lines(d, vl, vf, vs, MARGIN + label_w, y + 14,
-                   (HLT(True, c["text"]) or c["text"]) if k in ("Deadline", "Position") else c["text"], 1.2)
+                   c["text"], 1.2)                                  # valori bianchi: solo l'etichetta (prima colonna) è a colore
         y += gap
     return img
 

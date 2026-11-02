@@ -609,6 +609,8 @@ def reel_run(posted):
         kind = p.get("kind") or "research"
         if kind not in REEL_KINDS or kind in latest or p.get("id") in done or not p.get("time") or force not in (None, kind):
             continue
+        if kind == "announcement" and force != "announcement":
+            continue                 # gli annunci scritti a mano hanno numeri fissi (poi superati): reel solo su richiesta
         if datetime.fromisoformat(p["time"]).timestamp() < now - (21 if kind == "research" else 10) * 86400:
             continue                 # bandi, posizioni e speciali: solo se usciti negli ultimi 10 giorni
         safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in p["id"])
