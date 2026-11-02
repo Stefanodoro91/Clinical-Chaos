@@ -145,6 +145,39 @@ def weekly_frame(t, data, pt):
     return img
 
 
+def _with_cubes(draw, data, pt, accent, cfg, seed):
+    import numpy as np
+    final = draw(SECONDS - 0.1, data, pt)
+    old = (cards.MONO, cards.HL, cards.H)
+    cards.MONO, cards.HL, cards.H = bool(cfg.get("mono")), accent, H     # il modulo delle schede lavora su 1350 px: qui la storia è 1920
+    textured = final.copy()
+    try:
+        cards.cube_texture(textured, f"story-{seed}-{data.get('hook', '')}", accent, True, keep_out=[(0, H - 260, W, H)], density=1.8)
+    finally:
+        cards.MONO, cards.HL, cards.H = old
+    a, b = np.asarray(final, dtype=np.int16), np.asarray(textured, dtype=np.int16)
+    mask = np.abs(a - b).sum(axis=2) > 0
+    try:                                  # scarta i cubetti troppo vicini al testo (si ritaglierebbero tra le lettere)
+        from scipy import ndimage
+        near = ndimage.binary_dilation(np.abs(a - np.array(pt.bg, dtype=np.int16)).sum(axis=2) > 40, iterations=22)
+        lab, n = ndimage.label(mask)
+        bad = np.unique(lab[near & mask])
+        mask &= ~np.isin(lab, bad[bad > 0])
+    except ImportError:
+        pass
+    layer = np.asarray(textured)
+
+    def wrapped(t, d, p):
+        img = draw(t, d, p)
+        fade = _ease(t, 0.3, 1.0)
+        arr = np.array(img)
+        bgc = np.array(p.bg, dtype=np.int16)
+        free = mask & (np.abs(arr.astype(np.int16) - bgc).sum(axis=2) < 12)
+        arr[free] = (arr[free] * (1 - fade) + layer[free] * fade).astype(np.uint8)
+        return Image.fromarray(arr)
+    return wrapped
+
+
 def render(kind, data, out_path, cfg, seed=0):
     """Scrive l'mp4 della storia e restituisce il percorso. kind = «countdown» oppure «weekly»."""
     accent = cfg.get("grant_accent", "#FFB547") if kind == "countdown" else cfg["colors"]["accent"]
@@ -152,6 +185,8 @@ def render(kind, data, out_path, cfg, seed=0):
     pcfg = {**cfg, "colors": {**cfg["colors"], "background": "#0A0A0A", "muted_text": "#CFCFCF"}, "_mono": True} if cfg.get("mono") else cfg
     pt = _Painter(pcfg, accent)
     draw = countdown_frame if kind == "countdown" else weekly_frame
+    if cfg.get("design_v3"):                       # cubetti nelle parti vuote (calcolati sul fotogramma finale, in dissolvenza)
+        draw = _with_cubes(draw, data, pt, accent, cfg, seed)
     out_path = Path(out_path)
     silent = out_path.with_suffix(".silent.mp4")
     wav = out_path.with_suffix(".wav")
