@@ -51,5 +51,6 @@
   "bluesky_images": 1,
   "backfill_per_run": 1,
   "rubrics": true,
-  "cube_v2": true
+  "cube_v2": true,
+  "photo_bonus": 1
 }

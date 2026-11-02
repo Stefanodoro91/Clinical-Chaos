@@ -208,11 +208,13 @@ def choose_best(slide, pictures, cfg, kinds=None, strict=False, minimum=None):
     minimum = int(minimum or cfg.get("image_min_relevance", 6))
     best, best_score = None, -1
     for i, (pic, sc) in enumerate(zip(pictures, scores), 1):
-        ok = not sc.get("has_text") and sc.get("style_ok") and int(sc.get("relevance", 0)) >= minimum
+        bonus = float(cfg.get("photo_bonus", 0)) if (kinds[i - 1] == "photo" and slide.get("photo_query")) else 0.0
+        rel = int(sc.get("relevance", 0)) + bonus      # piccolo vantaggio alle foto quando il tema è una scena reale
+        ok = not sc.get("has_text") and sc.get("style_ok") and rel >= minimum
         print(f"  Candidata {i} ({kinds[i - 1]}): pertinenza {sc.get('relevance')}, testo {sc.get('has_text')}, "
               f"stile {sc.get('style_ok')}{' – ' + sc['problems'] if sc.get('problems') else ''}")
-        if ok and int(sc["relevance"]) > best_score:
-            best, best_score = pic, int(sc["relevance"])
+        if ok and rel > best_score:
+            best, best_score = pic, rel
     LAST["kind"] = kinds[pictures.index(best)] if best is not None else None
     if best is None:
         print(f"  Nessuna candidata abbastanza buona: la slide «{slide['heading']}» resta solo testo.")

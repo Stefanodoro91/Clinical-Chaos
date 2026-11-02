@@ -13,10 +13,19 @@ FONTS = Path(__file__).resolve().parent / "fonts"
 _font_cache = {}
 
 
+EDITORIAL = False      # impostato da render_carousel (config «design_v3»): stile editoriale da rivista scientifica
+
+
+def H_(weight):
+    """Peso dei titoli: serif nello stile editoriale, altrimenti Inter come prima."""
+    return "Serif" + weight if EDITORIAL else weight
+
+
 def font(weight, size):
     key = (weight, size)
     if key not in _font_cache:
-        _font_cache[key] = ImageFont.truetype(str(FONTS / f"Inter-{weight}.ttf"), size)
+        path = f"SourceSerif4-{weight[5:]}.ttf" if weight.startswith("Serif") else f"Inter-{weight}.ttf"
+        _font_cache[key] = ImageFont.truetype(str(FONTS / path), size)
     return _font_cache[key]
 
 
@@ -160,11 +169,24 @@ def logo_mark(img, d, x, y, size, fg, bg, cfg):
     d.text((x + (size - d.textlength("CRC", font=f)) / 2, y + size * 0.3), "CRC", font=f, fill=bg)
 
 
+def editorial_chrome(d, cfg, dark, c, n=None):
+    """Testata da rivista: nome in maiuscoletto con filetto sotto, e filetto sopra il piè di pagina."""
+    ink = c["muted"] if dark else INK_MUTED
+    rule = "#2A4058" if dark else "#C9D4DE"
+    acc = c["accent"] if dark else DARK_ACCENT.get(c["accent"], c["background"])
+    kf = font("Bold", 24)
+    d.text((MARGIN, 38), cfg["brand_name"].upper(), font=kf, fill=acc)
+    d.line((MARGIN, 84, W - MARGIN, 84), fill=rule, width=2)
+    d.line((MARGIN, H - 134, W - MARGIN, H - 134), fill=rule, width=2)
+
+
 def light_canvas(cfg, index, total):
     c = cfg["colors"]
     img = Image.new("RGB", (W, H), PAPER)
     d = ImageDraw.Draw(img)
     d.rectangle((0, 0, W, 14), fill=c["accent"])
+    if EDITORIAL and index > 1:
+        editorial_chrome(d, cfg, False, c)
     foot = font("SemiBold", 30)
     d.text((MARGIN, H - 110), cfg["handle"], font=foot, fill=INK_MUTED)
     if total:                                  # total=None: immagine singola (Bluesky), senza numero di pagina
@@ -178,6 +200,8 @@ def canvas(cfg, index, total):
     img = Image.new("RGB", (W, H), c["background"])
     d = ImageDraw.Draw(img)
     d.rectangle((0, 0, W, 14), fill=c["accent"])
+    if EDITORIAL and index > 1:
+        editorial_chrome(d, cfg, True, c)
     # piè di pagina: handle a sinistra, numero slide a destra
     foot = font("SemiBold", 30)
     d.text((MARGIN, H - 110), cfg["handle"], font=foot, fill=c["muted"])
@@ -324,8 +348,29 @@ def cube_texture(img, seed, accent, dark, keep_out=(), density=1.0):
         placed += 1
 
 
+def editorial_title(d, text, highlight, x, y, max_w, max_h, color, accent, start=124, minimum=56):
+    """Titolo serif in maiuscole e minuscole (stile Nature/Science); le parole del `highlight` nel colore d'accento."""
+    hl = {w.strip(":?.,!;").lower() for w in (highlight or "").split()}
+    size = start
+    while True:
+        f = font("SerifExtraBold", size)
+        lines = wrap(d, text, f, max_w)
+        if (len(lines) * size * 1.08 <= max_h and all(d.textlength(l, font=f) <= max_w for l in lines)) or size <= minimum:
+            break
+        size -= 4
+    for ln in lines:
+        cx = x
+        for w in ln.split():
+            d.text((cx, y), w, font=f, fill=accent if w.strip(":?.,!;").lower() in hl else color)
+            cx += d.textlength(w + " ", font=f)
+        y += size * 1.08
+    return y
+
+
 def poster_title(d, text, highlight, x, y, max_w, max_h, color, accent, start=150, minimum=64):
     """Titolo in maiuscolo con Anton; le parole del `highlight` nel colore d'accento. Restituisce la y finale."""
+    if EDITORIAL:
+        return editorial_title(d, text, highlight, x, y, max_w, max_h, color, accent)
     text = text.upper()
     hl = {w.strip(":?.,!;").upper() for w in (highlight or "").split()}
     size = start
@@ -509,7 +554,7 @@ def cover(post, cfg, total):
     d.text((MARGIN + 28, pill_top + 11), label, font=pill_f, fill=navy)
     extra_pills(d, post, MARGIN + pw + 16, pill_top, "#FFFFFF", navy)
     title_top = pill_top + 110
-    fnt, lines, size = fit(d, post["title"], "ExtraBold", 124, 64, W - 2 * MARGIN, H - 320 - title_top, 1.08)
+    fnt, lines, size = fit(d, post["title"], H_("ExtraBold"), 124, 64, W - 2 * MARGIN, H - 320 - title_top, 1.08)
     phrase = post.get("title_highlight") or (lines[-1] if lines else "")
     draw_rich(d, post["title"], phrase, fnt, size, MARGIN, title_top, W - 2 * MARGIN, navy, 1.08, c["accent"], half=True)
     if total:
@@ -548,7 +593,7 @@ def grant_cover(post, cfg, total):
     if post.get("funder"):
         ff, fl, fs = fit(d, post["funder"], "SemiBold", 38 if picture is None else 32, 26, W - 2 * MARGIN, 90, 1.25)
         y = draw_lines(d, fl, ff, fs, MARGIN, y, INK_MUTED, 1.25) + (30 if picture is None else 18)
-    fnt, lines, size = fit(d, post["title"], "ExtraBold", 88 if picture is None else 72, 44, W - 2 * MARGIN,
+    fnt, lines, size = fit(d, post["title"], H_("ExtraBold"), 88 if picture is None else 72, 44, W - 2 * MARGIN,
                            box_top - y - (60 if picture is None else 36), 1.15)
     phrase = post.get("title_highlight") or (lines[-1] if lines else "")
     draw_rich(d, post["title"], phrase, fnt, size, MARGIN, y, W - 2 * MARGIN, navy, 1.15, c["accent"], half=True)
@@ -565,12 +610,12 @@ def grant_cover(post, cfg, total):
 def content(slide, number, cfg, index, total):
     c = cfg["colors"]
     img, d = canvas(cfg, index, total)
-    hf, hl, hs = fit(d, slide["heading"], "ExtraBold", 76, 46, W - 2 * MARGIN, 300, 1.15)
+    hf, hl, hs = fit(d, slide["heading"], H_("ExtraBold"), 76, 46, W - 2 * MARGIN, 300, 1.15)
     head_h = len(hl) * hs * 1.15
     bf, bl, bs = fit(d, slide["body"], "Regular", 54, 32, W - 2 * MARGIN, H - 170 - 180 - head_h - 220, 1.4)
     block = 180 + head_h + 40 + len(bl) * bs * 1.45
     top = max(150, (H - block) / 2 - 50)   # blocco centrato in verticale
-    d.text((MARGIN, top), f"{number:02d}", font=font("ExtraBold", 120), fill=c["accent"])
+    d.text((MARGIN, top), f"{number:02d}", font=font(H_("ExtraBold"), 120), fill=c["accent"])
     y = draw_lines(d, hl, hf, hs, MARGIN, top + 180, c["text"], 1.15) + 44
     draw_rich(d, slide["body"], slide.get("highlight"), bf, bs, MARGIN, y, W - 2 * MARGIN,
               c["muted_text"], 1.4, c["accent"], c["background"])
@@ -593,8 +638,8 @@ def illustrated(slide, number, cfg, index, total, picture):
     text_w = W - 2 * MARGIN
     top, bottom = 90, H - (190 if slide.get("source") else 150)   # spazio utile sopra il piè di pagina
 
-    d.text((MARGIN, top), f"{number:02d}", font=font("ExtraBold", 72), fill=c["accent"])
-    hf, hl, hs = fit(d, slide["heading"], "Bold", 54, 38, text_w, 140, 1.2)
+    d.text((MARGIN, top), f"{number:02d}", font=font(H_("ExtraBold"), 72), fill=c["accent"])
+    hf, hl, hs = fit(d, slide["heading"], H_("Bold"), 54, 38, text_w, 140, 1.2)
     y = draw_lines(d, hl, hf, hs, MARGIN, top + 100, c["text"], 1.2) + 30
 
     # il testo ha la precedenza e deve restare leggibile sul telefono: corpo più grande,
@@ -705,7 +750,7 @@ def closing(post, cfg, total):
     img, d = light_canvas(cfg, total, total)
     d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 34), fill=DARK_ACCENT.get(c["accent"], navy))
     card_top = H - 660
-    fnt, lines, size = fit(d, post["takeaway"], "ExtraBold", 72, 44, W - 2 * MARGIN, card_top - 240 - 50, 1.2)
+    fnt, lines, size = fit(d, post["takeaway"], H_("ExtraBold"), 72, 44, W - 2 * MARGIN, card_top - 240 - 50, 1.2)
     draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 240, W - 2 * MARGIN,
               navy, 1.2, c["accent"], half=True)
     d.rounded_rectangle((MARGIN, card_top, W - MARGIN, card_top + 500), radius=32, fill=navy)
@@ -760,7 +805,7 @@ def positions_cover(post, cfg, total):
     d.text((MARGIN + 30, 312), label, font=badge_f, fill=navy)
     extra_pills(d, post, MARGIN + bw + 16, 303, "#FFFFFF", navy)
     d.text((MARGIN, 396), f"Week of {post.get('week', '')}", font=font("SemiBold", 36), fill=INK_MUTED)
-    fnt, lines, size = fit(d, post["title"], "ExtraBold", 100, 60, W - 2 * MARGIN, 420, 1.12)
+    fnt, lines, size = fit(d, post["title"], H_("ExtraBold"), 100, 60, W - 2 * MARGIN, 420, 1.12)
     draw_rich(d, post["title"], post.get("title_highlight"), fnt, size, MARGIN, 470, W - 2 * MARGIN, navy, 1.12,
               c["accent"], half=True)
     counts = {}
@@ -803,7 +848,7 @@ def position_slide(job, number, cfg, index, total):
     d.text((MARGIN + 24, 141), job["type"].upper(), font=tf, fill=c["background"])
     d.text((W - MARGIN - d.textlength(f"{number:02d}", font=font("ExtraBold", 72)), 118), f"{number:02d}",
            font=font("ExtraBold", 72), fill=c["accent"])
-    hf, hl, hs = fit(d, job["title"], "Bold", 54, 36, W - 2 * MARGIN, 200, 1.16)
+    hf, hl, hs = fit(d, job["title"], H_("Bold"), 54, 36, W - 2 * MARGIN, 200, 1.16)
     y = draw_lines(d, hl, hf, hs, MARGIN, 236, c["text"], 1.16) + 40
     rows_ = [("University", job.get("institution")), ("Position", job.get("type")),
              ("Topic", job.get("topic") or job.get("area_label")), ("SSD", job.get("ssd")),
@@ -851,7 +896,7 @@ def source_slide(post, cfg, index, total, meta, thumb=None):
                 (f"Open access · {meta['license_label']}" if meta.get("license_label") else "", "Regular", 28, c["muted_text"])]
     else:
         y = 400                                   # solo citazione: blocco centrato in verticale
-        tf, tl, ts = fit(d, meta["title"], "Bold", 52, 30, W - 2 * MARGIN, 420, 1.2)
+        tf, tl, ts = fit(d, meta["title"], H_("Bold"), 52, 30, W - 2 * MARGIN, 420, 1.2)
         y = draw_lines(d, tl, tf, ts, MARGIN, y, c["text"], 1.2) + 24
         rows = [(meta.get("authors", ""), "SemiBold", 34, c["muted_text"]),
                 (" · ".join(str(x) for x in (meta.get("journal"), meta.get("year")) if x), "SemiBold", 34, c["accent"]),
@@ -871,7 +916,7 @@ def rule_slide(post, cfg, index, total, with_cta=False):
     img, d = light_canvas(cfg, index, total)
     d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 36), fill=DARK_ACCENT.get(c["accent"], navy))
     room = H - 300 - (250 if not with_cta else 560)
-    fnt, lines, size = fit(d, post["takeaway"], "ExtraBold", 100 if not with_cta else 88, 52, W - 2 * MARGIN, room, 1.12)
+    fnt, lines, size = fit(d, post["takeaway"], H_("ExtraBold"), 100 if not with_cta else 88, 52, W - 2 * MARGIN, room, 1.12)
     draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 260, W - 2 * MARGIN,
               navy, 1.12, c["accent"], half=True)
     if with_cta:
@@ -979,8 +1024,9 @@ def decorate_inner(pages, post, cfg):
 
 def render_carousel(post, cfg):
     """Copertina, slide di contenuto, chiusura. Le slide in posizione pari (2, 4, 6…) hanno anche un'immagine AI."""
-    global CUBE_V2
+    global CUBE_V2, EDITORIAL
     CUBE_V2 = bool(cfg.get("cube_v2"))
+    EDITORIAL = bool(cfg.get("design_v3"))
     if post.get("kind") == "grant":   # i bandi hanno un colore d'accento proprio, per riconoscerli a colpo d'occhio
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("grant_accent", "#FFB547")}}
     if post.get("accent"):   # post speciali (annunci): colore d'accento proprio
