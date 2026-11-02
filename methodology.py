@@ -107,9 +107,13 @@ PAGE = """<!doctype html>
   .tools h2 {{ font-size: 21px; font-weight: 800; margin: 26px 0 4px; color: var(--accent); }}
   .tools .sub {{ color: var(--soft); font-size: 14px; margin: 0 0 12px; }}
   .tools .row {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }}
-  .tools a.tool {{ display: block; background: var(--card); border-radius: 16px; padding: 16px; text-decoration: none; color: var(--text);
-                  border: 1px solid transparent; }}
-  .tools a.tool:hover, .tools a.tool:focus-visible {{ border-color: var(--accent); }}
+  .tools .tool {{ display: block; background: var(--card); border-radius: 16px; padding: 16px; color: var(--text); }}
+  .tools ul {{ list-style: none; margin: 8px 0 0; padding: 0; }}
+  .tools li a {{ display: flex; justify-content: space-between; gap: 8px; padding: 7px 0; border-top: 1px solid #2E2E2E;
+                text-decoration: none; color: var(--text); font-size: 14px; }}
+  .tools li a b {{ color: var(--accent); font-weight: 700; }}
+  .tools li a span {{ color: var(--soft); font-size: 12px; text-align: right; }}
+  .tools li a:hover b, .tools li a:focus-visible b {{ text-decoration: underline; }}
   .tools .k {{ font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }}
   .tools .t {{ display: block; font-size: 17px; font-weight: 800; margin: 4px 0; line-height: 1.25; }}
   .tools .d {{ display: block; font-size: 13px; color: var(--soft); }}
@@ -130,7 +134,7 @@ PAGE = """<!doctype html>
   <form class="filters" role="search" aria-label="Filter topics" data-noun="topics" onsubmit="return false">
     <label>Search<input type="search" name="q" placeholder="Keyword (e.g. blinding, p-value, regression)" autocomplete="off"></label>
     <label>Topic<select name="area"><option value="">All topics</option>{cat_opts}</select></label>
-    <div class="status"><span class="count" aria-live="polite">{n} topics</span><button type="reset" hidden>Clear filters</button></div>
+    <div class="status"><span class="count" aria-live="polite">{n} {topics_word}</span><button type="reset" hidden>Clear filters</button></div>
   </form>
 {tools}
 {sections}
@@ -160,25 +164,37 @@ PAGE = """<!doctype html>
 """
 
 
-TOOLS = [("Protocol draft", "Draft your protocol", "Step-by-step protocol drafting for your study design.", "protocol"),
-         ("Reporting", "Reporting guidelines", "The right checklist for your design: CONSORT, STROBE, PRISMA and more.", "reporting"),
-         ("Clinical appraisal", "Appraise the evidence", "Critical appraisal tools matched to each study design.", "appraisal")]
+TOOLS = [   # strumenti ufficiali per disegno di studio: (etichetta, titolo, [(disegno, strumento, url)])
+    ("Protocol draft", "Draft your protocol", [
+        ("Randomised trials", "SPIRIT", "https://www.spirit-statement.org/"),
+        ("Systematic reviews", "PRISMA-P", "https://www.prisma-statement.org/protocols"),
+        ("Review registration", "PROSPERO", "https://www.crd.york.ac.uk/prospero/"),
+        ("All designs", "EQUATOR library", "https://www.equator-network.org/library/")]),
+    ("Reporting", "Reporting guidelines", [
+        ("Randomised trials", "CONSORT", "https://www.consort-statement.org/"),
+        ("Observational studies", "STROBE", "https://www.strobe-statement.org/"),
+        ("Systematic reviews", "PRISMA", "https://www.prisma-statement.org/"),
+        ("Case reports", "CARE", "https://www.care-statement.org/"),
+        ("Every design", "EQUATOR Network", "https://www.equator-network.org/")]),
+    ("Clinical appraisal", "Appraise the evidence", [
+        ("Trials, cohorts, qualitative…", "CASP checklists", "https://casp-uk.net/casp-tools-checklists/"),
+        ("All study types", "JBI tools", "https://jbi.global/critical-appraisal-tools"),
+        ("Risk of bias (RCTs, NRSI)", "RoB 2 · ROBINS-I", "https://www.riskofbias.info/"),
+        ("Systematic reviews", "AMSTAR 2", "https://amstar.ca/")]),
+]
 
 
 def tools_block(cfg):
-    """Link agli strumenti per disegno di studio (config «tools_url», oppure «tools_urls» con un link per strumento)."""
-    base = (cfg.get("tools_url") or "").strip()
-    urls = cfg.get("tools_urls") or {}
-    cards_ = []
-    for kicker, title, desc, key in TOOLS:
-        url = (urls.get(key) or base).strip()
-        if url:
-            cards_.append(f'<a class="tool" href="{escape(url, quote=True)}" rel="noopener"><span class="k">{kicker}</span>'
-                          f'<span class="t">{title} &rarr;</span><span class="d">{desc}</span></a>')
-    if not cards_:
+    """Strumenti ufficiali per disegno di studio: protocollo, reporting, valutazione critica (link alle pagine ufficiali)."""
+    if not cfg.get("tools_block", True):
         return ""
+    cards_ = []
+    for kicker, title, links in TOOLS:
+        rows = "".join(f'<li><a href="{escape(u, quote=True)}" rel="noopener" target="_blank"><b>{escape(n)}</b>'
+                       f'<span>{escape(d)}</span></a></li>' for d, n, u in links)
+        cards_.append(f'<div class="tool"><span class="k">{kicker}</span><span class="t">{title}</span><ul>{rows}</ul></div>')
     return ('<section class="tools" id="tools"><h2>Tools by study design</h2>'
-            '<p class="sub">Draft the protocol, report it properly and appraise the evidence, for every study design.</p>'
+            '<p class="sub">Official tools to draft the protocol, report it properly and appraise the evidence, by study design.</p>'
             f'<div class="row">{"".join(cards_)}</div></section>')
 
 
@@ -232,6 +248,6 @@ def build_page(data, cfg, today=None):
     cat_opts = "".join(f'<option value="{_slug(k)}">{escape(k)}</option>' for k in sorted(cats))
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"], cat_opts=cat_opts,
-                       n=len(data), tools=tools_block(cfg), sections="\n".join(sections), updated=grants._fmt_date(today),
+                       n=len(data), topics_word="topic" if len(data) == 1 else "topics", tools=tools_block(cfg), sections="\n".join(sections), updated=grants._fmt_date(today),
                        og=grants.og_tags(cfg, f"Methodology library · {cfg['brand_name']}",
                                          "Practical clinical research methodology: key points and references.", "methodology"))

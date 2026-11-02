@@ -64,9 +64,13 @@
   .tools h2 { font-size: 21px; font-weight: 800; margin: 26px 0 4px; color: var(--accent); }
   .tools .sub { color: var(--soft); font-size: 14px; margin: 0 0 12px; }
   .tools .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .tools a.tool { display: block; background: var(--card); border-radius: 16px; padding: 16px; text-decoration: none; color: var(--text);
-                  border: 1px solid transparent; }
-  .tools a.tool:hover, .tools a.tool:focus-visible { border-color: var(--accent); }
+  .tools .tool { display: block; background: var(--card); border-radius: 16px; padding: 16px; color: var(--text); }
+  .tools ul { list-style: none; margin: 8px 0 0; padding: 0; }
+  .tools li a { display: flex; justify-content: space-between; gap: 8px; padding: 7px 0; border-top: 1px solid #2E2E2E;
+                text-decoration: none; color: var(--text); font-size: 14px; }
+  .tools li a b { color: var(--accent); font-weight: 700; }
+  .tools li a span { color: var(--soft); font-size: 12px; text-align: right; }
+  .tools li a:hover b, .tools li a:focus-visible b { text-decoration: underline; }
   .tools .k { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
   .tools .t { display: block; font-size: 17px; font-weight: 800; margin: 4px 0; line-height: 1.25; }
   .tools .d { display: block; font-size: 13px; color: var(--soft); }
@@ -79,17 +83,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style id="crc-editorial">
   /* stile editoriale dei post (design_v3): titoli serif, testata da rivista, schede con filetto, etichette piene */
-  h1, h2, h3, .t, .big, .num {font-family: "Source Serif 4", Georgia, serif !important; letter-spacing: -.01em;}
+  h1, h2, h3, .t, .big .name, .num {font-family: "Source Serif 4", Georgia, serif !important; letter-spacing: -.01em;}
   h1 {font-weight: 800; font-size: clamp(30px, 6vw, 40px); line-height: 1.1;}
   .bar {height: 10px !important;}
   main::before {content: attr(data-brand); display: block;}
   .badge {border-radius: 999px; letter-spacing: .08em;}
   section > h2, .tools h2 {border-bottom: 1px solid #2E2E2E; padding-bottom: 6px;}
-  .method, .job, .call, .card, form.filters, .nomatch, a.tool {background: #0F0F0F !important; border: 1px solid #2E2E2E !important;
+  article.method, .job, .call, form.filters, .nomatch, .tools .tool {background: #0F0F0F !important; border: 1px solid #2E2E2E !important;
       border-radius: 14px !important; box-shadow: none !important;}
-  .method, .job, .call {border-left-color: var(--accent) !important;}
-  a.tool:hover, a.tool:focus-visible {border-color: var(--accent) !important;}
-  .take, .intro {font-family: "Source Serif 4", Georgia, serif; font-size: 17px !important; line-height: 1.5;}
+  article.method, .job, .call {border-left-color: var(--accent) !important;}
+    .take, .intro {font-family: "Source Serif 4", Georgia, serif; font-size: 17px !important; line-height: 1.5;}
   details summary, .k {letter-spacing: .04em;}
   .refs {border-top-color: #2E2E2E !important;}
   footer {border-top: 1px solid #2E2E2E; padding-top: 14px;}
@@ -108,9 +111,9 @@
   <form class="filters" role="search" aria-label="Filter topics" data-noun="topics" onsubmit="return false">
     <label>Search<input type="search" name="q" placeholder="Keyword (e.g. blinding, p-value, regression)" autocomplete="off"></label>
     <label>Topic<select name="area"><option value="">All topics</option><option value="endpoints-outcomes">Endpoints &amp; outcomes</option></select></label>
-    <div class="status"><span class="count" aria-live="polite">1 topics</span><button type="reset" hidden>Clear filters</button></div>
+    <div class="status"><span class="count" aria-live="polite">1 topic</span><button type="reset" hidden>Clear filters</button></div>
   </form>
-<section class="tools" id="tools"><h2>Tools by study design</h2><p class="sub">Draft the protocol, report it properly and appraise the evidence, for every study design.</p><div class="row"><a class="tool" href="https://clinicalresearchchaos.com/" rel="noopener"><span class="k">Protocol draft</span><span class="t">Draft your protocol &rarr;</span><span class="d">Step-by-step protocol drafting for your study design.</span></a><a class="tool" href="https://clinicalresearchchaos.com/" rel="noopener"><span class="k">Reporting</span><span class="t">Reporting guidelines &rarr;</span><span class="d">The right checklist for your design: CONSORT, STROBE, PRISMA and more.</span></a><a class="tool" href="https://clinicalresearchchaos.com/" rel="noopener"><span class="k">Clinical appraisal</span><span class="t">Appraise the evidence &rarr;</span><span class="d">Critical appraisal tools matched to each study design.</span></a></div></section>
+<section class="tools" id="tools"><h2>Tools by study design</h2><p class="sub">Official tools to draft the protocol, report it properly and appraise the evidence, by study design.</p><div class="row"><div class="tool"><span class="k">Protocol draft</span><span class="t">Draft your protocol</span><ul><li><a href="https://www.spirit-statement.org/" rel="noopener" target="_blank"><b>SPIRIT</b><span>Randomised trials</span></a></li><li><a href="https://www.prisma-statement.org/protocols" rel="noopener" target="_blank"><b>PRISMA-P</b><span>Systematic reviews</span></a></li><li><a href="https://www.crd.york.ac.uk/prospero/" rel="noopener" target="_blank"><b>PROSPERO</b><span>Review registration</span></a></li><li><a href="https://www.equator-network.org/library/" rel="noopener" target="_blank"><b>EQUATOR library</b><span>All designs</span></a></li></ul></div><div class="tool"><span class="k">Reporting</span><span class="t">Reporting guidelines</span><ul><li><a href="https://www.consort-statement.org/" rel="noopener" target="_blank"><b>CONSORT</b><span>Randomised trials</span></a></li><li><a href="https://www.strobe-statement.org/" rel="noopener" target="_blank"><b>STROBE</b><span>Observational studies</span></a></li><li><a href="https://www.prisma-statement.org/" rel="noopener" target="_blank"><b>PRISMA</b><span>Systematic reviews</span></a></li><li><a href="https://www.care-statement.org/" rel="noopener" target="_blank"><b>CARE</b><span>Case reports</span></a></li><li><a href="https://www.equator-network.org/" rel="noopener" target="_blank"><b>EQUATOR Network</b><span>Every design</span></a></li></ul></div><div class="tool"><span class="k">Clinical appraisal</span><span class="t">Appraise the evidence</span><ul><li><a href="https://casp-uk.net/casp-tools-checklists/" rel="noopener" target="_blank"><b>CASP checklists</b><span>Trials, cohorts, qualitative…</span></a></li><li><a href="https://jbi.global/critical-appraisal-tools" rel="noopener" target="_blank"><b>JBI tools</b><span>All study types</span></a></li><li><a href="https://www.riskofbias.info/" rel="noopener" target="_blank"><b>RoB 2 · ROBINS-I</b><span>Risk of bias (RCTs, NRSI)</span></a></li><li><a href="https://amstar.ca/" rel="noopener" target="_blank"><b>AMSTAR 2</b><span>Systematic reviews</span></a></li></ul></div></div></section>
   <section id="endpoints-outcomes">
     <h2>Endpoints &amp; outcomes</h2>
     <div class="grp">
@@ -165,7 +168,7 @@
   function start() {
     if (started || !wide.matches) return;
     started = true;
-    var COLORS = ["#3DD9C1", "#14A085", "#FFFFFF", "#7F96AB"];
+    var COLORS = ["#6EC1FF", "#6EC1FF", "#416E90", "#284053"];
     var SIZES = [4, 6, 8, 10, 12], SHAPES = [[], [], [[1, 0]], [[0, 1]], [[1, 0], [0, 1]], [[1, 0], [1, 1]]];
     function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
     /* cascata lenta di quadratini ai due lati, singoli o a piccoli gruppi come nel logo */

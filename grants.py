@@ -1418,7 +1418,7 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
                        amber=cfg.get("grant_accent", "#FFB547"), lilac=cfg.get("positions_accent", "#A78BFA"),
                        calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
-                       method_line=escape(f"{n_methods} carousels to swipe, with key points and references" if n_methods
+                       method_line=escape(f"{n_methods} carousel{'s' if n_methods != 1 else ''} to swipe, with key points and references" if n_methods
                                           else "Practical topics with key points and references"),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
                                   "engineering and rehabilitation, checked on the official texts.", ""))
@@ -1837,17 +1837,16 @@ EDITORIAL_SITE = """<link rel="preconnect" href="https://fonts.gstatic.com" cros
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style id="crc-editorial">
   /* stile editoriale dei post (design_v3): titoli serif, testata da rivista, schede con filetto, etichette piene */
-  h1, h2, h3, .t, .big, .num {font-family: "Source Serif 4", Georgia, serif !important; letter-spacing: -.01em;}
+  h1, h2, h3, .t, .big .name, .num {font-family: "Source Serif 4", Georgia, serif !important; letter-spacing: -.01em;}
   h1 {font-weight: 800; font-size: clamp(30px, 6vw, 40px); line-height: 1.1;}
   .bar {height: 10px !important;}
   main::before {content: attr(data-brand); display: block;}
   .badge {border-radius: 999px; letter-spacing: .08em;}
   section > h2, .tools h2 {border-bottom: 1px solid #2E2E2E; padding-bottom: 6px;}
-  .method, .job, .call, .card, form.filters, .nomatch, a.tool {background: #0F0F0F !important; border: 1px solid #2E2E2E !important;
+  article.method, .job, .call, form.filters, .nomatch, .tools .tool {background: #0F0F0F !important; border: 1px solid #2E2E2E !important;
       border-radius: 14px !important; box-shadow: none !important;}
-  .method, .job, .call {border-left-color: var(--accent) !important;}
-  a.tool:hover, a.tool:focus-visible {border-color: var(--accent) !important;}
-  .take, .intro {font-family: "Source Serif 4", Georgia, serif; font-size: 17px !important; line-height: 1.5;}
+  article.method, .job, .call {border-left-color: var(--accent) !important;}
+    .take, .intro {font-family: "Source Serif 4", Georgia, serif; font-size: 17px !important; line-height: 1.5;}
   details summary, .k {letter-spacing: .04em;}
   .refs {border-top-color: #2E2E2E !important;}
   footer {border-top: 1px solid #2E2E2E; padding-top: 14px;}
@@ -1855,6 +1854,34 @@ EDITORIAL_SITE = """<link rel="preconnect" href="https://fonts.gstatic.com" cros
   mark, .hl {background: var(--accent); color: #0A0A0A; padding: 0 .15em;}
 </style>
 """
+
+
+SITE_COLORS = {"grant": "#FFB547", "positions": "#8B5CF6", "methods": "#6EC1FF"}   # aggiornati da bot.py dal config
+
+
+def _shade(hexc, f):
+    r, g, b = (int(hexc.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    return "#%02X%02X%02X" % (int(r * f + 10 * (1 - f)), int(g * f + 10 * (1 - f)), int(b * f + 10 * (1 - f)))
+
+
+def page_cubes(html):
+    """Cubetti della cascata laterale nel colore della pagina, come i cubetti dei post: giallo i bandi, violetto le
+    posizioni, azzurrino la metodologia (e le altre pagine); in home i tre colori insieme."""
+    import json as _json
+    import re as _re
+    home = _re.search(r'rel="canonical" href="https?://[^/"]+/"', html)
+    if home:
+        cols = []
+        for c in SITE_COLORS.values():
+            cols += [c, _shade(c, .55)]
+    else:
+        m = _re.search(r"--accent:\s*(#[0-9A-Fa-f]{6})", html)
+        acc = m.group(1) if m else SITE_COLORS["methods"]
+        if acc.upper() == "#A78BFA":                   # vecchio violetto delle pagine posizioni
+            acc = SITE_COLORS["positions"]
+            html = html.replace("#A78BFA", acc)
+        cols = [acc, acc, _shade(acc, .55), _shade(acc, .3)]
+    return _re.sub(r"var COLORS = \[[^\]]*\];", "var COLORS = " + _json.dumps(cols) + ";", html)
 
 
 def add_decor(html):
@@ -1870,6 +1897,8 @@ def add_decor(html):
         html = html.replace("</body>", SHARE + "</body>", 1)
     if 'class="share cal"' in html and "crc-cal-menu" not in html:
         html = html.replace("</body>", CAL + "</body>", 1)
+    if SITE_MONO:
+        html = page_cubes(html)
     if 'class="filters"' in html and "form.filters\")" not in html:
         html = html.replace("</body>", FILTER_SCRIPT + "</body>", 1)
     return html
