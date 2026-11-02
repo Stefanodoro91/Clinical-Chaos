@@ -176,6 +176,7 @@ def story_frame(slide, cfg, index, total, accent):
     c = cfg["colors"]
     kind = slide.get("type", "point")
     accent = slide.get("accent") or accent
+    cards.LOGO_ACCENT = accent
     bg = slide.get("bg") or (("#F2F2F2" if mono else LIGHT_BG) if kind == "cover" else c["background"])
     rgb = tuple(int(bg.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
     light = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 > 0.55       # fondo chiaro: testo scuro
@@ -220,11 +221,16 @@ def story_frame(slide, cfg, index, total, accent):
                 img.paste(pic, (M, y), mask)
     elif kind == "cover":
         inkc = "#0A0A0A" if mono else DARK_TEXT
-        logo = Image.open(ROOT / "docs" / "logo-horizontal.png").convert("RGBA")
-        lw = 560
-        logo = logo.resize((lw, int(logo.height * lw / logo.width)), Image.LANCZOS)
-        img.paste(logo, (M - 10, 260), logo)
-        y = 260 + logo.height + 200
+        if cards.EDITORIAL:                          # logo v3 nel colore del tipo
+            sz = cards.paste_logo(img, "logo-symbol" if light else "logo-symbol-light", M - 10, 260, height=170)
+            cards.paste_logo(img, "logo-wordmark" if light else "logo-wordmark-light", M - 10 + sz[0] + 28, 278, height=126)
+            y = 260 + 170 + 200
+        else:
+            logo = Image.open(ROOT / "docs" / "logo-horizontal.png").convert("RGBA")
+            lw = 560
+            logo = logo.resize((lw, int(logo.height * lw / logo.width)), Image.LANCZOS)
+            img.paste(logo, (M - 10, 260), logo)
+            y = 260 + logo.height + 200
         kick = slide.get("kicker", "")
         if kick:
             f = cards.font("Bold", 34)
@@ -298,12 +304,18 @@ def story_frame(slide, cfg, index, total, accent):
                 d.rounded_rectangle((x0 - 8, yy - 8, x0 + cw + 8, yy + ch + 8), radius=20, fill="#05121C")
                 img.paste(cov, (x0, yy))
     elif kind == "closing":
-        sym = Image.open(ROOT / "assets" / "logo-symbol-light.png").convert("RGBA").resize((300, 302), Image.LANCZOS)
-        img.paste(sym, ((W - 300) // 2, 380), sym)
-        word = Image.open(ROOT / "assets" / "logo-wordmark-light.png").convert("RGBA")
-        ww = 520
-        word = word.resize((ww, int(word.height * ww / word.width)), Image.LANCZOS)
-        img.paste(word, ((W - ww) // 2, 740), word)
+        if cards.EDITORIAL:                          # logo v3 nel colore del tipo, centrato
+            sym = cards.logo_v3("logo-symbol-light", 300)
+            img.paste(sym, ((W - sym.width) // 2, 380), sym)
+            word = cards.logo_v3("logo-wordmark-light", 210)
+            img.paste(word, ((W - word.width) // 2, 740), word)
+        else:
+            sym = Image.open(ROOT / "assets" / "logo-symbol-light.png").convert("RGBA").resize((300, 302), Image.LANCZOS)
+            img.paste(sym, ((W - 300) // 2, 380), sym)
+            word = Image.open(ROOT / "assets" / "logo-wordmark-light.png").convert("RGBA")
+            ww = 520
+            word = word.resize((ww, int(word.height * ww / word.width)), Image.LANCZOS)
+            img.paste(word, ((W - ww) // 2, 740), word)
         y = 740 + word.height + 120
         for text, f, col in ((slide.get("title", ""), cards.font(cards.H_("ExtraBold"), 66), "#FFFFFF"),
                              (slide.get("body", ""), cards.font("SemiBold", 46), accent),

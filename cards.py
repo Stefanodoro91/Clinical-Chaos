@@ -203,8 +203,34 @@ ASSETS = Path(__file__).resolve().parent / "assets"
 _logo_cache = {}
 
 
+LOGO_ACCENT = None     # colore del tipo di post per il logo v3 (impostato da set_mono / storie / reel)
+LOGO_NAMES = ("logo-symbol", "logo-symbol-light", "logo-wordmark", "logo-wordmark-light")
+
+
+def logo_v3(name, height):
+    """Logo v3 nel colore del tipo: «-light» = su fondo scuro (scritta bianca), altrimenti su fondo chiaro."""
+    import logo
+    light = name.endswith("-light")
+    acc = LOGO_ACCENT or "#3DD9C1"
+    if not light:                          # su fondo chiaro: stesso colore, più scuro e leggibile
+        import colorsys
+        r, g, b = (int(acc.lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4))
+        h, l, sat = colorsys.rgb_to_hls(r, g, b)
+        acc = "#%02x%02x%02x" % tuple(int(v * 255) for v in colorsys.hls_to_rgb(h, min(l, 0.42), max(sat, 0.6)))
+    ink = logo.INK_LIGHT if light else logo.INK_DARK
+    return (logo.symbol if "symbol" in name else logo.wordmark)(acc, ink, int(height))
+
+
 def paste_logo(img, name, x, y, height=None, width=None):
-    """Incolla assets/<name>.png (trasparente) alto `height` o largo `width`; restituisce (larghezza, altezza)."""
+    """Incolla assets/<name>.png (trasparente) alto `height` o largo `width`; restituisce (larghezza, altezza).
+    Con lo stile editoriale (design_v3) simbolo e scritta sono il logo v3 nel colore del tipo di post."""
+    if EDITORIAL and name in LOGO_NAMES and (height or width):
+        if not height:
+            ref = logo_v3(name, 200)
+            height = width * ref.height / ref.width
+        lg = logo_v3(name, height)
+        img.paste(lg, (int(x), int(y)), lg)
+        return lg.size
     path = ASSETS / f"{name}.png"
     if not path.exists():
         return None
@@ -1286,8 +1312,9 @@ MONO_COLORS = {"background": "#0A0A0A", "accent": "#F2F2F2", "text": "#FFFFFF", 
 def set_mono(cfg):
     """Imposta il bianco e nero (config «mono»): palette di grigi per tutto, e come colore speciale l'accento
     del tipo di post (HL), usato solo per le evidenziazioni del testo."""
-    global MONO, HL, PAPER, INK_MUTED, SCIENCE
+    global MONO, HL, PAPER, INK_MUTED, SCIENCE, LOGO_ACCENT
     MONO = bool(cfg.get("mono"))
+    LOGO_ACCENT = cfg["colors"]["accent"]
     HL = cfg["colors"]["accent"] if MONO else None
     SCIENCE = bool(MONO and cfg.get("_science"))
     PAPER, INK_MUTED = ("#FFFFFF" if SCIENCE else "#F2F2F2", "#666666") if MONO else ("#F3F6F9", "#5B7186")

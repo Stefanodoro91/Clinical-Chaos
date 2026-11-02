@@ -182,6 +182,7 @@ def render(kind, data, out_path, cfg, seed=0):
     """Scrive l'mp4 della storia e restituisce il percorso. kind = «countdown» oppure «weekly»."""
     accent = cfg.get("grant_accent", "#FFB547") if kind == "countdown" else cfg["colors"]["accent"]
     cards.EDITORIAL = bool(cfg.get("design_v3"))
+    cards.LOGO_ACCENT = accent                     # logo v3 nel colore del tipo (giallo bandi, violetto posizioni…)
     pcfg = {**cfg, "colors": {**cfg["colors"], "background": "#0A0A0A", "muted_text": "#CFCFCF"}, "_mono": True} if cfg.get("mono") else cfg
     pt = _Painter(pcfg, accent)
     draw = countdown_frame if kind == "countdown" else weekly_frame
