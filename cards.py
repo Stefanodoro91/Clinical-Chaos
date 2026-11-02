@@ -464,7 +464,7 @@ def glow_streaks(img, seed, accent, dark, grown=None, keep_out=(), density=1.0):
         samples = [bez(t, p0, p1, p2, p3) for t in np.linspace(0, 1, 160)]
         length = sum(math.dist(samples[i], samples[i + 1]) for i in range(159))
         hd.line(samples, fill=int(70 * k), width=int(wd * 1.5), joint="curve")
-        n = int(length / 1500 * 1000 * k)
+        n = int(length / 1500 * 340 * k)
         for _ in range(n):
             t = min(1.0, max(0.0, rnd.betavariate(1.5, 1.5)))
             dens = 0.55 + 0.45 * math.sin(t * 9 + phases[0]) * math.sin(t * 5 + phases[1])  # grumi più densi e radure
@@ -481,37 +481,37 @@ def glow_streaks(img, seed, accent, dark, grown=None, keep_out=(), density=1.0):
             core = max(0.15, 1 - abs(off) / (2.2 * sigma))             # più vivo al centro della strisciata
             roll = rnd.random()
             col = rnd.choice(palette)
-            if roll < 0.085:                                           # cubetto quadrato, in mezzo alle particelle
+            if roll < 0.06:                                            # cubetto quadrato, in mezzo alle particelle
                 sz = rnd.choice([6, 8, 10, 13, 17, 22])
-                if blocked(x, y, sz + 6):
+                if blocked(x, y, 2):
                     continue
                 cc = rnd.choice(cubes_pal)
                 sd.rectangle((x, y, x + sz, y + sz), fill=cc + (int(rnd.uniform(90, 200) * (0.5 + core / 2)),))
             elif roll < 0.60:                                          # polvere fine
                 rad = rnd.uniform(0.9, 2.0)
-                if blocked(x, y, 6):
+                if blocked(x, y, 2):
                     continue
                 sd.ellipse((x - rad, y - rad, x + rad, y + rad), fill=col + (int(rnd.uniform(130, 255) * (0.45 + core / 2)),))
             elif roll < 0.82:                                          # scintilla con alone
                 rad = rnd.uniform(2.0, 4.2)
-                if blocked(x, y, 14):
+                if blocked(x, y, 2):
                     continue
                 sd.ellipse((x - rad, y - rad, x + rad, y + rad), fill=col + (int(rnd.uniform(190, 255)),))
             elif roll < 0.94:                                          # bokeh piccolo (cerchio morbido con bordo leggero)
                 rad = rnd.uniform(6, 15)
-                if blocked(x, y, rad + 4):
+                if blocked(x, y, 2):
                     continue
                 a = int(rnd.uniform(35, 95) * k * (0.5 + core / 2))
                 bc = rnd.choice(bok_pal)
                 bs.ellipse((x - rad, y - rad, x + rad, y + rad), fill=bc + (a,), outline=bc + (min(255, a + 40),), width=1)
             elif roll < 0.985:                                         # bokeh grande, molto sfocato
                 rad = rnd.uniform(20, 46)
-                if blocked(x, y, rad + 6):
+                if blocked(x, y, 2):
                     continue
                 bb.ellipse((x - rad, y - rad, x + rad, y + rad), fill=rnd.choice(bok_pal) + (int(rnd.uniform(22, 55) * k),))
             elif dark:                                                 # lampo a croce
                 ln = rnd.uniform(12, 26)
-                if blocked(x, y, ln + 4):
+                if blocked(x, y, 2):
                     continue
                 cc = col + (230,)
                 sd.line((x - ln, y, x + ln, y), fill=cc, width=1)
@@ -520,12 +520,13 @@ def glow_streaks(img, seed, accent, dark, grown=None, keep_out=(), density=1.0):
 
     # maschera morbida delle zone libere: niente alone su testo, logo e immagini
     soft = np.kron((~grown).astype(np.uint8) * 255, np.ones((Q, Q), dtype=np.uint8))[:H, :W]
-    soft = Image.fromarray(soft).filter(ImageFilter.GaussianBlur(12))
+    soft = Image.fromarray(soft).filter(ImageFilter.GaussianBlur(46))      # dissolvenza ampia (~100 px) attorno al testo
+    soft = soft.point(lambda v: min(255, int(max(0, v - 40) * 255 / 175)))
     base = img.convert("RGBA")
     haze_col = acc if dark else _mixrgb(acc, (0, 0, 0), 0.3)
     haze = haze.filter(ImageFilter.GaussianBlur(80))
-    haze_soft = soft.point(lambda v: 120 + v * 135 // 255)          # la nebbia passa anche dietro il testo (leggera): niente riquadro nero
-    haze = ImageChops.multiply(haze.point(lambda v: int(v * (0.8 if dark else 0.3))), haze_soft)
+    haze_soft = soft.point(lambda v: 150 + v * 105 // 255)          # la nebbia passa anche dietro il testo (leggera): niente riquadro nero
+    haze = ImageChops.multiply(haze.point(lambda v: int(v * (0.5 if dark else 0.22))), haze_soft)
     layer = Image.new("RGBA", (W, H), haze_col + (0,)); layer.putalpha(haze)
     base = Image.alpha_composite(base, layer)
     for lay, blur in ((bok_b, 7), (bok_s, 2.2)):
@@ -536,7 +537,7 @@ def glow_streaks(img, seed, accent, dark, grown=None, keep_out=(), density=1.0):
         halo = sharp.filter(ImageFilter.GaussianBlur(5))
         halo.putalpha(ImageChops.multiply(halo.getchannel("A").point(lambda v: min(255, int(v * 1.5))), soft))
         base = Image.alpha_composite(base, halo)
-    sharp.putalpha(ImageChops.multiply(sharp.getchannel("A"), soft.point(lambda v: 255 if v > 200 else 0)))
+    sharp.putalpha(ImageChops.multiply(sharp.getchannel("A"), soft))
     base = Image.alpha_composite(base, sharp)
     img.paste(base.convert("RGB"))
     return img
