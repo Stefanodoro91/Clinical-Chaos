@@ -38,5 +38,16 @@
       "POS-8bbe81003073",
       "POS-b7dc5d6c1f64"
     ]
+  },
+  {
+    "date": "2026-11-03",
+    "time": "2026-11-03T11:50:33+00:00",
+    "id": "grant-GG-PAR-25-145",
+    "title": "Cancer survivorship researchers? Grants for chronic therapy sequelae studies",
+    "source": "GrantFinder",
+    "simulated": true,
+    "kind": "grant",
+    "grant_id": "GG-PAR-25-145",
+    "deadline": "2027-02-05"
   }
 ]
