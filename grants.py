@@ -1418,11 +1418,11 @@ HOME = """<!doctype html>
 HEADER_SYMBOL = [["#3475C4",[[30.08,71.44],[38.15,72.72],[36.87,80.78],[28.8,79.5]]],["#3475C4",[[29.2,94.21],[38.54,94.97],[37.78,104.31],[28.44,103.55]]],["#0A0A0A",[[50.72,50.72],[61.58,50.72],[61.58,61.58],[50.72,61.58]]],["#3475C4",[[47.52,70.21],[61.72,70.21],[61.72,84.41],[47.52,84.41]]],["#0A0A0A",[[46.36,92.26],[61.84,92.26],[61.84,107.74],[46.36,107.74]]],["#885CB5",[[50.72,138.42],[61.58,138.42],[61.58,149.28],[50.72,149.28]]],["#3475C4",[[74.98,29.08],[82.61,30.31],[81.39,37.94],[73.76,36.72]]],["#0A0A0A",[[70.21,47.52],[84.41,47.52],[84.41,61.72],[70.21,61.72]]],["#0A0A0A",[[67.34,67.34],[85.72,67.34],[85.72,85.72],[67.34,85.72]]],["#0A0A0A",[[76.27,100.0],[76.27,90.0],[86.27,90.0],[86.27,100.0],[86.27,110.0],[76.27,110.0],[66.26,110.0],[66.26,100.0]]],["#0A0A0A",[[67.34,114.28],[85.72,114.28],[85.72,132.66],[67.34,132.66]]],["#0A0A0A",[[70.21,138.28],[84.41,138.28],[84.41,152.48],[70.21,152.48]]],["#885CB5",[[76.07,163.13],[84.19,163.02],[84.3,171.14],[76.18,171.25]]],["#0A0A0A",[[95.65,28.08],[104.72,28.4],[104.39,37.47],[95.33,37.15]]],["#0A0A0A",[[92.26,46.36],[107.74,46.36],[107.74,61.84],[92.26,61.84]]],["#0A0A0A",[[90.0,66.26],[110.0,66.26],[110.0,86.27],[90.0,86.27]]],["#0A0A0A",[[89.12,89.12],[110.88,89.12],[110.88,110.88],[89.12,110.88]]],["#0A0A0A",[[90.0,113.73],[100.0,113.73],[110.0,113.73],[110.0,123.73],[100.0,123.73],[100.0,133.74],[90.0,133.74],[90.0,123.73]]],["#008D5F",[[92.26,138.16],[107.74,138.16],[107.74,153.64],[92.26,153.64]]],["#008D5F",[[95.5,162.35],[104.36,161.57],[105.13,170.43],[96.27,171.21]]],["#A56300",[[117.31,28.0],[125.5,29.38],[124.12,37.58],[115.93,36.2]]],["#A56300",[[115.59,47.52],[129.79,47.52],[129.79,61.72],[115.59,61.72]]],["#0A0A0A",[[114.28,67.34],[123.47,67.34],[123.47,76.53],[132.66,76.53],[132.66,85.72],[123.47,85.72],[114.28,85.72],[114.28,76.53]]],["#0A0A0A",[[113.73,90.0],[133.74,90.0],[133.74,110.0],[113.73,110.0]]],["#0A0A0A",[[114.28,114.28],[132.66,114.28],[132.66,132.66],[114.28,132.66]]],["#008D5F",[[115.49,162.6],[123.62,162.93],[123.29,171.06],[115.15,170.73]]],["#A56300",[[138.28,70.21],[152.48,70.21],[152.48,84.41],[138.28,84.41]]],["#008D5F",[[138.28,115.59],[152.48,115.59],[152.48,129.79],[138.28,129.79]]],["#0A0A0A",[[138.42,138.42],[149.28,138.42],[149.28,149.28],[138.42,149.28]]],["#A56300",[[163.19,71.71],[171.12,72.26],[170.57,80.19],[162.64,79.64]]],["#008D5F",[[163.05,96.03],[171.83,96.15],[171.71,104.93],[162.93,104.82]]],["#008D5F",[[163.41,117.9],[170.68,117.2],[171.38,124.47],[164.11,125.17]]]]
 
 HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
-<svg class="crc-sym" viewBox="26 26 148 148" aria-hidden="true">{cubes}</svg>
+<svg class="crc-sym" viewBox="26 26 148 148" aria-hidden="true"><defs>{defs}</defs>{glow}{cubes}</svg>
 <img class="crc-word" src="logo-wordmark-header.png" alt="" width="1142" height="360">
 </div>
 <style>
-  .top .crc-logo {{ --s: clamp(60px, calc((100vw - 64px) / 4.3), 118px); display: flex; align-items: center; justify-content: center;
+  .top .crc-logo {{ --s: clamp(54px, calc((100vw - 64px) / 4.6), 92px); display: flex; align-items: center; justify-content: center;
                    gap: calc(var(--s) * .186); margin: 6px auto 20px; }}
   .top .crc-sym {{ width: var(--s); height: var(--s); flex: none; overflow: visible; }}
   .top .crc-word {{ height: calc(var(--s) * .977); width: auto; max-width: none; margin: 0; display: block; }}
@@ -1474,11 +1474,38 @@ def header_logo(cfg):
     brand = escape(cfg["brand_name"], quote=True)
     if not cfg.get("site_v4"):
         return f'<img src="logo-horizontal.png" alt="{brand}" width="340" height="128">'
+    ink = "#0A0A0A"
+    accents = [c for c, _ in HEADER_SYMBOL if c != ink]
+    by_q = {}                                   # colore di ogni quadrante, dai cubetti d'accento che ci stanno
+    for col, pts in HEADER_SYMBOL:
+        if col != ink:
+            cx = sum(p[0] for p in pts) / len(pts); cy = sum(p[1] for p in pts) / len(pts)
+            by_q.setdefault((cx >= 100, cy >= 100), col)
+
+    def mix(h, k, to=(10, 10, 10)):
+        r, g, b = (int(h[i:i + 2], 16) for i in (1, 3, 5))
+        return "#%02X%02X%02X" % tuple(round(v * k + t * (1 - k)) for v, t in zip((r, g, b), to))
+    # cubetti centrali: sfumatura dal colore del loro quadrante (al centro) al nero (verso l'esterno)
+    defs, glow = [], []
+    for n, (q, col) in enumerate(sorted(by_q.items())):
+        defs.append(f'<radialGradient id="crc-q{n}" gradientUnits="userSpaceOnUse" cx="100" cy="100" r="62">'
+                    f'<stop offset="0" stop-color="{mix(col, 1.0)}"/><stop offset=".5" stop-color="{mix(col, .62)}"/>'
+                    f'<stop offset="1" stop-color="{ink}"/></radialGradient>')
+        gx, gy = (112 if q[0] else 88), (112 if q[1] else 88)
+        glow.append(f'<circle cx="{gx}" cy="{gy}" r="30" fill="{col}" opacity=".16" filter="url(#crc-blur)"/>')
+    defs.append('<filter id="crc-blur" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="9"/></filter>')
+    # piccolo riflesso in alto a sinistra su ogni cubetto: dà profondità senza cambiare il disegno
+    defs.append('<linearGradient id="crc-sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".28"/>'
+                '<stop offset=".5" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>')
+    qid = {q: n for n, (q, _) in enumerate(sorted(by_q.items()))}
     cubes = []
     for col, pts in HEADER_SYMBOL:
         cx = sum(p[0] for p in pts) / len(pts); cy = sum(p[1] for p in pts) / len(pts)
-        cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{" ".join(f"{x},{y}" for x, y in pts)}" fill="{col}"/></g>')
-    return HEADER_LOGO.format(brand=brand, cubes="".join(cubes))
+        fill = f"url(#crc-q{qid[(cx >= 100, cy >= 100)]})" if col == ink else col
+        poly = " ".join(f"{x},{y}" for x, y in pts)
+        cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{poly}" fill="{fill}"/>'
+                     f'<polygon points="{poly}" fill="url(#crc-sheen)"/></g>')
+    return HEADER_LOGO.format(brand=brand, cubes="".join(cubes), defs="".join(defs), glow="".join(glow))
 
 
 ICONS_DIR = __import__("pathlib").Path(__file__).resolve().parent / "icons"
