@@ -1367,5 +1367,111 @@
     "source_hint": "pages 5-6",
     "id": "5526e14d",
     "source": "Methodology for research I.pdf"
+  },
+  {
+    "title": "Most CPG Development Tools Are Unvalidated",
+    "title_highlight": "Are Unvalidated",
+    "category": "Critical appraisal",
+    "slides": [
+      {
+        "heading": "Selecting Unvalidated Guideline Frameworks",
+        "body": "Guideline developers frequently choose development tools without verifying their methodological validity or usability testing.",
+        "image_prompt": "a researcher standing before a wall of framed certificates, using a magnifying glass to inspect an unverified blueprint document",
+        "photo_query": "researcher reviewing clinical documentation",
+        "highlight": "verifying their methodological validity",
+        "source": "Yao et al., 2022"
+      },
+      {
+        "heading": "26 of 33 Development Tools Lack Validation",
+        "body": "A systematic survey revealed that 26 out of 33 clinical guideline development tools did not report validity or usability data.",
+        "image_prompt": "a stack of thirty-three blue folders where twenty-six folders are marked with red question marks and seven have green checkmarks",
+        "photo_query": "stack of research documents work",
+        "highlight": "26 out of 33 clinical guideline",
+        "source": "Yao et al., 2022"
+      },
+      {
+        "heading": "Reporting and Assessment Tools Are Tested More",
+        "body": "In contrast, 9 out of 13 CPG reporting checklist instruments and assessment tools documented usability or validity testing.",
+        "image_prompt": "two side-by-side balance scales, one holding validated reporting tools weighed down heavily, the other holding untested development tools",
+        "photo_query": "clinical checklist documents desk",
+        "highlight": "9 out of 13 CPG reporting",
+        "source": "Yao et al., 2022"
+      },
+      {
+        "heading": "Verify Tool Suitability Before Guideline Creation",
+        "body": "Developers must evaluate whether candidate CPG tools are methodologically sound and suitable for their specific clinical context.",
+        "image_prompt": "a group of three researchers around a table examining a flowchart with a green checkmark stamp on a paper document",
+        "photo_query": "medical researchers meeting discussion",
+        "highlight": "evaluate whether candidate CPG tools",
+        "source": "Yao et al., 2022"
+      }
+    ],
+    "takeaway": "Verify that your chosen clinical practice guideline tool has documented validity and usability before starting development.",
+    "takeaway_highlight": "documented validity and usability",
+    "references": [
+      "Yao, X., Xia, J., Jin, Y., Shen, Q., Wang, Q., Zhu, Y., McNair, S., Sussman, J., Wang, Z., Florez, I. D., Zeng, X. T., & Brouwers, M. (2022). Methodological approaches for developing, reporting, and assessing evidence-based clinical practice guidelines: a systematic survey. Journal of Clinical Epidemiology, 146, 77–85. https://doi.org/10.1016/j.jclinepi.2022.02.015"
+    ],
+    "caption": "Did you know 26 out of 33 guideline development tools lack published validity or usability testing?\n\nWhen creating clinical practice guidelines (CPGs), methodology matters. A systematic survey of 46 CPG tools found that most development frameworks do not report any validity or usability testing. While CPG reporting and assessment instruments are often validated, development frameworks frequently lack empirical support. Before launching a guideline panel, check if your methodology is context-appropriate and rigorously tested. How does your team select frameworks for CPG development?",
+    "hashtags": [
+      "#ClinicalGuidelines",
+      "#EvidenceBasedMedicine",
+      "#ResearchMethodology"
+    ],
+    "source_hint": "page 2, Key findings & Section 3.2",
+    "id": "3819a6bc",
+    "source": "evidence-based clinical practice guidelines.pdf"
+  },
+  {
+    "title": "Guideline Adaptation vs Adoption: Know the Difference",
+    "title_highlight": "Know the Difference",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Recommendations Do Not Travel Automatically",
+        "body": "Clinical recommendations created for one healthcare setting are rarely directly applicable to another without evaluation.",
+        "image_prompt": "a globe with two distinct landmasses connected by a dotted line carrying a paper document between two different clinics",
+        "photo_query": "international healthcare conference meeting",
+        "highlight": "rarely directly applicable to another",
+        "source": "Yao et al., 2022"
+      },
+      {
+        "heading": "CPG Adoption Accepts Without Changes",
+        "body": "CPG adoption means accepting existing guideline recommendations in full, without any modification for local contexts.",
+        "image_prompt": "a rubber stamp marking an intact document with a green seal of approval on an office desk",
+        "photo_query": "medical guideline document review",
+        "highlight": "accepting existing guideline recommendations in full",
+        "source": "Yao et al., 2022"
+      },
+      {
+        "heading": "CPG Adaptation Modifies for Local Context",
+        "body": "CPG adaptation means modifying existing recommendations to account for local resources, values, and healthcare settings.",
+        "image_prompt": "a researcher tailoring a blueprint paper with a pair of scissors and a pencil to fit a smaller local building model",
+        "photo_query": "scientist planning strategy document",
+        "highlight": "modifying existing recommendations to account",
+        "source": "Yao et al., 2022"
+      },
+      {
+        "heading": "Standard Frameworks Guide Adaptation",
+        "body": "Twelve of seventeen published CPG adaptation approaches rely on the ADAPTE framework to systematically adjust guidelines.",
+        "image_prompt": "a structured flowchart tool showing pathways leading from an original guideline document to a revised local guideline",
+        "photo_query": "team working whiteboard diagram",
+        "highlight": "Twelve of seventeen published CPG adaptation",
+        "source": "Yao et al., 2022"
+      }
+    ],
+    "takeaway": "Adopt CPG recommendations only when fully applicable; adapt them with transparent modifications for local context.",
+    "takeaway_highlight": "adapt them with transparent modifications",
+    "references": [
+      "Yao, X., Xia, J., Jin, Y., Shen, Q., Wang, Q., Zhu, Y., McNair, S., Sussman, J., Wang, Z., Florez, I. D., Zeng, X. T., & Brouwers, M. (2022). Methodological approaches for developing, reporting, and assessing evidence-based clinical practice guidelines: a systematic survey. Journal of Clinical Epidemiology, 146, 77–85. https://doi.org/10.1016/j.jclinepi.2022.02.015"
+    ],
+    "caption": "Are you adopting or adapting clinical practice guidelines for your local healthcare setting?\n\nRecommendations developed in one setting often fail to translate directly to another due to differences in resources and patient values. Methodologically, CPG adoption accepts recommendations without changes, whereas CPG adaptation alters recommendations to fit local context. Frameworks like ADAPTE help panels systematically modify guidelines while preserving evidence rigor. Does your institution adapt existing CPGs or develop them de novo?",
+    "hashtags": [
+      "#ClinicalGuidelines",
+      "#ImplementationScience",
+      "#ResearchMethods"
+    ],
+    "source_hint": "page 3, Section 3.2.3 & page 6, Section 4",
+    "id": "7ec1fad2",
+    "source": "evidence-based clinical practice guidelines.pdf"
   }
 ]
