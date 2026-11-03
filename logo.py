@@ -147,8 +147,7 @@ def lockup(accent, ink=INK_LIGHT, height=170):
 # ---------------------------------------------------------------- logo v4 (definitivo, 3/11/2026; config «brand_v4»)
 # Indipendente dalla linea: i cubetti d'accento del simbolo sono divisi per quadrante nei quattro colori delle rubriche
 # (alto-sx Design, Reporting & Appraisal; alto-dx Funding Calls; basso-sx Academic Positions; basso-dx Latest Science),
-# «CLINICAL RESEARCH» e «Chaos» bianchi su scuro e neri su chiaro, la «o» in quattro spicchi morbidi con slancio verso
-# ore 2 (variante C del canvas).
+# «CLINICAL RESEARCH» e «Chaos» bianchi su scuro e neri su chiaro, la «o» a sasso del logo divisa in quattro spicchi.
 # palette «Quadrante» (3/11): stessa luminosità e saturazione percepite (OKLCH), tinte distanziate
 LINES_DARK = {"m": "#82BEFF", "c": "#ECAD59", "p": "#CDA6FB", "i": "#60D4A7"}
 LINES_LIGHT = {"m": "#3475C4", "c": "#A56300", "p": "#885CB5", "i": "#008D5F"}
@@ -224,18 +223,22 @@ _O4 = None
 
 
 def o4(on_dark, size):
-    """La «o» definitiva, RGBA quadrata di lato `size`, nei quattro colori delle rubriche."""
-    global _O4
-    if _O4 is None:
-        _O4 = _o4_polys()
+    """La «o» definitiva: la «o» a sasso del logo (anello inclinato di -20°) divisa in quattro spicchi, uno per rubrica,
+    con un filo di separazione. RGBA quadrata di lato `size`."""
     k = 4
     S = size * k
-    img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
+    ring = pebble("#000000", S).getchannel("A")                  # stessa forma della «o» del logo v3
+    d = ImageDraw.Draw(ring)
+    gap = S * 2.2 / 140                                            # filo tra gli spicchi
+    d.rectangle((S / 2 - gap / 2, 0, S / 2 + gap / 2, S), fill=0)
+    d.rectangle((0, S / 2 - gap / 2, S, S / 2 + gap / 2), fill=0)
     L = _lines(on_dark)
-    for pl, role in zip(_O4, ("m", "c", "p", "i")):
-        d.polygon([(x / 140 * S + S / 2, y / 140 * S + S / 2) for x, y in pl], fill=_rgb(L[role]) + (255,))
-    return img.resize((size, size), Image.LANCZOS)
+    col = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    cd = ImageDraw.Draw(col)
+    for (x0, y0), role in zip(((0, 0), (S / 2, 0), (0, S / 2), (S / 2, S / 2)), ("m", "c", "p", "i")):
+        cd.rectangle((x0, y0, x0 + S / 2, y0 + S / 2), fill=_rgb(L[role]) + (255,))
+    col.putalpha(ring)
+    return col.resize((size, size), Image.LANCZOS)
 
 
 @lru_cache(maxsize=32)
