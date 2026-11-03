@@ -17,6 +17,25 @@ MONO, HL, SCIENCE = False, None, False   # bianco e nero (config «mono»): HL =
 EDITORIAL = False      # impostato da render_carousel (config «design_v3»): stile editoriale da rivista scientifica
 
 
+def _brand_v4_flag():
+    import json
+    import os
+    if os.environ.get("BRAND_V4") is not None:
+        return os.environ["BRAND_V4"] not in ("", "0", "false")
+    try:
+        return bool(json.loads((Path(__file__).resolve().parent / "config.json").read_text(encoding="utf-8")).get("brand_v4"))
+    except Exception:
+        return False
+
+
+BRAND_V4 = _brand_v4_flag()   # logo definitivo (indipendente dalla linea) ed etichette delle rubriche (config «brand_v4»)
+# colori delle linee nel brand v4 e nome della rubrica in copertina (quadrante del simbolo: 0 alto-sx, 1 alto-dx,
+# 2 basso-sx, 3 basso-dx)
+V4_ACCENT = {"methods": "#88B0F8", "science": "#3FA6C6", "grant": "#F8B048", "positions": "#A07CF4"}
+V4_RUBRIC = {"methods": ("DESIGN, REPORTING & APPRAISAL", 0), "science": ("LATEST SCIENCE", 3),
+             "grant": ("FUNDING CALLS", 1), "positions": ("ACADEMIC POSITIONS", 2)}
+
+
 AZURES = ["#6EC1FF", "#7AB8FF", "#5FD0F2", "#8AB4FF", "#66C7E8"]     # azzurrini: uno per post, stabile
 
 
@@ -211,6 +230,8 @@ def logo_v3(name, height):
     """Logo v3 nel colore del tipo: «-light» = su fondo scuro (scritta bianca), altrimenti su fondo chiaro."""
     import logo
     light = name.endswith("-light")
+    if BRAND_V4:                           # logo definitivo: uguale per tutte le linee
+        return (logo.symbol4 if "symbol" in name else logo.wordmark4)(light, int(height))
     acc = LOGO_ACCENT or "#3DD9C1"
     if not light:                          # su fondo chiaro: stesso colore, più scuro e leggibile
         import colorsys
@@ -721,12 +742,34 @@ def _small_lockup(img, d, cfg, y):
     return 120
 
 
-def poster_pill(d, label, x, y, fill, text):
+def poster_pill(d, label, x, y, fill, text, quadrant=None):
     pf = font("Bold", 30)
+    if quadrant is not None:               # brand v4: quadratino 2×2 con acceso il quadrante della rubrica
+        tw = d.textlength(label, font=pf)
+        pw = 22 + 30 + 14 + tw + 28
+        d.rounded_rectangle((x, y, x + pw, y + 60), radius=30, fill=fill)
+        rgb = lambda h: tuple(int(h.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+        tc, fc = rgb(text), rgb(fill)
+        dim = tuple(int(tc[i] * 0.32 + fc[i] * 0.68) for i in range(3))
+        for i, (ox, oy) in enumerate(((0, 0), (17, 0), (0, 17), (17, 17))):
+            d.rounded_rectangle((x + 22 + ox, y + 15 + oy, x + 22 + ox + 13, y + 15 + oy + 13), radius=2,
+                                fill=tc if i == quadrant else dim)
+        d.text((x + 22 + 30 + 14, y + 11), label, font=pf, fill=text)
+        return pw
     pw = d.textlength(label, font=pf) + 56
     d.rounded_rectangle((x, y, x + pw, y + 60), radius=30, fill=fill)
     d.text((x + 28, y + 11), label, font=pf, fill=text)
     return pw
+
+
+def main_pill(d, post, default, x, y, fill, text):
+    """Etichetta principale della copertina: nel brand v4 il nome della rubrica (linea del post), altrimenti `default`."""
+    if BRAND_V4:
+        line = post_line(post)
+        if line in V4_RUBRIC:
+            label, q = V4_RUBRIC[line]
+            return poster_pill(d, label, x, y, fill, text, quadrant=q)
+    return poster_pill(d, default, x, y, fill, text)
 
 
 RUBRIC_STYLE = {   # identità delle rubriche: motivo nella pill della copertina e motto nel piè di pagina
@@ -764,11 +807,19 @@ def extra_pills(d, post, x, y, bg, ink):
     """Pill aggiuntive dopo quella principale: rubrica (es. CHECKLIST) e avviso idoneità dei bandi
     (es. US-BASED TEAMS ONLY). Fondo del tema e testo in inchiostro, per distinguerle dalla principale."""
     labels = [l for l in (post.get("eligibility_flag"), post.get("rubric"), post.get("area_label")) if l]   # l'avviso ha la precedenza
+    if BRAND_V4:                                 # la rubrica è già nell'etichetta principale; l'argomento va qui
+        cat = post.get("category") if post_line(post) in ("methods", "science") else None
+        labels = [l for l in (post.get("eligibility_flag"), post.get("rubric"), cat, post.get("area_label"))
+                  if l and l != "Clinical Insights"]
     pf = font("Bold", 28)
+    global PILLS_BOTTOM
+    row_y = y
     for label in labels:
         style = RUBRIC_STYLE.get(label)
         text = label.upper() + (f" · Nº {post['rubric_no']}" if style and post.get("rubric_no") else "")
         pw = d.textlength(text, font=pf) + 52 + (44 if style else 0)
+        if x + pw > W - MARGIN and BRAND_V4 and y == row_y and MARGIN + pw <= W - MARGIN:
+            x, y = MARGIN, y + 76                # brand v4: l'etichetta principale è lunga, si va a capo una volta
         if x + pw > W - MARGIN:                  # niente pill tagliate: quelle che non entrano si saltano
             continue
         col = hlc(not SCIENCE, ink) if (MONO and HL) else ink
@@ -780,7 +831,16 @@ def extra_pills(d, post, x, y, bg, ink):
             d.rounded_rectangle((x, y + 2, x + pw, y + 58), radius=28, fill=bg, outline=col, width=3)
             d.text((x + 26, y + 13), text, font=pf, fill=col)
         x += pw + 16
+        PILLS_BOTTOM = y + 60
     return x
+
+
+PILLS_BOTTOM = 0         # fondo dell'ultima riga di etichette (brand v4: possono andare su due righe)
+
+
+def _below_pills(top, default_gap):
+    """Inizio del titolo sotto le etichette: come prima, o più in basso se sono andate a capo."""
+    return max(top + default_gap, PILLS_BOTTOM + 50) if BRAND_V4 else top + default_gap
 
 
 def photo_cover(post, cfg, total, pic, img, d, dark, ink, acc):
@@ -793,10 +853,13 @@ def photo_cover(post, cfg, total, pic, img, d, dark, ink, acc):
     paste_logo(img, "logo-symbol-light", MARGIN - 14, 60, height=120)
     paste_logo(img, "logo-wordmark-light", MARGIN + 118, 76, height=88)
     py = band - 28
-    pw = poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, py, *pill_colors(c, dark))
+    global PILLS_BOTTOM
+    PILLS_BOTTOM = 0
+    pw = main_pill(d, post, post.get("category", "Research methods").upper(), MARGIN, py, *pill_colors(c, dark))
     extra_pills(d, post, MARGIN + pw + 16, py, c["background"] if dark else "#FFFFFF", ink)
-    poster_title(d, post["title"], post.get("title_highlight"), MARGIN, py + 100, W - 2 * MARGIN,
-                 H - 300 - (py + 100), ink, hlc(dark, acc), start=96, minimum=52)
+    ty = _below_pills(py, 100)
+    poster_title(d, post["title"], post.get("title_highlight"), MARGIN, ty, W - 2 * MARGIN,
+                 H - 300 - ty, ink, hlc(dark, acc), start=96, minimum=52)
     if total:
         d.text((MARGIN, H - 240), "Swipe  →", font=font("ExtraBold", 46), fill=hlc(dark, acc))
     return img
@@ -811,9 +874,11 @@ def poster_cover(post, cfg, total):
         return photo_cover(post, cfg, total, pic, img, d, dark, ink, acc)
     lh = poster_logo(img, d, cfg, dark)
     top = 80 + lh + 50
-    pw = poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, top, *pill_colors(c, dark))
+    global PILLS_BOTTOM
+    PILLS_BOTTOM = 0
+    pw = main_pill(d, post, post.get("category", "Research methods").upper(), MARGIN, top, *pill_colors(c, dark))
     extra_pills(d, post, MARGIN + pw + 16, top, c["background"] if dark else "#FFFFFF", ink)
-    title_top = top + 110
+    title_top = _below_pills(top, 110)
     end = poster_title(d, post["title"], post.get("title_highlight"), MARGIN, title_top, W - 2 * MARGIN,
                        H - 300 - title_top, ink, acc)
     cube_texture(img, post.get("id") or post["title"], c["accent"], dark,
@@ -831,14 +896,14 @@ def poster_grant_cover(post, cfg, total, picture=None):
     if picture is not None:
         band = 470
         img.paste(ImageOps.fit(picture.convert("RGB"), (W, band), Image.LANCZOS), (0, 14))
-        pw = poster_pill(d, "OPEN CALL", MARGIN, band - 30, *pill_colors(c, dark))
+        pw = main_pill(d, post, "OPEN CALL", MARGIN, band - 30, *pill_colors(c, dark))
         extra_pills(d, post, MARGIN + pw + 16, band - 30, c["background"] if dark else "#FFFFFF", ink)
         y = band + 60
         keep.append((0, 0, W, band + 40))
     else:
         lh = poster_logo(img, d, cfg, dark)
         y = 80 + lh + 50
-        pw = poster_pill(d, "OPEN CALL", MARGIN, y, *pill_colors(c, dark))
+        pw = main_pill(d, post, "OPEN CALL", MARGIN, y, *pill_colors(c, dark))
         extra_pills(d, post, MARGIN + pw + 16, y, c["background"] if dark else "#FFFFFF", ink)
         keep.append((MARGIN - 20, y - 10, W - MARGIN + 20, y + 70))
         y += 100
@@ -871,7 +936,7 @@ def poster_positions_cover(post, cfg, total):
     img, d, dark, ink, acc = poster_base(post, cfg, total)
     lh = poster_logo(img, d, cfg, dark)
     y = 80 + lh + 50
-    pw = poster_pill(d, "ACADEMIC POSITIONS", MARGIN, y, *pill_colors(c, dark))
+    pw = main_pill(d, post, "ACADEMIC POSITIONS", MARGIN, y, *pill_colors(c, dark))
     extra_pills(d, post, MARGIN + pw + 16, y, c["background"] if dark else "#FFFFFF", ink)
     d.text((MARGIN, y + 86), f"Week of {post.get('week', '')}", font=font("SemiBold", 36),
            fill=c["muted_text"] if dark else INK_MUTED)
@@ -1539,10 +1604,12 @@ def style_cfg(post, cfg):
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": post["accent"]}}
     if post.get("kind") == "positions":
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("positions_accent", "#A78BFA")}}
+    if BRAND_V4 and post_line(post) in V4_ACCENT:   # brand v4: un colore fisso per rubrica, come nel logo
+        cfg = {**cfg, "colors": {**cfg["colors"], "accent": V4_ACCENT[post_line(post)]}}
     if cfg.get("mono"):                   # una palette per linea: azzurrino (metodologia e scienza), giallo, violetto
         line = post_line(post)
         if line in ("methods", "science"):
-            cfg = {**cfg, "colors": {**cfg["colors"], "accent": azure_for(post)},
+            cfg = {**cfg, "colors": {**cfg["colors"], "accent": V4_ACCENT[line] if BRAND_V4 else azure_for(post)},
                    "cover_theme": "light" if line == "science" else "dark", "_science": line == "science"}
         else:
             cfg = {**cfg, "cover_theme": "dark", "_science": False}
