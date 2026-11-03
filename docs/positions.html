@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root { --bg: #0A0A0A; --card: #161616; --text: #FFFFFF; --muted: #8A8A8A; --soft: #CFCFCF; --accent: #A07CF4; --teal: #88B0F8; }
+  :root { --bg: #0A0A0A; --card: #161616; --text: #FFFFFF; --muted: #8A8A8A; --soft: #CFCFCF; --accent: #8B5CF6; --teal: #6EC1FF; }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }
@@ -762,7 +762,7 @@
   function start() {
     if (started || !wide.matches) return;
     started = true;
-    var COLORS = ["#A07CF4", "#A07CF4", "#5C488A", "#372C50"];
+    var COLORS = ["#8B5CF6", "#8B5CF6", "#50378B", "#302250"];
     var SIZES = [4, 6, 8, 10, 12], SHAPES = [[], [], [[1, 0]], [[0, 1]], [[1, 0], [0, 1]], [[1, 0], [1, 1]]];
     function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
     /* cascata lenta di quadratini ai due lati, singoli o a piccoli gruppi come nel logo */

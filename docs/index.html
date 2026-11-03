@@ -20,7 +20,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root { --bg: #0A0A0A; --paper: #F3F6F9; --card: #161616; --text: #FFFFFF; --soft: #CFCFCF; --muted: #8A8A8A;
-           --teal: #88B0F8; --amber: #F8B048; --lilac: #A07CF4; }
+           --teal: #6EC1FF; --amber: #FFB547; --lilac: #8B5CF6; }
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }
   .top { background: var(--paper); padding: 34px 16px 30px; text-align: center; border-top: 6px solid var(--teal); }
@@ -74,17 +74,17 @@
 <main>
   <a class="big calls" href="calls.html">
     <span class="label">Open calls</span>
-    <span class="name">Funding Calls <span aria-hidden="true">&rarr;</span></span>
+    <span class="name">Funding calls <span aria-hidden="true">&rarr;</span></span>
     <span class="count">174 open calls worldwide · 94 open to Italian institutions</span>
   </a>
   <a class="big jobs" href="positions.html">
     <span class="label">Open positions</span>
-    <span class="name">Academic Positions <span aria-hidden="true">&rarr;</span></span>
+    <span class="name">Academic positions <span aria-hidden="true">&rarr;</span></span>
     <span class="count">64 open PhD, post-doc and faculty positions</span>
   </a>
   <a class="big method" href="methodology.html">
     <span class="label">Methodology library</span>
-    <span class="name">Design, Reporting &amp; Appraisal <span aria-hidden="true">&rarr;</span></span>
+    <span class="name">Methodology <span aria-hidden="true">&rarr;</span></span>
     <span class="count">1 carousel to swipe, with key points and references</span>
   </a>
   <div class="social">
@@ -118,7 +118,7 @@
   function start() {
     if (started || !wide.matches) return;
     started = true;
-    var COLORS = ["#F8B048", "#8C652C", "#A07CF4", "#5C488A", "#6EC1FF", "#416E90"];
+    var COLORS = ["#FFB547", "#90682B", "#8B5CF6", "#50378B", "#6EC1FF", "#416E90"];
     var SIZES = [4, 6, 8, 10, 12], SHAPES = [[], [], [[1, 0]], [[0, 1]], [[1, 0], [0, 1]], [[1, 0], [1, 1]]];
     function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
     /* cascata lenta di quadratini ai due lati, singoli o a piccoli gruppi come nel logo */
