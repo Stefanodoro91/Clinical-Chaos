@@ -49,5 +49,33 @@
     "kind": "grant",
     "grant_id": "GG-PAR-25-145",
     "deadline": "2027-02-05"
+  },
+  {
+    "date": "2026-11-03",
+    "time": "2026-11-03T18:23:22+00:00",
+    "id": "035742c6",
+    "title": "Linear or Logistic Regression? Look at Your Outcome",
+    "source": "Regression.pdf",
+    "simulated": true,
+    "points": [
+      {
+        "heading": "The outcome dictates the model",
+        "body": "Regression helps reveal how different factors connect to disease outcomes. Deciding between linear and logistic models depends completely on how you measure your dependent variable."
+      },
+      {
+        "heading": "Linear models require continuous data",
+        "body": "In linear regression, the dependent variable must be continuous, such as intraocular pressure or visual acuity. Independent variables may be continuous, binary, or categorical."
+      },
+      {
+        "heading": "Logistic models need binary outcomes",
+        "body": "Logistic regression stands out because its dependent variable must be binary, meaning it only allows for two possible outcomes, like yes or no."
+      },
+      {
+        "heading": "Comparing the effect metrics",
+        "body": "Linear regression reports coefficients showing unit changes in the outcome. Logistic regression expresses predictor effects using an odds ratio to compare relative odds of the event."
+      }
+    ],
+    "takeaway": "Linear regression requires a continuous outcome, whereas logistic regression demands a binary dependent variable.",
+    "category": "Statistics"
   }
 ]
