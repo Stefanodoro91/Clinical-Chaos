@@ -1,0 +1,192 @@
+{
+ "date": "2026-11-03",
+ "grants": [
+  {
+   "id": "GG-PAR-25-081",
+   "error": "HTTPSConnectionPool(host='generativelanguage.googleapis.com', port=443): Read timed out. (read timeout=300)"
+  },
+  {
+   "id": "GG-PAR-25-346",
+   "same": {
+    "due_dates": true,
+    "deadline_source": true,
+    "italy": true,
+    "is_open_call": true,
+    "countries": true,
+    "lead_present": true,
+    "loi": true
+   },
+   "A": {
+    "due_dates": [
+     "2025-02-16",
+     "2025-06-16",
+     "2025-10-16",
+     "2026-02-16",
+     "2026-06-16",
+     "2026-10-16",
+     "2027-02-16",
+     "2027-06-16",
+     "2027-10-16"
+    ],
+    "italy": "yes",
+    "eligible_countries": "Any country (non-US organisations eligible)",
+    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "is_open_call": "yes"
+   },
+   "B": {
+    "due_dates": [
+     "2025-02-16",
+     "2025-06-16",
+     "2025-10-16",
+     "2026-02-16",
+     "2026-06-16",
+     "2026-10-16",
+     "2027-02-16",
+     "2027-06-16",
+     "2027-10-16"
+    ],
+    "italy": "yes",
+    "eligible_countries": "Any country (non-US organisations eligible)",
+    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s)",
+    "is_open_call": "yes"
+   }
+  },
+  {
+   "id": "GG-RFA-AI-28-007",
+   "same": {
+    "due_dates": true,
+    "deadline_source": true,
+    "italy": true,
+    "is_open_call": true,
+    "countries": true,
+    "lead_present": true,
+    "loi": true
+   },
+   "A": {
+    "due_dates": [],
+    "italy": "unclear",
+    "eligible_countries": "Coming soon: published with the full call",
+    "lead": "",
+    "is_open_call": "no"
+   },
+   "B": {
+    "due_dates": [],
+    "italy": "unclear",
+    "eligible_countries": "Coming soon: published with the full call",
+    "lead": "",
+    "is_open_call": "no"
+   }
+  },
+  {
+   "id": "EU-HORIZON-HLTH-2027-01-DISEASE-08",
+   "same": {
+    "due_dates": true,
+    "deadline_source": true,
+    "italy": true,
+    "is_open_call": true,
+    "countries": true,
+    "lead_present": true,
+    "loi": true
+   },
+   "A": {
+    "due_dates": [
+     "2027-02-17"
+    ],
+    "italy": "yes",
+    "eligible_countries": "EU Member States and associated countries",
+    "lead": "",
+    "is_open_call": "yes"
+   },
+   "B": {
+    "due_dates": [
+     "2027-02-17"
+    ],
+    "italy": "yes",
+    "eligible_countries": "EU Member States and associated countries",
+    "lead": "",
+    "is_open_call": "yes"
+   }
+  }
+ ],
+ "positions": [
+  {
+   "id": "POS-e4360d4f3b3e",
+   "same": {
+    "is_open": true,
+    "type": true,
+    "relevance": true,
+    "deadline": true,
+    "area": true,
+    "country": true
+   },
+   "A": {
+    "is_open": "yes",
+    "type": "faculty",
+    "relevance": "medium",
+    "deadline": "2026-11-04",
+    "country": "United Kingdom"
+   },
+   "B": {
+    "is_open": "yes",
+    "type": "faculty",
+    "relevance": "medium",
+    "deadline": "2026-11-04",
+    "country": "United Kingdom"
+   }
+  },
+  {
+   "id": "POS-a57d226b979b",
+   "error": "annuncio chiuso o scaduto"
+  },
+  {
+   "id": "POS-68488f850d37",
+   "same": {
+    "is_open": true,
+    "type": true,
+    "relevance": true,
+    "deadline": true,
+    "area": true,
+    "country": true
+   },
+   "A": {
+    "is_open": "yes",
+    "type": "research",
+    "relevance": "medium",
+    "deadline": "2026-11-15",
+    "country": "United Kingdom"
+   },
+   "B": {
+    "is_open": "yes",
+    "type": "research",
+    "relevance": "medium",
+    "deadline": "2026-11-15",
+    "country": "United Kingdom"
+   }
+  },
+  {
+   "id": "POS-02a2ab213085",
+   "same": {
+    "is_open": true,
+    "type": true,
+    "relevance": false,
+    "deadline": true,
+    "area": true,
+    "country": true
+   },
+   "A": {
+    "is_open": "yes",
+    "type": "faculty",
+    "relevance": "low",
+    "deadline": "2026-12-10",
+    "country": "China"
+   },
+   "B": {
+    "is_open": "yes",
+    "type": "faculty",
+    "relevance": "medium",
+    "deadline": "2026-12-10",
+    "country": "China"
+   }
+  }
+ ]
+}

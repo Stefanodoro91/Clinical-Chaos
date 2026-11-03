@@ -1,0 +1,59 @@
+{
+ "workflow": "Confronto A/B token (temporaneo, fino al 2/11)",
+ "quota_day": "2026-11-03",
+ "consumo": {
+  "verifica bandi [A]|gemini-flash-latest": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 3
+  },
+  "verifica bandi [A]|gemini-3.6-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 3
+  },
+  "verifica bandi [A]|gemini-3.5-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 2
+  },
+  "verifica bandi [A]|gemini-3.1-flash-lite": {
+   "richieste": 3,
+   "ingresso": 15500,
+   "uscita": 1489,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.1-flash-lite"
+  },
+  "verifica bandi [B]|gemini-flash-lite-latest": {
+   "richieste": 3,
+   "ingresso": 15500,
+   "uscita": 1083,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "verifica posizioni [A]|gemini-3.1-flash-lite": {
+   "richieste": 3,
+   "ingresso": 7604,
+   "uscita": 618,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.1-flash-lite"
+  },
+  "verifica posizioni [B]|gemini-flash-lite-latest": {
+   "richieste": 3,
+   "ingresso": 7594,
+   "uscita": 4738,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  }
+ }
+}
