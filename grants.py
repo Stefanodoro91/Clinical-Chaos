@@ -1499,12 +1499,30 @@ def header_logo(cfg):
                 '<stop offset=".5" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>')
     qid = {q: n for n, (q, _) in enumerate(sorted(by_q.items()))}
     cubes = []
+    R = 1.7                                     # raggio degli angoli arrotondati (unità del viewBox)
+    k_ink = 0
     for col, pts in HEADER_SYMBOL:
         cx = sum(p[0] for p in pts) / len(pts); cy = sum(p[1] for p in pts) / len(pts)
-        fill = f"url(#crc-q{qid[(cx >= 100, cy >= 100)]})" if col == ink else col
-        poly = " ".join(f"{x},{y}" for x, y in pts)
-        cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{poly}" fill="{fill}"/>'
-                     f'<polygon points="{poly}" fill="url(#crc-sheen)"/></g>')
+        half = max(max(abs(x - cx), abs(y - cy)) for x, y in pts)
+        f = max(0.4, (half - R) / half)           # rientro: con il bordo arrotondato torna alla misura di prima
+        poly = " ".join(f"{cx + (x - cx) * f:.2f},{cy + (y - cy) * f:.2f}" for x, y in pts)
+        extra = ""
+        if col == ink:                          # cubetti centrali: un po' neri, qualche bianco, gli altri sfumati
+            k_ink += 1
+            kind = ("black", "grad", "grad", "white", "grad", "black", "grad")[k_ink % 7]
+            if kind == "black":
+                fill = stroke = ink
+            elif kind == "white":               # bianco con un filo nero sul bordo esterno
+                cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{poly}" fill="{ink}" stroke="{ink}" '
+                             f'stroke-width="{2 * R + 1.2}" stroke-linejoin="round"/><polygon points="{poly}" fill="#FFFFFF" '
+                             f'stroke="#FFFFFF" stroke-width="{2 * R - 1.2}" stroke-linejoin="round"/></g>')
+                continue
+            else:
+                fill = stroke = f"url(#crc-q{qid[(cx >= 100, cy >= 100)]})"
+        else:
+            fill = stroke = col
+        cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{poly}" fill="{fill}" stroke="{stroke}" '
+                     f'stroke-width="{2 * R}" stroke-linejoin="round"/>{extra}</g>')
     return HEADER_LOGO.format(brand=brand, cubes="".join(cubes), defs="".join(defs), glow="".join(glow))
 
 
