@@ -149,8 +149,8 @@ def lockup(accent, ink=INK_LIGHT, height=170):
 # (alto-sx Design, Reporting & Appraisal; alto-dx Funding Calls; basso-sx Academic Positions; basso-dx Latest Science),
 # «CLINICAL RESEARCH» e «Chaos» bianchi su scuro e neri su chiaro, la «o» a sasso del logo divisa in quattro spicchi.
 # palette «Quadrante» (3/11): stessa luminosità e saturazione percepite (OKLCH), tinte distanziate
-LINES_DARK = {"m": "#82BEFF", "c": "#ECAD59", "p": "#CDA6FB", "i": "#60D4A7"}
-LINES_LIGHT = {"m": "#3475C4", "c": "#A56300", "p": "#885CB5", "i": "#008D5F"}
+LINES_DARK = {"m": "#6EC1E4", "c": "#FFB74D", "p": "#B9A2F0", "i": "#8FD694"}
+LINES_LIGHT = {"m": "#1F7FA6", "c": "#B86A00", "p": "#6B4FC0", "i": "#3D8F47"}
 INK4_DARK = "#0A0A0A"
 O4_ANGLE = -35          # rotazione della «o» a sasso nel logo definitivo (nel v3: -20)
 SYMBOL4 = [('m', [(30.08, 71.44), (38.15, 72.72), (36.87, 80.78), (28.8, 79.5)]), ('m', [(29.2, 94.21), (38.54, 94.97), (37.78, 104.31), (28.44, 103.55)]), ('ink', [(50.72, 50.72), (61.58, 50.72), (61.58, 61.58), (50.72, 61.58)]), ('m', [(47.52, 70.21), (61.72, 70.21), (61.72, 84.41), (47.52, 84.41)]), ('ink', [(46.36, 92.26), (61.84, 92.26), (61.84, 107.74), (46.36, 107.74)]), ('p', [(50.72, 138.42), (61.58, 138.42), (61.58, 149.28), (50.72, 149.28)]), ('m', [(74.98, 29.08), (82.61, 30.31), (81.39, 37.94), (73.76, 36.72)]), ('ink', [(70.21, 47.52), (84.41, 47.52), (84.41, 61.72), (70.21, 61.72)]), ('ink', [(67.34, 67.34), (85.72, 67.34), (85.72, 85.72), (67.34, 85.72)]), ('ink', [(76.27, 100.0), (76.27, 90.0), (86.27, 90.0), (86.27, 100.0), (86.27, 110.0), (76.27, 110.0), (66.26, 110.0), (66.26, 100.0)]), ('ink', [(67.34, 114.28), (85.72, 114.28), (85.72, 132.66), (67.34, 132.66)]), ('ink', [(70.21, 138.28), (84.41, 138.28), (84.41, 152.48), (70.21, 152.48)]), ('p', [(76.07, 163.13), (84.19, 163.02), (84.3, 171.14), (76.18, 171.25)]), ('ink', [(95.65, 28.08), (104.72, 28.4), (104.39, 37.47), (95.33, 37.15)]), ('ink', [(92.26, 46.36), (107.74, 46.36), (107.74, 61.84), (92.26, 61.84)]), ('ink', [(90.0, 66.26), (110.0, 66.26), (110.0, 86.27), (90.0, 86.27)]), ('ink', [(89.12, 89.12), (110.88, 89.12), (110.88, 110.88), (89.12, 110.88)]), ('ink', [(90.0, 113.73), (100.0, 113.73), (110.0, 113.73), (110.0, 123.73), (100.0, 123.73), (100.0, 133.74), (90.0, 133.74), (90.0, 123.73)]), ('i', [(92.26, 138.16), (107.74, 138.16), (107.74, 153.64), (92.26, 153.64)]), ('i', [(95.5, 162.35), (104.36, 161.57), (105.13, 170.43), (96.27, 171.21)]), ('c', [(117.31, 28.0), (125.5, 29.38), (124.12, 37.58), (115.93, 36.2)]), ('c', [(115.59, 47.52), (129.79, 47.52), (129.79, 61.72), (115.59, 61.72)]), ('ink', [(114.28, 67.34), (123.47, 67.34), (123.47, 76.53), (132.66, 76.53), (132.66, 85.72), (123.47, 85.72), (114.28, 85.72), (114.28, 76.53)]), ('ink', [(113.73, 90.0), (133.74, 90.0), (133.74, 110.0), (113.73, 110.0)]), ('ink', [(114.28, 114.28), (132.66, 114.28), (132.66, 132.66), (114.28, 132.66)]), ('i', [(115.49, 162.6), (123.62, 162.93), (123.29, 171.06), (115.15, 170.73)]), ('c', [(138.28, 70.21), (152.48, 70.21), (152.48, 84.41), (138.28, 84.41)]), ('i', [(138.28, 115.59), (152.48, 115.59), (152.48, 129.79), (138.28, 129.79)]), ('ink', [(138.42, 138.42), (149.28, 138.42), (149.28, 149.28), (138.42, 149.28)]), ('c', [(163.19, 71.71), (171.12, 72.26), (170.57, 80.19), (162.64, 79.64)]), ('i', [(163.05, 96.03), (171.83, 96.15), (171.71, 104.93), (162.93, 104.82)]), ('i', [(163.41, 117.9), (170.68, 117.2), (171.38, 124.47), (164.11, 125.17)])]
@@ -223,23 +223,32 @@ def _o4_polys():
 _O4 = None
 
 
+O4_SWIRL = 75           # gradi di avvitamento dei quattro spicchi a r = 70 (nel viewBox -70..70): «o» a vortice
+
+
 def o4(on_dark, size):
-    """La «o» definitiva: la «o» a sasso del logo (anello inclinato di -20°) divisa in quattro spicchi, uno per rubrica,
-    con un filo di separazione. RGBA quadrata di lato `size`."""
+    """La «o» definitiva: la «o» a sasso del logo (anello inclinato di O4_ANGLE) divisa in quattro spicchi a vortice,
+    uno per rubrica, con un filo di separazione. RGBA quadrata di lato `size`."""
+    import numpy as np
     k = 4
     S = size * k
-    ring = pebble("#000000", S, O4_ANGLE).getchannel("A")        # forma della «o» del logo v3, più ruotata
-    d = ImageDraw.Draw(ring)
-    gap = S * 2.2 / 140                                            # filo tra gli spicchi
-    d.rectangle((S / 2 - gap / 2, 0, S / 2 + gap / 2, S), fill=0)
-    d.rectangle((0, S / 2 - gap / 2, S, S / 2 + gap / 2), fill=0)
+    ring = np.array(pebble("#000000", S, O4_ANGLE).getchannel("A"), dtype=float)
+    yy, xx = np.mgrid[0:S, 0:S]
+    x = (xx + 0.5 - S / 2) / S * 140
+    y = (yy + 0.5 - S / 2) / S * 140
+    r = np.hypot(x, y)
+    th = np.degrees(np.arctan2(y, x)) - O4_SWIRL * r / 70          # angolo "svitato"
+    u = (th + 180) % 90                                             # distanza angolare dal bordo dello spicchio
+    q = (((th + 180) // 90) % 4).astype(int)                        # 0 alto-sx, 1 alto-dx, 2 basso-dx, 3 basso-sx
+    dist = np.minimum(u, 90 - u) * np.pi / 180 * np.maximum(r, 1)   # px (unità viewBox) dal filo
+    ring = ring * np.clip((dist - 1.1) / 0.5 + 0.5, 0, 1)           # filo di 2,2 unità
     L = _lines(on_dark)
-    col = Image.new("RGBA", (S, S), (0, 0, 0, 0))
-    cd = ImageDraw.Draw(col)
-    for (x0, y0), role in zip(((0, 0), (S / 2, 0), (0, S / 2), (S / 2, S / 2)), ("m", "c", "p", "i")):
-        cd.rectangle((x0, y0, x0 + S / 2, y0 + S / 2), fill=_rgb(L[role]) + (255,))
-    col.putalpha(ring)
-    return col.resize((size, size), Image.LANCZOS)
+    roles = ("m", "c", "i", "p")
+    out = np.zeros((S, S, 4), dtype=np.uint8)
+    for i, role in enumerate(roles):
+        out[q == i, :3] = _rgb(L[role])
+    out[..., 3] = ring.astype(np.uint8)
+    return Image.fromarray(out, "RGBA").resize((size, size), Image.LANCZOS)
 
 
 @lru_cache(maxsize=32)

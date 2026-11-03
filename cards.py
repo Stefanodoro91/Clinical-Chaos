@@ -31,7 +31,7 @@ def _brand_v4_flag():
 BRAND_V4 = _brand_v4_flag()   # logo definitivo (indipendente dalla linea) ed etichette delle rubriche (config «brand_v4»)
 # colori delle linee nel brand v4 e nome della rubrica in copertina (quadrante del simbolo: 0 alto-sx, 1 alto-dx,
 # 2 basso-sx, 3 basso-dx)
-V4_ACCENT = {"methods": "#82BEFF", "science": "#60D4A7", "grant": "#ECAD59", "positions": "#CDA6FB"}   # palette «Quadrante»
+V4_ACCENT = {"methods": "#6EC1E4", "science": "#8FD694", "grant": "#FFB74D", "positions": "#B9A2F0"}   # palette «Corallo & Mare» + arancio D
 V4_RUBRIC = {"methods": ("DESIGN, REPORTING & APPRAISAL", 0), "science": ("LATEST SCIENCE", 3),
              "grant": ("FUNDING CALLS", 1), "positions": ("ACADEMIC POSITIONS", 2)}
 
