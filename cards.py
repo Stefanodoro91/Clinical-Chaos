@@ -31,7 +31,7 @@ def _brand_v4_flag():
 BRAND_V4 = _brand_v4_flag()   # logo definitivo (indipendente dalla linea) ed etichette delle rubriche (config «brand_v4»)
 # colori delle linee nel brand v4 e nome della rubrica in copertina (quadrante del simbolo: 0 alto-sx, 1 alto-dx,
 # 2 basso-sx, 3 basso-dx)
-V4_ACCENT = {"methods": "#88B0F8", "science": "#3FA6C6", "grant": "#F8B048", "positions": "#A07CF4"}
+V4_ACCENT = {"methods": "#82BEFF", "science": "#60D4A7", "grant": "#ECAD59", "positions": "#CDA6FB"}   # palette «Quadrante»
 V4_RUBRIC = {"methods": ("DESIGN, REPORTING & APPRAISAL", 0), "science": ("LATEST SCIENCE", 3),
              "grant": ("FUNDING CALLS", 1), "positions": ("ACADEMIC POSITIONS", 2)}
 
@@ -311,7 +311,7 @@ def light_canvas(cfg, index, total):
     c = cfg["colors"]
     img = Image.new("RGB", (W, H), PAPER)
     d = ImageDraw.Draw(img)
-    d.rectangle((0, 0, W, 14), fill=c["accent"])
+    d.rectangle((0, 0, W, 14), fill=HL if (BRAND_V4 and HL) else c["accent"])   # v4: barra nel colore della rubrica
     if EDITORIAL and index > 1:
         editorial_chrome(d, cfg, False, c)
     foot = font("SemiBold", 30)
@@ -326,7 +326,7 @@ def canvas(cfg, index, total):
     c = cfg["colors"]
     img = Image.new("RGB", (W, H), "#FFFFFF" if SCIENCE else c["background"])
     d = ImageDraw.Draw(img)
-    d.rectangle((0, 0, W, 14), fill=c["accent"])
+    d.rectangle((0, 0, W, 14), fill=HL if (BRAND_V4 and HL) else c["accent"])   # v4: barra nel colore della rubrica
     if EDITORIAL and index > 1:
         editorial_chrome(d, cfg, not SCIENCE, c)
     # piè di pagina: handle a sinistra, numero slide a destra
@@ -917,7 +917,7 @@ def poster_grant_cover(post, cfg, total, picture=None):
     keep.append((MARGIN - 20, y - 20, W - MARGIN + 20, end + 20))
     if post.get("deadline"):
         d.rounded_rectangle((MARGIN, box_top, W - MARGIN, box_top + box_h), radius=26,
-                            fill=c["accent"] if dark else c["background"])
+                            fill=(HL if (BRAND_V4 and HL) else c["accent"]) if dark else c["background"])
         lab = c["background"] if dark else c["accent"]
         d.text((MARGIN + 44, box_top + 22), "DEADLINE", font=font("Bold", 28), fill=lab)
         d.text((MARGIN + 44, box_top + 58), post["deadline"] if EDITORIAL else post["deadline"].upper(),
