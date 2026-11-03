@@ -1151,7 +1151,7 @@ PAGE = """<!doctype html>
 <main>
   <a class="switch" href="positions.html">Academic positions &rarr;</a><br>
   <a class="home" href="index.html">&larr; Home</a>
-  <span class="badge">OPEN CALLS</span>
+  <span class="badge">FUNDING CALLS</span>
   <h1>Research funding calls</h1>
   <p class="intro">All open calls for clinical research, clinical and biomedical engineering and rehabilitation found by our monitoring, from funders worldwide, including calls reserved for applicants in a single country: use the filters.
   Each call is checked against its official text; grouped by region and funding programme, sorted by deadline.
@@ -1378,17 +1378,17 @@ HOME = """<!doctype html>
 <main>
   <a class="big calls" href="calls.html">
     <span class="label">Open calls</span>
-    <span class="name">Funding calls <span aria-hidden="true">&rarr;</span></span>
+    <span class="name">Funding Calls <span aria-hidden="true">&rarr;</span></span>
     <span class="count">{calls_line}</span>
   </a>
   <a class="big jobs" href="positions.html">
     <span class="label">Open positions</span>
-    <span class="name">Academic positions <span aria-hidden="true">&rarr;</span></span>
+    <span class="name">Academic Positions <span aria-hidden="true">&rarr;</span></span>
     <span class="count">{jobs_line}</span>
   </a>
   <a class="big method" href="methodology.html">
     <span class="label">Methodology library</span>
-    <span class="name">Methodology <span aria-hidden="true">&rarr;</span></span>
+    <span class="name">Design, Reporting &amp; Appraisal <span aria-hidden="true">&rarr;</span></span>
     <span class="count">{method_line}</span>
   </a>
   <div class="social">
@@ -1848,8 +1848,9 @@ SITE_MONO = False      # impostato da bot.py (config «mono»): sito in nero con
 def site_palette(cfg):
     """Colori del sito: quelli del config, oppure (config «mono») nero e grigi con azzurrino come colore base."""
     c = cfg["colors"]
-    if cfg.get("mono"):
-        return {**c, "background": "#0A0A0A", "muted": "#8A8A8A", "muted_text": "#CFCFCF", "accent": "#6EC1FF"}
+    if cfg.get("mono"):                # brand v4: il blu della rubrica Design, Reporting & Appraisal
+        return {**c, "background": "#0A0A0A", "muted": "#8A8A8A", "muted_text": "#CFCFCF",
+                "accent": "#88B0F8" if cfg.get("brand_v4") else "#6EC1FF"}
     return c
 
 
