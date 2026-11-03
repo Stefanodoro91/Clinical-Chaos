@@ -1373,7 +1373,7 @@ HOME = """<!doctype html>
 </head>
 <body>
 <header class="top">
-  <img src="{logo}" alt="{brand}" width="340" height="128">
+  {logo_block}
   <p>Design, report and appraise better. Keep up with new evidence. Find your next grant or position.</p>
 </header>
 <main>
@@ -1410,6 +1410,73 @@ HOME = """<!doctype html>
 """
 
 
+# simbolo definitivo per l'intestazione della home (fondo chiaro): (colore, vertici) nel viewBox 26 26 148 148
+HEADER_SYMBOL = [["#3475C4",[[30.08,71.44],[38.15,72.72],[36.87,80.78],[28.8,79.5]]],["#3475C4",[[29.2,94.21],[38.54,94.97],[37.78,104.31],[28.44,103.55]]],["#0A0A0A",[[50.72,50.72],[61.58,50.72],[61.58,61.58],[50.72,61.58]]],["#3475C4",[[47.52,70.21],[61.72,70.21],[61.72,84.41],[47.52,84.41]]],["#0A0A0A",[[46.36,92.26],[61.84,92.26],[61.84,107.74],[46.36,107.74]]],["#885CB5",[[50.72,138.42],[61.58,138.42],[61.58,149.28],[50.72,149.28]]],["#3475C4",[[74.98,29.08],[82.61,30.31],[81.39,37.94],[73.76,36.72]]],["#0A0A0A",[[70.21,47.52],[84.41,47.52],[84.41,61.72],[70.21,61.72]]],["#0A0A0A",[[67.34,67.34],[85.72,67.34],[85.72,85.72],[67.34,85.72]]],["#0A0A0A",[[76.27,100.0],[76.27,90.0],[86.27,90.0],[86.27,100.0],[86.27,110.0],[76.27,110.0],[66.26,110.0],[66.26,100.0]]],["#0A0A0A",[[67.34,114.28],[85.72,114.28],[85.72,132.66],[67.34,132.66]]],["#0A0A0A",[[70.21,138.28],[84.41,138.28],[84.41,152.48],[70.21,152.48]]],["#885CB5",[[76.07,163.13],[84.19,163.02],[84.3,171.14],[76.18,171.25]]],["#0A0A0A",[[95.65,28.08],[104.72,28.4],[104.39,37.47],[95.33,37.15]]],["#0A0A0A",[[92.26,46.36],[107.74,46.36],[107.74,61.84],[92.26,61.84]]],["#0A0A0A",[[90.0,66.26],[110.0,66.26],[110.0,86.27],[90.0,86.27]]],["#0A0A0A",[[89.12,89.12],[110.88,89.12],[110.88,110.88],[89.12,110.88]]],["#0A0A0A",[[90.0,113.73],[100.0,113.73],[110.0,113.73],[110.0,123.73],[100.0,123.73],[100.0,133.74],[90.0,133.74],[90.0,123.73]]],["#008D5F",[[92.26,138.16],[107.74,138.16],[107.74,153.64],[92.26,153.64]]],["#008D5F",[[95.5,162.35],[104.36,161.57],[105.13,170.43],[96.27,171.21]]],["#A56300",[[117.31,28.0],[125.5,29.38],[124.12,37.58],[115.93,36.2]]],["#A56300",[[115.59,47.52],[129.79,47.52],[129.79,61.72],[115.59,61.72]]],["#0A0A0A",[[114.28,67.34],[123.47,67.34],[123.47,76.53],[132.66,76.53],[132.66,85.72],[123.47,85.72],[114.28,85.72],[114.28,76.53]]],["#0A0A0A",[[113.73,90.0],[133.74,90.0],[133.74,110.0],[113.73,110.0]]],["#0A0A0A",[[114.28,114.28],[132.66,114.28],[132.66,132.66],[114.28,132.66]]],["#008D5F",[[115.49,162.6],[123.62,162.93],[123.29,171.06],[115.15,170.73]]],["#A56300",[[138.28,70.21],[152.48,70.21],[152.48,84.41],[138.28,84.41]]],["#008D5F",[[138.28,115.59],[152.48,115.59],[152.48,129.79],[138.28,129.79]]],["#0A0A0A",[[138.42,138.42],[149.28,138.42],[149.28,149.28],[138.42,149.28]]],["#A56300",[[163.19,71.71],[171.12,72.26],[170.57,80.19],[162.64,79.64]]],["#008D5F",[[163.05,96.03],[171.83,96.15],[171.71,104.93],[162.93,104.82]]],["#008D5F",[[163.41,117.9],[170.68,117.2],[171.38,124.47],[164.11,125.17]]]]
+
+HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
+<svg class="crc-sym" viewBox="26 26 148 148" aria-hidden="true">{cubes}</svg>
+<img class="crc-word" src="logo-wordmark-header.png" alt="" width="1142" height="360">
+</div>
+<style>
+  .top .crc-logo {{ --s: clamp(64px, calc((100vw - 48px) / 4.3), 176px); display: flex; align-items: center; justify-content: center;
+                   gap: calc(var(--s) * .186); margin: 6px auto 20px; }}
+  .top .crc-sym {{ width: var(--s); height: var(--s); flex: none; overflow: visible; }}
+  .top .crc-word {{ height: calc(var(--s) * .977); width: auto; max-width: none; margin: 0; display: block; }}
+</style>
+<script>
+/* i cubetti del simbolo si allargano e orbitano attorno al centro quando il puntatore si avvicina */
+(function () {{
+  var svg = document.querySelector(".crc-sym");
+  if (!svg || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var cubes = [].map.call(svg.querySelectorAll("g"), function (g) {{
+    var cx = +g.dataset.x, cy = +g.dataset.y, dx = cx - 100, dy = cy - 100, r = Math.sqrt(dx * dx + dy * dy) || 1;
+    return {{ g: g, cx: cx, cy: cy, ux: dx / r, uy: dy / r, r: r, a: 0, w: (r < 20 ? 0.6 : 1.4 * Math.pow(60 / r, 0.6)) }};
+  }});
+  var near = 0, target = 0, last = performance.now(), running = false;
+  function sense(x, y) {{
+    var b = svg.getBoundingClientRect(), mx = b.left + b.width / 2, my = b.top + b.height / 2;
+    var d = Math.sqrt((x - mx) * (x - mx) + (y - my) * (y - my)), R = Math.max(220, b.width * 1.9);
+    target = Math.max(0, Math.min(1, 1 - (d - b.width * 0.25) / R));
+    if (!running) {{ running = true; last = performance.now(); requestAnimationFrame(step); }}
+  }}
+  function step(t) {{
+    var dt = Math.min(0.05, (t - last) / 1000); last = t;
+    near += (target - near) * Math.min(1, dt * 4);
+    var still = near < 0.002 && target === 0;
+    cubes.forEach(function (c) {{
+      if (near > 0.01) c.a += c.w * near * dt * 60;            /* gradi al secondo: i cubetti interni girano più piano */
+      else {{ c.a = ((c.a + 180) % 360 + 360) % 360 - 180; c.a *= Math.max(0, 1 - dt * 4); }}   /* tornano al posto per la via più breve */
+      var spread = near * (4 + c.r * 0.32);
+      c.g.setAttribute("transform", "rotate(" + c.a.toFixed(2) + " 100 100) translate(" + (c.ux * spread).toFixed(2) + " " +
+                       (c.uy * spread).toFixed(2) + ") rotate(" + (c.a * 0.8).toFixed(2) + " " + c.cx + " " + c.cy + ")");
+    }});
+    if (still && cubes.every(function (c) {{ return Math.abs(c.a) < 0.05; }})) {{
+      cubes.forEach(function (c) {{ c.a = 0; c.g.removeAttribute("transform"); }}); running = false; return;
+    }}
+    requestAnimationFrame(step);
+  }}
+  window.addEventListener("pointermove", function (e) {{ sense(e.clientX, e.clientY); }}, {{ passive: true }});
+  window.addEventListener("pointerdown", function (e) {{ sense(e.clientX, e.clientY); }}, {{ passive: true }});
+  document.addEventListener("pointerleave", function () {{ target = 0; }});
+  window.addEventListener("blur", function () {{ target = 0; }});
+}})();
+</script>"""
+
+
+def header_logo(cfg):
+    """Logo dell'intestazione della home: con «site_v4» il simbolo definitivo in SVG (cubetti animati) e la scritta;
+    altrimenti l'immagine di prima."""
+    from html import escape
+    brand = escape(cfg["brand_name"], quote=True)
+    if not cfg.get("site_v4"):
+        return f'<img src="logo-horizontal.png" alt="{brand}" width="340" height="128">'
+    cubes = []
+    for col, pts in HEADER_SYMBOL:
+        cx = sum(p[0] for p in pts) / len(pts); cy = sum(p[1] for p in pts) / len(pts)
+        cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{" ".join(f"{x},{y}" for x, y in pts)}" fill="{col}"/></g>')
+    return HEADER_LOGO.format(brand=brand, cubes="".join(cubes))
+
+
 ICONS_DIR = __import__("pathlib").Path(__file__).resolve().parent / "icons"
 
 
@@ -1444,7 +1511,7 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
                        amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"), sci=site_accent(cfg, "science"),
                        calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
-                       logo="logo-header.png" if cfg.get("site_v4") else "logo-horizontal.png",
+                       logo_block=header_logo(cfg),
                        method_line=escape(f"{n_methods} carousel{'s' if n_methods != 1 else ''} to swipe, with key points and references" if n_methods
                                           else "Practical topics with key points and references"),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
