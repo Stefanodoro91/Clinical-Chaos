@@ -1151,7 +1151,7 @@ PAGE = """<!doctype html>
 <main>
   <a class="switch" href="positions.html">Academic positions &rarr;</a><br>
   <a class="home" href="index.html">&larr; Home</a>
-  <span class="badge">OPEN CALLS</span>
+  <span class="badge">FUNDING CALLS</span>
   <h1>Research funding calls</h1>
   <p class="intro">All open calls for clinical research, clinical and biomedical engineering and rehabilitation found by our monitoring, from funders worldwide, including calls reserved for applicants in a single country: use the filters.
   Each call is checked against its official text; grouped by region and funding programme, sorted by deadline.
@@ -1321,7 +1321,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     c = site_palette(cfg)
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
-                       accent=cfg.get("grant_accent", "#FFB547"), nav="".join(nav),
+                       accent=site_accent(cfg, "grant"), nav="".join(nav),
                        italy=italy_html, other=other_html, updated=_fmt_date(today), filters=filters_form(entries),
                        og=og_tags(cfg, f"Open research funding calls · {cfg['brand_name']}",
                                   "Open funding calls for clinical research, clinical engineering and rehabilitation, checked on the official call text.",
@@ -1372,23 +1372,23 @@ HOME = """<!doctype html>
 </head>
 <body>
 <header class="top">
-  <img src="logo-horizontal.png" alt="{brand}" width="340" height="128">
+  <img src="{logo}" alt="{brand}" width="340" height="128">
   <p>Clinical research methodology, made practical. Open funding calls and academic positions, checked on the official texts.</p>
 </header>
 <main>
   <a class="big calls" href="calls.html">
     <span class="label">Open calls</span>
-    <span class="name">Funding calls <span aria-hidden="true">&rarr;</span></span>
+    <span class="name">Funding Calls <span aria-hidden="true">&rarr;</span></span>
     <span class="count">{calls_line}</span>
   </a>
   <a class="big jobs" href="positions.html">
     <span class="label">Open positions</span>
-    <span class="name">Academic positions <span aria-hidden="true">&rarr;</span></span>
+    <span class="name">Academic Positions <span aria-hidden="true">&rarr;</span></span>
     <span class="count">{jobs_line}</span>
   </a>
   <a class="big method" href="methodology.html">
     <span class="label">Methodology library</span>
-    <span class="name">Methodology <span aria-hidden="true">&rarr;</span></span>
+    <span class="name">Design, Reporting &amp; Appraisal <span aria-hidden="true">&rarr;</span></span>
     <span class="count">{method_line}</span>
   </a>
   <div class="social">
@@ -1436,8 +1436,9 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
     jobs_line = f"{n_positions} open PhD, post-doc and faculty positions" if n_positions else "PhD, post-doc and faculty positions"
     return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"], social=social_links(cfg),
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
-                       amber=cfg.get("grant_accent", "#FFB547"), lilac=cfg.get("positions_accent", "#A78BFA"),
+                       amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"),
                        calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
+                       logo="logo-header.png" if cfg.get("site_v4") else "logo-horizontal.png",
                        method_line=escape(f"{n_methods} carousel{'s' if n_methods != 1 else ''} to swipe, with key points and references" if n_methods
                                           else "Practical topics with key points and references"),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
@@ -1786,6 +1787,7 @@ DECOR = """
   .crc-side canvas { display: block; width: 100%; height: 100%; }
   @media (min-width: 1180px) { .crc-side { display: block; } }
   main, header, footer, .bar { position: relative; z-index: 1; }
+  .crc-side.over { z-index: 2; }
 </style>
 <script>
 (function () {
@@ -1796,43 +1798,92 @@ DECOR = """
     if (started || !wide.matches) return;
     started = true;
     var COLORS = ["#3DD9C1", "#14A085", "#FFFFFF", "#7F96AB"];
+    var GREYS = ["#0A0A0A", "#2E2E2E", "#5A5A5A", "#8A8A8A"];
     var SIZES = [4, 6, 8, 10, 12], SHAPES = [[], [], [[1, 0]], [[0, 1]], [[1, 0], [0, 1]], [[1, 0], [1, 1]]];
     function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
-    /* cascata lenta di quadratini ai due lati, singoli o a piccoli gruppi come nel logo */
+    /* zone chiare della pagina (intestazione bianca): lì cubetti e pulviscolo cadono in nero e grigi,
+       poi entrando nella parte scura prendono colore */
+    var light = [];
+    function lum(c) { var m = c.match(/\\d+(\\.\\d+)?/g); if (!m || (m.length > 3 && +m[3] === 0)) return -1;
+      return (0.2126 * m[0] + 0.7152 * m[1] + 0.0722 * m[2]) / 255; }
+    function zones() {
+      light = [];
+      document.querySelectorAll("body > header, body > .top, body > section, body > div:not(.crc-side), [data-light]").forEach(function (e) {
+        var bg = getComputedStyle(e).backgroundColor;
+        if (lum(bg) > 0.6) { var r = e.getBoundingClientRect(); if (r.bottom > 0 && r.height > 0) light.push([r.top, r.bottom]); }
+      });
+    }
+    function mixIn(y) {       /* 0 = su chiaro (grigi), 1 = su scuro (colori); passaggio graduale di 40 px */
+      for (var i = 0; i < light.length; i++) {
+        var z = light[i];
+        if (y >= z[0] - 4 && y < z[1]) return 0;
+        if (y >= z[1] && y < z[1] + 40) return (y - z[1]) / 40;
+      }
+      return 1;
+    }
     function side(id) {
       var el = document.getElementById(id), c = document.createElement("canvas"), ctx = c.getContext("2d");
+      el.classList.add("over");
       el.appendChild(c);
-      var L = { ctx: ctx, drops: [], R: null };
+      var L = { ctx: ctx, drops: [], dust: [], R: null };
       function drop(y) {
         return { x: Math.random() * L.R.width, y: (y === undefined ? -40 : y), s: pick(SIZES), v: 7 + Math.random() * 20,
-                 c: pick(COLORS), a: 0.12 + Math.random() * 0.5, shape: pick(SHAPES) };
+                 c: pick(COLORS), g: pick(GREYS), a: 0.12 + Math.random() * 0.5, shape: pick(SHAPES) };
+      }
+      function mote(y) {
+        var glow = Math.random() < 0.16;
+        return { x: Math.random() * L.R.width, y: (y === undefined ? -20 : y), r: glow ? 5 + Math.random() * 10 : 0.6 + Math.random() * 1.4,
+                 v: 4 + Math.random() * 10, w: Math.random() * 6.28, glow: glow, c: pick(COLORS), g: pick(GREYS.slice(1)),
+                 a: glow ? 0.06 + Math.random() * 0.12 : 0.25 + Math.random() * 0.55 };
       }
       L.fit = function () {
         var r = el.getBoundingClientRect(), d = window.devicePixelRatio || 1;
         c.width = r.width * d; c.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); L.R = r;
         L.drops = []; var n = Math.round(r.width * r.height / 7500);
         for (var i = 0; i < n; i++) L.drops.push(drop(Math.random() * r.height));
+        L.dust = []; var m = Math.round(r.width * r.height / 2600);
+        for (var j = 0; j < m; j++) L.dust.push(mote(Math.random() * r.height));
       };
-      L.step = function (dt) {
+      function paint(col, alpha, x, y, s) { if (alpha <= 0.003) return; ctx.globalAlpha = alpha; ctx.fillStyle = col; ctx.fillRect(x, y, s, s); }
+      L.step = function (dt, t) {
         ctx.clearRect(0, 0, L.R.width, L.R.height);
+        L.dust.forEach(function (p) {
+          p.y += p.v * dt; p.x += Math.sin(t / 1800 + p.w) * 4 * dt;
+          if (p.y > L.R.height + 20) { var n = mote(); for (var k in n) p[k] = n[k]; }
+          var k2 = mixIn(p.y);
+          [[p.g, (1 - k2) * 0.7], [p.c, k2]].forEach(function (v) {
+            if (v[1] <= 0.003) return;
+            ctx.globalAlpha = p.a * v[1];
+            if (p.glow) {
+              var gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+              gr.addColorStop(0, v[0]); gr.addColorStop(1, "rgba(0,0,0,0)");
+              ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832); ctx.fill();
+            } else { ctx.fillStyle = v[0]; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832); ctx.fill(); }
+          });
+        });
         L.drops.forEach(function (d) {
           d.y += d.v * dt;
           if (d.y > L.R.height + 40) { var n = drop(); for (var k in n) d[k] = n[k]; }
-          ctx.globalAlpha = d.a; ctx.fillStyle = d.c; ctx.fillRect(d.x, d.y, d.s, d.s);
-          d.shape.forEach(function (o) { ctx.fillRect(d.x + o[0] * (d.s + 2), d.y + o[1] * (d.s + 2), d.s, d.s); });
+          [[0, 0]].concat(d.shape).forEach(function (o) {
+            var x = d.x + o[0] * (d.s + 2), y = d.y + o[1] * (d.s + 2), k3 = mixIn(y + d.s / 2);
+            paint(d.g, d.a * (1 - k3) * 1.25, x, y, d.s);
+            paint(d.c, d.a * k3, x, y, d.s);
+          });
         });
       };
       L.fit();
       return L;
     }
+    zones();
     var sides = [side("crc-rain"), side("crc-rain-r")];
     var last = performance.now();
     function frame(t) {
       var dt = Math.min(0.05, (t - last) / 1000); last = t;
-      sides.forEach(function (L) { L.step(dt); });
+      sides.forEach(function (L) { L.step(dt, t); });
       if (!still) requestAnimationFrame(frame);
     }
-    window.addEventListener("resize", function () { sides.forEach(function (L) { L.fit(); }); if (still) frame(performance.now()); });
+    window.addEventListener("scroll", zones, { passive: true });
+    window.addEventListener("resize", function () { zones(); sides.forEach(function (L) { L.fit(); }); if (still) frame(performance.now()); });
     requestAnimationFrame(frame);
   }
   start();
@@ -1849,8 +1900,26 @@ def site_palette(cfg):
     """Colori del sito: quelli del config, oppure (config «mono») nero e grigi con azzurrino come colore base."""
     c = cfg["colors"]
     if cfg.get("mono"):
-        return {**c, "background": "#0A0A0A", "muted": "#8A8A8A", "muted_text": "#CFCFCF", "accent": "#6EC1FF"}
+        return {**c, "background": "#0A0A0A", "muted": "#8A8A8A", "muted_text": "#CFCFCF", "accent": site_accent(cfg, "methods")}
     return c
+
+
+SITE_V4 = {"grant": "#F8B048", "positions": "#A07CF4", "methods": "#88B0F8", "science": "#3FA6C6"}   # colori delle rubriche
+
+
+def site_accent(cfg, kind):
+    """Colore di una sezione del sito: con config «site_v4» quello fisso della rubrica (come nel logo definitivo),
+    altrimenti quello di prima. Solo sito: i post del bot non cambiano."""
+    if cfg.get("site_v4"):
+        return SITE_V4[kind]
+    return {"grant": cfg.get("grant_accent", "#FFB547"), "positions": cfg.get("positions_accent", "#A78BFA"),
+            "methods": "#6EC1FF", "science": "#6EC1FF"}[kind]
+
+
+def site_colors(cfg):
+    """Colori della cascata laterale in home: le rubriche del sito (con «site_v4» anche Latest Science)."""
+    keys = ("grant", "positions", "methods", "science") if cfg.get("site_v4") else ("grant", "positions", "methods")
+    return {k: site_accent(cfg, k) for k in keys}
 
 
 EDITORIAL_SITE = """<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
