@@ -1474,56 +1474,11 @@ def header_logo(cfg):
     brand = escape(cfg["brand_name"], quote=True)
     if not cfg.get("site_v4"):
         return f'<img src="logo-horizontal.png" alt="{brand}" width="340" height="128">'
-    ink = "#0A0A0A"
-    accents = [c for c, _ in HEADER_SYMBOL if c != ink]
-    by_q = {}                                   # colore di ogni quadrante, dai cubetti d'accento che ci stanno
-    for col, pts in HEADER_SYMBOL:
-        if col != ink:
-            cx = sum(p[0] for p in pts) / len(pts); cy = sum(p[1] for p in pts) / len(pts)
-            by_q.setdefault((cx >= 100, cy >= 100), col)
-
-    def mix(h, k, to=(10, 10, 10)):
-        r, g, b = (int(h[i:i + 2], 16) for i in (1, 3, 5))
-        return "#%02X%02X%02X" % tuple(round(v * k + t * (1 - k)) for v, t in zip((r, g, b), to))
-    # cubetti centrali: sfumatura dal colore del loro quadrante (al centro) al nero (verso l'esterno)
-    defs, glow = [], []
-    for n, (q, col) in enumerate(sorted(by_q.items())):
-        defs.append(f'<radialGradient id="crc-q{n}" gradientUnits="userSpaceOnUse" cx="100" cy="100" r="62">'
-                    f'<stop offset="0" stop-color="{mix(col, 1.0)}"/><stop offset=".5" stop-color="{mix(col, .62)}"/>'
-                    f'<stop offset="1" stop-color="{ink}"/></radialGradient>')
-        gx, gy = (112 if q[0] else 88), (112 if q[1] else 88)
-        glow.append(f'<circle cx="{gx}" cy="{gy}" r="30" fill="{col}" opacity=".16" filter="url(#crc-blur)"/>')
-    defs.append('<filter id="crc-blur" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="9"/></filter>')
-    # piccolo riflesso in alto a sinistra su ogni cubetto: dà profondità senza cambiare il disegno
-    defs.append('<linearGradient id="crc-sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".28"/>'
-                '<stop offset=".5" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>')
-    qid = {q: n for n, (q, _) in enumerate(sorted(by_q.items()))}
-    cubes = []
-    R = 1.7                                     # raggio degli angoli arrotondati (unità del viewBox)
-    k_ink = 0
+    cubes = []                                  # simbolo piatto, come nel logo definitivo
     for col, pts in HEADER_SYMBOL:
         cx = sum(p[0] for p in pts) / len(pts); cy = sum(p[1] for p in pts) / len(pts)
-        half = max(max(abs(x - cx), abs(y - cy)) for x, y in pts)
-        f = max(0.4, (half - R) / half)           # rientro: con il bordo arrotondato torna alla misura di prima
-        poly = " ".join(f"{cx + (x - cx) * f:.2f},{cy + (y - cy) * f:.2f}" for x, y in pts)
-        extra = ""
-        if col == ink:                          # cubetti centrali: un po' neri, qualche bianco, gli altri sfumati
-            k_ink += 1
-            kind = ("black", "grad", "grad", "white", "grad", "black", "grad")[k_ink % 7]
-            if kind == "black":
-                fill = stroke = ink
-            elif kind == "white":               # bianco con un filo nero sul bordo esterno
-                cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{poly}" fill="{ink}" stroke="{ink}" '
-                             f'stroke-width="{2 * R + 1.2}" stroke-linejoin="round"/><polygon points="{poly}" fill="#FFFFFF" '
-                             f'stroke="#FFFFFF" stroke-width="{2 * R - 1.2}" stroke-linejoin="round"/></g>')
-                continue
-            else:
-                fill = stroke = f"url(#crc-q{qid[(cx >= 100, cy >= 100)]})"
-        else:
-            fill = stroke = col
-        cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{poly}" fill="{fill}" stroke="{stroke}" '
-                     f'stroke-width="{2 * R}" stroke-linejoin="round"/>{extra}</g>')
-    return HEADER_LOGO.format(brand=brand, cubes="".join(cubes), defs="".join(defs), glow="".join(glow))
+        cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{" ".join(f"{x},{y}" for x, y in pts)}" fill="{col}"/></g>')
+    return HEADER_LOGO.format(brand=brand, cubes="".join(cubes), defs="", glow="")
 
 
 ICONS_DIR = __import__("pathlib").Path(__file__).resolve().parent / "icons"
