@@ -1344,7 +1344,7 @@ HOME = """<!doctype html>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {{ --bg: {bg}; --paper: #F3F6F9; --card: #15304A; --text: #FFFFFF; --soft: {soft}; --muted: {muted};
-           --teal: {teal}; --amber: {amber}; --lilac: {lilac}; }}
+           --teal: {teal}; --amber: {amber}; --lilac: {lilac}; --sci: {sci}; }}
   * {{ box-sizing: border-box; }}
   body {{ margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }}
   .top {{ background: var(--paper); padding: 34px 16px 30px; text-align: center; border-top: 6px solid var(--teal); }}
@@ -1355,6 +1355,7 @@ HOME = """<!doctype html>
   a.big.calls {{ background: var(--amber); }}
   a.big.jobs {{ background: var(--lilac); }}
   a.big.method {{ background: var(--teal); }}
+  a.big.science {{ background: var(--sci); }}
   a.big .label {{ font-size: 13px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; opacity: .8; }}
   a.big .name {{ display: flex; justify-content: space-between; align-items: center; font-size: 27px; font-weight: 800; margin: 4px 0 6px; }}
   a.big .count {{ font-size: 15px; font-weight: 600; }}
@@ -1373,7 +1374,7 @@ HOME = """<!doctype html>
 <body>
 <header class="top">
   <img src="{logo}" alt="{brand}" width="340" height="128">
-  <p>Clinical research methodology, made practical. Open funding calls and academic positions, checked on the official texts.</p>
+  <p>Design, report and appraise better. Keep up with new evidence. Find your next grant or position.</p>
 </header>
 <main>
   <a class="big calls" href="calls.html">
@@ -1390,6 +1391,11 @@ HOME = """<!doctype html>
     <span class="label">Methodology library</span>
     <span class="name">Design, Reporting &amp; Appraisal <span aria-hidden="true">&rarr;</span></span>
     <span class="count">{method_line}</span>
+  </a>
+  <a class="big science" href="methodology.html">
+    <span class="label">Every Saturday</span>
+    <span class="name">Latest Science <span aria-hidden="true">&rarr;</span></span>
+    <span class="count">One new clinical paper, one lesson for practice: in the library</span>
   </a>
   <div class="social">
 {social}
@@ -1436,7 +1442,7 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
     jobs_line = f"{n_positions} open PhD, post-doc and faculty positions" if n_positions else "PhD, post-doc and faculty positions"
     return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"], social=social_links(cfg),
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
-                       amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"),
+                       amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"), sci=site_accent(cfg, "science"),
                        calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
                        logo="logo-header.png" if cfg.get("site_v4") else "logo-horizontal.png",
                        method_line=escape(f"{n_methods} carousel{'s' if n_methods != 1 else ''} to swipe, with key points and references" if n_methods
