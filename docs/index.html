@@ -23,20 +23,24 @@
            --teal: #82BEFF; --amber: #ECAD59; --lilac: #CDA6FB; --sci: #60D4A7; }
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }
-  .top { background: var(--paper); padding: 34px 16px 30px; text-align: center; border-top: 6px solid var(--teal); }
+  .top { background: var(--paper); padding: 30px 16px 28px; text-align: center; border-top: 4px solid var(--teal); }
   .top img { width: 340px; max-width: 100%; height: auto; display: block; margin: 0 auto 14px; }
-  .top p { color: #5B7186; margin: 0 auto; max-width: 420px; font-size: 15px; }
+  .top p { color: #4A5563; margin: 0 auto; max-width: 440px; font: italic 400 17px/1.45 "Source Serif 4", Georgia, serif; }
   main { max-width: 520px; margin: 0 auto; padding: 26px 16px 40px; display: grid; gap: 16px; }
-  a.big { display: block; text-decoration: none; color: var(--bg); border-radius: 22px; padding: 22px 22px 20px; }
-  a.big.calls { background: var(--amber); }
-  a.big.jobs { background: var(--lilac); }
-  a.big.method { background: var(--teal); }
-  a.big.science { background: var(--sci); }
-  a.big .label { font-size: 13px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; opacity: .8; }
-  a.big .name { display: flex; justify-content: space-between; align-items: center; font-size: 27px; font-weight: 800; margin: 4px 0 6px; }
-  a.big .count { font-size: 15px; font-weight: 600; }
-  a.big:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
-  a.big:hover { filter: brightness(1.05); }
+  a.big { --c: var(--teal); display: block; text-decoration: none; color: var(--text); background: #111111;
+            border: 1px solid #262626; border-left: 3px solid var(--c); border-radius: 14px; padding: 18px 22px 17px;
+            transition: border-color .2s, background .2s; }
+  a.big.calls { --c: var(--amber); }
+  a.big.jobs { --c: var(--lilac); }
+  a.big.method { --c: var(--teal); }
+  a.big.science { --c: var(--sci); }
+  a.big .label { color: var(--c); font: 600 11.5px/1.2 Inter, system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+  a.big .name { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 7px 0 5px;
+                font-family: "Source Serif 4", Georgia, serif; font-size: 25px; font-weight: 600; letter-spacing: -.005em; line-height: 1.2; }
+  a.big .name span { color: var(--c); font-family: Inter, system-ui, sans-serif; font-weight: 400; }
+  a.big .count { color: var(--soft); font-size: 14px; font-weight: 400; }
+  a.big:focus-visible { outline: 2px solid var(--c); outline-offset: 3px; }
+  a.big:hover { border-color: var(--c); background: #151515; }
   .social { display: flex; justify-content: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
   .noig a { color: var(--teal); font-weight: 600; }
   .noig { color: var(--soft); font-size: 14px; text-align: center; max-width: 440px; margin: 16px auto 0; line-height: 1.5; }
@@ -74,7 +78,7 @@
 <img class="crc-word" src="logo-wordmark-header.png" alt="" width="1142" height="360">
 </div>
 <style>
-  .top .crc-logo { --s: clamp(64px, calc((100vw - 48px) / 4.3), 176px); display: flex; align-items: center; justify-content: center;
+  .top .crc-logo { --s: clamp(60px, calc((100vw - 64px) / 4.3), 118px); display: flex; align-items: center; justify-content: center;
                    gap: calc(var(--s) * .186); margin: 6px auto 20px; }
   .top .crc-sym { width: var(--s); height: var(--s); flex: none; overflow: visible; }
   .top .crc-word { height: calc(var(--s) * .977); width: auto; max-width: none; margin: 0; display: block; }
@@ -97,16 +101,16 @@
   }
   function step(t) {
     var dt = Math.min(0.05, (t - last) / 1000); last = t;
-    near += (target - near) * Math.min(1, dt * 4);
+    near += (target - near) * Math.min(1, dt * (target > near ? 4 : 9));   /* si allarga piano, si ricompone svelto */
     var still = near < 0.002 && target === 0;
     cubes.forEach(function (c) {
       if (near > 0.01) c.a += c.w * near * dt * 60;            /* gradi al secondo: i cubetti interni girano più piano */
-      else { c.a = ((c.a + 180) % 360 + 360) % 360 - 180; c.a *= Math.max(0, 1 - dt * 4); }   /* tornano al posto per la via più breve */
+      else { c.a = ((c.a + 180) % 360 + 360) % 360 - 180; c.a *= Math.max(0, 1 - dt * 10); }   /* tornano al posto per la via più breve, in fretta */
       var spread = near * (4 + c.r * 0.32);
       c.g.setAttribute("transform", "rotate(" + c.a.toFixed(2) + " 100 100) translate(" + (c.ux * spread).toFixed(2) + " " +
                        (c.uy * spread).toFixed(2) + ") rotate(" + (c.a * 0.8).toFixed(2) + " " + c.cx + " " + c.cy + ")");
     });
-    if (still && cubes.every(function (c) { return Math.abs(c.a) < 0.05; })) {
+    if (still && cubes.every(function (c) { return Math.abs(c.a) < 0.3; })) {
       cubes.forEach(function (c) { c.a = 0; c.g.removeAttribute("transform"); }); running = false; return;
     }
     requestAnimationFrame(step);
