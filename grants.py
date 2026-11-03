@@ -1910,7 +1910,7 @@ def site_palette(cfg):
     return c
 
 
-SITE_V4 = {"grant": "#F8B048", "positions": "#A07CF4", "methods": "#88B0F8", "science": "#3FA6C6"}   # colori delle rubriche
+SITE_V4 = {"grant": "#ECAD59", "positions": "#CDA6FB", "methods": "#82BEFF", "science": "#60D4A7"}   # rubriche, palette «Quadrante»
 
 
 def site_accent(cfg, kind):
