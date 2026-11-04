@@ -1664,7 +1664,9 @@ def _fragments():
         return [a] + [a + (b - a) * ((k + 1) / (n + 1) + rnd(-0.12, 0.12)) for k in range(n)] + [b]
 
     import math
-    o = 0.35                                        # sovrapposizione fra pezzi vicini: niente righine
+    o = 1.2                                         # sovrapposizione fra pezzi vicini: niente righine. Può
+                                                    # essere generosa: i pezzi crescono solo l'uno dentro
+                                                    # l'altro, quindi la sagoma del cubetto non cambia di un pelo
     for role, pts in logo_v3.SYMBOL:
         if any(abs(a[0] - b[0]) > 0.01 and abs(a[1] - b[1]) > 0.01
                for a, b in zip(pts, pts[1:] + pts[:1])):   # cubetto inclinato: resta storto com'è nel logo,

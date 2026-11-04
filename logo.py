@@ -129,9 +129,11 @@ def wordmark(accent, ink=INK_LIGHT, height=160, label=None):
     return img.resize((round(img.width / k), height), Image.LANCZOS)
 
 
-def ring_rows(per=60, rows=3, center=(100.0, 100.0), scale=0.95):
+def ring_rows(per=60, rows=3, center=(100.0, 100.0), scale=0.95, roundness=0.55):
     """`rows` giri concentrici dell'anello della «o», ognuno campionato in `per` punti ordinati lungo il
-    percorso, nel sistema del simbolo (viewBox 26 26 148 148). Il sito li usa come orbita dei frammenti."""
+    percorso, nel sistema del simbolo (viewBox 26 26 148 148). Il sito li usa come orbita dei frammenti.
+    `roundness` tira il percorso verso il cerchio (0 = la «o» tale e quale, 1 = cerchio): smussa gli angoli
+    del sasso, che in movimento si leggerebbero come spigoli."""
     a = math.radians(-20)
 
     def resample(pts, m):
@@ -158,6 +160,16 @@ def ring_rows(per=60, rows=3, center=(100.0, 100.0), scale=0.95):
             y = outer[k][1] + (inner[k][1] - outer[k][1]) * f
             row.append(((x * math.cos(a) - y * math.sin(a)) * scale + center[0],
                         (x * math.sin(a) + y * math.cos(a)) * scale + center[1]))
+        if roundness:                              # verso il cerchio: stesso raggio medio, angoli smussati
+            cx = sum(p[0] for p in row) / len(row)
+            cy = sum(p[1] for p in row) / len(row)
+            rad = sum(math.hypot(p[0] - cx, p[1] - cy) for p in row) / len(row)
+            soft = []
+            for x, y in row:
+                d = math.hypot(x - cx, y - cy) or 1
+                soft.append((x + (cx + (x - cx) / d * rad - x) * roundness,
+                             y + (cy + (y - cy) / d * rad - y) * roundness))
+            row = soft
         out.append(row)
     return out
 
