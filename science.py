@@ -65,6 +65,7 @@ PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
+  {lockup}
   <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><br>
   <span class="badge">LATEST SCIENCE</span>
   <h1>One clinical concept a week, from a real paper</h1>
@@ -144,7 +145,7 @@ def build_page(data, cfg, today=None):
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"],
                        teal=grants.site_accent(cfg, "science") if cfg.get("site_v4") else c["accent"],
-                       sections=sections, updated=grants._fmt_date(today),
+                       sections=sections, updated=grants._fmt_date(today), lockup=grants.page_lockup(cfg, "science"),
                        og=grants.og_tags(cfg, f"Latest Science · {cfg['brand_name']}",
                                          "One real paper, one clinical lesson every Saturday: what it means for "
                                          "the therapeutic approach and the patient.", "science"))
