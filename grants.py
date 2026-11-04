@@ -1581,12 +1581,13 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
     var p = spline(RING[r0], f), q = spline(RING[r1], f);
     return [p[0] + (q[0] - p[0]) * rt, p[1] + (q[1] - p[1]) * rt];
   }}
-  var frags = [].map.call(svg.querySelectorAll("g"), function (g, i) {{
+  var halo = svg.querySelectorAll(".crc-glow");
+  var frags = [].map.call(svg.querySelectorAll("#crcFrags > g"), function (g, i) {{
     var p = g.firstChild, row = +g.dataset.row, w = +p.getAttribute("width"), h = +p.getAttribute("height");
     var j = ((i * 2654435761) % 1000) / 1000;             /* un numero suo, stabile: niente moto all'unisono */
     return {{ g: g, p: p, x: +g.dataset.x, y: +g.dataset.y, row: row, i0: +g.dataset.i,
              bx: +g.dataset.cx, by: +g.dataset.cy, a: rgb(p.getAttribute("fill")), b: rgb(g.dataset.c1),
-             spd: 44 + 15 * row + 16 * j,                 /* ognuno la sua andatura: la corsa non è meccanica */
+             spd: 72 + 24 * row + 26 * j,                 /* ognuno la sua andatura: la corsa non è meccanica */
              w1: 0.9 + 2.6 * j, w2: 0.37 + 0.7 * j, w3: 1.7 + 3.1 * j,
              ph1: 6.3 * j, ph2: 4.1 * j + row, ph3: 2.2 * j + row,
              rmax: Math.min(w, h) * 0.5, lag: 0.72 + 0.28 * j, shown: -1, dim: -1 }};
@@ -1598,6 +1599,11 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
     near += (target - near) * Math.min(1, dt * (target > near ? 3.4 : 7));   /* fluisce piano, si ricompone svelto */
     phase += dt * near;                                     /* l'orbita gira solo mentre il flusso è acceso */
     var still = near < 0.004 && target === 0;
+    var lum = near * near;                                  /* la luce sale più tardi del moto: prima si sfalda, poi si accende */
+    for (var k = 0; k < halo.length; k++) {{
+      halo[k].style.display = lum < 0.01 ? "none" : "";      /* a riposo il filtro non costa nulla */
+      halo[k].setAttribute("opacity", (lum * (k ? 0.95 : 0.75)).toFixed(2));
+    }}
     for (var i = 0; i < frags.length; i++) {{
       var f = frags[i], e = Math.max(0, Math.min(1, (near - (1 - f.lag) * 0.45) / f.lag));
       e = e * e * (3 - 2 * e);                              /* partenza e arrivo morbidi */
@@ -1713,6 +1719,12 @@ def header_logo(cfg, accent=None, ink="#FFFFFF"):
     acc = accent or SITE_GREEN
     deep = logo_v3.deep_of(acc)
     cols = {"ink": ink, "teal": acc, "deep": deep}
+
+    def lighten(hexa, k):                               # verso il bianco: il nucleo acceso del tubo luminoso
+        r, g, b = (int(hexa.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+        return "#%02x%02x%02x" % tuple(round(v + (255 - v) * k) for v in (r, g, b))
+
+    core, core_in = lighten(acc, 0.68), lighten(acc, 0.42)
     frags = _fragments()
     centres = [(x + w / 2, y + h / 2) for _, x, y, w, h, _r in frags]
     per, rows = 96, 4                                   # l'orbita: 4 giri concentrici da 96 posizioni
@@ -1731,12 +1743,21 @@ def header_logo(cfg, accent=None, ink="#FFFFFF"):
         nrm = math.hypot(nx, ny) or 1
         cubes[i] = (f'<g data-x="{cx:.1f}" data-y="{cy:.1f}" data-row="{row}" data-i="{idx:.2f}" '
                     f'data-cx="{mx + nx / nrm * bend:.1f}" data-cy="{my + ny / nrm * bend:.1f}" '
-                    f'data-c1="{deep if row >= rows - 2 else acc}">'      # la «o» resta verde: giri interni più scuri
+                    f'data-c1="{core_in if row >= rows - 2 else core}">'  # nucleo acceso, quasi bianco; il verde sta nell'alone
                     f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" rx="0" fill="{cols[role]}"'
                     + (f' transform="rotate({rot:.1f} {cx:.2f} {cy:.2f})"' if rot else "") + "/></g>")
+    # luminescenza: due aloni verdi sfocati dietro i frammenti (una copia sola, non il doppio dei nodi)
+    defs = (f'<filter id="crcGlowA" x="-45%" y="-45%" width="190%" height="190%">'
+            f'<feGaussianBlur in="SourceAlpha" stdDeviation="2.4" result="b"/>'
+            f'<feFlood flood-color="{acc}" flood-opacity="0.95"/><feComposite in2="b" operator="in"/></filter>'
+            f'<filter id="crcGlowB" x="-70%" y="-70%" width="240%" height="240%">'
+            f'<feGaussianBlur in="SourceAlpha" stdDeviation="6.5" result="b"/>'
+            f'<feFlood flood-color="{acc}" flood-opacity="0.8"/><feComposite in2="b" operator="in"/></filter>')
+    glow = ('<use class="crc-glow" href="#crcFrags" filter="url(#crcGlowB)" opacity="0" style="display:none"/>'
+            '<use class="crc-glow" href="#crcFrags" filter="url(#crcGlowA)" opacity="0" style="display:none"/>')
     ring_js = json.dumps([[[round(x, 1), round(y, 1)] for x, y in r] for r in ring], separators=(",", ":"))
-    return HEADER_LOGO.format(brand=brand, cubes="".join(cubes), defs="", glow="", ring=ring_js,
-                              word="logo-wordmark-dark.png")
+    return HEADER_LOGO.format(brand=brand, cubes=f'<g id="crcFrags">{"".join(cubes)}</g>',
+                              defs=defs, glow=glow, ring=ring_js, word="logo-wordmark-dark.png")
 
 
 ICONS_DIR = __import__("pathlib").Path(__file__).resolve().parent / "icons"
