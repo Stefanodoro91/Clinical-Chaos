@@ -1151,6 +1151,7 @@ PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
+  {lockup}
   <a class="switch" href="positions.html">Academic positions &rarr;</a><br>
   <a class="home" href="index.html">&larr; Home</a>
   <span class="badge">FUNDING CALLS</span>
@@ -1482,6 +1483,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
                        accent=site_accent(cfg, "grant"), nav="".join(nav), description=escape(desc, quote=True),
+                       lockup=page_lockup(cfg, "grant"),
                        italy=italy_html, other=other_html, updated=_fmt_date(today), filters=filters_form(entries),
                        og=og_tags(cfg, f"Open research funding calls · {cfg['brand_name']}", desc, "calls"))
 
@@ -1505,9 +1507,13 @@ HOME = """<!doctype html>
            --teal: {teal}; --amber: {amber}; --lilac: {lilac}; --sci: {sci}; --meth: {meth}; }}
   * {{ box-sizing: border-box; }}
   body {{ margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }}
-  .top {{ background: var(--paper); padding: 30px 16px 28px; text-align: center; border-top: 4px solid var(--teal); }}
+  .top {{ background: var(--bg); padding: 34px 16px 26px; text-align: center; border-top: 4px solid var(--teal); }}
   .top img {{ width: 340px; max-width: 100%; height: auto; display: block; margin: 0 auto 14px; }}
-  .top p {{ color: #4A5563; margin: 0 auto; max-width: 440px; font: italic 400 17px/1.45 "Source Serif 4", Georgia, serif; }}
+  .top p {{ color: var(--text); margin: 0 auto; max-width: 460px; font: 600 17px/1.45 Inter, system-ui, sans-serif; }}
+  .pills {{ display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin: 4px auto 16px; max-width: 780px; }}
+  .pills a {{ border-radius: 999px; padding: 9px 16px; font: 800 12.5px/1 Inter, system-ui, sans-serif; letter-spacing: .045em;
+             text-decoration: none; white-space: nowrap; }}
+  .pills a:hover, .pills a:focus-visible {{ filter: brightness(1.08); }}
   main {{ max-width: 520px; margin: 0 auto; padding: 26px 16px 40px; display: grid; gap: 16px; }}
   a.big {{ --c: var(--teal); display: block; text-decoration: none; color: var(--text); background: #111111;
             border: 1px solid #262626; border-left: 3px solid var(--c); border-radius: 14px; padding: 18px 22px 17px;
@@ -1536,7 +1542,8 @@ HOME = """<!doctype html>
 <body>
 <header class="top">
   {logo_block}
-  <p>Design, report and appraise better. Keep up with new evidence. Find your next grant or position.</p>
+  <nav class="pills" aria-label="Sections">{pills}</nav>
+  <p>Pieces of research. All in one place.</p>
 </header>
 <main>
   <a class="big calls" href="calls.html">
@@ -1577,7 +1584,7 @@ HEADER_SYMBOL = [["#258473",[[30.08,71.44],[38.15,72.72],[36.87,80.78],[28.8,79.
 
 HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
 <svg class="crc-sym" viewBox="26 26 148 148" aria-hidden="true"><defs>{defs}</defs>{glow}{cubes}</svg>
-<img class="crc-word" src="logo-wordmark-header.png" alt="" width="1142" height="360">
+<img class="crc-word" src="{word}" alt="" width="1142" height="360">
 </div>
 <style>
   .top .crc-logo {{ --s: clamp(54px, calc((100vw - 64px) / 4.6), 92px); display: flex; align-items: center; justify-content: center;
@@ -1625,18 +1632,23 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
 </script>"""
 
 
-def header_logo(cfg):
+def header_logo(cfg, accent=None, ink="#FFFFFF"):
     """Logo dell'intestazione della home: con «site_v4» il simbolo definitivo in SVG (cubetti animati) e la scritta;
-    altrimenti l'immagine di prima."""
+    altrimenti l'immagine di prima. Su fondo scuro i cubetti principali sono bianchi e quelli d'accento nel colore
+    indicato (verde del sito per la home, colore della rubrica per le pagine di sezione)."""
     from html import escape
+    import logo as logo_v3
     brand = escape(cfg["brand_name"], quote=True)
     if not cfg.get("site_v4"):
         return f'<img src="logo-horizontal.png" alt="{brand}" width="340" height="128">'
+    acc = accent or SITE_GREEN
+    cols = {"ink": ink, "teal": acc, "deep": logo_v3.deep_of(acc)}
     cubes = []                                  # simbolo piatto, come nel logo definitivo
-    for col, pts in HEADER_SYMBOL:
+    for role, pts in logo_v3.SYMBOL:
         cx = sum(p[0] for p in pts) / len(pts); cy = sum(p[1] for p in pts) / len(pts)
-        cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{" ".join(f"{x},{y}" for x, y in pts)}" fill="{col}"/></g>')
-    return HEADER_LOGO.format(brand=brand, cubes="".join(cubes), defs="", glow="")
+        cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{" ".join(f"{x},{y}" for x, y in pts)}" '
+                     f'fill="{cols[role]}"/></g>')
+    return HEADER_LOGO.format(brand=brand, cubes="".join(cubes), defs="", glow="", word="logo-wordmark-dark.png")
 
 
 ICONS_DIR = __import__("pathlib").Path(__file__).resolve().parent / "icons"
@@ -1675,7 +1687,7 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0, n_sc
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
                        amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"), sci=site_accent(cfg, "science"), meth=site_accent(cfg, "methods"),
                        calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
-                       logo_block=header_logo(cfg),
+                       logo_block=header_logo(cfg), pills=section_pills(cfg),
                        method_line=escape(f"{n_methods} carousel{'s' if n_methods != 1 else ''} to swipe, with key points and references" if n_methods
                                           else "Practical topics with key points and references"),
                        science_line=escape(f"{n_science} clinical lesson{'s' if n_science != 1 else ''} so far: one new concept every Saturday" if n_science
@@ -2167,6 +2179,46 @@ def site_accent(cfg, kind):
         return SITE_V4[kind]
     return {"grant": cfg.get("grant_accent", "#FFB547"), "positions": cfg.get("positions_accent", "#A78BFA"),
             "methods": "#6EC1FF", "science": "#6EC1FF"}[kind]
+
+
+SECTIONS = [("methods", "methodology.html", "Design, Reporting &amp; Appraisal"),
+            ("science", "science.html", "Latest Science"),
+            ("grant", "calls.html", "Funding calls"),
+            ("positions", "positions.html", "Academic positions")]
+
+
+def on_color(hexa):
+    """Nero o bianco, quello che si legge meglio sul colore dato."""
+    r, g, b = (int(hexa.lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    return "#0A0A0A" if lum > 0.55 else "#FFFFFF"
+
+
+def section_pills(cfg, current=None):
+    """Le quattro rubriche come pillole nei loro colori (come nell'immagine di anteprima del sito)."""
+    out = []
+    for kind, href, label in SECTIONS:
+        col = site_accent(cfg, kind)
+        here = ' aria-current="page"' if kind == current else ""
+        out.append(f'<a href="{href}" style="background:{col};color:{on_color(col)}"{here}>{label.upper()}</a>')
+    return "".join(out)
+
+
+LOCKUP_SRC = {"methods": "lockup-methods.png", "science": "lockup-science.png",
+              "grant": "lockup-calls.png", "positions": "lockup-positions.png"}
+
+
+def page_lockup(cfg, kind):
+    """Logo in cima a una pagina di sezione, nel colore della rubrica (bandi giallo, posizioni violetto,
+    metodologia azzurro, Latest Science bianco), collegato alla home."""
+    from html import escape as esc
+    if not cfg.get("site_v4"):
+        return ""
+    brand = esc(cfg["brand_name"], quote=True)
+    return (f'<a class="crc-top" href="index.html" aria-label="{brand}, home">'
+            f'<img src="{LOCKUP_SRC[kind]}" alt="{brand}" width="857" height="200"></a>'
+            '<style>.crc-top { display: block; width: max-content; max-width: 100%; margin: 0 0 18px; }'
+            ' .crc-top img { height: 44px; width: auto; max-width: 100%; display: block; }</style>')
 
 
 def site_colors(cfg):

@@ -127,6 +127,7 @@ PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
+  {lockup}
   <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><br>
   <span class="badge">DESIGN, REPORTING &amp; APPRAISAL</span>
   <h1>Clinical research methodology, made practical</h1>
@@ -252,5 +253,6 @@ def build_page(data, cfg, today=None):
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=grants.site_accent(cfg, "methods") if cfg.get("site_v4") else c["accent"], cat_opts=cat_opts,
                        n=len(data), topics_word="topic" if len(data) == 1 else "topics", tools=tools_block(cfg), sections="\n".join(sections), updated=grants._fmt_date(today),
+                       lockup=grants.page_lockup(cfg, "methods"),
                        og=grants.og_tags(cfg, f"Methodology library · {cfg['brand_name']}",
                                          "Practical clinical research methodology: study design, statistics, reporting guidelines and critical appraisal, with references.", "methodology"))

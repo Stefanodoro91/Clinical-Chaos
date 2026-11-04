@@ -766,6 +766,7 @@ PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
+  {lockup}
   <a class="switch" href="index.html">&larr; Home</a> &nbsp; <a class="switch" href="calls.html">Research funding calls &rarr;</a><br>
   <span class="badge">ACADEMIC POSITIONS</span>
   <h1>Positions in clinical research, engineering and rehabilitation</h1>
@@ -858,7 +859,7 @@ def build_page(archive, posted, cfg, today=None):
             "clinical engineering and health research worldwide, checked against the original advertisement. Updated daily.")
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
-                       accent=grants.site_accent(cfg, "positions"), nav="".join(nav),
+                       accent=grants.site_accent(cfg, "positions"), nav="".join(nav), lockup=grants.page_lockup(cfg, "positions"),
                        sections="\n".join(sections), updated=_fmt(today), filters=filters_form(len(entries)), description=escape(desc, quote=True),
                        og=grants.og_tags(cfg, f"Academic positions in clinical research, engineering and rehabilitation · {cfg['brand_name']}",
                                          desc, "positions"))
