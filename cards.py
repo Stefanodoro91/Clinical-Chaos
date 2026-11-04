@@ -31,7 +31,7 @@ def _brand_v4_flag():
 BRAND_V4 = _brand_v4_flag()   # logo definitivo (indipendente dalla linea) ed etichette delle rubriche (config «brand_v4»)
 # colori delle linee nel brand v4 e nome della rubrica in copertina (quadrante del simbolo: 0 alto-sx, 1 alto-dx,
 # 2 basso-sx, 3 basso-dx)
-V4_ACCENT = {"methods": "#6EC1E4", "science": "#8FD694", "grant": "#FFB74D", "positions": "#B9A2F0"}   # palette «Corallo & Mare» + arancio D
+V4_ACCENT = {"methods": "#88B0F8", "science": "#FFFFFF", "grant": "#F8B048", "positions": "#8858F0"}   # colori del logo v3 per rubrica (Latest Science bianco)
 V4_RUBRIC = {"methods": ("DESIGN, REPORTING & APPRAISAL", 0), "science": ("LATEST SCIENCE", 3),
              "grant": ("FUNDING CALLS", 1), "positions": ("ACADEMIC POSITIONS", 2)}
 
@@ -230,8 +230,6 @@ def logo_v3(name, height):
     """Logo v3 nel colore del tipo: «-light» = su fondo scuro (scritta bianca), altrimenti su fondo chiaro."""
     import logo
     light = name.endswith("-light")
-    if BRAND_V4:                           # logo definitivo: uguale per tutte le linee
-        return (logo.symbol4 if "symbol" in name else logo.wordmark4)(light, int(height))
     acc = LOGO_ACCENT or "#3DD9C1"
     if not light:                          # su fondo chiaro: stesso colore, più scuro e leggibile
         import colorsys
@@ -767,8 +765,7 @@ def main_pill(d, post, default, x, y, fill, text):
     if BRAND_V4:
         line = post_line(post)
         if line in V4_RUBRIC:
-            label, q = V4_RUBRIC[line]
-            return poster_pill(d, label, x, y, fill, text, quadrant=q)
+            return poster_pill(d, V4_RUBRIC[line][0], x, y, fill, text)
     return poster_pill(d, default, x, y, fill, text)
 
 
@@ -1610,7 +1607,8 @@ def style_cfg(post, cfg):
         line = post_line(post)
         if line in ("methods", "science"):
             cfg = {**cfg, "colors": {**cfg["colors"], "accent": V4_ACCENT[line] if BRAND_V4 else azure_for(post)},
-                   "cover_theme": "light" if line == "science" else "dark", "_science": line == "science"}
+                   "cover_theme": "light" if (line == "science" and not BRAND_V4) else "dark",
+                   "_science": line == "science" and not BRAND_V4}   # v4: Latest Science su fondo scuro, accento bianco
         else:
             cfg = {**cfg, "cover_theme": "dark", "_science": False}
     set_mono(cfg)                         # da qui l'accento del tipo resta in HL (evidenziazioni, cubetti)
