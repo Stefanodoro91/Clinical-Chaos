@@ -1565,20 +1565,30 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
 (function () {{
   var svg = document.querySelector(".crc-sym"), box = document.querySelector(".crc-logo");
   if (!svg || !box || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  var RING = {ring}, PER = RING[0].length;
+  var RING = {ring}, PER = RING[0].length, ROWS = RING.length;
   function rgb(h) {{ return [parseInt(h.substr(1, 2), 16), parseInt(h.substr(3, 2), 16), parseInt(h.substr(5, 2), 16)]; }}
-  function at(row, f) {{                                   /* posizione sull'orbita, a indice frazionario */
-    var a = RING[row], i = Math.floor(f), t = f - i;
-    i = ((i % PER) + PER) % PER;
-    var p = a[i], q = a[(i + 1) % PER];
-    return [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t];
+  function spline(a, f) {{                                 /* Catmull-Rom: il percorso non fa spigoli */
+    var i = Math.floor(f), t = f - i, k = function (d) {{ return a[((((i + d) % PER) + PER) % PER)]; }};
+    var p0 = k(-1), p1 = k(0), p2 = k(1), p3 = k(2), t2 = t * t, t3 = t2 * t, out = [0, 0];
+    for (var c = 0; c < 2; c++) {{
+      out[c] = 0.5 * (2 * p1[c] + (-p0[c] + p2[c]) * t + (2 * p0[c] - 5 * p1[c] + 4 * p2[c] - p3[c]) * t2 +
+                      (-p0[c] + 3 * p1[c] - 3 * p2[c] + p3[c]) * t3);
+    }}
+    return out;
+  }}
+  function at(rowF, f) {{                                  /* morbido anche fra un giro e l'altro */
+    var r0 = Math.max(0, Math.min(ROWS - 1, Math.floor(rowF))), r1 = Math.min(ROWS - 1, r0 + 1), rt = rowF - r0;
+    var p = spline(RING[r0], f), q = spline(RING[r1], f);
+    return [p[0] + (q[0] - p[0]) * rt, p[1] + (q[1] - p[1]) * rt];
   }}
   var frags = [].map.call(svg.querySelectorAll("g"), function (g, i) {{
-    var p = g.firstChild, row = +g.dataset.row;
+    var p = g.firstChild, row = +g.dataset.row, w = +p.getAttribute("width"), h = +p.getAttribute("height");
+    var j = ((i * 2654435761) % 1000) / 1000;             /* un numero suo, stabile: niente moto all'unisono */
     return {{ g: g, p: p, x: +g.dataset.x, y: +g.dataset.y, row: row, i0: +g.dataset.i,
              bx: +g.dataset.cx, by: +g.dataset.cy, a: rgb(p.getAttribute("fill")), b: rgb(g.dataset.c1),
-             spd: 30 + 9 * row,                           /* in posizione girano veloci, i giri interni di più */
-             lag: 0.72 + 0.28 * ((i * 37) % 11) / 10, shown: -1 }};   /* ognuno parte con un filo di ritardo */
+             spd: 26 + 10 * row + 9 * j,                  /* ognuno la sua andatura: la corsa non è meccanica */
+             w1: 0.7 + 1.9 * j, w2: 0.31 + 0.5 * j, ph1: 6.3 * j, ph2: 4.1 * j + row,
+             rmax: Math.min(w, h) * 0.5, lag: 0.72 + 0.28 * j, shown: -1, dim: -1 }};
   }});
   var near = 0, target = 0, phase = 0, last = performance.now(), running = false;
   function wake() {{ if (!running) {{ running = true; last = performance.now(); requestAnimationFrame(step); }} }}
@@ -1590,26 +1600,33 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
     for (var i = 0; i < frags.length; i++) {{
       var f = frags[i], e = Math.max(0, Math.min(1, (near - (1 - f.lag) * 0.45) / f.lag));
       e = e * e * (3 - 2 * e);                              /* partenza e arrivo morbidi */
-      var pos = at(f.row, f.i0 + phase * f.spd), u = 1 - e;
+      var idx = f.i0 + phase * f.spd + 2.4 * Math.sin(phase * f.w1 + f.ph1);   /* avanza a ondate, non a passo fisso */
+      var rowF = f.row + 0.75 * Math.sin(phase * f.w2 + f.ph2);                /* e intanto va e viene fra i giri */
+      var pos = at(rowF, idx), u = 1 - e;
       var px = u * u * f.x + 2 * u * e * f.bx + e * e * pos[0];    /* curva quadratica: la linea di campo */
       var py = u * u * f.y + 2 * u * e * f.by + e * e * pos[1];
-      var nx = at(f.row, f.i0 + phase * f.spd + 0.6);              /* tangente: il frammento si stira nel verso del moto */
+      var nx = at(rowF, idx + 0.5);                                /* tangente: il frammento si stira nel verso del moto */
       var ang = Math.atan2(nx[1] - pos[1], nx[0] - pos[0]) * 180 / Math.PI;
-      var s = 1 - 0.3 * e, sx = s * (1 + 1.7 * e), sy = s * (1 - 0.3 * e);   /* più corsa, più scia */
+      var dep = Math.max(-1, Math.min(1, (pos[1] - 100) / 52));    /* 3D: sotto è il davanti, sopra il dietro */
+      var s = (1 - 0.34 * e) * (1 + 0.3 * dep * e), sx = s * (1 + 1.5 * e), sy = s * (1 - 0.28 * e);
       f.g.setAttribute("transform", "translate(" + (px - f.x).toFixed(2) + " " + (py - f.y).toFixed(2) + ") " +
                        "translate(" + f.x + " " + f.y + ") rotate(" + ang.toFixed(1) + ") scale(" + sx.toFixed(3) + " " +
                        sy.toFixed(3) + ") rotate(" + (-ang).toFixed(1) + ") translate(" + (-f.x) + " " + (-f.y) + ")");
-      var q = Math.round(e * 10);                           /* il colore cambia a scatti impercettibili: meno lavoro */
+      var q = Math.round(e * 10);                           /* colore e raggio a scatti impercettibili: meno lavoro */
       if (q !== f.shown) {{
         f.shown = q;
         var k = q / 10;
         f.p.setAttribute("fill", "rgb(" + Math.round(f.a[0] + (f.b[0] - f.a[0]) * k) + "," +
                          Math.round(f.a[1] + (f.b[1] - f.a[1]) * k) + "," +
                          Math.round(f.a[2] + (f.b[2] - f.a[2]) * k) + ")");
+        f.p.setAttribute("rx", (f.rmax * k).toFixed(2));    /* da spigoli vivi a capsule: code senza angoli */
       }}
+      var d2 = Math.round((0.6 + 0.4 * (dep + 1) / 2) * e * 12);   /* dietro più velato, davanti pieno */
+      if (d2 !== f.dim) {{ f.dim = d2; f.g.setAttribute("opacity", (1 - e + d2 / 12).toFixed(2)); }}
     }}
     if (still) {{
-      frags.forEach(function (f) {{ f.g.removeAttribute("transform"); }}); running = false; return;
+      frags.forEach(function (f) {{ f.g.removeAttribute("transform"); f.g.removeAttribute("opacity"); }});
+      running = false; return;
     }}
     requestAnimationFrame(step);
   }}
@@ -1620,37 +1637,60 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
 </script>"""
 
 
+def _in_poly(x, y, pts):
+    inside, j = False, len(pts) - 1
+    for i, (xi, yi) in enumerate(pts):
+        xj, yj = pts[j]
+        if (yi > y) != (yj > y) and x < (xj - xi) * (y - yi) / (yj - yi) + xi:
+            inside = not inside
+        j = i
+    return inside
+
+
 def _fragments():
-    """I cubetti del simbolo, spezzati in pezzi irregolari: i tagli cadono a caso (ma sempre negli stessi
-    punti, il seme è l'indice del cubetto) e i pezzi combaciano con un filo di sovrapposizione, così a riposo
-    il simbolo è identico al logo di sempre e si sfalda solo quando parte il flusso."""
+    """Il simbolo spezzato in tanti pezzi rettangolari irregolari: i tagli cadono a caso (seme fisso, così
+    l'HTML non cambia a ogni build) e i pezzi si sovrappongono di un filo, perché a riposo non si veda
+    nessuna cucitura fra l'uno e l'altro: il simbolo fermo resta il logo di sempre. Anche i cubetti a elle
+    vengono decomposti, così ogni pezzo è un rettangolo e può arrotondarsi mentre scorre."""
     import logo as logo_v3
     out, seed = [], 7
+
     def rnd(lo, hi):                                # generatore ripetibile: stesso HTML a ogni build
         nonlocal seed
         seed = (seed * 1103515245 + 12345) % 2147483648
         return lo + (hi - lo) * (seed / 2147483648)
 
+    def cuts(a, b, n):                              # n tagli scentrati a caso fra a e b
+        return [a] + [a + (b - a) * ((k + 1) / (n + 1) + rnd(-0.12, 0.12)) for k in range(n)] + [b]
+
+    import math
+    o = 0.35                                        # sovrapposizione fra pezzi vicini: niente righine
     for role, pts in logo_v3.SYMBOL:
-        xs, ys = [p[0] for p in pts], [p[1] for p in pts]
-        x0, y0 = min(xs), min(ys)
-        w, h = max(xs) - x0, max(ys) - y0
-        square = len(pts) == 4 and abs(w - h) < 0.6 * max(w, h)
-        o = 0.2                                     # sovrapposizione: niente righine fra i pezzi a riposo
-        rect = lambda a, b, c, d: (role, [(a - o, b - o), (c + o, b - o), (c + o, d + o), (a - o, d + o)])
-        if square and w >= 12:                      # cubetto grande: quattro pezzi, tagli scentrati
-            cx, cy = x0 + w * rnd(0.34, 0.66), y0 + h * rnd(0.34, 0.66)
-            out += [rect(x0, y0, cx, cy), rect(cx, y0, x0 + w, cy),
-                    rect(x0, cy, cx, y0 + h), rect(cx, cy, x0 + w, y0 + h)]
-        elif square and w >= 8.5:                   # cubetto medio: due pezzi, taglio in un verso o nell'altro
-            if rnd(0, 1) < 0.5:
-                c = x0 + w * rnd(0.35, 0.65)
-                out += [rect(x0, y0, c, y0 + h), rect(c, y0, x0 + w, y0 + h)]
-            else:
-                c = y0 + h * rnd(0.35, 0.65)
-                out += [rect(x0, y0, x0 + w, c), rect(x0, c, x0 + w, y0 + h)]
-        else:
-            out.append((role, list(pts)))
+        if any(abs(a[0] - b[0]) > 0.01 and abs(a[1] - b[1]) > 0.01
+               for a, b in zip(pts, pts[1:] + pts[:1])):   # cubetto inclinato: resta storto com'è nel logo,
+            cx = sum(p[0] for p in pts) / len(pts)         # raddrizzarlo darebbe al simbolo un'aria a reticolo
+            cy = sum(p[1] for p in pts) / len(pts)
+            dx, dy = pts[1][0] - pts[0][0], pts[1][1] - pts[0][1]
+            side = math.hypot(dx, dy)
+            out.append((role, cx - side / 2, cy - side / 2, side, side, math.degrees(math.atan2(dy, dx))))
+            continue
+        xs, ys = sorted({p[0] for p in pts}), sorted({p[1] for p in pts})
+        if len(xs) == 2 and len(ys) == 2:           # cubetto pieno: lo spezzo secondo quanto è grande
+            w = xs[1] - xs[0]
+            nx, ny = ((2, 1) if rnd(0, 1) < 0.5 else (1, 2)) if w >= 15 else ((1, 0) if rnd(0, 1) < 0.5 else (0, 1)) if w >= 8.5 else (0, 0)
+            gx, gy = cuts(xs[0], xs[1], nx), cuts(ys[0], ys[1], ny)
+        else:                                       # cubetto a elle o a croce: lo divido dove si piega
+            gx, gy = xs, ys
+        inside = {(i, j): _in_poly((gx[i] + gx[i + 1]) / 2, (gy[j] + gy[j + 1]) / 2, pts)
+                  for i in range(len(gx) - 1) for j in range(len(gy) - 1)}
+        for (i, j), yes in inside.items():
+            if not yes:
+                continue                            # il pezzo si allarga solo verso un altro pezzo, mai verso
+            a = o if inside.get((i - 1, j)) else 0   # fuori: così il bordo del cubetto resta quello di sempre
+            b = o if inside.get((i, j - 1)) else 0
+            c = o if inside.get((i + 1, j)) else 0
+            d = o if inside.get((i, j + 1)) else 0
+            out.append((role, gx[i] - a, gy[j] - b, gx[i + 1] - gx[i] + a + c, gy[j + 1] - gy[j] + b + d, 0.0))
     return out
 
 
@@ -1669,15 +1709,15 @@ def header_logo(cfg, accent=None, ink="#FFFFFF"):
     deep = logo_v3.deep_of(acc)
     cols = {"ink": ink, "teal": acc, "deep": deep}
     frags = _fragments()
-    centres = [(sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)) for _, pts in frags]
-    per, rows = 72, 3                                   # l'orbita: 3 giri concentrici da 72 posizioni
+    centres = [(x + w / 2, y + h / 2) for _, x, y, w, h, _r in frags]
+    per, rows = 96, 4                                   # l'orbita: 4 giri concentrici da 96 posizioni
     ring = logo_v3.ring_rows(per, rows)
     ang = lambda p: math.atan2(p[1] - 100, p[0] - 100)
     order = sorted(range(len(frags)), key=lambda i: ang(centres[i]))      # per angolo: i frammenti non si incrociano
     step = per / max(1, -(-len(frags) // rows))
     cubes = [""] * len(frags)
     for slot, i in enumerate(order):
-        (role, pts), (cx, cy) = frags[i], centres[i]
+        (role, x, y, w, h, rot), (cx, cy) = frags[i], centres[i]
         row, idx = slot % rows, (slot // rows) * step
         tx, ty = ring[row][int(idx) % per]
         bend = 0.55 * math.hypot(tx - cx, ty - cy) * math.cos(ang((tx, ty)))   # linea di campo: piega al contrario sui due lati
@@ -1686,8 +1726,9 @@ def header_logo(cfg, accent=None, ink="#FFFFFF"):
         nrm = math.hypot(nx, ny) or 1
         cubes[i] = (f'<g data-x="{cx:.1f}" data-y="{cy:.1f}" data-row="{row}" data-i="{idx:.2f}" '
                     f'data-cx="{mx + nx / nrm * bend:.1f}" data-cy="{my + ny / nrm * bend:.1f}" '
-                    f'data-c1="{deep if row == rows - 1 else acc}">'      # la «o» resta verde: giro interno più scuro
-                    f'<polygon points="{" ".join(f"{x:g},{y:g}" for x, y in pts)}" fill="{cols[role]}"/></g>')
+                    f'data-c1="{deep if row >= rows - 2 else acc}">'      # la «o» resta verde: giri interni più scuri
+                    f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" rx="0" fill="{cols[role]}"'
+                    + (f' transform="rotate({rot:.1f} {cx:.2f} {cy:.2f})"' if rot else "") + "/></g>")
     ring_js = json.dumps([[[round(x, 1), round(y, 1)] for x, y in r] for r in ring], separators=(",", ":"))
     return HEADER_LOGO.format(brand=brand, cubes="".join(cubes), defs="", glow="", ring=ring_js,
                               word="logo-wordmark-dark.png")
