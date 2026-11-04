@@ -129,11 +129,12 @@ def wordmark(accent, ink=INK_LIGHT, height=160, label=None):
     return img.resize((round(img.width / k), height), Image.LANCZOS)
 
 
-def ring_points(n, rows=3, center=(100.0, 100.0), scale=0.95):
-    """n punti distribuiti sull'anello della «o», su `rows` giri concentrici, nel sistema del simbolo
-    (viewBox 26 26 148 148). Servono al sito come bersagli dei frammenti del simbolo al passaggio del mouse."""
+def ring_rows(per=60, rows=3, center=(100.0, 100.0), scale=0.95, roundness=0.55, oval=0.36):
+    """`rows` giri concentrici dell'anello della «o», ognuno campionato in `per` punti ordinati lungo il
+    percorso, nel sistema del simbolo (viewBox 26 26 148 148). Il sito li usa come orbita dei frammenti.
+    `roundness` tira il percorso verso il cerchio (0 = la «o» tale e quale, 1 = cerchio): smussa gli angoli
+    del sasso, che in movimento si leggerebbero come spigoli."""
     a = math.radians(-20)
-    per = -(-n // rows)
 
     def resample(pts, m):
         acc = [0.0]
@@ -150,15 +151,40 @@ def ring_points(n, rows=3, center=(100.0, 100.0), scale=0.95):
         return out
 
     outer, inner = resample(_quad(PEBBLE_OUT, 20), per), resample(_quad(PEBBLE_IN, 20), per)
-    pts = []
+    out = []
     for r in range(rows):
         f = (r + 1) / (rows + 1)                      # dal bordo esterno a quello interno
+        row = []
         for k in range(per):
             x = outer[k][0] + (inner[k][0] - outer[k][0]) * f
             y = outer[k][1] + (inner[k][1] - outer[k][1]) * f
-            pts.append(((x * math.cos(a) - y * math.sin(a)) * scale + center[0],
+            row.append(((x * math.cos(a) - y * math.sin(a)) * scale + center[0],
                         (x * math.sin(a) + y * math.cos(a)) * scale + center[1]))
-    return pts[:n]
+        if roundness:                              # verso il cerchio: stesso raggio medio, angoli smussati
+            cx = sum(p[0] for p in row) / len(row)
+            cy = sum(p[1] for p in row) / len(row)
+            rad = sum(math.hypot(p[0] - cx, p[1] - cy) for p in row) / len(row)
+            soft = []
+            for x, y in row:
+                d = math.hypot(x - cx, y - cy) or 1
+                soft.append((x + (cx + (x - cx) / d * rad - x) * roundness,
+                             y + (cy + (y - cy) / d * rad - y) * roundness))
+            row = soft
+        out.append(row)
+    if oval:                                      # stira lungo la diagonale del sasso (la sua inclinazione di
+        cx, cy = center                           # -20°) e stringe di traverso: in corsa la «o» diventa ovale
+        co, si, kx, ky = math.cos(a), math.sin(a), 1 + oval, 1 - 0.42 * oval
+        before = max(math.hypot(p[0] - cx, p[1] - cy) for r in out for p in r)
+        for r in range(len(out)):
+            new = []
+            for x, y in out[r]:
+                u, v = (x - cx) * co + (y - cy) * si, -(x - cx) * si + (y - cy) * co
+                u, v = u * kx, v * ky
+                new.append((cx + u * co - v * si, cy + u * si + v * co))
+            out[r] = new
+        k = before / max(math.hypot(p[0] - cx, p[1] - cy) for r in out for p in r)   # stesso ingombro di prima
+        out = [[(cx + (x - cx) * k, cy + (y - cy) * k) for x, y in r] for r in out]
+    return out
 
 
 def lockup(accent, ink=INK_LIGHT, height=170):
