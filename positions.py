@@ -52,7 +52,12 @@ RX_REHAB = re.compile(
     r"ageing|aging|gerontolog|geriatri|psycholog|psicolog|dementia|demenz|alzheimer|"
     r"health data|data science.{0,20}health|medical (ai|artificial intelligence)|ai in (medicine|health)|clinical ai|"
     r"research nurse|infermier\w* di ricerca|data manager|study coordinator|trial (coordinator|manager)|"
-    r"clinical research (coordinator|associate)|collaborator\w* professional\w* di ricerca", re.I)
+    r"clinical research (coordinator|associate)|collaborator\w* professional\w* di ricerca|"
+    # Asia e America Latina: termini in spagnolo, portoghese, cinese, giapponese, coreano
+    r"investigaci[oó]n cl[ií]nica|ensayos? cl[ií]nicos?|pesquisa cl[ií]nica|ensaios? cl[ií]nicos?|epidemiolog[ií]a|"
+    r"kinesiolog|terapia ocupacional|fonoaudiolog|ci[eê]ncias? da sa[uú]de|ciencias de la salud|medicina|enfermer|"
+    r"oncolog[ií]a|geriatr[ií]a|psicolog[ií]a|ingenier[ií]a biom[eé]dica|engenharia biom[eé]dica|"
+    r"康复|临床|医学|护理|生物医学工程|リハビリ|臨床|医学|看護|재활|임상|의학|간호", re.I)
 # per la pertinenza «media»: termini riabilitativi clinici; «rehabilitation» da solo non basta
 # (esclude riabilitazione di detenuti, animali, edifici)
 RX_CLINICAL_REHAB = re.compile(
@@ -72,7 +77,11 @@ RX_POSITION = re.compile(
     r"ricercatore sanitario|ricerca sanitaria|contratt\w* di ricerca|incaric\w* (post-?doc|di ricerca)|"
     r"ricercat\w* \w* ?tenure|ricercat\w*.{0,40}\b(iii|terzo) livello|"
     r"research nurse|infermier\w* di ricerca|data manager|study coordinator|trial (coordinator|manager)|"
-    r"clinical research (coordinator|associate)|collaborator\w* professional\w* di ricerca", re.I)
+    r"clinical research (coordinator|associate)|collaborator\w* professional\w* di ricerca|"
+    r"pos-?doc|p[oó]s-?doutor|posdoctora|doctorado|doutorado|becas? (doctoral|posdoctoral|de investigaci)|"
+    r"bolsas? (de )?(p[oó]s|pesquisa|doutorado|PD|DR)|profesor|docente|investigador|pesquisador|"
+    r"concurso (docente|acad[eé]mico|p[uú]blico)|博士后|教授|研究员|讲师|博士研究生|ポスドク|教員|研究員|助教|准教授|"
+    r"교수|박사후|연구원|faculty recruitment|recruitment of faculty", re.I)
 RX_MEDIUM_TITLE = re.compile(
     r"clinical|patient|trial|epidemiolog|public health|population health|global health|rehabilit|physiother|"
     r"occupational therap|speech|medic(al|ine)|health sciences|nursing|psychiatr|orthopa|anaesthes|anesthes|gastro|"
