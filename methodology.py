@@ -247,7 +247,7 @@ def build_page(data, cfg, today=None):
     c = grants.site_palette(cfg)
     cat_opts = "".join(f'<option value="{_slug(k)}">{escape(k)}</option>' for k in sorted(cats))
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
-                       bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"], cat_opts=cat_opts,
+                       bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=grants.site_accent(cfg, "methods") if cfg.get("site_v4") else c["accent"], cat_opts=cat_opts,
                        n=len(data), topics_word="topic" if len(data) == 1 else "topics", tools=tools_block(cfg), sections="\n".join(sections), updated=grants._fmt_date(today),
                        og=grants.og_tags(cfg, f"Methodology library · {cfg['brand_name']}",
                                          "Practical clinical research methodology: key points and references.", "methodology"))
