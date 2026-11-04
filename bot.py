@@ -256,11 +256,16 @@ def drop_repeats(queue, posted, threshold=0.72):
     return [q for i, q in enumerate(kept) if i not in drop]
 
 
+METHOD_ONLY_CATEGORIES = {"Study design", "Reporting & publication", "Critical appraisal"}  # pura metodologia:
+                                        # esclusa dalla scelta del sabato (Latest Science vuole un angolo clinico)
+
+
 def pick_next(queue, posted, prefer_doi=False):
     """Il prossimo post della coda: mai una fonte già usata negli ultimi 7 giorni (al massimo un post per
     fonte a settimana) né quella dell'ultimo post, quando la coda lo permette. Con prefer_doi (rubrica
-    Clinical Insights del sabato) sceglie possibilmente un post con articolo citabile (DOI nelle reference),
-    così la slide «Based on» ha la fonte."""
+    Clinical Insights del sabato) sceglie possibilmente un post con articolo citabile (DOI nelle reference) e,
+    tra questi, preferisce chi non è di pura metodologia (design, reporting, appraisal): Latest Science punta
+    a un concetto clinico, non a una lezione di metodo. Così la slide «Based on» ha comunque la fonte."""
     week_ago = datetime.now(timezone.utc) - timedelta(days=7)
     recent = {p.get("source") for p in posted
               if (p.get("kind") or "research") == "research" and p.get("time")
@@ -276,7 +281,8 @@ def pick_next(queue, posted, prefer_doi=False):
         if prefer_doi:
             with_doi = [i for i in pool if any("doi" in str(r).lower() for r in i.get("references") or [])]
             if with_doi:
-                return with_doi[0]
+                clinical = [i for i in with_doi if i.get("category") not in METHOD_ONLY_CATEGORIES]
+                return (clinical or with_doi)[0]
         return pool[0]
     return queue[0]
 
@@ -978,6 +984,9 @@ def main():
                        "message). Controlla il log del run: i motivi sono elencati per ogni post.")
                 print("::warning title=Nessun post di metodologia::nessun post ha passato la revisione incrociata")
                 return
+            if post.get("rubric") == "Clinical Insights":
+                post["category"] = content.CLINICAL_CATEGORY   # «Latest Science»: mai design/reporting/appraisal
+                content.clinical_takeaway(post)        # takeaway in chiave clinica/paziente, non di metodo
     if kind == "research" and CONFIG.get("areas_posting") and not post.get("area"):
         area = rubrics.area_of(post)
         if area:
@@ -1268,7 +1277,7 @@ def write_sitemap():
     old = sm.read_text(encoding="utf-8") if sm.exists() else ""
     prev = dict(_re.findall(r"<loc>([^<]+)</loc><lastmod>([^<]+)</lastmod>", old))
     changed = _changed_docs()
-    files = (["docs/index.html"] + [f"docs/{p}.html" for p in ("calls", "positions", "methodology", "feedback", "rss")]
+    files = (["docs/index.html"] + [f"docs/{p}.html" for p in ("calls", "positions", "methodology", "science", "feedback", "rss")]
              + sorted(f.relative_to(ROOT).as_posix() for f in JOBS_DIR.glob("*.html"))
              + sorted(f.relative_to(ROOT).as_posix() for f in CALLS_DIR.glob("*.html")))
     urls = []
@@ -1338,11 +1347,15 @@ def write_home():
     import methodology
     methods = methodology.load()
     (ROOT / "docs" / "methodology.html").write_text(grants.add_decor(methodology.build_page(methods, CONFIG)), encoding="utf-8")
+    import science
+    (ROOT / "docs" / "science.html").write_text(grants.add_decor(science.build_page(methods, CONFIG)), encoding="utf-8")
     import feedback
     (ROOT / "docs" / "feedback.html").write_text(grants.add_decor(feedback.build_page(CONFIG)), encoding="utf-8")
     (ROOT / "docs" / "rss.html").write_text(grants.add_decor(feedback.build_feeds_page(CONFIG)), encoding="utf-8")
     HOME_FILE.write_text(grants.add_decor(grants.build_home(n_calls, int(m.group(1)) if m else 0, n_positions, CONFIG,
-                                                            n_methods=sum(1 for e in methods.values() if not e.get("duplicate_of")))),
+                                                            n_methods=sum(1 for e in methods.values() if not e.get("duplicate_of")
+                                                                         and e.get("category") != content.CLINICAL_CATEGORY),
+                                                            n_science=len(science.entries(methods)))),
                          encoding="utf-8")
     write_sitemap()
     return HOME_FILE.relative_to(ROOT).as_posix()

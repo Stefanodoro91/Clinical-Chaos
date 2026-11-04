@@ -8,6 +8,7 @@ from pathlib import Path
 
 from PIL import Image
 
+import content
 import grants
 
 ROOT = Path(__file__).resolve().parent
@@ -126,7 +127,7 @@ PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
-  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><br>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><br>
   <span class="badge">DESIGN, REPORTING &amp; APPRAISAL</span>
   <h1>Clinical research methodology, made practical</h1>
   <p class="intro">Every methodology carousel we have published: swipe through the slides here, no Instagram account needed.
@@ -202,7 +203,9 @@ def build_page(data, cfg, today=None):
     today = today or date.today()
     THUMBS.mkdir(parents=True, exist_ok=True)
     cats = {}
-    data = {k: e for k, e in data.items() if not e.get("duplicate_of")}      # post ripetuti: una sola voce
+    data = {k: e for k, e in data.items()
+            if not e.get("duplicate_of") and e.get("category") != content.CLINICAL_CATEGORY}  # post ripetuti e
+                                              # «Latest Science» fuori: hanno la loro pagina (science.py)
     for e in sorted(data.values(), key=lambda e: e.get("date", ""), reverse=True):
         cats.setdefault(e.get("category") or "Research methods", []).append(e)
     sections = []

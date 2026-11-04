@@ -1554,10 +1554,10 @@ HOME = """<!doctype html>
     <span class="name">Design, Reporting &amp; Appraisal <span aria-hidden="true">&rarr;</span></span>
     <span class="count">{method_line}</span>
   </a>
-  <a class="big science" href="methodology.html">
+  <a class="big science" href="science.html">
     <span class="label">Every Saturday</span>
     <span class="name">Latest Science <span aria-hidden="true">&rarr;</span></span>
-    <span class="count">One new clinical paper, one lesson for practice: in the library</span>
+    <span class="count">{science_line}</span>
   </a>
   <div class="social">
 {social}
@@ -1665,7 +1665,7 @@ def social_links(cfg):
     return "\n".join(f'    <a href="{url}" rel="me">{icon(name)}<span>{label}</span></a>' for name, label, url in links)
 
 
-def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
+def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0, n_science=0):
     from html import escape
     today = today or date.today()
     c = site_palette(cfg)
@@ -1678,6 +1678,8 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
                        logo_block=header_logo(cfg),
                        method_line=escape(f"{n_methods} carousel{'s' if n_methods != 1 else ''} to swipe, with key points and references" if n_methods
                                           else "Practical topics with key points and references"),
+                       science_line=escape(f"{n_science} clinical lesson{'s' if n_science != 1 else ''} so far: one new concept every Saturday" if n_science
+                                           else "One new clinical paper, one lesson for practice: starting this Saturday"),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
                                   "engineering and rehabilitation, checked on the official texts.", "") + org_jsonld(cfg))
 
