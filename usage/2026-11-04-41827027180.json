@@ -1,0 +1,44 @@
+{
+ "workflow": "Aggiorna posizioni accademiche",
+ "quota_day": "2026-11-04",
+ "consumo": {
+  "verifica posizioni|gemini-flash-latest": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 2
+  },
+  "verifica posizioni|gemini-3.6-flash": {
+   "richieste": 1,
+   "ingresso": 2794,
+   "uscita": 313,
+   "ragionamento": 1201,
+   "respinte": 1,
+   "versione": "gemini-3.6-flash"
+  },
+  "verifica posizioni|gemini-3.5-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 1
+  },
+  "verifica posizioni|gemini-flash-lite-latest": {
+   "richieste": 23,
+   "ingresso": 63003,
+   "uscita": 485926,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "verifica posizioni|gemini-3.1-flash-lite": {
+   "richieste": 7,
+   "ingresso": 18572,
+   "uscita": 1463,
+   "ragionamento": 0,
+   "respinte": 1,
+   "versione": "gemini-3.1-flash-lite"
+  }
+ }
+}
