@@ -1586,8 +1586,9 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
     var j = ((i * 2654435761) % 1000) / 1000;             /* un numero suo, stabile: niente moto all'unisono */
     return {{ g: g, p: p, x: +g.dataset.x, y: +g.dataset.y, row: row, i0: +g.dataset.i,
              bx: +g.dataset.cx, by: +g.dataset.cy, a: rgb(p.getAttribute("fill")), b: rgb(g.dataset.c1),
-             spd: 26 + 10 * row + 9 * j,                  /* ognuno la sua andatura: la corsa non è meccanica */
-             w1: 0.7 + 1.9 * j, w2: 0.31 + 0.5 * j, ph1: 6.3 * j, ph2: 4.1 * j + row,
+             spd: 44 + 15 * row + 16 * j,                 /* ognuno la sua andatura: la corsa non è meccanica */
+             w1: 0.9 + 2.6 * j, w2: 0.37 + 0.7 * j, w3: 1.7 + 3.1 * j,
+             ph1: 6.3 * j, ph2: 4.1 * j + row, ph3: 2.2 * j + row,
              rmax: Math.min(w, h) * 0.5, lag: 0.72 + 0.28 * j, shown: -1, dim: -1 }};
   }});
   var near = 0, target = 0, phase = 0, last = performance.now(), running = false;
@@ -1600,15 +1601,17 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
     for (var i = 0; i < frags.length; i++) {{
       var f = frags[i], e = Math.max(0, Math.min(1, (near - (1 - f.lag) * 0.45) / f.lag));
       e = e * e * (3 - 2 * e);                              /* partenza e arrivo morbidi */
-      var idx = f.i0 + phase * f.spd + 2.4 * Math.sin(phase * f.w1 + f.ph1);   /* avanza a ondate, non a passo fisso */
-      var rowF = f.row + 0.75 * Math.sin(phase * f.w2 + f.ph2);                /* e intanto va e viene fra i giri */
+      var idx = f.i0 + phase * f.spd + 5 * Math.sin(phase * f.w1 + f.ph1)      /* avanza a ondate, non a passo fisso */
+                + 2.2 * Math.sin(phase * f.w3 + f.ph3);                        /* due onde sfasate: traiettoria mai uguale */
+      var rowF = f.row + 1.15 * Math.sin(phase * f.w2 + f.ph2)                 /* e intanto va e viene fra i giri */
+                 + 0.4 * Math.sin(phase * f.w3 * 0.6 + f.ph1);
       var pos = at(rowF, idx), u = 1 - e;
       var px = u * u * f.x + 2 * u * e * f.bx + e * e * pos[0];    /* curva quadratica: la linea di campo */
       var py = u * u * f.y + 2 * u * e * f.by + e * e * pos[1];
       var nx = at(rowF, idx + 0.5);                                /* tangente: il frammento si stira nel verso del moto */
       var ang = Math.atan2(nx[1] - pos[1], nx[0] - pos[0]) * 180 / Math.PI;
       var dep = Math.max(-1, Math.min(1, (pos[1] - 100) / 52));    /* 3D: sotto è il davanti, sopra il dietro */
-      var s = (1 - 0.34 * e) * (1 + 0.3 * dep * e), sx = s * (1 + 1.5 * e), sy = s * (1 - 0.28 * e);
+      var s = (1 - 0.34 * e) * (1 + 0.3 * dep * e), sx = s * (1 + 2.8 * e), sy = s * (1 - 0.36 * e);   /* scie lunghe */
       f.g.setAttribute("transform", "translate(" + (px - f.x).toFixed(2) + " " + (py - f.y).toFixed(2) + ") " +
                        "translate(" + f.x + " " + f.y + ") rotate(" + ang.toFixed(1) + ") scale(" + sx.toFixed(3) + " " +
                        sy.toFixed(3) + ") rotate(" + (-ang).toFixed(1) + ") translate(" + (-f.x) + " " + (-f.y) + ")");
