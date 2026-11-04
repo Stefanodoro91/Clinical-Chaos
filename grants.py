@@ -1560,39 +1560,46 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
   .top .crc-word {{ height: calc(var(--s) * .977); width: auto; max-width: none; margin: 0; display: block; }}
 </style>
 <script>
-/* al passaggio del puntatore il simbolo si scompone in frammenti che seguono linee di campo e si ricompongono
-   nella «o» del logo, prendendo via via i colori delle quattro rubriche; nessuna rotazione */
+/* col puntatore sul logo (solo lì) il simbolo si scompone in frammenti che seguono linee di campo, si
+   ricompongono nella «o» verde e restano in orbita lungo l'anello finché il puntatore non se ne va */
 (function () {{
-  var svg = document.querySelector(".crc-sym");
-  if (!svg || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var svg = document.querySelector(".crc-sym"), box = document.querySelector(".crc-logo");
+  if (!svg || !box || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var RING = {ring}, PER = RING[0].length;
   function rgb(h) {{ return [parseInt(h.substr(1, 2), 16), parseInt(h.substr(3, 2), 16), parseInt(h.substr(5, 2), 16)]; }}
-  var frags = [].map.call(svg.querySelectorAll("g"), function (g, i) {{
-    var p = g.firstChild;
-    return {{ g: g, p: p, x: +g.dataset.x, y: +g.dataset.y, tx: +g.dataset.tx, ty: +g.dataset.ty,
-             bx: +g.dataset.cx, by: +g.dataset.cy, a: rgb(p.getAttribute("fill")), b: rgb(g.dataset.c1),
-             lag: 0.72 + 0.28 * ((i * 37) % 11) / 10, shown: -1 }};   /* ogni frammento parte con un filo di ritardo */
-  }});
-  var near = 0, target = 0, last = performance.now(), running = false;
-  function sense(x, y) {{
-    var b = svg.getBoundingClientRect(), mx = b.left + b.width / 2, my = b.top + b.height / 2;
-    var d = Math.sqrt((x - mx) * (x - mx) + (y - my) * (y - my)), R = Math.max(220, b.width * 1.9);
-    target = Math.max(0, Math.min(1, 1 - (d - b.width * 0.25) / R));
-    if (!running) {{ running = true; last = performance.now(); requestAnimationFrame(step); }}
+  function at(row, f) {{                                   /* posizione sull'orbita, a indice frazionario */
+    var a = RING[row], i = Math.floor(f), t = f - i;
+    i = ((i % PER) + PER) % PER;
+    var p = a[i], q = a[(i + 1) % PER];
+    return [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t];
   }}
+  var frags = [].map.call(svg.querySelectorAll("g"), function (g, i) {{
+    var p = g.firstChild, row = +g.dataset.row;
+    return {{ g: g, p: p, x: +g.dataset.x, y: +g.dataset.y, row: row, i0: +g.dataset.i,
+             bx: +g.dataset.cx, by: +g.dataset.cy, a: rgb(p.getAttribute("fill")), b: rgb(g.dataset.c1),
+             spd: 3.4 + 1.1 * row,                        /* i giri interni corrono un filo di più */
+             lag: 0.72 + 0.28 * ((i * 37) % 11) / 10, shown: -1 }};   /* ognuno parte con un filo di ritardo */
+  }});
+  var near = 0, target = 0, phase = 0, last = performance.now(), running = false;
+  function wake() {{ if (!running) {{ running = true; last = performance.now(); requestAnimationFrame(step); }} }}
   function step(t) {{
     var dt = Math.min(0.05, (t - last) / 1000); last = t;
     near += (target - near) * Math.min(1, dt * (target > near ? 3.4 : 7));   /* fluisce piano, si ricompone svelto */
+    phase += dt * near;                                     /* l'orbita gira solo mentre il flusso è acceso */
     var still = near < 0.004 && target === 0;
     for (var i = 0; i < frags.length; i++) {{
       var f = frags[i], e = Math.max(0, Math.min(1, (near - (1 - f.lag) * 0.45) / f.lag));
-      e = e * e * (3 - 2 * e);                                  /* partenza e arrivo morbidi */
-      var u = 1 - e;
-      var px = u * u * f.x + 2 * u * e * f.bx + e * e * f.tx;    /* curva quadratica: la linea di campo */
-      var py = u * u * f.y + 2 * u * e * f.by + e * e * f.ty;
-      var s = 1 - 0.3 * e;
+      e = e * e * (3 - 2 * e);                              /* partenza e arrivo morbidi */
+      var pos = at(f.row, f.i0 + phase * f.spd), u = 1 - e;
+      var px = u * u * f.x + 2 * u * e * f.bx + e * e * pos[0];    /* curva quadratica: la linea di campo */
+      var py = u * u * f.y + 2 * u * e * f.by + e * e * pos[1];
+      var nx = at(f.row, f.i0 + phase * f.spd + 0.6);              /* tangente: il frammento si stira nel verso del moto */
+      var ang = Math.atan2(nx[1] - pos[1], nx[0] - pos[0]) * 180 / Math.PI;
+      var s = 1 - 0.3 * e, sx = s * (1 + 1.3 * e), sy = s * (1 - 0.25 * e);
       f.g.setAttribute("transform", "translate(" + (px - f.x).toFixed(2) + " " + (py - f.y).toFixed(2) + ") " +
-                       "translate(" + f.x + " " + f.y + ") scale(" + s.toFixed(3) + ") translate(" + (-f.x) + " " + (-f.y) + ")");
-      var q = Math.round(e * 10);                               /* il colore cambia a scatti impercettibili: meno lavoro */
+                       "translate(" + f.x + " " + f.y + ") rotate(" + ang.toFixed(1) + ") scale(" + sx.toFixed(3) + " " +
+                       sy.toFixed(3) + ") rotate(" + (-ang).toFixed(1) + ") translate(" + (-f.x) + " " + (-f.y) + ")");
+      var q = Math.round(e * 10);                           /* il colore cambia a scatti impercettibili: meno lavoro */
       if (q !== f.shown) {{
         f.shown = q;
         var k = q / 10;
@@ -1606,10 +1613,9 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
     }}
     requestAnimationFrame(step);
   }}
-  window.addEventListener("pointermove", function (e) {{ sense(e.clientX, e.clientY); }}, {{ passive: true }});
-  window.addEventListener("pointerdown", function (e) {{ sense(e.clientX, e.clientY); }}, {{ passive: true }});
-  document.addEventListener("pointerleave", function () {{ target = 0; }});
-  window.addEventListener("blur", function () {{ target = 0; }});
+  box.addEventListener("pointerenter", function () {{ target = 1; wake(); }});
+  box.addEventListener("pointerleave", function () {{ target = 0; wake(); }});
+  window.addEventListener("blur", function () {{ target = 0; wake(); }});
 }})();
 </script>"""
 
@@ -1644,29 +1650,34 @@ def header_logo(cfg, accent=None, ink="#FFFFFF"):
     brand = escape(cfg["brand_name"], quote=True)
     if not cfg.get("site_v4"):
         return f'<img src="logo-horizontal.png" alt="{brand}" width="340" height="128">'
+    import json
     import math
     acc = accent or SITE_GREEN
-    cols = {"ink": ink, "teal": acc, "deep": logo_v3.deep_of(acc)}
+    deep = logo_v3.deep_of(acc)
+    cols = {"ink": ink, "teal": acc, "deep": deep}
     frags = _fragments()
     centres = [(sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)) for _, pts in frags]
-    targets = logo_v3.ring_points(len(frags))
+    per, rows = 72, 3                                   # l'orbita: 3 giri concentrici da 72 posizioni
+    ring = logo_v3.ring_rows(per, rows)
     ang = lambda p: math.atan2(p[1] - 100, p[0] - 100)
     order = sorted(range(len(frags)), key=lambda i: ang(centres[i]))      # per angolo: i frammenti non si incrociano
-    rubric = [SITE_V4[k] for k in ("methods", "science", "grant", "positions")]
+    step = per / max(1, -(-len(frags) // rows))
     cubes = [""] * len(frags)
     for slot, i in enumerate(order):
         (role, pts), (cx, cy) = frags[i], centres[i]
-        tx, ty = targets[slot]
-        at = ang((tx, ty))
-        bend = 0.55 * math.hypot(tx - cx, ty - cy) * math.cos(at)   # linea di campo: verso opposto ai due lati
+        row, idx = slot % rows, (slot // rows) * step
+        tx, ty = ring[row][int(idx) % per]
+        bend = 0.55 * math.hypot(tx - cx, ty - cy) * math.cos(ang((tx, ty)))   # linea di campo: piega al contrario sui due lati
         mx, my = (cx + tx) / 2, (cy + ty) / 2
         nx, ny = -(ty - cy), (tx - cx)
         nrm = math.hypot(nx, ny) or 1
-        cubes[i] = (f'<g data-x="{cx:.1f}" data-y="{cy:.1f}" data-tx="{tx:.1f}" data-ty="{ty:.1f}" '
+        cubes[i] = (f'<g data-x="{cx:.1f}" data-y="{cy:.1f}" data-row="{row}" data-i="{idx:.2f}" '
                     f'data-cx="{mx + nx / nrm * bend:.1f}" data-cy="{my + ny / nrm * bend:.1f}" '
-                    f'data-c1="{rubric[int((at + math.pi) / (math.pi / 2)) % 4]}">'
+                    f'data-c1="{deep if row == rows - 1 else acc}">'      # la «o» resta verde: giro interno più scuro
                     f'<polygon points="{" ".join(f"{x:g},{y:g}" for x, y in pts)}" fill="{cols[role]}"/></g>')
-    return HEADER_LOGO.format(brand=brand, cubes="".join(cubes), defs="", glow="", word="logo-wordmark-dark.png")
+    ring_js = json.dumps([[[round(x, 1), round(y, 1)] for x, y in r] for r in ring], separators=(",", ":"))
+    return HEADER_LOGO.format(brand=brand, cubes="".join(cubes), defs="", glow="", ring=ring_js,
+                              word="logo-wordmark-dark.png")
 
 
 ICONS_DIR = __import__("pathlib").Path(__file__).resolve().parent / "icons"
