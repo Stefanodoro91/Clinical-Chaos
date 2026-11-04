@@ -66,7 +66,7 @@ PAGE = """<!doctype html>
 <div class="bar"></div>
 <main>
   {lockup}
-  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><br>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><br>
   <span class="badge">LATEST SCIENCE</span>
   <h1>One clinical concept a week, from a real paper</h1>
   <p class="intro">Every Saturday, one new clinical paper and one lesson for practice: what it means for the

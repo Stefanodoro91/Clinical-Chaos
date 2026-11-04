@@ -1152,8 +1152,7 @@ PAGE = """<!doctype html>
 <div class="bar"></div>
 <main>
   {lockup}
-  <a class="switch" href="positions.html">Academic positions &rarr;</a><br>
-  <a class="home" href="index.html">&larr; Home</a>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><br>
   <span class="badge">FUNDING CALLS</span>
   <h1>Research funding calls</h1>
   <p class="intro">All open calls for clinical research, clinical and biomedical engineering and rehabilitation found by our monitoring, from funders worldwide, including calls reserved for applicants in a single country: use the filters.
@@ -1322,7 +1321,7 @@ CALL_PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
-  <a class="switch" href="../calls.html#{anchor}">&larr; All funding calls</a><a class="switch" href="../positions.html">Academic positions &rarr;</a><br>
+  <a class="switch" href="../calls.html#{anchor}">&larr; All funding calls</a><a class="switch" href="../positions.html">Academic positions &rarr;</a><a class="switch" href="../methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="../science.html">Latest Science &rarr;</a><br>
   <span class="badge">Funding call</span>{italy_badge}
   <h1>{title}</h1>
   <p class="inst">{funder}</p>
@@ -1507,18 +1506,18 @@ HOME = """<!doctype html>
            --teal: {teal}; --amber: {amber}; --lilac: {lilac}; --sci: {sci}; --meth: {meth}; }}
   * {{ box-sizing: border-box; }}
   body {{ margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }}
-  .top {{ background: var(--bg); padding: 34px 16px 26px; text-align: center; border-top: 4px solid var(--teal); }}
+  .top {{ background: var(--bg); padding: 34px 16px 36px; text-align: center; border-top: 4px solid var(--teal); }}
   .top img {{ width: 340px; max-width: 100%; height: auto; display: block; margin: 0 auto 14px; }}
   .top p {{ color: var(--text); margin: 0 auto; max-width: 460px; font: 600 17px/1.45 Inter, system-ui, sans-serif; }}
-  .pills {{ display: flex; flex-direction: column; align-items: center; gap: 17px; margin: 10px auto 20px; max-width: 520px; }}
+  .pills {{ display: flex; flex-direction: column; align-items: center; gap: 17px; margin: 0 auto 22px; max-width: 520px; }}
   .pills a {{ display: flex; flex-direction: column; align-items: center; gap: 7px; text-decoration: none; }}
   .pills .tag {{ background: var(--c); color: var(--on); border-radius: 999px; padding: 9px 17px; letter-spacing: .045em;
                 font: 800 12.5px/1 Inter, system-ui, sans-serif; }}
   .pills .met {{ color: var(--soft); font-size: 14px; line-height: 1.35; }}
   .pills a:hover .tag, .pills a:focus-visible .tag {{ filter: brightness(1.08); }}
   .pills a:hover .met {{ color: var(--text); }}
-  main {{ max-width: 520px; margin: 0 auto; padding: 10px 16px 40px; display: grid; gap: 16px; }}
-  .social {{ display: flex; justify-content: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }}
+  main {{ max-width: 520px; margin: 0 auto; padding: 0 16px 40px; display: grid; gap: 16px; }}
+  .social {{ display: flex; justify-content: center; gap: 10px; margin-top: 0; flex-wrap: wrap; }}
   .noig a {{ color: var(--teal); font-weight: 600; }}
   .noig {{ color: var(--soft); font-size: 14px; text-align: center; max-width: 440px; margin: 16px auto 0; line-height: 1.5; }}
   .social a {{ color: var(--soft); text-decoration: none; font-weight: 600; font-size: 14px; border: 1px solid var(--muted);
@@ -1557,7 +1556,7 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
 </div>
 <style>
   .top .crc-logo {{ --s: clamp(54px, calc((100vw - 64px) / 4.6), 92px); display: flex; align-items: center; justify-content: center;
-                   gap: calc(var(--s) * .186); margin: 6px auto 20px; }}
+                   gap: calc(var(--s) * .186); margin: 6px auto 36px; }}
   .top .crc-sym {{ width: var(--s); height: var(--s); flex: none; overflow: visible; }}
   .top .crc-word {{ height: calc(var(--s) * .977); width: auto; max-width: none; margin: 0; display: block; }}
 </style>

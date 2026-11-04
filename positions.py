@@ -767,7 +767,7 @@ PAGE = """<!doctype html>
 <div class="bar"></div>
 <main>
   {lockup}
-  <a class="switch" href="index.html">&larr; Home</a> &nbsp; <a class="switch" href="calls.html">Research funding calls &rarr;</a><br>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><br>
   <span class="badge">ACADEMIC POSITIONS</span>
   <h1>Positions in clinical research, engineering and rehabilitation</h1>
   <p class="intro">Open PhD, post-doc and faculty positions in clinical research, clinical and biomedical engineering and
@@ -906,7 +906,7 @@ JOB_PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
-  <a class="switch" href="../positions.html">&larr; All academic positions</a><a class="switch" href="../calls.html">Funding calls &rarr;</a><br>
+  <a class="switch" href="../positions.html">&larr; All academic positions</a><a class="switch" href="../calls.html">Funding calls &rarr;</a><a class="switch" href="../methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="../science.html">Latest Science &rarr;</a><br>
   <span class="badge">{type_label}</span>
   <h1>{title}</h1>
   <p class="inst">{place}</p>
