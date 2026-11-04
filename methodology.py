@@ -53,8 +53,8 @@ PAGE = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Methodology library · {brand}</title>
-<meta name="description" content="Practical clinical research methodology in short carousels: key points and references for every topic we have covered.">
+<title>Clinical research methodology library: study design, reporting &amp; appraisal · {brand}</title>
+<meta name="description" content="Practical clinical research methodology in short carousels: study design, statistics, reporting guidelines and critical appraisal, with key points and references for every topic.">
 {og}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -250,4 +250,4 @@ def build_page(data, cfg, today=None):
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=grants.site_accent(cfg, "methods") if cfg.get("site_v4") else c["accent"], cat_opts=cat_opts,
                        n=len(data), topics_word="topic" if len(data) == 1 else "topics", tools=tools_block(cfg), sections="\n".join(sections), updated=grants._fmt_date(today),
                        og=grants.og_tags(cfg, f"Methodology library · {cfg['brand_name']}",
-                                         "Practical clinical research methodology: key points and references.", "methodology"))
+                                         "Practical clinical research methodology: study design, statistics, reporting guidelines and critical appraisal, with references.", "methodology"))

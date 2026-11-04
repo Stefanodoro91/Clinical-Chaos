@@ -1059,8 +1059,8 @@ PAGE = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Open calls · {brand}</title>
-<meta name="description" content="Open research funding calls checked against the official call text, grouped by funding programme.">
+<title>Open funding calls for clinical research &amp; rehabilitation · {brand}</title>
+<meta name="description" content="{description}">
 {og}
 <link rel="alternate" type="application/rss+xml" title="Open funding calls" href="feed-calls.xml">
 <link rel="alternate" type="application/rss+xml" title="Academic positions" href="feed-positions.xml">
@@ -1102,6 +1102,8 @@ PAGE = """<!doctype html>
          letter-spacing: .05em; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }}
   .tag.soon-tag {{ background: var(--accent); }}
   .call h4 {{ font-size: 18px; margin: 0 0 10px; line-height: 1.3; }}
+  .call h4 a {{ color: inherit; text-decoration: none; }}
+  .call h4 a:hover, .call h4 a:focus-visible {{ text-decoration: underline; text-decoration-color: var(--accent); }}
   .summary {{ color: var(--soft); font-size: 15px; margin: 0 0 12px; }}
   .countries {{ font-size: 14px; margin: 0 0 4px; }}
   .countries b {{ color: var(--soft); font-weight: 600; }}
@@ -1216,6 +1218,181 @@ def _group(entries):
     return sorted(groups.items(), key=lambda kv: key(kv[1][0]))
 
 
+def when_html(v, d, today):
+    """Riga della scadenza di un bando (scheda e pagina propria)."""
+    from html import escape
+    if d:
+        soon = '<span class="soon">CLOSING SOON</span>' if (d - today).days <= 21 else ""
+        label, note = deadline_text(v, d) if checked(v) else ("Deadline", "")
+        return f"{label} <b>{_fmt_date(d)}</b>{soon}" + (f'<span class="dlnote">{escape(note)}</span>' if note else "")
+    if v.get("deadline_type") == "rolling":
+        return "Deadline <b>rolling, no fixed date</b>"
+    if v.get("forecast") and _date(v.get("est_deadline")):
+        return f"Expected deadline <b>~{_fmt_date(_date(v['est_deadline']))}</b><span class=\"dlnote\">estimate, call not yet published</span>"
+    return "Deadline <b>see official call</b>"
+
+
+def more_dates(v, d, today):
+    """Scadenze successive, risottomissioni, lettera d'intenti e fine della call."""
+    more = []
+    later = later_dues(v, d) if checked(v) else []
+    if later:
+        more.append("Later deadlines: " + ", ".join(_fmt_date(x) for x in later[:3]))
+    resub = [x for x in (_date(y) for y in v.get("resubmission_dates") or []) if x and x >= today]
+    if resub:
+        more.append(f"Resubmissions: next {_fmt_date(resub[0])}")
+    loi = _date(v.get("loi_deadline"))
+    if loi and loi >= today:
+        more.append(f"Letter of intent{' (required)' if v.get('loi_required') == 'yes' else ''}: {_fmt_date(loi)}")
+    exp = _date(v.get("expires"))
+    if exp and later:
+        more.append(f"Call expires {_fmt_date(exp)}")
+    return more
+
+
+def call_path(g, v):
+    """Percorso della pagina propria di un bando verificato (es. «call/horizon-health-…-3fa9c1»), stabile per id."""
+    import hashlib
+    title = v.get("title") or g.get("titolo") or "funding call"
+    words = re.sub(r"[^a-z0-9]+", "-", unescape(title).lower()).strip("-")[:60].rstrip("-") or "funding-call"
+    return f"call/{words}-{hashlib.sha1(str(g['id']).encode()).hexdigest()[:6]}"
+
+
+def call_jsonld(g, v, cfg, path, title, summary):
+    """Dati strutturati: percorso di navigazione (BreadcrumbList, letto da Google) e bando (MonetaryGrant, schema.org)."""
+    funder = funder_line(g) or v.get("programme") or ""
+    crumbs = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": cfg["brand_name"], "item": site_url(cfg, "")},
+        {"@type": "ListItem", "position": 2, "name": "Funding calls", "item": site_url(cfg, "calls")},
+        {"@type": "ListItem", "position": 3, "name": title}]}
+    grant = {"@context": "https://schema.org", "@type": "MonetaryGrant", "name": title, "url": site_url(cfg, path),
+             "sameAs": g["url"]}
+    if summary:
+        grant["description"] = summary
+    if funder:
+        grant["funder"] = {"@type": "Organization", "name": funder}
+    text = json.dumps([crumbs, grant], ensure_ascii=False, indent=1).replace("</", "<\\/")
+    return f'<script type="application/ld+json">\n{text}\n</script>'
+
+
+CALL_PAGE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title_tag}</title>
+<meta name="description" content="{description}">
+{og}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+{jsonld}
+<style>
+  :root {{ --bg: {bg}; --card: #15304A; --text: #FFFFFF; --muted: {muted}; --soft: {soft}; --accent: {accent}; --teal: {teal}; }}
+  * {{ box-sizing: border-box; }}
+  body {{ margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.5; }}
+  .bar {{ height: 6px; background: var(--accent); }}
+  main {{ max-width: 680px; margin: 0 auto; padding: 28px 16px 48px; }}
+  .switch {{ display: inline-block; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
+            border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px; margin: 0 6px 18px 0; }}
+  .badge {{ display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
+           letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; text-transform: uppercase; }}
+  .badge.it {{ background: var(--teal); margin-left: 6px; }}
+  h1 {{ font-size: 28px; font-weight: 800; margin: 14px 0 8px; line-height: 1.2; overflow-wrap: anywhere; }}
+  .inst {{ color: var(--soft); font-size: 15px; font-weight: 600; margin: 0 0 20px; }}
+  .call {{ background: var(--card); border-radius: 18px; padding: 20px; border-left: 4px solid var(--accent); }}
+  dl {{ display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0 0 16px; font-size: 15px; }}
+  dt {{ color: var(--muted); font-weight: 600; }}
+  dd {{ margin: 0; overflow-wrap: anywhere; }}
+  .summary {{ color: var(--soft); font-size: 15px; margin: 0 0 18px; }}
+  .soon {{ color: var(--accent); font-weight: 800; font-size: 12px; margin-left: 6px; }}
+  .dlnote {{ display: block; color: var(--muted); font-size: 13px; }}
+  .dates {{ color: var(--soft); font-size: 14px; margin: 0 0 16px; }}
+  blockquote {{ font-size: 14px; color: var(--soft); border-left: 2px solid var(--muted); padding-left: 12px; margin: 0 0 18px; font-style: italic; }}
+  .btns {{ display: flex; flex-wrap: wrap; gap: 8px; }}
+  a.btn {{ background: var(--accent); color: var(--bg); text-decoration: none; font-weight: 800; font-size: 15px;
+           padding: 11px 18px; border-radius: 12px; }}
+  a.btn.ghost {{ background: transparent; color: var(--text); border: 1px solid var(--muted); }}
+  a.btn:focus-visible, .switch:focus-visible {{ outline: 3px solid var(--text); outline-offset: 2px; }}
+  footer {{ color: var(--muted); font-size: 13px; margin-top: 30px; }}
+  footer a {{ color: var(--teal); }}
+  @media (max-width: 480px) {{ dl {{ grid-template-columns: 1fr; gap: 2px; }} dd {{ margin-bottom: 8px; }} h1 {{ font-size: 24px; }} }}
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<main>
+  <a class="switch" href="../calls.html#{anchor}">&larr; All funding calls</a><a class="switch" href="../positions.html">Academic positions &rarr;</a><br>
+  <span class="badge">Funding call</span>{italy_badge}
+  <h1>{title}</h1>
+  <p class="inst">{funder}</p>
+  <article class="call">
+    <dl>
+      <dt>Programme</dt><dd>{programme}</dd>
+      <dt>Eligible countries</dt><dd>{countries}</dd>
+      <dt>Open to Italy</dt><dd>{italy}</dd>
+      {lead}<dt>Deadline</dt><dd>{when}</dd>
+    </dl>
+    {dates}
+    {summary}
+    {proof}
+    <div class="btns">{share}{cal}{find}<a class="btn" href="{url}" target="_blank" rel="noopener">Official call &rarr;</a></div>
+  </article>
+  <footer>
+    Checked automatically against the official call text on {checked}: always read the full call before applying;
+    the funder's page is the only official source. <a href="../feedback.html?topic=Report%20an%20error&amp;ref={anchor}">Report an error</a><br>
+    <a href="../index.html">{brand}</a> · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a>
+  </footer>
+</main>
+</body>
+</html>
+"""
+
+
+def call_pages(grants_list, verified, cfg, today=None):
+    """{percorso del file: html} con una pagina per ogni bando verificato in pagina (es. «call/….html»)."""
+    from html import escape
+    today = today or date.today()
+    c = site_palette(cfg)
+    italy_words = {"yes": "Yes, organisations based in Italy are eligible", "no": "No",
+                   "unclear": "Not stated in the official text: check the call"}
+    out = {}
+    for g, v, d in page_entries(grants_list, verified, today):
+        if not v:
+            continue
+        path = call_path(g, v)
+        title = v.get("title") or g.get("titolo") or "Funding call"
+        programme = v.get("programme") or programme_detail(g)
+        summary = v.get("summary") or ""
+        funder = funder_line(g) or programme
+        dl = f", deadline {_fmt_date(d)}" if d else ""
+        it = " Open to Italian institutions." if v.get("italy") == "yes" else ""
+        base = f"{programme}: {summary}" if summary else f"Funding call from {funder}{dl}."
+        desc = base if len(base) <= 150 - len(it) else base[:150 - len(it)].rsplit(" ", 1)[0] + "…"
+        desc += it
+        ev = v.get("countries_evidence") or v.get("italy_evidence")
+        ps = partner_search(g)
+        more = more_dates(v, d, today)
+        out[path + ".html"] = CALL_PAGE.format(
+            title_tag=escape(f"{title} – funding call{dl} · {cfg['brand_name']}"), description=escape(desc, quote=True),
+            og=og_tags(cfg, f"Funding call: {title}", desc, path), jsonld=call_jsonld(g, v, cfg, path, title, summary),
+            bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"], accent=site_accent(cfg, "grant"),
+            anchor=card_anchor(g["id"]), title=escape(title), funder=escape(funder),
+            italy_badge='<span class="badge it">Open to Italy</span>' if v.get("italy") == "yes" else "",
+            programme=escape(programme), countries=escape(v.get("eligible_countries") or "check the call"),
+            italy=escape(italy_words.get(v.get("italy"), italy_words["unclear"])),
+            lead=f'<dt>Who can lead</dt><dd>{escape(v["lead"])}</dd>\n      ' if v.get("lead") else "",
+            when=when_html(v, d, today).removeprefix("Deadline "), dates=f'<p class="dates">{escape(" · ".join(more))}</p>' if more else "",
+            summary=f'<p class="summary">{escape(summary)}</p>' if summary else "",
+            proof=f'<blockquote>From the official call: &ldquo;{escape(ev)}&rdquo;</blockquote>' if ev else "",
+            share=share_button(site_url(cfg, path), f"Funding call: {title}" + (f" (deadline {_fmt_date(d)})" if d else "")),
+            cal=calendar_button(d, title, g["url"], programme or ""),
+            find=(f'<a class="btn ghost" href="{escape(ps[0], quote=True)}" target="_blank" rel="noopener">Find partners</a>'
+                  if ps else ""),
+            url=escape(g["url"], quote=True), checked=_fmt_date(_date(v.get("checked")) or today),
+            brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), handle=escape(cfg["handle"]))
+    return out
+
+
 def build_page(grants_list, verified, posted, cfg, today=None):
     from html import escape
     today = today or date.today()
@@ -1228,29 +1405,8 @@ def build_page(grants_list, verified, posted, cfg, today=None):
             by_region[region(e[0], e[1], cfg)].append(e)
 
     def card(g, v, d, css):
-        if d:
-            soon = '<span class="soon">CLOSING SOON</span>' if (d - today).days <= 21 else ""
-            label, note = deadline_text(v, d) if checked(v) else ("Deadline", "")
-            when = f"{label} <b>{_fmt_date(d)}</b>{soon}" + (f'<span class="dlnote">{escape(note)}</span>' if note else "")
-        elif v.get("deadline_type") == "rolling":
-            when = "Deadline <b>rolling, no fixed date</b>"
-        elif v.get("forecast") and _date(v.get("est_deadline")):
-            when = f"Expected deadline <b>~{_fmt_date(_date(v['est_deadline']))}</b><span class=\"dlnote\">estimate, call not yet published</span>"
-        else:
-            when = "Deadline <b>see official call</b>"
-        more = []
-        later = later_dues(v, d) if checked(v) else []
-        if later:
-            more.append("Later deadlines: " + ", ".join(_fmt_date(x) for x in later[:3]))
-        resub = [x for x in (_date(y) for y in v.get("resubmission_dates") or []) if x and x >= today]
-        if resub:
-            more.append(f"Resubmissions: next {_fmt_date(resub[0])}")
-        loi = _date(v.get("loi_deadline"))
-        if loi and loi >= today:
-            more.append(f"Letter of intent{' (required)' if v.get('loi_required') == 'yes' else ''}: {_fmt_date(loi)}")
-        exp = _date(v.get("expires"))
-        if exp and later:
-            more.append(f"Call expires {_fmt_date(exp)}")
+        when = when_html(v, d, today)
+        more = more_dates(v, d, today)
         dates_html = f'<p class="dates">{escape(" · ".join(more))}</p>' if more else ""
         lead_html = (f'      <p class="countries"><b>Who can lead:</b> {escape(v["lead"])}</p>\n' if v.get("lead") else "")
         tag = '<span class="tag">ON INSTAGRAM</span>' if g["id"] in featured else ""
@@ -1277,8 +1433,10 @@ def build_page(grants_list, verified, posted, cfg, today=None):
                     f'{lead_html}'
                     f'      {proof}')
         title = v.get("title") or g.get("titolo") or ""
-        share = share_button(site_url(cfg, "calls#" + card_anchor(g["id"])),
+        own = call_path(g, v) if v else ""       # pagina propria (solo bandi verificati)
+        share = share_button(site_url(cfg, own or "calls#" + card_anchor(g["id"])),
                              f"Funding call: {title}" + (f" (deadline {_fmt_date(d)})" if d else ""))
+        h4 = f'<a href="{own}.html">{escape(title)}</a>' if own else escape(title)
         words = " ".join(x for x in (title, v.get("programme"), programme_detail(g), v.get("summary"),
                                      v.get("eligible_countries"), g.get("ente"), g.get("titolo")) if x).lower()
         attrs = (f'data-region="{escape(region(g, v, cfg), quote=True)}" data-italy="{"yes" if v.get("italy") == "yes" else "no"}" '
@@ -1286,7 +1444,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
                  f'data-text="{escape(words, quote=True)}"')
         return f"""    <article class="call {css}" id="{card_anchor(g["id"])}" {attrs}>
       <div class="funder">{escape(v.get("programme") or programme_detail(g))}{tag}</div>
-      <h4>{escape(title)}</h4>
+      <h4>{h4}</h4>
       {body}
       {partners}
       <div class="row">
@@ -1319,13 +1477,13 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     nav = [f'<a href="#italy">Open to Italy <b>{len(italy)}</b></a>']
     nav += [f'<a href="#{slug(r)}">{escape(r)} <b>{len(by_region[r])}</b></a>' for r in REGIONS if by_region[r]]
     c = site_palette(cfg)
+    desc = (f"{len(entries)} open research grants and funding calls for clinical research, rehabilitation, clinical "
+            f"engineering and health research, {len(italy)} open to Italian institutions. Checked on the official call text, updated daily.")
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
-                       accent=site_accent(cfg, "grant"), nav="".join(nav),
+                       accent=site_accent(cfg, "grant"), nav="".join(nav), description=escape(desc, quote=True),
                        italy=italy_html, other=other_html, updated=_fmt_date(today), filters=filters_form(entries),
-                       og=og_tags(cfg, f"Open research funding calls · {cfg['brand_name']}",
-                                  "Open funding calls for clinical research, clinical engineering and rehabilitation, checked on the official call text.",
-                                  "calls"))
+                       og=og_tags(cfg, f"Open research funding calls · {cfg['brand_name']}", desc, "calls"))
 
 
 # ---------------------------------------------------------------- pagina iniziale (link in bio)
@@ -1334,7 +1492,7 @@ HOME = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{brand}</title>
+<title>{brand} – Funding calls &amp; academic positions in clinical research</title>
 <meta name="google-site-verification" content="CmqA15pmnid3j9D4hdy5u6P45Dly32YcaeAil7P-6tM">
 <meta name="description" content="Open research funding calls and academic positions in clinical research, clinical engineering and rehabilitation, checked on the official texts.">
 {og}
@@ -1661,7 +1819,7 @@ def calls_feed(grants_list, verified, cfg, today=None):
             f"Who can lead: {v.get('lead')}." if v.get("lead") else "",
             f"{label}: {_fmt_date(d)}" + (f" ({note})." if note else ".") if d else "Deadline: see the official call.",
             f"Official call: {g['url']}") if x)
-        items.append((title, site_url(cfg, "calls#" + card_anchor(g["id"])), desc, _date(v.get("checked")), g["id"]))
+        items.append((title, site_url(cfg, call_path(g, v)), desc, _date(v.get("checked")), g["id"]))
     items.sort(key=lambda it: it[3] or date.min, reverse=True)
     return rss(cfg, f"{cfg['brand_name']} – open funding calls",
                "Open funding calls in clinical research, clinical engineering and rehabilitation, checked on the official text.",

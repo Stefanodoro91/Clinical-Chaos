@@ -701,8 +701,8 @@ PAGE = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Academic positions · {brand}</title>
-<meta name="description" content="Open PhD, post-doc and faculty positions in clinical research, clinical engineering and rehabilitation worldwide, checked against the original advertisement.">
+<title>PhD, postdoc &amp; faculty positions in clinical research &amp; rehabilitation · {brand}</title>
+<meta name="description" content="{description}">
 {og}
 <link rel="alternate" type="application/rss+xml" title="Academic positions" href="feed-positions.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -854,13 +854,14 @@ def build_page(archive, posted, cfg, today=None):
         parts.append("  </section>")
         sections.append("\n".join(parts))
     c = grants.site_palette(cfg)
+    desc = (f"{len(entries)} open PhD, postdoc, research fellow and faculty positions in clinical research, rehabilitation, "
+            "clinical engineering and health research worldwide, checked against the original advertisement. Updated daily.")
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
                        accent=grants.site_accent(cfg, "positions"), nav="".join(nav),
-                       sections="\n".join(sections), updated=_fmt(today), filters=filters_form(len(entries)),
+                       sections="\n".join(sections), updated=_fmt(today), filters=filters_form(len(entries)), description=escape(desc, quote=True),
                        og=grants.og_tags(cfg, f"Academic positions in clinical research, engineering and rehabilitation · {cfg['brand_name']}",
-                                         "Open PhD, post-doc and faculty positions in clinical research, clinical engineering and rehabilitation, "
-                                         "checked against the original advertisement.", "positions"))
+                                         desc, "positions"))
 
 
 # ---------------------------------------------------------------- una pagina per posizione (Google Jobs)

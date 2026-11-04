@@ -1217,17 +1217,114 @@ def write_job_pages(archive):
         (JOBS_DIR / name).write_text(grants.add_decor(html), encoding="utf-8")
 
 
+CALLS_DIR = ROOT / "docs" / "call"
+
+
+def write_call_pages(grants_list, verified):
+    """Una pagina per ogni bando verificato in pagina; le pagine dei bandi non piu' in pagina si cancellano."""
+    pages = grants.call_pages(grants_list, verified, CONFIG)
+    CALLS_DIR.mkdir(parents=True, exist_ok=True)
+    names = {Path(k).name for k in pages}
+    for f in CALLS_DIR.glob("*.html"):
+        if f.name not in names:
+            f.unlink()
+    for path, html in pages.items():
+        (ROOT / "docs" / path).write_text(grants.add_decor(html), encoding="utf-8")
+
+
+CHANGED_URLS = {"updated": [], "deleted": []}     # pagine cambiate in questo giro: avvisi a IndexNow e Google dopo il deploy
+
+
+def _changed_docs():
+    """{file in docs/: stato} dei file del sito diversi dall'ultimo commit: «M» cambiato o nuovo, «D» cancellato."""
+    try:
+        out = subprocess.run(["git", "status", "--porcelain", "--untracked-files=all", "--", "docs"], cwd=ROOT,
+                             capture_output=True, text=True, timeout=60).stdout
+    except Exception:
+        return None
+    changed = {}
+    for line in out.splitlines():
+        st, path = line[:2], line[3:].strip().strip('"')
+        if " -> " in path:
+            path = path.split(" -> ")[-1]
+        changed[path] = "D" if "D" in st else "M"
+    return changed
+
+
+def _page_path(file):
+    """docs/jobs/x.html -> «jobs/x»; docs/index.html -> «» (indirizzi senza .html, come li serve Cloudflare)."""
+    rel = Path(file).relative_to("docs").with_suffix("").as_posix()
+    return "" if rel == "index" else rel
+
+
 def write_sitemap():
-    """sitemap.xml e robots.txt, perché Google trovi tutte le pagine (anche quelle delle singole posizioni)."""
+    """sitemap.xml e robots.txt, perche' Google trovi tutte le pagine (anche quelle di singole posizioni e bandi).
+    lastmod: la data dell'ultima modifica reale di ogni pagina (oggi solo se il contenuto e' cambiato), cosi'
+    Google sa quali pagine ricontrollare."""
+    import re as _re
     from xml.sax.saxutils import escape as xesc
     today = datetime.now().date().isoformat()
-    paths = ["", "calls", "positions", "methodology", "feedback", "rss"] + sorted("jobs/" + f.stem for f in JOBS_DIR.glob("*.html"))
-    urls = "".join(f"  <url><loc>{xesc(grants.site_url(CONFIG, p))}</loc><lastmod>{today}</lastmod></url>\n" for p in paths)
-    (ROOT / "docs" / "sitemap.xml").write_text(
-        f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n',
-        encoding="utf-8")
+    sm = ROOT / "docs" / "sitemap.xml"
+    old = sm.read_text(encoding="utf-8") if sm.exists() else ""
+    prev = dict(_re.findall(r"<loc>([^<]+)</loc><lastmod>([^<]+)</lastmod>", old))
+    changed = _changed_docs()
+    files = (["docs/index.html"] + [f"docs/{p}.html" for p in ("calls", "positions", "methodology", "feedback", "rss")]
+             + sorted(f.relative_to(ROOT).as_posix() for f in JOBS_DIR.glob("*.html"))
+             + sorted(f.relative_to(ROOT).as_posix() for f in CALLS_DIR.glob("*.html")))
+    urls = []
+    for f in files:
+        loc = xesc(grants.site_url(CONFIG, _page_path(f)))
+        fresh = changed is None or f in changed or loc not in prev
+        urls.append(f"  <url><loc>{loc}</loc><lastmod>{today if fresh else prev[loc]}</lastmod></url>\n")
+    sm.write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+                  f'{"".join(urls)}</urlset>\n', encoding="utf-8")
     (ROOT / "docs" / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {grants.site_url(CONFIG, 'sitemap.xml')}\n",
                                               encoding="utf-8")
+    key = CONFIG.get("indexnow_key")
+    if key:                                   # file di verifica di IndexNow (Bing, Yandex, Seznam, Naver...)
+        (ROOT / "docs" / f"{key}.txt").write_text(key, encoding="utf-8")
+    if changed:
+        pages = {f: st for f, st in changed.items() if f.endswith(".html")}
+        CHANGED_URLS["updated"] = sorted(grants.site_url(CONFIG, _page_path(f)) for f, st in pages.items() if st == "M")
+        CHANGED_URLS["deleted"] = sorted(grants.site_url(CONFIG, _page_path(f)) for f, st in pages.items() if st == "D")
+
+
+def notify_search_engines():
+    """Dopo il deploy: IndexNow per tutte le pagine cambiate e, se attivo, Indexing API di Google per le posizioni
+    (Google la ammette solo per le offerte di lavoro). Un errore qui non blocca nulla."""
+    urls = CHANGED_URLS["updated"] + CHANGED_URLS["deleted"]
+    if not urls or DRY_RUN:
+        return
+    key = CONFIG.get("indexnow_key")
+    if key or CONFIG.get("google_indexing"):
+        time.sleep(int(CONFIG.get("indexnow_wait_seconds", 120)))       # il tempo che Cloudflare pubblichi il sito
+    if key:
+        host = grants.site_url(CONFIG, "").split("/")[2]
+        try:
+            r = requests.post("https://api.indexnow.org/indexnow", timeout=60, json={
+                "host": host, "key": key, "keyLocation": grants.site_url(CONFIG, f"{key}.txt"), "urlList": urls[:10000]})
+            print(f"::notice title=IndexNow::{len(urls)} pagine segnalate ({r.status_code})")
+        except requests.RequestException as e:
+            print(f"::warning title=IndexNow::non raggiungibile: {e}")
+    if CONFIG.get("google_indexing") and os.environ.get("GDRIVE_SERVICE_ACCOUNT_JSON"):
+        jobs = [(u, "URL_UPDATED") for u in CHANGED_URLS["updated"] if "/jobs/" in u]
+        jobs += [(u, "URL_DELETED") for u in CHANGED_URLS["deleted"] if "/jobs/" in u]
+        try:
+            from google.auth.transport.requests import AuthorizedSession
+            creds = service_account.Credentials.from_service_account_info(
+                json.loads(os.environ["GDRIVE_SERVICE_ACCOUNT_JSON"]), scopes=["https://www.googleapis.com/auth/indexing"])
+            session, ok = AuthorizedSession(creds), 0
+            for u, kind in jobs[:int(CONFIG.get("google_indexing_per_run", 100))]:      # quota Google: 200 al giorno
+                r = session.post("https://indexing.googleapis.com/v3/urlNotifications:publish",
+                                 json={"url": u, "type": kind}, timeout=30)
+                ok += r.ok
+                if not r.ok:
+                    print(f"::warning title=Google Indexing API::{r.status_code} {r.text[:200]}")
+                    break
+            print(f"::notice title=Google Indexing API::{ok} di {len(jobs)} pagine di posizioni segnalate")
+        except Exception as e:
+            print(f"::warning title=Google Indexing API::{str(e)[:300]}")
+    CHANGED_URLS["updated"], CHANGED_URLS["deleted"] = [], []
 
 
 def write_home():
@@ -1259,6 +1356,8 @@ def trigger_deploy():
     try:
         r = requests.post(hook, timeout=30)
         print(f"::notice title=Sito::ripubblicazione richiesta a Cloudflare ({r.status_code})")
+        if r.ok:
+            notify_search_engines()
     except requests.RequestException as e:
         print(f"::warning title=Sito::deploy hook non raggiungibile: {e}")
 
@@ -1274,6 +1373,7 @@ def update_grants(posted=None, verify_limit=None):
     PAGE_FILE.parent.mkdir(exist_ok=True)
     PAGE_FILE.write_text(grants.add_decor(grants.build_page(grants_list, verified, posted, CONFIG)), encoding="utf-8")
     (ROOT / "docs" / "feed-calls.xml").write_text(grants.calls_feed(grants_list, verified, CONFIG), encoding="utf-8")
+    write_call_pages(grants_list, verified)
     entries = grants.page_entries(grants_list, verified)
     pending = sum(1 for g in grants_list if g["id"] not in verified)
     print(f"::notice title=Pagina bandi::{len(entries)} bandi in pagina, {pending} ancora da verificare")
