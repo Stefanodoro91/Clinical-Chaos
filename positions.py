@@ -838,7 +838,7 @@ def build_page(archive, posted, cfg, today=None):
     c = grants.site_palette(cfg)
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
-                       accent=cfg.get("positions_accent", "#A78BFA"), nav="".join(nav),
+                       accent=grants.site_accent(cfg, "positions"), nav="".join(nav),
                        sections="\n".join(sections), updated=_fmt(today), filters=filters_form(len(entries)),
                        og=grants.og_tags(cfg, f"Academic positions in clinical research, engineering and rehabilitation · {cfg['brand_name']}",
                                          "Open PhD, post-doc and faculty positions in clinical research, clinical engineering and rehabilitation, "
@@ -978,7 +978,7 @@ def job_pages(archive, cfg, today=None):
             description=escape(desc, quote=True),
             og=grants.og_tags(cfg, f"{title} · {v.get('institution') or loc}", desc, "jobs/" + slug),
             jsonld=job_jsonld(k, v, d) or "", bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
-            accent=cfg.get("positions_accent", "#A78BFA"), type_label=escape(TYPES.get(v.get("type"), "Academic position")),
+            accent=grants.site_accent(cfg, "positions"), type_label=escape(TYPES.get(v.get("type"), "Academic position")),
             place=escape(place), institution=escape(v.get("institution") or "see advertisement"), location=escape(loc),
             deadline=deadline, summary=f'<p class="summary">{escape(summary)}</p>' if summary else "",
             share=grants.share_button(grants.site_url(cfg, "jobs/" + slug), share_title),

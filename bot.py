@@ -28,8 +28,7 @@ import rubrics
 ROOT = Path(__file__).resolve().parent
 CONFIG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
 grants.SITE_MONO = bool(CONFIG.get("mono"))
-grants.SITE_COLORS = {"grant": CONFIG.get("grant_accent", "#FFB547"), "positions": CONFIG.get("positions_accent", "#8B5CF6"),
-                      "methods": "#6EC1FF"}
+grants.SITE_COLORS = grants.site_colors(CONFIG)     # solo sito (cascata laterale)
 QUEUE_FILE = ROOT / "queue.json"
 POSTED_FILE = ROOT / "posted_log.json"
 SOURCES_FILE = ROOT / "sources_log.json"

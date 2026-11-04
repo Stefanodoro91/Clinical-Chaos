@@ -127,7 +127,7 @@ PAGE = """<!doctype html>
 <div class="bar"></div>
 <main>
   <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><br>
-  <span class="badge">METHODOLOGY LIBRARY</span>
+  <span class="badge">DESIGN, REPORTING &amp; APPRAISAL</span>
   <h1>Clinical research methodology, made practical</h1>
   <p class="intro">Every methodology carousel we have published: swipe through the slides here, no Instagram account needed.
   Key points and references under each one. New topics every day.</p>

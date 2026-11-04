@@ -1151,7 +1151,7 @@ PAGE = """<!doctype html>
 <main>
   <a class="switch" href="positions.html">Academic positions &rarr;</a><br>
   <a class="home" href="index.html">&larr; Home</a>
-  <span class="badge">OPEN CALLS</span>
+  <span class="badge">FUNDING CALLS</span>
   <h1>Research funding calls</h1>
   <p class="intro">All open calls for clinical research, clinical and biomedical engineering and rehabilitation found by our monitoring, from funders worldwide, including calls reserved for applicants in a single country: use the filters.
   Each call is checked against its official text; grouped by region and funding programme, sorted by deadline.
@@ -1321,7 +1321,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     c = site_palette(cfg)
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
-                       accent=cfg.get("grant_accent", "#FFB547"), nav="".join(nav),
+                       accent=site_accent(cfg, "grant"), nav="".join(nav),
                        italy=italy_html, other=other_html, updated=_fmt_date(today), filters=filters_form(entries),
                        og=og_tags(cfg, f"Open research funding calls · {cfg['brand_name']}",
                                   "Open funding calls for clinical research, clinical engineering and rehabilitation, checked on the official call text.",
@@ -1344,22 +1344,27 @@ HOME = """<!doctype html>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {{ --bg: {bg}; --paper: #F3F6F9; --card: #15304A; --text: #FFFFFF; --soft: {soft}; --muted: {muted};
-           --teal: {teal}; --amber: {amber}; --lilac: {lilac}; }}
+           --teal: {teal}; --amber: {amber}; --lilac: {lilac}; --sci: {sci}; }}
   * {{ box-sizing: border-box; }}
   body {{ margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }}
-  .top {{ background: var(--paper); padding: 34px 16px 30px; text-align: center; border-top: 6px solid var(--teal); }}
+  .top {{ background: var(--paper); padding: 30px 16px 28px; text-align: center; border-top: 4px solid var(--teal); }}
   .top img {{ width: 340px; max-width: 100%; height: auto; display: block; margin: 0 auto 14px; }}
-  .top p {{ color: #5B7186; margin: 0 auto; max-width: 420px; font-size: 15px; }}
+  .top p {{ color: #4A5563; margin: 0 auto; max-width: 440px; font: italic 400 17px/1.45 "Source Serif 4", Georgia, serif; }}
   main {{ max-width: 520px; margin: 0 auto; padding: 26px 16px 40px; display: grid; gap: 16px; }}
-  a.big {{ display: block; text-decoration: none; color: var(--bg); border-radius: 22px; padding: 22px 22px 20px; }}
-  a.big.calls {{ background: var(--amber); }}
-  a.big.jobs {{ background: var(--lilac); }}
-  a.big.method {{ background: var(--teal); }}
-  a.big .label {{ font-size: 13px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; opacity: .8; }}
-  a.big .name {{ display: flex; justify-content: space-between; align-items: center; font-size: 27px; font-weight: 800; margin: 4px 0 6px; }}
-  a.big .count {{ font-size: 15px; font-weight: 600; }}
-  a.big:focus-visible {{ outline: 3px solid var(--text); outline-offset: 3px; }}
-  a.big:hover {{ filter: brightness(1.05); }}
+  a.big {{ --c: var(--teal); display: block; text-decoration: none; color: var(--text); background: #111111;
+            border: 1px solid #262626; border-left: 3px solid var(--c); border-radius: 14px; padding: 18px 22px 17px;
+            transition: border-color .2s, background .2s; }}
+  a.big.calls {{ --c: var(--amber); }}
+  a.big.jobs {{ --c: var(--lilac); }}
+  a.big.method {{ --c: var(--teal); }}
+  a.big.science {{ --c: var(--sci); }}
+  a.big .label {{ color: var(--c); font: 600 11.5px/1.2 Inter, system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; }}
+  a.big .name {{ display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 7px 0 5px;
+                font-family: "Source Serif 4", Georgia, serif; font-size: 25px; font-weight: 600; letter-spacing: -.005em; line-height: 1.2; }}
+  a.big .name span {{ color: var(--c); font-family: Inter, system-ui, sans-serif; font-weight: 400; }}
+  a.big .count {{ color: var(--soft); font-size: 14px; font-weight: 400; }}
+  a.big:focus-visible {{ outline: 2px solid var(--c); outline-offset: 3px; }}
+  a.big:hover {{ border-color: var(--c); background: #151515; }}
   .social {{ display: flex; justify-content: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }}
   .noig a {{ color: var(--teal); font-weight: 600; }}
   .noig {{ color: var(--soft); font-size: 14px; text-align: center; max-width: 440px; margin: 16px auto 0; line-height: 1.5; }}
@@ -1372,24 +1377,29 @@ HOME = """<!doctype html>
 </head>
 <body>
 <header class="top">
-  <img src="logo-horizontal.png" alt="{brand}" width="340" height="128">
-  <p>Clinical research methodology, made practical. Open funding calls and academic positions, checked on the official texts.</p>
+  {logo_block}
+  <p>Design, report and appraise better. Keep up with new evidence. Find your next grant or position.</p>
 </header>
 <main>
   <a class="big calls" href="calls.html">
     <span class="label">Open calls</span>
-    <span class="name">Funding calls <span aria-hidden="true">&rarr;</span></span>
+    <span class="name">Funding Calls <span aria-hidden="true">&rarr;</span></span>
     <span class="count">{calls_line}</span>
   </a>
   <a class="big jobs" href="positions.html">
     <span class="label">Open positions</span>
-    <span class="name">Academic positions <span aria-hidden="true">&rarr;</span></span>
+    <span class="name">Academic Positions <span aria-hidden="true">&rarr;</span></span>
     <span class="count">{jobs_line}</span>
   </a>
   <a class="big method" href="methodology.html">
     <span class="label">Methodology library</span>
-    <span class="name">Methodology <span aria-hidden="true">&rarr;</span></span>
+    <span class="name">Design, Reporting &amp; Appraisal <span aria-hidden="true">&rarr;</span></span>
     <span class="count">{method_line}</span>
+  </a>
+  <a class="big science" href="methodology.html">
+    <span class="label">Every Saturday</span>
+    <span class="name">Latest Science <span aria-hidden="true">&rarr;</span></span>
+    <span class="count">One new clinical paper, one lesson for practice: in the library</span>
   </a>
   <div class="social">
 {social}
@@ -1402,6 +1412,73 @@ HOME = """<!doctype html>
 </body>
 </html>
 """
+
+
+# simbolo definitivo per l'intestazione della home (fondo chiaro): (colore, vertici) nel viewBox 26 26 148 148
+HEADER_SYMBOL = [["#1F7FA6",[[30.08,71.44],[38.15,72.72],[36.87,80.78],[28.8,79.5]]],["#1F7FA6",[[29.2,94.21],[38.54,94.97],[37.78,104.31],[28.44,103.55]]],["#0A0A0A",[[50.72,50.72],[61.58,50.72],[61.58,61.58],[50.72,61.58]]],["#1F7FA6",[[47.52,70.21],[61.72,70.21],[61.72,84.41],[47.52,84.41]]],["#0A0A0A",[[46.36,92.26],[61.84,92.26],[61.84,107.74],[46.36,107.74]]],["#6B4FC0",[[50.72,138.42],[61.58,138.42],[61.58,149.28],[50.72,149.28]]],["#1F7FA6",[[74.98,29.08],[82.61,30.31],[81.39,37.94],[73.76,36.72]]],["#0A0A0A",[[70.21,47.52],[84.41,47.52],[84.41,61.72],[70.21,61.72]]],["#0A0A0A",[[67.34,67.34],[85.72,67.34],[85.72,85.72],[67.34,85.72]]],["#0A0A0A",[[76.27,100.0],[76.27,90.0],[86.27,90.0],[86.27,100.0],[86.27,110.0],[76.27,110.0],[66.26,110.0],[66.26,100.0]]],["#0A0A0A",[[67.34,114.28],[85.72,114.28],[85.72,132.66],[67.34,132.66]]],["#0A0A0A",[[70.21,138.28],[84.41,138.28],[84.41,152.48],[70.21,152.48]]],["#6B4FC0",[[76.07,163.13],[84.19,163.02],[84.3,171.14],[76.18,171.25]]],["#0A0A0A",[[95.65,28.08],[104.72,28.4],[104.39,37.47],[95.33,37.15]]],["#0A0A0A",[[92.26,46.36],[107.74,46.36],[107.74,61.84],[92.26,61.84]]],["#0A0A0A",[[90.0,66.26],[110.0,66.26],[110.0,86.27],[90.0,86.27]]],["#0A0A0A",[[89.12,89.12],[110.88,89.12],[110.88,110.88],[89.12,110.88]]],["#0A0A0A",[[90.0,113.73],[100.0,113.73],[110.0,113.73],[110.0,123.73],[100.0,123.73],[100.0,133.74],[90.0,133.74],[90.0,123.73]]],["#3D8F47",[[92.26,138.16],[107.74,138.16],[107.74,153.64],[92.26,153.64]]],["#3D8F47",[[95.5,162.35],[104.36,161.57],[105.13,170.43],[96.27,171.21]]],["#B86A00",[[117.31,28.0],[125.5,29.38],[124.12,37.58],[115.93,36.2]]],["#B86A00",[[115.59,47.52],[129.79,47.52],[129.79,61.72],[115.59,61.72]]],["#0A0A0A",[[114.28,67.34],[123.47,67.34],[123.47,76.53],[132.66,76.53],[132.66,85.72],[123.47,85.72],[114.28,85.72],[114.28,76.53]]],["#0A0A0A",[[113.73,90.0],[133.74,90.0],[133.74,110.0],[113.73,110.0]]],["#0A0A0A",[[114.28,114.28],[132.66,114.28],[132.66,132.66],[114.28,132.66]]],["#3D8F47",[[115.49,162.6],[123.62,162.93],[123.29,171.06],[115.15,170.73]]],["#B86A00",[[138.28,70.21],[152.48,70.21],[152.48,84.41],[138.28,84.41]]],["#3D8F47",[[138.28,115.59],[152.48,115.59],[152.48,129.79],[138.28,129.79]]],["#0A0A0A",[[138.42,138.42],[149.28,138.42],[149.28,149.28],[138.42,149.28]]],["#B86A00",[[163.19,71.71],[171.12,72.26],[170.57,80.19],[162.64,79.64]]],["#3D8F47",[[163.05,96.03],[171.83,96.15],[171.71,104.93],[162.93,104.82]]],["#3D8F47",[[163.41,117.9],[170.68,117.2],[171.38,124.47],[164.11,125.17]]]]
+
+HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
+<svg class="crc-sym" viewBox="26 26 148 148" aria-hidden="true"><defs>{defs}</defs>{glow}{cubes}</svg>
+<img class="crc-word" src="logo-wordmark-header.png" alt="" width="1142" height="360">
+</div>
+<style>
+  .top .crc-logo {{ --s: clamp(54px, calc((100vw - 64px) / 4.6), 92px); display: flex; align-items: center; justify-content: center;
+                   gap: calc(var(--s) * .186); margin: 6px auto 20px; }}
+  .top .crc-sym {{ width: var(--s); height: var(--s); flex: none; overflow: visible; }}
+  .top .crc-word {{ height: calc(var(--s) * .977); width: auto; max-width: none; margin: 0; display: block; }}
+</style>
+<script>
+/* i cubetti del simbolo si allargano e orbitano attorno al centro quando il puntatore si avvicina */
+(function () {{
+  var svg = document.querySelector(".crc-sym");
+  if (!svg || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var cubes = [].map.call(svg.querySelectorAll("g"), function (g) {{
+    var cx = +g.dataset.x, cy = +g.dataset.y, dx = cx - 100, dy = cy - 100, r = Math.sqrt(dx * dx + dy * dy) || 1;
+    return {{ g: g, cx: cx, cy: cy, ux: dx / r, uy: dy / r, r: r, a: 0, w: (r < 20 ? 0.6 : 1.4 * Math.pow(60 / r, 0.6)) }};
+  }});
+  var near = 0, target = 0, last = performance.now(), running = false;
+  function sense(x, y) {{
+    var b = svg.getBoundingClientRect(), mx = b.left + b.width / 2, my = b.top + b.height / 2;
+    var d = Math.sqrt((x - mx) * (x - mx) + (y - my) * (y - my)), R = Math.max(220, b.width * 1.9);
+    target = Math.max(0, Math.min(1, 1 - (d - b.width * 0.25) / R));
+    if (!running) {{ running = true; last = performance.now(); requestAnimationFrame(step); }}
+  }}
+  function step(t) {{
+    var dt = Math.min(0.05, (t - last) / 1000); last = t;
+    near += (target - near) * Math.min(1, dt * (target > near ? 4 : 9));   /* si allarga piano, si ricompone svelto */
+    var still = near < 0.002 && target === 0;
+    cubes.forEach(function (c) {{
+      if (near > 0.01) c.a += c.w * near * dt * 60;            /* gradi al secondo: i cubetti interni girano più piano */
+      else {{ c.a = ((c.a + 180) % 360 + 360) % 360 - 180; c.a *= Math.max(0, 1 - dt * 10); }}   /* tornano al posto per la via più breve, in fretta */
+      var spread = near * (4 + c.r * 0.32);
+      c.g.setAttribute("transform", "rotate(" + c.a.toFixed(2) + " 100 100) translate(" + (c.ux * spread).toFixed(2) + " " +
+                       (c.uy * spread).toFixed(2) + ") rotate(" + (c.a * 0.8).toFixed(2) + " " + c.cx + " " + c.cy + ")");
+    }});
+    if (still && cubes.every(function (c) {{ return Math.abs(c.a) < 0.3; }})) {{
+      cubes.forEach(function (c) {{ c.a = 0; c.g.removeAttribute("transform"); }}); running = false; return;
+    }}
+    requestAnimationFrame(step);
+  }}
+  window.addEventListener("pointermove", function (e) {{ sense(e.clientX, e.clientY); }}, {{ passive: true }});
+  window.addEventListener("pointerdown", function (e) {{ sense(e.clientX, e.clientY); }}, {{ passive: true }});
+  document.addEventListener("pointerleave", function () {{ target = 0; }});
+  window.addEventListener("blur", function () {{ target = 0; }});
+}})();
+</script>"""
+
+
+def header_logo(cfg):
+    """Logo dell'intestazione della home: con «site_v4» il simbolo definitivo in SVG (cubetti animati) e la scritta;
+    altrimenti l'immagine di prima."""
+    from html import escape
+    brand = escape(cfg["brand_name"], quote=True)
+    if not cfg.get("site_v4"):
+        return f'<img src="logo-horizontal.png" alt="{brand}" width="340" height="128">'
+    cubes = []                                  # simbolo piatto, come nel logo definitivo
+    for col, pts in HEADER_SYMBOL:
+        cx = sum(p[0] for p in pts) / len(pts); cy = sum(p[1] for p in pts) / len(pts)
+        cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{" ".join(f"{x},{y}" for x, y in pts)}" fill="{col}"/></g>')
+    return HEADER_LOGO.format(brand=brand, cubes="".join(cubes), defs="", glow="")
 
 
 ICONS_DIR = __import__("pathlib").Path(__file__).resolve().parent / "icons"
@@ -1436,8 +1513,9 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
     jobs_line = f"{n_positions} open PhD, post-doc and faculty positions" if n_positions else "PhD, post-doc and faculty positions"
     return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"], social=social_links(cfg),
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
-                       amber=cfg.get("grant_accent", "#FFB547"), lilac=cfg.get("positions_accent", "#A78BFA"),
+                       amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"), sci=site_accent(cfg, "science"),
                        calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
+                       logo_block=header_logo(cfg),
                        method_line=escape(f"{n_methods} carousel{'s' if n_methods != 1 else ''} to swipe, with key points and references" if n_methods
                                           else "Practical topics with key points and references"),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
@@ -1786,6 +1864,7 @@ DECOR = """
   .crc-side canvas { display: block; width: 100%; height: 100%; }
   @media (min-width: 1180px) { .crc-side { display: block; } }
   main, header, footer, .bar { position: relative; z-index: 1; }
+  .crc-side.over { z-index: 2; }
 </style>
 <script>
 (function () {
@@ -1796,43 +1875,92 @@ DECOR = """
     if (started || !wide.matches) return;
     started = true;
     var COLORS = ["#3DD9C1", "#14A085", "#FFFFFF", "#7F96AB"];
+    var GREYS = ["#0A0A0A", "#2E2E2E", "#5A5A5A", "#8A8A8A"];
     var SIZES = [4, 6, 8, 10, 12], SHAPES = [[], [], [[1, 0]], [[0, 1]], [[1, 0], [0, 1]], [[1, 0], [1, 1]]];
     function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
-    /* cascata lenta di quadratini ai due lati, singoli o a piccoli gruppi come nel logo */
+    /* zone chiare della pagina (intestazione bianca): lì cubetti e pulviscolo cadono in nero e grigi,
+       poi entrando nella parte scura prendono colore */
+    var light = [];
+    function lum(c) { var m = c.match(/\\d+(\\.\\d+)?/g); if (!m || (m.length > 3 && +m[3] === 0)) return -1;
+      return (0.2126 * m[0] + 0.7152 * m[1] + 0.0722 * m[2]) / 255; }
+    function zones() {
+      light = [];
+      document.querySelectorAll("body > header, body > .top, body > section, body > div:not(.crc-side), [data-light]").forEach(function (e) {
+        var bg = getComputedStyle(e).backgroundColor;
+        if (lum(bg) > 0.6) { var r = e.getBoundingClientRect(); if (r.bottom > 0 && r.height > 0) light.push([r.top, r.bottom]); }
+      });
+    }
+    function mixIn(y) {       /* 0 = su chiaro (grigi), 1 = su scuro (colori); passaggio graduale di 40 px */
+      for (var i = 0; i < light.length; i++) {
+        var z = light[i];
+        if (y >= z[0] - 4 && y < z[1]) return 0;
+        if (y >= z[1] && y < z[1] + 40) return (y - z[1]) / 40;
+      }
+      return 1;
+    }
     function side(id) {
       var el = document.getElementById(id), c = document.createElement("canvas"), ctx = c.getContext("2d");
+      el.classList.add("over");
       el.appendChild(c);
-      var L = { ctx: ctx, drops: [], R: null };
+      var L = { ctx: ctx, drops: [], dust: [], R: null };
       function drop(y) {
         return { x: Math.random() * L.R.width, y: (y === undefined ? -40 : y), s: pick(SIZES), v: 7 + Math.random() * 20,
-                 c: pick(COLORS), a: 0.12 + Math.random() * 0.5, shape: pick(SHAPES) };
+                 c: pick(COLORS), g: pick(GREYS), a: 0.12 + Math.random() * 0.5, shape: pick(SHAPES) };
+      }
+      function mote(y) {
+        var glow = Math.random() < 0.16;
+        return { x: Math.random() * L.R.width, y: (y === undefined ? -20 : y), r: glow ? 5 + Math.random() * 10 : 0.6 + Math.random() * 1.4,
+                 v: 4 + Math.random() * 10, w: Math.random() * 6.28, glow: glow, c: pick(COLORS), g: pick(GREYS.slice(1)),
+                 a: glow ? 0.06 + Math.random() * 0.12 : 0.25 + Math.random() * 0.55 };
       }
       L.fit = function () {
         var r = el.getBoundingClientRect(), d = window.devicePixelRatio || 1;
         c.width = r.width * d; c.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); L.R = r;
         L.drops = []; var n = Math.round(r.width * r.height / 7500);
         for (var i = 0; i < n; i++) L.drops.push(drop(Math.random() * r.height));
+        L.dust = []; var m = Math.round(r.width * r.height / 2600);
+        for (var j = 0; j < m; j++) L.dust.push(mote(Math.random() * r.height));
       };
-      L.step = function (dt) {
+      function paint(col, alpha, x, y, s) { if (alpha <= 0.003) return; ctx.globalAlpha = alpha; ctx.fillStyle = col; ctx.fillRect(x, y, s, s); }
+      L.step = function (dt, t) {
         ctx.clearRect(0, 0, L.R.width, L.R.height);
+        L.dust.forEach(function (p) {
+          p.y += p.v * dt; p.x += Math.sin(t / 1800 + p.w) * 4 * dt;
+          if (p.y > L.R.height + 20) { var n = mote(); for (var k in n) p[k] = n[k]; }
+          var k2 = mixIn(p.y);
+          [[p.g, (1 - k2) * 0.7], [p.c, k2]].forEach(function (v) {
+            if (v[1] <= 0.003) return;
+            ctx.globalAlpha = p.a * v[1];
+            if (p.glow) {
+              var gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+              gr.addColorStop(0, v[0]); gr.addColorStop(1, "rgba(0,0,0,0)");
+              ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832); ctx.fill();
+            } else { ctx.fillStyle = v[0]; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832); ctx.fill(); }
+          });
+        });
         L.drops.forEach(function (d) {
           d.y += d.v * dt;
           if (d.y > L.R.height + 40) { var n = drop(); for (var k in n) d[k] = n[k]; }
-          ctx.globalAlpha = d.a; ctx.fillStyle = d.c; ctx.fillRect(d.x, d.y, d.s, d.s);
-          d.shape.forEach(function (o) { ctx.fillRect(d.x + o[0] * (d.s + 2), d.y + o[1] * (d.s + 2), d.s, d.s); });
+          [[0, 0]].concat(d.shape).forEach(function (o) {
+            var x = d.x + o[0] * (d.s + 2), y = d.y + o[1] * (d.s + 2), k3 = mixIn(y + d.s / 2);
+            paint(d.g, d.a * (1 - k3) * 1.25, x, y, d.s);
+            paint(d.c, d.a * k3, x, y, d.s);
+          });
         });
       };
       L.fit();
       return L;
     }
+    zones();
     var sides = [side("crc-rain"), side("crc-rain-r")];
     var last = performance.now();
     function frame(t) {
       var dt = Math.min(0.05, (t - last) / 1000); last = t;
-      sides.forEach(function (L) { L.step(dt); });
+      sides.forEach(function (L) { L.step(dt, t); });
       if (!still) requestAnimationFrame(frame);
     }
-    window.addEventListener("resize", function () { sides.forEach(function (L) { L.fit(); }); if (still) frame(performance.now()); });
+    window.addEventListener("scroll", zones, { passive: true });
+    window.addEventListener("resize", function () { zones(); sides.forEach(function (L) { L.fit(); }); if (still) frame(performance.now()); });
     requestAnimationFrame(frame);
   }
   start();
@@ -1849,8 +1977,26 @@ def site_palette(cfg):
     """Colori del sito: quelli del config, oppure (config «mono») nero e grigi con azzurrino come colore base."""
     c = cfg["colors"]
     if cfg.get("mono"):
-        return {**c, "background": "#0A0A0A", "muted": "#8A8A8A", "muted_text": "#CFCFCF", "accent": "#6EC1FF"}
+        return {**c, "background": "#0A0A0A", "muted": "#8A8A8A", "muted_text": "#CFCFCF", "accent": site_accent(cfg, "methods")}
     return c
+
+
+SITE_V4 = {"grant": "#FFB74D", "positions": "#B9A2F0", "methods": "#6EC1E4", "science": "#8FD694"}   # rubriche, palette «Corallo & Mare»
+
+
+def site_accent(cfg, kind):
+    """Colore di una sezione del sito: con config «site_v4» quello fisso della rubrica (come nel logo definitivo),
+    altrimenti quello di prima. Solo sito: i post del bot non cambiano."""
+    if cfg.get("site_v4"):
+        return SITE_V4[kind]
+    return {"grant": cfg.get("grant_accent", "#FFB547"), "positions": cfg.get("positions_accent", "#A78BFA"),
+            "methods": "#6EC1FF", "science": "#6EC1FF"}[kind]
+
+
+def site_colors(cfg):
+    """Colori della cascata laterale in home: le rubriche del sito (con «site_v4» anche Latest Science)."""
+    keys = ("grant", "positions", "methods", "science") if cfg.get("site_v4") else ("grant", "positions", "methods")
+    return {k: site_accent(cfg, k) for k in keys}
 
 
 EDITORIAL_SITE = """<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
