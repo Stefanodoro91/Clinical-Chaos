@@ -1577,7 +1577,7 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
     var p = g.firstChild, row = +g.dataset.row;
     return {{ g: g, p: p, x: +g.dataset.x, y: +g.dataset.y, row: row, i0: +g.dataset.i,
              bx: +g.dataset.cx, by: +g.dataset.cy, a: rgb(p.getAttribute("fill")), b: rgb(g.dataset.c1),
-             spd: 3.4 + 1.1 * row,                        /* i giri interni corrono un filo di più */
+             spd: 30 + 9 * row,                           /* in posizione girano veloci, i giri interni di più */
              lag: 0.72 + 0.28 * ((i * 37) % 11) / 10, shown: -1 }};   /* ognuno parte con un filo di ritardo */
   }});
   var near = 0, target = 0, phase = 0, last = performance.now(), running = false;
@@ -1595,7 +1595,7 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
       var py = u * u * f.y + 2 * u * e * f.by + e * e * pos[1];
       var nx = at(f.row, f.i0 + phase * f.spd + 0.6);              /* tangente: il frammento si stira nel verso del moto */
       var ang = Math.atan2(nx[1] - pos[1], nx[0] - pos[0]) * 180 / Math.PI;
-      var s = 1 - 0.3 * e, sx = s * (1 + 1.3 * e), sy = s * (1 - 0.25 * e);
+      var s = 1 - 0.3 * e, sx = s * (1 + 1.7 * e), sy = s * (1 - 0.3 * e);   /* più corsa, più scia */
       f.g.setAttribute("transform", "translate(" + (px - f.x).toFixed(2) + " " + (py - f.y).toFixed(2) + ") " +
                        "translate(" + f.x + " " + f.y + ") rotate(" + ang.toFixed(1) + ") scale(" + sx.toFixed(3) + " " +
                        sy.toFixed(3) + ") rotate(" + (-ang).toFixed(1) + ") translate(" + (-f.x) + " " + (-f.y) + ")");
@@ -1621,21 +1621,34 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
 
 
 def _fragments():
-    """I cubetti del simbolo, con i più grandi divisi in quattro: al passaggio del mouse si scompone in
-    tanti frammenti, non in pochi blocchi."""
+    """I cubetti del simbolo, spezzati in pezzi irregolari: i tagli cadono a caso (ma sempre negli stessi
+    punti, il seme è l'indice del cubetto) e i pezzi combaciano con un filo di sovrapposizione, così a riposo
+    il simbolo è identico al logo di sempre e si sfalda solo quando parte il flusso."""
     import logo as logo_v3
-    out = []
+    out, seed = [], 7
+    def rnd(lo, hi):                                # generatore ripetibile: stesso HTML a ogni build
+        nonlocal seed
+        seed = (seed * 1103515245 + 12345) % 2147483648
+        return lo + (hi - lo) * (seed / 2147483648)
+
     for role, pts in logo_v3.SYMBOL:
         xs, ys = [p[0] for p in pts], [p[1] for p in pts]
-        w, h = max(xs) - min(xs), max(ys) - min(ys)
+        x0, y0 = min(xs), min(ys)
+        w, h = max(xs) - x0, max(ys) - y0
         square = len(pts) == 4 and abs(w - h) < 0.6 * max(w, h)
-        if square and w >= 12:                      # i cubetti grandi si spezzano in quarti
-            x0, y0, g = min(xs), min(ys), 0.5       # g: un filo di stacco fra i quarti
-            for i in (0, 1):
-                for j in (0, 1):
-                    a, b = x0 + i * w / 2, y0 + j * h / 2
-                    out.append((role, [(a + g, b + g), (a + w / 2 - g, b + g),
-                                       (a + w / 2 - g, b + h / 2 - g), (a + g, b + h / 2 - g)]))
+        o = 0.2                                     # sovrapposizione: niente righine fra i pezzi a riposo
+        rect = lambda a, b, c, d: (role, [(a - o, b - o), (c + o, b - o), (c + o, d + o), (a - o, d + o)])
+        if square and w >= 12:                      # cubetto grande: quattro pezzi, tagli scentrati
+            cx, cy = x0 + w * rnd(0.34, 0.66), y0 + h * rnd(0.34, 0.66)
+            out += [rect(x0, y0, cx, cy), rect(cx, y0, x0 + w, cy),
+                    rect(x0, cy, cx, y0 + h), rect(cx, cy, x0 + w, y0 + h)]
+        elif square and w >= 8.5:                   # cubetto medio: due pezzi, taglio in un verso o nell'altro
+            if rnd(0, 1) < 0.5:
+                c = x0 + w * rnd(0.35, 0.65)
+                out += [rect(x0, y0, c, y0 + h), rect(c, y0, x0 + w, y0 + h)]
+            else:
+                c = y0 + h * rnd(0.35, 0.65)
+                out += [rect(x0, y0, x0 + w, c), rect(x0, c, x0 + w, y0 + h)]
         else:
             out.append((role, list(pts)))
     return out
