@@ -1510,25 +1510,14 @@ HOME = """<!doctype html>
   .top {{ background: var(--bg); padding: 34px 16px 26px; text-align: center; border-top: 4px solid var(--teal); }}
   .top img {{ width: 340px; max-width: 100%; height: auto; display: block; margin: 0 auto 14px; }}
   .top p {{ color: var(--text); margin: 0 auto; max-width: 460px; font: 600 17px/1.45 Inter, system-ui, sans-serif; }}
-  .pills {{ display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin: 4px auto 16px; max-width: 780px; }}
-  .pills a {{ border-radius: 999px; padding: 9px 16px; font: 800 12.5px/1 Inter, system-ui, sans-serif; letter-spacing: .045em;
-             text-decoration: none; white-space: nowrap; }}
-  .pills a:hover, .pills a:focus-visible {{ filter: brightness(1.08); }}
-  main {{ max-width: 520px; margin: 0 auto; padding: 26px 16px 40px; display: grid; gap: 16px; }}
-  a.big {{ --c: var(--teal); display: block; text-decoration: none; color: var(--text); background: #111111;
-            border: 1px solid #262626; border-left: 3px solid var(--c); border-radius: 14px; padding: 18px 22px 17px;
-            transition: border-color .2s, background .2s; }}
-  a.big.calls {{ --c: var(--amber); }}
-  a.big.jobs {{ --c: var(--lilac); }}
-  a.big.method {{ --c: var(--meth); }}
-  a.big.science {{ --c: var(--sci); }}
-  a.big .label {{ color: var(--c); font: 600 11.5px/1.2 Inter, system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; }}
-  a.big .name {{ display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 7px 0 5px;
-                font-family: "Source Serif 4", Georgia, serif; font-size: 25px; font-weight: 600; letter-spacing: -.005em; line-height: 1.2; }}
-  a.big .name span {{ color: var(--c); font-family: Inter, system-ui, sans-serif; font-weight: 400; }}
-  a.big .count {{ color: var(--soft); font-size: 14px; font-weight: 400; }}
-  a.big:focus-visible {{ outline: 2px solid var(--c); outline-offset: 3px; }}
-  a.big:hover {{ border-color: var(--c); background: #151515; }}
+  .pills {{ display: flex; flex-direction: column; align-items: center; gap: 17px; margin: 10px auto 20px; max-width: 520px; }}
+  .pills a {{ display: flex; flex-direction: column; align-items: center; gap: 7px; text-decoration: none; }}
+  .pills .tag {{ background: var(--c); color: var(--on); border-radius: 999px; padding: 9px 17px; letter-spacing: .045em;
+                font: 800 12.5px/1 Inter, system-ui, sans-serif; }}
+  .pills .met {{ color: var(--soft); font-size: 14px; line-height: 1.35; }}
+  .pills a:hover .tag, .pills a:focus-visible .tag {{ filter: brightness(1.08); }}
+  .pills a:hover .met {{ color: var(--text); }}
+  main {{ max-width: 520px; margin: 0 auto; padding: 10px 16px 40px; display: grid; gap: 16px; }}
   .social {{ display: flex; justify-content: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }}
   .noig a {{ color: var(--teal); font-weight: 600; }}
   .noig {{ color: var(--soft); font-size: 14px; text-align: center; max-width: 440px; margin: 16px auto 0; line-height: 1.5; }}
@@ -1543,29 +1532,9 @@ HOME = """<!doctype html>
 <header class="top">
   {logo_block}
   <nav class="pills" aria-label="Sections">{pills}</nav>
-  <p>Pieces of research. All in one place.</p>
+  <p>Pieces of clinical research. In one place.</p>
 </header>
 <main>
-  <a class="big calls" href="calls.html">
-    <span class="label">Open calls</span>
-    <span class="name">Funding Calls <span aria-hidden="true">&rarr;</span></span>
-    <span class="count">{calls_line}</span>
-  </a>
-  <a class="big jobs" href="positions.html">
-    <span class="label">Open positions</span>
-    <span class="name">Academic Positions <span aria-hidden="true">&rarr;</span></span>
-    <span class="count">{jobs_line}</span>
-  </a>
-  <a class="big method" href="methodology.html">
-    <span class="label">Methodology library</span>
-    <span class="name">Design, Reporting &amp; Appraisal <span aria-hidden="true">&rarr;</span></span>
-    <span class="count">{method_line}</span>
-  </a>
-  <a class="big science" href="science.html">
-    <span class="label">Every Saturday</span>
-    <span class="name">Latest Science <span aria-hidden="true">&rarr;</span></span>
-    <span class="count">{science_line}</span>
-  </a>
   <div class="social">
 {social}
   </div>
@@ -1681,17 +1650,19 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0, n_sc
     from html import escape
     today = today or date.today()
     c = site_palette(cfg)
-    calls_line = f"{n_calls} open calls worldwide" + (f" · {n_italy} open to Italian institutions" if n_italy else "")
-    jobs_line = f"{n_positions} open PhD, post-doc and faculty positions" if n_positions else "PhD, post-doc and faculty positions"
+    metrics = {       # la metrica di ogni rubrica, sotto la sua pillola
+        "grant": f"{n_calls} open calls worldwide" + (f" · {n_italy} open to Italian institutions" if n_italy else ""),
+        "positions": f"{n_positions} open PhD, post-doc and faculty positions" if n_positions
+                     else "PhD, post-doc and faculty positions",
+        "methods": f"{n_methods} carousel{'s' if n_methods != 1 else ''}, with key points and references" if n_methods
+                   else "Practical topics with key points and references",
+        "science": f"{n_science} clinical lesson{'s' if n_science != 1 else ''}, one new every Saturday" if n_science
+                   else "One clinical paper, one lesson for practice: every Saturday"}
     return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"], social=social_links(cfg),
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
                        amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"), sci=site_accent(cfg, "science"), meth=site_accent(cfg, "methods"),
-                       calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
-                       logo_block=header_logo(cfg), pills=section_pills(cfg),
-                       method_line=escape(f"{n_methods} carousel{'s' if n_methods != 1 else ''} to swipe, with key points and references" if n_methods
-                                          else "Practical topics with key points and references"),
-                       science_line=escape(f"{n_science} clinical lesson{'s' if n_science != 1 else ''} so far: one new concept every Saturday" if n_science
-                                           else "One new clinical paper, one lesson for practice: starting this Saturday"),
+                       updated=_fmt_date(today),
+                       logo_block=header_logo(cfg), pills=section_pills(cfg, metrics),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
                                   "engineering and rehabilitation, checked on the official texts.", "") + org_jsonld(cfg))
 
@@ -2194,14 +2165,18 @@ def on_color(hexa):
     return "#0A0A0A" if lum > 0.55 else "#FFFFFF"
 
 
-def section_pills(cfg, current=None):
-    """Le quattro rubriche come pillole nei loro colori (come nell'immagine di anteprima del sito)."""
+def section_pills(cfg, metrics=None, current=None):
+    """Le quattro rubriche in colonna: pillola nel colore della rubrica e, sotto, la sua metrica."""
+    from html import escape as esc
     out = []
     for kind, href, label in SECTIONS:
         col = site_accent(cfg, kind)
         here = ' aria-current="page"' if kind == current else ""
-        out.append(f'<a href="{href}" style="background:{col};color:{on_color(col)}"{here}>{label.upper()}</a>')
-    return "".join(out)
+        met = (metrics or {}).get(kind, "")
+        out.append(f'<a href="{href}" style="--c:{col};--on:{on_color(col)}"{here}>'
+                   f'<span class="tag">{label.upper()}</span>'
+                   + (f'<span class="met">{esc(met)}</span>' if met else "") + "</a>")
+    return "\n".join(out)
 
 
 LOCKUP_SRC = {"methods": "lockup-methods.png", "science": "lockup-science.png",
