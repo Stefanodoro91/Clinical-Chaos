@@ -22,6 +22,7 @@ from googleapiclient.discovery import build
 import cards
 import content
 import grants
+import linkedin
 import positions
 import rubrics
 
@@ -34,6 +35,7 @@ POSTED_FILE = ROOT / "posted_log.json"
 SOURCES_FILE = ROOT / "sources_log.json"
 IMAGES_DIR = ROOT / "published_images"
 PREVIEW_DIR = ROOT / "preview"
+LINKEDIN_DIR = ROOT / "linkedin_drafts"   # testo pronto da incollare a mano su LinkedIn, un file per post uscito
 PAGE_FILE = ROOT / "docs" / "calls.html"   # pagina dei bandi
 HOME_FILE = ROOT / "docs" / "index.html"   # pagina iniziale del link in bio: due pulsanti, bandi e posizioni
 
@@ -772,6 +774,13 @@ def simulate_post(post, kind, slides, caption):
     pdf = PREVIEW_DIR / "carousel.pdf"
     drive_preview.carousel_pdf(slides, caption, pdf)
     drive_preview.upload(pdf, {"grant": "grant", "positions": "positions"}.get(kind, "research"), "application/pdf", CONFIG)
+    kind_link = {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",
+                 "research": f"methodology#m-{post.get('id', '')}"}.get(kind or "research", "")
+    li_link = grants.site_url(CONFIG, kind_link)
+    LINKEDIN_DIR.mkdir(exist_ok=True)
+    li_path = LINKEDIN_DIR / linkedin.filename(post, kind, today)
+    li_path.write_text(linkedin.draft(post, caption, kind, li_link), encoding="utf-8")
+    rel.append(li_path.relative_to(ROOT).as_posix())
     entry = {"date": today, "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "id": post["id"],
              "title": post["title"], "source": post.get("source", ""), "simulated": True,
              **({"kind": kind} if kind in ("grant", "positions") else {}),
@@ -1003,6 +1012,7 @@ def main():
             (PREVIEW_DIR / "facebook.jpg").write_bytes(cards.facebook_single(post, CONFIG))
         (PREVIEW_DIR / "bluesky.jpg").write_bytes(cards.single_cover(post, CONFIG))
         (PREVIEW_DIR / "facebook.txt").write_text(facebook_text(post, caption, post.get("kind"), plink), encoding="utf-8")
+        (PREVIEW_DIR / "linkedin.txt").write_text(linkedin.draft(post, caption, post.get("kind"), plink), encoding="utf-8")
         (PREVIEW_DIR / "bluesky.txt").write_text(social.short_text({**post, "caption": caption}, plink, 300), encoding="utf-8")
         (PREVIEW_DIR / "threads.txt").write_text(social.short_text({**post, "caption": caption}, plink, 500), encoding="utf-8")
         (PREVIEW_DIR / "queue.json").write_text(json.dumps(queue, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -1056,6 +1066,10 @@ def main():
     kind_link = {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",
                  "research": f"methodology#m-{post['id']}"}.get(post.get("kind") or "research", "")
     link = grants.site_url(CONFIG, kind_link)
+    LINKEDIN_DIR.mkdir(exist_ok=True)
+    li_path = LINKEDIN_DIR / linkedin.filename(post, kind, today)
+    li_path.write_text(linkedin.draft(post, caption, kind, link), encoding="utf-8")
+    commit_and_push([li_path.relative_to(ROOT).as_posix()], "Draft LinkedIn")
     fb_id = None
     if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID"):
         try:   # un errore su Facebook non blocca il post Instagram già uscito
