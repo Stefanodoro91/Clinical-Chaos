@@ -7,8 +7,8 @@
     "errori_di_fila": 0
   },
   "jobs.ac.uk – physiotherapy": {
-    "letti": 11,
-    "pertinenti": 11,
+    "letti": 13,
+    "pertinenti": 13,
     "errore": "",
     "data": "2026-11-04",
     "errori_di_fila": 0
@@ -56,8 +56,8 @@
     "errori_di_fila": 0
   },
   "Times Higher Education – clinical research": {
-    "letti": 17,
-    "pertinenti": 17,
+    "letti": 18,
+    "pertinenti": 18,
     "errore": "",
     "data": "2026-11-04",
     "errori_di_fila": 0
@@ -105,14 +105,14 @@
     "errori_di_fila": 0
   },
   "jobs.ac.uk – clinical research": {
-    "letti": 17,
-    "pertinenti": 17,
+    "letti": 16,
+    "pertinenti": 16,
     "errore": "",
     "data": "2026-11-04",
     "errori_di_fila": 0
   },
   "Nature Careers – clinical research": {
-    "letti": 11,
+    "letti": 13,
     "pertinenti": 2,
     "errore": "",
     "data": "2026-11-04",
@@ -127,7 +127,7 @@
   },
   "JREC-IN Portal (Giappone)": {
     "letti": 22,
-    "pertinenti": 2,
+    "pertinenti": 0,
     "errore": "",
     "data": "2026-11-04",
     "errori_di_fila": 0
@@ -266,8 +266,8 @@
     "errori_di_fila": 0
   },
   "Lund University – Vacancies": {
-    "letti": 36,
-    "pertinenti": 2,
+    "letti": 37,
+    "pertinenti": 3,
     "errore": "",
     "data": "2026-11-04",
     "errori_di_fila": 0
@@ -308,8 +308,8 @@
     "errori_di_fila": 0
   },
   "Nature Careers – rheumatology": {
-    "letti": 3,
-    "pertinenti": 3,
+    "letti": 4,
+    "pertinenti": 4,
     "errore": "",
     "data": "2026-11-04",
     "errori_di_fila": 0
@@ -357,8 +357,8 @@
     "errori_di_fila": 0
   },
   "jobs.ac.uk – paediatrics": {
-    "letti": 9,
-    "pertinenti": 9,
+    "letti": 10,
+    "pertinenti": 10,
     "errore": "",
     "data": "2026-11-04",
     "errori_di_fila": 0
@@ -378,7 +378,7 @@
     "errori_di_fila": 0
   },
   "Aarhus University – Vacancies (browser)": {
-    "letti": 31,
+    "letti": 32,
     "pertinenti": 2,
     "errore": "",
     "data": "2026-11-04",
@@ -392,7 +392,7 @@
     "errori_di_fila": 0
   },
   "University of Zurich – Jobs (browser)": {
-    "letti": 2,
+    "letti": 3,
     "pertinenti": 1,
     "errore": "",
     "data": "2026-11-04",
@@ -434,15 +434,15 @@
     "errori_di_fila": 0
   },
   "jobs.ac.uk – oncology": {
-    "letti": 19,
-    "pertinenti": 19,
+    "letti": 20,
+    "pertinenti": 20,
     "errore": "",
     "data": "2026-11-04",
     "errori_di_fila": 0
   },
   "jobs.ac.uk – haematology": {
-    "letti": 2,
-    "pertinenti": 2,
+    "letti": 3,
+    "pertinenti": 3,
     "errore": "",
     "data": "2026-11-04",
     "errori_di_fila": 0
@@ -490,8 +490,8 @@
     "errori_di_fila": 0
   },
   "jobs.ac.uk – medical imaging": {
-    "letti": 0,
-    "pertinenti": 0,
+    "letti": 20,
+    "pertinenti": 20,
     "errore": "",
     "data": "2026-11-04",
     "errori_di_fila": 0
@@ -609,15 +609,15 @@
     "errori_di_fila": 0
   },
   "HigherEdJobs – rehabilitation": {
-    "letti": 10,
-    "pertinenti": 10,
+    "letti": 0,
+    "pertinenti": 0,
     "errore": "",
     "data": "2026-11-04",
     "errori_di_fila": 0
   },
   "HigherEdJobs – clinical research": {
-    "letti": 17,
-    "pertinenti": 17,
+    "letti": 0,
+    "pertinenti": 0,
     "errore": "",
     "data": "2026-11-04",
     "errori_di_fila": 0
