@@ -9,13 +9,24 @@ sys.path.insert(0, str(ROOT))
 import positions, grants
 
 N_OLD = int(os.environ.get("N_OLD", "64"))
-out = ["## Posizioni: fonti nuove", "", "| fonte | letti | pertinenti | errore |", "|---|---|---|---|"]
+out = ["## Posizioni: fonti nuove", "", "| fonte | letti | pertinenti | nuovi (non in archivio né in altre fonti) | errore |", "|---|---|---|---|---|"]
 diag = []
+_old_found, _ = ({}, None)
+archive = positions.load_archive()
+seen = set(archive)
+for src in positions.read_sources()[:N_OLD]:
+    f0, _ = positions.collect([src], guided=False)
+    seen |= set(f0)
+tot_new = 0
 for src in positions.read_sources()[N_OLD:]:
-    _, rep = positions.collect([src], guided=False)
+    found, rep = positions.collect([src], guided=False)
     name, n, kept, err = rep[0]
-    out.append(f"| {name} | {n} | {kept} | {err[:80]} |")
-    print(name, n, kept, err[:120], flush=True)
+    new = [k for k in found if k not in seen]
+    seen |= set(found); tot_new += len(new)
+    out.append(f"| {name} | {n} | {kept} | {len(new)} | {err[:80]} |")
+    print(name, n, kept, len(new), err[:120], flush=True)
+    for k in new[:4]:
+        print("    ·", found[k]["title"][:100], "->", found[k]["url"][:100], flush=True)
     if kept == 0 and not src["tipo"].startswith("inpa"):
         try:
             r = requests.get(src["url"], headers=positions.HEADERS, timeout=45)
@@ -30,7 +41,8 @@ for src in positions.read_sources()[N_OLD:]:
                         "\n".join("- " + l for l in links[40:70]))
         except Exception as e:
             diag.append(f"### {name}\nerrore: {e}")
-out += ["", "## Diagnostica fonti a zero", ""] + diag
+out += ["", f"**Annunci nuovi in totale: {tot_new}** (prima della verifica Gemini)", "", "## Diagnostica fonti a zero", ""] + diag
+print("TOTALE NUOVI", tot_new, flush=True)
 
 gf = os.environ.get("GRANTFINDER")
 if gf:
