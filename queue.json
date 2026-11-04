@@ -1473,5 +1473,58 @@
     "source_hint": "page 3, Section 3.2.3 & page 6, Section 4",
     "id": "7ec1fad2",
     "source": "evidence-based clinical practice guidelines.pdf"
+  },
+  {
+    "title": "Why SHAP Values Do Not Equal Causal Truth",
+    "title_highlight": "Not Equal Causal Truth",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "The Illusion of Ground Truth",
+        "body": "Supervised machine learning models achieve high predictive accuracy, but feature importance scores lack intrinsic verifiability.",
+        "image_prompt": "a magnifying glass revealing a hidden crack in a perfect-looking bridge built from simple digital blocks",
+        "photo_query": "magnifying glass data analysis",
+        "highlight": "lack intrinsic verifiability",
+        "source": ""
+      },
+      {
+        "heading": "What SHAP Actually Measures",
+        "body": "SHapley Additive exPlanations (SHAP) quantify marginal contributions to predictions, not bona fide causal or associative strengths.",
+        "image_prompt": "a crowd of simple figures split by a large coin into two equal groups, each walking toward a pill bottle",
+        "photo_query": "data analytics machine learning",
+        "highlight": "quantify marginal contributions",
+        "source": ""
+      },
+      {
+        "heading": "Correlated Features and Arbitrary Credit",
+        "body": "Correlated features can divide or inflate credit arbitrarily, and overfitting can embed spurious patterns that SHAP explains.",
+        "image_prompt": "two identical pill bottles sharing a single floating glowing number that splits unevenly between them",
+        "photo_query": "data variables correlation chart",
+        "highlight": "divide or inflate credit",
+        "source": ""
+      },
+      {
+        "heading": "Treat SHAP as Hypothesis Generators",
+        "body": "Because importance scores remain tied exclusively to the chosen model, SHAP outputs should be treated as hypothesis generators.",
+        "image_prompt": "a researcher pointing a flashlight at a dark wooden box on a table filled with documents",
+        "photo_query": "researcher examining data",
+        "highlight": "hypothesis generators",
+        "source": ""
+      }
+    ],
+    "takeaway": "Treat SHAP attributions as model-dependent hypotheses rather than objective causal or associative effects.",
+    "takeaway_highlight": "Treat SHAP attributions",
+    "references": [
+      "Takefuji, Y. (2026). Beyond the black box: Enhancing feature explainability in machine learning with SHAP and complementary approaches. Computers and Electronics in Agriculture, 240, 111226. https://doi.org/10.1016/j.compag.2025.111226"
+    ],
+    "caption": "Why high predictive accuracy does not mean your SHAP feature importance rankings are true or unbiased.\n\nMachine learning interpretability tools are increasingly popular, yet their outputs depend entirely on the chosen model and sample. When correlated features divide credit arbitrarily, importance scores become unstable. How do you validate your feature importance rankings?",
+    "hashtags": [
+      "#MachineLearning",
+      "#DataScience",
+      "#ExplainableAI"
+    ],
+    "source_hint": "pages 1-2",
+    "id": "da69d2db",
+    "source": "Beyond the black box.pdf"
   }
 ]
