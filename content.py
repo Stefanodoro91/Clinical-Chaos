@@ -1026,6 +1026,54 @@ def enrich(post, material):
     return not concreteness(post)
 
 
+CLINICAL_CATEGORY = "Clinical insight"   # categoria dedicata al post del sabato (Latest Science): si esclude a
+                                          # mano dalla libreria di metodologia, mai assegnata dal prompt principale
+
+CLINICAL_TAKEAWAY_PROMPT = """This Instagram carousel is about to go out under "Latest Science": a weekly feature
+that gives one clinical, practice-facing lesson from a real paper, for clinicians and researchers who treat
+patients. Its takeaway line currently reads like a methodology lesson (about study design, reporting or
+statistics). Rewrite ONLY the takeaway so it reads as a clinical concept: what this means for the therapeutic
+approach or for the patient in front of the clinician, not for how the study was run or reported.
+
+STRICT RULES:
+- Use ONLY facts already present in the slides below. Do not add any number, result or claim that is not there.
+- Do not mention study design, sample size, bias, blinding, statistics, reporting guidelines or "this study/paper".
+- Write it as a clinical takeaway: what to do differently, watch for, or understand about the patient/condition.
+- Max 130 characters. Plain English, no hashtags.
+- If the slides truly contain nothing with a clinical/patient angle (pure methodology, no clinical content at all),
+  return the original takeaway unchanged.
+
+Title: {title}
+Slides:
+{slides}
+
+Current takeaway: {takeaway}"""
+
+CLINICAL_SCHEMA = {"type": "OBJECT", "properties": {"takeaway": {"type": "STRING"},
+                   "takeaway_highlight": {"type": "STRING"}}, "required": ["takeaway"]}
+
+
+def clinical_takeaway(post):
+    """Riscrive il takeaway del post «Clinical Insights» (sabato) in chiave clinica/paziente invece che
+    metodologica, usando solo i fatti già nelle slide. Se Gemini non risponde o non trova un angolo clinico,
+    lascia il takeaway originale: nessun errore bloccante, il post esce comunque."""
+    listing = "\n".join(f"{i+1}. {s.get('heading', '')} — {s.get('body', '')}" for i, s in enumerate(post.get("slides") or []))
+    try:
+        out = gemini_json([{"text": CLINICAL_TAKEAWAY_PROMPT.format(title=post.get("title", ""), slides=listing,
+                                                                     takeaway=post.get("takeaway", ""))}],
+                          CLINICAL_SCHEMA, 0.3, task="takeaway clinico")
+    except Exception as e:
+        print(f"  Takeaway clinico non disponibile ({str(e)[:100]}): resta il takeaway originale")
+        return post
+    new_take = (out.get("takeaway") or "").strip()
+    if new_take and new_take.lower() != (post.get("takeaway") or "").strip().lower():
+        post["takeaway"] = _clip(new_take, 130)
+        hl = out.get("takeaway_highlight") or ""
+        post["takeaway_highlight"] = exact_phrase(hl, post["takeaway"]) if hl else ""
+        print(f"  Takeaway clinico: {post['takeaway']}")
+    return post
+
+
 def license_status(text):
     """Licenza di un articolo, letta dal testo (senza AI): («ok», etichetta) se riutilizzabile con attribuzione
     (CC BY, CC BY-SA, CC0, pubblico dominio); («blocked», etichetta) se vieta le opere derivate o l'uso
