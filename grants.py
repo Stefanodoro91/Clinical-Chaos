@@ -1501,6 +1501,8 @@ def social_links(cfg):
         links.append(("bluesky", "Bluesky", f"https://bsky.app/profile/{cfg['bluesky_handle'].lstrip('@')}"))
     if cfg.get("threads_handle"):
         links.append(("threads", "Threads", f"https://www.threads.com/@{cfg['threads_handle'].lstrip('@')}"))
+    if cfg.get("linkedin_url"):
+        links.append(("linkedin", "LinkedIn", cfg["linkedin_url"]))
     links.append(("rss", "RSS", "rss.html"))            # pagina che spiega come iscriversi (il feed grezzo è XML)
     return "\n".join(f'    <a href="{url}" rel="me">{icon(name)}<span>{label}</span></a>' for name, label, url in links)
 
@@ -1519,7 +1521,20 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
                        method_line=escape(f"{n_methods} carousel{'s' if n_methods != 1 else ''} to swipe, with key points and references" if n_methods
                                           else "Practical topics with key points and references"),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
-                                  "engineering and rehabilitation, checked on the official texts.", ""))
+                                  "engineering and rehabilitation, checked on the official texts.", "") + org_jsonld(cfg))
+
+
+def org_jsonld(cfg):
+    """Dati strutturati dell'organizzazione (schema.org): collegano il sito ai profili social per Google."""
+    ig = cfg["handle"].lstrip("@")
+    same = [f"https://www.instagram.com/{ig}/", f"https://www.facebook.com/{ig}"]
+    if cfg.get("bluesky_handle"):
+        same.append(f"https://bsky.app/profile/{cfg['bluesky_handle'].lstrip('@')}")
+    if cfg.get("linkedin_url"):
+        same.append(cfg["linkedin_url"])
+    data = {"@context": "https://schema.org", "@type": "Organization", "name": cfg["brand_name"],
+            "url": site_url(cfg, ""), "logo": site_url(cfg, "og.png"), "sameAs": same}
+    return '\n<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False) + "</script>"
 
 
 def filters_form(entries):
