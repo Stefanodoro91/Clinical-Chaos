@@ -47,7 +47,12 @@ RX_REHAB = re.compile(
     r"child health|radiolog|diagnostic imaging|diagnostica per immagini|radiotherap|radioterapi|nuclear medicine|"
     r"medicina nucleare|neuroimaging|human genetics|medical genetics|genetic counsel|consulenza genetica|"
     r"clinical genomics|autoimmun|arthritis|lupus|MED/36|MED/38|MED/16|MED/03|M-PSI/02|"
-    r"MED/48|MEDS-26|MED/34|MEDS-19|06/F4|MED/01|MEDS-24|ING-IND/34|IBIO-01|sperimentazion\w* clinic|scienze riabilitative", re.I)
+    r"MED/48|MEDS-26|MED/34|MEDS-19|06/F4|MED/01|MEDS-24|ING-IND/34|IBIO-01|sperimentazion\w* clinic|scienze riabilitative|"
+    # focus esteso (11/2026): psicologia clinica, invecchiamento, sanità digitale e AI, ruoli della ricerca clinica
+    r"ageing|aging|gerontolog|geriatri|psycholog|psicolog|dementia|demenz|alzheimer|"
+    r"health data|data science.{0,20}health|medical (ai|artificial intelligence)|ai in (medicine|health)|clinical ai|"
+    r"research nurse|infermier\w* di ricerca|data manager|study coordinator|trial (coordinator|manager)|"
+    r"clinical research (coordinator|associate)|collaborator\w* professional\w* di ricerca", re.I)
 # per la pertinenza «media»: termini riabilitativi clinici; «rehabilitation» da solo non basta
 # (esclude riabilitazione di detenuti, animali, edifici)
 RX_CLINICAL_REHAB = re.compile(
@@ -65,7 +70,9 @@ RX_POSITION = re.compile(
     r"assistant prof|associate prof|reader in|chair in|research (assistant|associate|scientist|officer)|"
     r"clinical academic|clinical research fellow|clinical fellowship|fellowship|bors[ae] di (ricerca|studio)|tecnologo|"
     r"ricercatore sanitario|ricerca sanitaria|contratt\w* di ricerca|incaric\w* (post-?doc|di ricerca)|"
-    r"ricercat\w* \w* ?tenure|ricercat\w*.{0,40}\b(iii|terzo) livello", re.I)
+    r"ricercat\w* \w* ?tenure|ricercat\w*.{0,40}\b(iii|terzo) livello|"
+    r"research nurse|infermier\w* di ricerca|data manager|study coordinator|trial (coordinator|manager)|"
+    r"clinical research (coordinator|associate)|collaborator\w* professional\w* di ricerca", re.I)
 RX_MEDIUM_TITLE = re.compile(
     r"clinical|patient|trial|epidemiolog|public health|population health|global health|rehabilit|physiother|"
     r"occupational therap|speech|medic(al|ine)|health sciences|nursing|psychiatr|orthopa|anaesthes|anesthes|gastro|"
@@ -90,7 +97,8 @@ Return:
   expired, a news item, a course, a list of jobs or not a position, "unclear" otherwise.
 - position_type: "phd" (PhD, doctoral studentship, dottorato), "postdoc" (post-doctoral position,
   research fellow, assegno di ricerca), "research" (research assistant, research associate, research
-  scientist or officer, borsa di ricerca, tecnologo), "clinical" (clinical academic post, clinical research
+  scientist or officer, borsa di ricerca, tecnologo, clinical research coordinator, trial manager, research
+  nurse, clinical data manager, collaboratore professionale di ricerca), "clinical" (clinical academic post, clinical research
   fellowship or training fellowship for clinicians and therapists), "faculty" (assistant/associate/full
   professor, lecturer, reader, tenure-track, RTD/RTT), or "other".
 - relevance: "high" if the position is about rehabilitation research (rehabilitation, physiotherapy,
@@ -100,7 +108,8 @@ Return:
   interventions, neuropsychology and cognitive rehabilitation, paediatric rehabilitation); "medium" if it is
   clinical research in any medical field, especially neurology, neuropsychology, orthopaedics, rheumatology and
   autoimmune diseases, paediatrics and neonatology, radiology, imaging and radiotherapy, geriatrics, oncology,
-  haematology, clinical and human genetics and rare diseases (clinical trials,
+  haematology, clinical and human genetics and rare diseases, clinical and health psychology, ageing and
+  geriatrics, dementia, digital health and AI or data science applied to patient care (clinical trials,
   studies with patients, clinical epidemiology, biostatistics for clinical studies, health services or
   implementation research) or clinical/biomedical engineering applied
   to patients or health care (medical devices, imaging, digital health), or if rehabilitation is one

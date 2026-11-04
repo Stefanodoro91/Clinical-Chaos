@@ -1,0 +1,26 @@
+name: Prova fonti nuove (solo branch fonti-ampliate)
+on:
+  push:
+    branches: [fonti-ampliate]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: pip install playwright && python -m playwright install --with-deps chromium
+      - run: git clone --depth 1 https://github.com/Stefanodoro91/GrantFinder /tmp/gf && pip install -r /tmp/gf/requirements.txt
+      - run: python tools/probe_sources.py
+        env:
+          GRANTFINDER: /tmp/gf
+      - uses: actions/upload-artifact@v4
+        with:
+          name: probe-report
+          path: probe_report.md
