@@ -129,6 +129,38 @@ def wordmark(accent, ink=INK_LIGHT, height=160, label=None):
     return img.resize((round(img.width / k), height), Image.LANCZOS)
 
 
+def ring_points(n, rows=3, center=(100.0, 100.0), scale=0.95):
+    """n punti distribuiti sull'anello della «o», su `rows` giri concentrici, nel sistema del simbolo
+    (viewBox 26 26 148 148). Servono al sito come bersagli dei frammenti del simbolo al passaggio del mouse."""
+    a = math.radians(-20)
+    per = -(-n // rows)
+
+    def resample(pts, m):
+        acc = [0.0]
+        for i in range(1, len(pts)):
+            acc.append(acc[-1] + math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]))
+        tot, out, j = acc[-1], [], 1
+        for k in range(m):
+            d = tot * k / m
+            while j < len(acc) - 1 and acc[j] < d:
+                j += 1
+            t = (d - acc[j - 1]) / max(1e-6, acc[j] - acc[j - 1])
+            out.append((pts[j - 1][0] + (pts[j][0] - pts[j - 1][0]) * t,
+                        pts[j - 1][1] + (pts[j][1] - pts[j - 1][1]) * t))
+        return out
+
+    outer, inner = resample(_quad(PEBBLE_OUT, 20), per), resample(_quad(PEBBLE_IN, 20), per)
+    pts = []
+    for r in range(rows):
+        f = (r + 1) / (rows + 1)                      # dal bordo esterno a quello interno
+        for k in range(per):
+            x = outer[k][0] + (inner[k][0] - outer[k][0]) * f
+            y = outer[k][1] + (inner[k][1] - outer[k][1]) * f
+            pts.append(((x * math.cos(a) - y * math.sin(a)) * scale + center[0],
+                        (x * math.sin(a) + y * math.cos(a)) * scale + center[1]))
+    return pts[:n]
+
+
 def lockup(accent, ink=INK_LIGHT, height=170):
     """Simbolo e scritta affiancati, come nel canvas (simbolo 70, spazio 13, scritta alta ~68)."""
     s = symbol(accent, ink, height)
