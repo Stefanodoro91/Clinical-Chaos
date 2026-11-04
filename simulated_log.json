@@ -88,5 +88,33 @@
     "reel_of": "positions-2026-11-02",
     "seconds": 28.0,
     "simulated": true
+  },
+  {
+    "date": "2026-11-04",
+    "time": "2026-11-04T18:21:53+00:00",
+    "id": "144c4de0",
+    "title": "Why P-Values Do Not Belong in Table 1",
+    "source": "P-value.pdf",
+    "simulated": true,
+    "points": [
+      {
+        "heading": "The Real Purpose of Table 1",
+        "body": "Table 1 exists to outline patient traits rather than show formal hypothesis tests. Its true purpose is to summarize baseline features so readers can assess clinical comparability."
+      },
+      {
+        "heading": "The Table 1 Fallacy in Randomized Trials",
+        "body": "In randomized trials, a P-value tests whether treatment allocation occurred at random. Randomization guarantees this by definition, making significance testing of baseline balance completely illogical."
+      },
+      {
+        "heading": "Sample Size Distorts the Results",
+        "body": "P-values are sensitive to sample size. In huge cohorts, trivial differences produce significant P-values, while in small samples, true clinically meaningful imbalances remain hidden behind high P-values."
+      },
+      {
+        "heading": "Guidelines Explicitly Oppose Them",
+        "body": "Major guidelines like CONSORT for randomized trials and STROBE for observational studies advise against reporting P-values in baseline tables, urging researchers to avoid confusing description with inference."
+      }
+    ],
+    "takeaway": "Table 1 exists to describe patients, not test hypotheses; drop the P-values and evaluate clinical relevance.",
+    "category": "Reporting & publication"
   }
 ]
