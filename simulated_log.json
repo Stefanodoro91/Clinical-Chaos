@@ -116,5 +116,16 @@
     ],
     "takeaway": "Table 1 exists to describe patients, not test hypotheses; drop the P-values and evaluate clinical relevance.",
     "category": "Reporting & publication"
+  },
+  {
+    "date": "2026-11-05",
+    "time": "2026-11-05T11:54:03+00:00",
+    "id": "grant-EU-HORIZON-BRIDGING-2027-06-02",
+    "title": "Knowledge intermediaries sought to validate Horizon innovations",
+    "source": "GrantFinder",
+    "simulated": true,
+    "kind": "grant",
+    "grant_id": "EU-HORIZON-BRIDGING-2027-06-02",
+    "deadline": "2027-02-16"
   }
 ]
