@@ -18,6 +18,9 @@ jobs:
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@v7
+      - name: Registro quote Gemini di oggi (da main)
+        # le quote sono condivise con i giri di main: il bot deve sapere quali modelli sono già esauriti o consumati
+        run: git fetch --depth=1 origin main && git checkout origin/main -- usage || true
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
@@ -43,3 +46,13 @@ jobs:
       - name: Riepilogo
         if: always()
         run: cat week_report.txt || true
+      - name: Copia delle uscite e consumo modelli
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: settimana-di-prova
+          path: |
+            preview_week/
+            week_report.txt
+            usage/
+          retention-days: 14

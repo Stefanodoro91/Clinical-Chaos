@@ -37,6 +37,14 @@ def clean():
     PREVIEW.mkdir()
 
 
+KEEP = ROOT / "preview_week"           # copia di ogni uscita: artifact del run, anche se Drive non riceve il file
+
+
+def keep(path, name):
+    KEEP.mkdir(exist_ok=True)
+    shutil.copy(path, KEEP / name.replace("/", "-"))
+
+
 def add_posted(entry):
     posted = bot.load(bot.POSTED_FILE, [])
     posted.append(entry)
@@ -45,6 +53,8 @@ def add_posted(entry):
 
 def main():
     plan = json.loads((ROOT / "week_preview.json").read_text(encoding="utf-8"))
+    if plan.get("folder"):
+        print(f"Cartella Drive di questa prova: {plan['folder']['name']} (https://drive.google.com/drive/folders/{plan['folder']['id']})")
     only = {s.strip() for s in (os.environ.get("ONLY") or "").split(",") if s.strip()}
     report = []
     for i, slot in enumerate(plan["slots"], 1):
@@ -62,7 +72,8 @@ def main():
                     report.append(f"{slot['name']}: nessuna storia (dati insufficienti)")
                     continue
                 out, skind, data = res
-                drive_preview.upload(out, None, "video/mp4", cfg, file_id=slot["file_id"])
+                keep(out, slot["name"])
+                saved = drive_preview.upload(out, None, "video/mp4", cfg, file_id=slot["file_id"])
                 log = stories.load_log()
                 e = {"date": day, "time": iso(day, slot["time"]), "kind": skind, "simulated": True}
                 for k in ("grant_id", "family"):
@@ -70,7 +81,7 @@ def main():
                         e[k] = data[k]
                 log.append(e)
                 stories.LOG_FILE.write_text(json.dumps(log, ensure_ascii=False, indent=2), encoding="utf-8")
-                report.append(f"{slot['name']}: ok ({skind})")
+                report.append(f"{slot['name']}: ok ({skind})" + ("" if saved else " — NON salvato su Drive"))
             elif kind == "reel":
                 os.environ["POST_TYPE"] = "reel"
                 os.environ["REEL_SOURCE"] = "latest"
@@ -80,10 +91,12 @@ def main():
                     report.append(f"{slot['name']}: nessun carosello da trasformare in reel")
                     continue
                 m = json.loads(meta.read_text(encoding="utf-8")) if meta.exists() else {}
-                drive_preview.upload(video, None, "video/mp4", cfg, file_id=slot["file_id"])
+                keep(video, slot["name"])
+                saved = drive_preview.upload(video, None, "video/mp4", cfg, file_id=slot["file_id"])
                 add_posted({"date": day, "time": iso(day, slot["time"]), "id": f"reel-{m.get('reel_of', i)}",
                             "title": m.get("title", ""), "kind": "reel", "reel_of": m.get("reel_of"), "simulated": True})
-                report.append(f"{slot['name']}: ok (da «{m.get('title', '')[:60]}», musica {m.get('music', '')})")
+                report.append(f"{slot['name']}: ok (da «{m.get('title', '')[:60]}», musica {m.get('music', '')})"
+                              + ("" if saved else " — NON salvato su Drive"))
             else:
                 os.environ["POST_TYPE"] = kind
                 bot.main()
@@ -95,8 +108,11 @@ def main():
                 slides = sorted(PREVIEW.glob("slide-*.jpg"), key=lambda p: int(p.stem.split("-")[1]))
                 caption = (PREVIEW / "caption.txt").read_text(encoding="utf-8")
                 pdf = PREVIEW / "carousel.pdf"
-                drive_preview.carousel_pdf([p.read_bytes() for p in slides], caption, pdf)
-                drive_preview.upload(pdf, None, "application/pdf", cfg, file_id=slot["file_id"])
+                li = PREVIEW / "linkedin.txt"             # bozza LinkedIn nelle ultime pagine del PDF
+                extra = ("LINKEDIN\n" + li.read_text(encoding="utf-8")) if li.exists() else ""
+                drive_preview.carousel_pdf([p.read_bytes() for p in slides], caption, pdf, extra)
+                keep(pdf, slot["name"])
+                saved = drive_preview.upload(pdf, None, "application/pdf", cfg, file_id=slot["file_id"])
                 safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in post["id"])
                 folder = bot.IMAGES_DIR / f"{day}-{safe}"   # per i reel dei giorni dopo (solo nel run, niente commit)
                 folder.mkdir(parents=True, exist_ok=True)
@@ -116,7 +132,7 @@ def main():
                     queue = [q for q in bot.load(bot.QUEUE_FILE, []) if q.get("id") != post["id"]]
                     bot.save(bot.QUEUE_FILE, queue)
                 add_posted(entry)
-                report.append(f"{slot['name']}: ok («{post['title'][:70]}»)")
+                report.append(f"{slot['name']}: ok («{post['title'][:70]}»)" + ("" if saved else " — NON salvato su Drive"))
         except SystemExit as e:
             report.append(f"{slot['name']}: saltato ({e})")
         except Exception as e:

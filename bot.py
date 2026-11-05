@@ -71,7 +71,9 @@ def git(*args):
 
 content.THINKING = dict(CONFIG.get("gemini_thinking") or {})
 content.ROUTE_OVERRIDES = dict(CONFIG.get("ai_routes") or {})
-content.CHECK_CAP = int(CONFIG.get("gemini_daily_cap_checks", 34))   # oltre: verifiche ferme, quota lasciata ai post
+content.CHECK_CAP = int(CONFIG.get("gemini_daily_cap_checks", 60))   # richieste dei modelli leggeri oltre le quali le verifiche si fermano
+content.MODEL_RPD.update(CONFIG.get("gemini_rpd") or {})
+content.STRONG_RESERVE = int(CONFIG.get("gemini_strong_reserve", content.STRONG_RESERVE))
 positions.TEXT_CHARS = int(CONFIG.get("positions_text_chars") or positions.TEXT_CHARS)
 
 def _head():
@@ -786,6 +788,7 @@ def simulate_post(post, kind, slides, caption):
     LINKEDIN_DIR.mkdir(exist_ok=True)
     li_path = LINKEDIN_DIR / linkedin.filename(post, kind, today)
     li_path.write_text(linkedin.draft(post, caption, kind, li_link), encoding="utf-8")
+    drive_preview.linkedin_doc(LINKEDIN_DIR, CONFIG)     # bozze LinkedIn anche su Drive (documento «Bozze LinkedIn»)
     rel.append(li_path.relative_to(ROOT).as_posix())
     entry = {"date": today, "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "id": post["id"],
              "title": post["title"], "source": post.get("source", ""), "simulated": True,
@@ -1078,6 +1081,8 @@ def main():
     LINKEDIN_DIR.mkdir(exist_ok=True)
     li_path = LINKEDIN_DIR / linkedin.filename(post, kind, today)
     li_path.write_text(linkedin.draft(post, caption, kind, link), encoding="utf-8")
+    import drive_preview
+    drive_preview.linkedin_doc(LINKEDIN_DIR, CONFIG)     # bozze LinkedIn anche su Drive (documento «Bozze LinkedIn»)
     commit_and_push([li_path.relative_to(ROOT).as_posix()], "Draft LinkedIn")
     fb_id = None
     if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID"):

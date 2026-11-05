@@ -94,6 +94,8 @@ def hlc(dark, fallback):
     import colorsys
     r, g, b = (int(HL.lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4))
     h, l, sat = colorsys.rgb_to_hls(r, g, b)         # stesso colore, più scuro e saturo: leggibile su fondo bianco
+    if sat < 0.15:                                   # bianco o grigio (Latest Science): su fondo chiaro diventa nero,
+        return "#0A0A0A"                             # non un rosso scuro inventato dalla tinta 0 del bianco
     return "#%02x%02x%02x" % tuple(int(v * 255) for v in colorsys.hls_to_rgb(h, 0.38, max(sat, 0.75)))
 
 
@@ -235,7 +237,10 @@ def logo_v3(name, height):
         import colorsys
         r, g, b = (int(acc.lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4))
         h, l, sat = colorsys.rgb_to_hls(r, g, b)
-        acc = "#%02x%02x%02x" % tuple(int(v * 255) for v in colorsys.hls_to_rgb(h, min(l, 0.42), max(sat, 0.6)))
+        if sat < 0.15:                     # bianco (Latest Science) su fondo chiaro: logo nero, non un rosso inventato
+            acc = "#1A1A1A"
+        else:
+            acc = "#%02x%02x%02x" % tuple(int(v * 255) for v in colorsys.hls_to_rgb(h, min(l, 0.42), max(sat, 0.6)))
     ink = logo.INK_LIGHT if light else logo.INK_DARK
     return (logo.symbol if "symbol" in name else logo.wordmark)(acc, ink, int(height))
 
@@ -804,10 +809,8 @@ def extra_pills(d, post, x, y, bg, ink):
     """Pill aggiuntive dopo quella principale: rubrica (es. CHECKLIST) e avviso idoneità dei bandi
     (es. US-BASED TEAMS ONLY). Fondo del tema e testo in inchiostro, per distinguerle dalla principale."""
     labels = [l for l in (post.get("eligibility_flag"), post.get("rubric"), post.get("area_label")) if l]   # l'avviso ha la precedenza
-    if BRAND_V4:                                 # la rubrica è già nell'etichetta principale; l'argomento va qui
-        cat = post.get("category") if post_line(post) in ("methods", "science") else None
-        labels = [l for l in (post.get("eligibility_flag"), post.get("rubric"), cat, post.get("area_label"))
-                  if l and l != "Clinical Insights"]
+    if BRAND_V4:                                 # brand v4: una sola etichetta per post, nome e colore della rubrica
+        return x                                 # (decisione di Stefano, 5/11); l'avviso d'idoneità dei bandi va nel testo
     pf = font("Bold", 28)
     global PILLS_BOTTOM
     row_y = y
@@ -908,6 +911,11 @@ def poster_grant_cover(post, cfg, total, picture=None):
         ff, fl, fs = fit(d, post["funder"], "SemiBold", 34, 26, W - 2 * MARGIN, 84, 1.25)
         keep.append((MARGIN - 20, y - 10, W - MARGIN + 20, y + len(fl) * fs * 1.25 + 10))
         y = draw_lines(d, fl, ff, fs, MARGIN, y, c["muted_text"] if dark else INK_MUTED, 1.25) + 16
+    if BRAND_V4 and post.get("eligibility_flag"):   # avviso d'idoneità come riga di testo, non come seconda etichetta
+        ef = font("Bold", 30)
+        d.text((MARGIN, y), post["eligibility_flag"].upper(), font=ef, fill=hlc(dark, acc))
+        keep.append((MARGIN - 20, y - 10, W - MARGIN + 20, y + 44))
+        y += 56
     box_top, box_h = H - 420, 150
     end = poster_title(d, post["title"], post.get("title_highlight"), MARGIN, y, W - 2 * MARGIN, box_top - y - 30,
                        ink, acc, start=130 if picture is None else 104, minimum=56)
@@ -1195,11 +1203,14 @@ def closing(post, cfg, total):
     c = cfg["colors"]
     navy = c["background"]
     img, d = light_canvas(cfg, total, total)
-    d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 34), fill=hlc(False, DARK_ACCENT.get(c["accent"], navy)))
-    card_top = H - 660
-    fnt, lines, size = fit(d, post["takeaway"], H_("ExtraBold"), 72, 44, W - 2 * MARGIN, card_top - 240 - 50, 1.2)
-    draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 240, W - 2 * MARGIN,
-              navy, 1.2, HLC(c), half=True)
+    if post.get("takeaway") and post.get("kind") != "grant":     # rubrica Funding calls: niente key takeaway (5/11)
+        d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 34), fill=hlc(False, DARK_ACCENT.get(c["accent"], navy)))
+        card_top = H - 660
+        fnt, lines, size = fit(d, post["takeaway"], H_("ExtraBold"), 72, 44, W - 2 * MARGIN, card_top - 240 - 50, 1.2)
+        draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 240, W - 2 * MARGIN,
+                  navy, 1.2, HLC(c), half=True)
+    else:                                         # solo la scheda profilo, centrata
+        card_top = (H - 500) // 2
     d.rounded_rectangle((MARGIN, card_top, W - MARGIN, card_top + 500), radius=32, fill=navy)
     sym = paste_logo(img, "logo-symbol-light", MARGIN + 30, card_top + 22, height=140)
     if sym:

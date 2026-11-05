@@ -1,7 +1,7 @@
-name: Confronto A/B token (temporaneo, fino al 2/11)
+name: Confronto A/B token (concluso il 4/11, solo a mano)
 on:
-  schedule:
-    - cron: "10 8 * * *"     # 08:10 UTC, dopo l'azzeramento della quota Gemini (09:00 a Roma dal 1/11); campione di 3 + 3
+  # pianificazione tolta il 5/11: il confronto è concluso (Flash-Lite = Flash nel 96% dei campi) e ogni mattina
+  # consumava la quota del Flash principale appena azzerata, togliendola ai post
   workflow_dispatch:
 permissions:
   contents: write
