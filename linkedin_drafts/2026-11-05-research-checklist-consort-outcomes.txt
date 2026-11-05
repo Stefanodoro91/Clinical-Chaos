@@ -1,0 +1,24 @@
+Primary outcome: defined before, not after
+
+CONSORT item 6a: your primary outcome must be fully pre-specified: measure, metric and time point.
+
+One reporting-checklist item at a time, every Thursday: what it asks, why it matters, and how to comply in practice.
+This week: CONSORT, Item 6a – Outcomes.
+Which checklist item do you see ignored most often?
+
+References:
+• Schulz, K. F., Altman, D. G., & Moher, D. (2010). CONSORT 2010 statement: Updated guidelines for reporting parallel group randomised trials. BMJ, 340, c332. https://doi.org/10.1136/bmj.c332
+
+Key points:
+1. What the item asks: Define every pre-specified primary and secondary outcome: the measure, how it was assessed, and exactly when.
+2. Why it matters: Vague outcomes invite switching after the data are in, one of the best-documented sources of reporting bias.
+3. How to comply: Write each outcome as: instrument + metric + aggregation + time point. Example: pain on a 0–10 scale, mean change at 12 weeks.
+
+Takeaway: An outcome is pre-specified only if measure, metric and time point are written down first.
+
+References:
+- Schulz, K. F., Altman, D. G., & Moher, D. (2010). CONSORT 2010 statement: Updated guidelines for reporting parallel group randomised trials. BMJ, 340, c332. https://doi.org/10.1136/bmj.c332
+
+Full details: https://clinicalresearchchaos.com/methodology#m-checklist-consort-outcomes
+
+#ClinicalResearch #ResearchMethodology #CONSORT #ClinicalTrials #Endpoints

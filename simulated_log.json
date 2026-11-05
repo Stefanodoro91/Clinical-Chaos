@@ -127,5 +127,29 @@
     "kind": "grant",
     "grant_id": "EU-HORIZON-BRIDGING-2027-06-02",
     "deadline": "2027-02-16"
+  },
+  {
+    "date": "2026-11-05",
+    "time": "2026-11-05T18:17:44+00:00",
+    "id": "checklist-consort-outcomes",
+    "title": "Primary outcome: defined before, not after",
+    "source": "Rubrica Checklist",
+    "simulated": true,
+    "points": [
+      {
+        "heading": "What the item asks",
+        "body": "Define every pre-specified primary and secondary outcome: the measure, how it was assessed, and exactly when."
+      },
+      {
+        "heading": "Why it matters",
+        "body": "Vague outcomes invite switching after the data are in, one of the best-documented sources of reporting bias."
+      },
+      {
+        "heading": "How to comply",
+        "body": "Write each outcome as: instrument + metric + aggregation + time point. Example: pain on a 0–10 scale, mean change at 12 weeks."
+      }
+    ],
+    "takeaway": "An outcome is pre-specified only if measure, metric and time point are written down first.",
+    "category": "Endpoints & outcomes"
   }
 ]

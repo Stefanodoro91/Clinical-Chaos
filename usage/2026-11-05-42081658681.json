@@ -30,6 +30,14 @@
    "uscita": 364,
    "ragionamento": 0,
    "respinte": 0
+  },
+  "scelta immagini|gemini-flash-lite-latest": {
+   "richieste": 3,
+   "ingresso": 7456,
+   "uscita": 358,
+   "ragionamento": 0,
+   "respinte": 1,
+   "versione": "gemini-3.5-flash-lite"
   }
  }
 }
