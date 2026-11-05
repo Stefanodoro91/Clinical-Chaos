@@ -1526,5 +1526,164 @@
     "source_hint": "pages 1-2",
     "id": "da69d2db",
     "source": "Beyond the black box.pdf"
+  },
+  {
+    "title": "Who Decides If Qualitative Findings Apply?",
+    "title_highlight": "Who Decides",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Quantitative criteria do not apply",
+        "body": "Quantitative criteria like generalizability do not fit qualitative research. Qualitative studies evaluate transferability instead.",
+        "image_prompt": "a researcher holding a square puzzle piece trying to insert it into a round cutout on a wooden board",
+        "photo_query": "researcher whiteboard notes",
+        "highlight": "Quantitative criteria like generalizability",
+        "source": "Lincoln & Guba, 1985"
+      },
+      {
+        "heading": "Researchers cannot judge transferability",
+        "body": "Researchers cannot make the transferability judgment because they do not know the specific settings of potential readers.",
+        "image_prompt": "a researcher holding a paper document while looking through a telescope at three different distant clinic buildings",
+        "photo_query": "researcher working desk",
+        "highlight": "transferability judgment",
+        "source": "Lincoln & Guba, 1985"
+      },
+      {
+        "heading": "Provide a thick description of context",
+        "body": "You must provide a thick description of participants and context so readers can evaluate whether findings apply to their setting.",
+        "image_prompt": "a magnifying glass focused on detailed notes detailing clinical settings, participant demographics, and study procedures",
+        "photo_query": "hand holding magnifying glass document",
+        "highlight": "thick description of participants",
+        "source": "Lincoln & Guba, 1985"
+      },
+      {
+        "heading": "The reader makes the final judgment",
+        "body": "The reader, not the researcher, makes the transferability judgment based on the similarity between study context and their own.",
+        "image_prompt": "a clinician sitting at a desk reading a paper document and comparing it to a medical record chart",
+        "photo_query": "doctor reading medical document office",
+        "highlight": "reader, not the researcher",
+        "source": "Lincoln & Guba, 1985"
+      }
+    ],
+    "takeaway": "Provide a thick description of context so readers, not researchers, can judge whether qualitative findings apply to their setting.",
+    "takeaway_highlight": "readers, not researchers, can judge",
+    "references": [
+      "Lincoln, Y. S., Guba, E. G., & Pilotta, J. J. (1985). Naturalistic inquiry. International Journal of Intercultural Relations, 9(4), 438–439. https://doi.org/10.1016/0147-1767(85)90062-8"
+    ],
+    "caption": "Can you claim your qualitative study findings are generalizable? In qualitative research, the reader makes that decision.\n\nQuantitative criteria like generalizability do not fit qualitative research. Instead, qualitative researchers focus on transferability.\n\nYour responsibility as a researcher is not to claim broad applicability, because you cannot know every reader's local clinical setting. Instead, you must provide a thick description of the context, participants, sampling, and research steps.\n\nThis rich detail allows readers to make the transferability judgment for their own setting.\n\nHow do you ensure thick description in your reporting?",
+    "hashtags": [
+      "#QualitativeResearch",
+      "#ResearchDesign",
+      "#EvidenceBasedPractice"
+    ],
+    "source_hint": "pages 2-3",
+    "id": "c980418d",
+    "source": "Practical guidance to qualitative research.pdf"
+  },
+  {
+    "title": "How to Audit Your Qualitative Study",
+    "title_highlight": "Audit Your Qualitative Study",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Dependability replaces reliability",
+        "body": "Qualitative research uses dependability for consistency and confirmability for neutrality, replacing quantitative reliability.",
+        "image_prompt": "two balanced scale pans holding labeled wooden blocks representing consistency and neutrality side by side",
+        "photo_query": "audit paperwork desk",
+        "highlight": "dependability for consistency",
+        "source": "Lincoln & Guba, 1985"
+      },
+      {
+        "heading": "Confirmability requires data grounding",
+        "body": "Confirmability ensures findings derive directly from raw data and original responses, not from researcher preferences.",
+        "image_prompt": "a tree with deep roots growing directly out of a stack of interview transcript papers on a desk",
+        "photo_query": "researcher analyzing interview notes",
+        "highlight": "derive directly from raw data",
+        "source": "Lincoln & Guba, 1985"
+      },
+      {
+        "heading": "Maintain a complete audit trail",
+        "body": "An audit trail documents all research steps, meeting minutes, reflective thoughts, sampling decisions, and data management records.",
+        "image_prompt": "an open binder displaying step-by-step decision records placed beside coding sheets and raw notes",
+        "photo_query": "open binder research records",
+        "highlight": "documents all research steps",
+        "source": "Lincoln & Guba, 1985"
+      },
+      {
+        "heading": "Independent auditors verify transparency",
+        "body": "An independent auditor reviews process notes, coding steps, and raw data to evaluate whether interpretations are grounded in data.",
+        "image_prompt": "an independent reviewer examining process notes and coding files placed on a clean wooden table",
+        "photo_query": "reviewer reading research manuscript",
+        "highlight": "independent auditor reviews process notes",
+        "source": ""
+      }
+    ],
+    "takeaway": "Maintain a complete audit trail of decisions and notes so an auditor can verify dependability and confirmability.",
+    "takeaway_highlight": "Maintain a complete audit trail",
+    "references": [
+      "Lincoln, Y. S., Guba, E. G., & Pilotta, J. J. (1985). Naturalistic inquiry. International Journal of Intercultural Relations, 9(4), 438–439. https://doi.org/10.1016/0147-1767(85)90062-8"
+    ],
+    "caption": "How do you prove qualitative findings are grounded in data? Maintain an audit trail to demonstrate dependability.\n\nQuantitative criteria like reliability and objectivity do not fit qualitative designs. Qualitative quality relies on dependability and confirmability.\n\nTo demonstrate both, researchers must construct a complete audit trail from the start of the study.\n\nAn independent auditor can then examine your decisions, meeting records, sampling choices, and coding notes to verify transparency.\n\nHave you ever included an audit trail in your research protocol?",
+    "hashtags": [
+      "#QualitativeResearch",
+      "#DataManagement",
+      "#Trustworthiness"
+    ],
+    "source_hint": "page 3",
+    "id": "556fe4ed",
+    "source": "Practical guidance to qualitative research.pdf"
+  },
+  {
+    "title": "Why Qualitative Papers Get Rejected Early",
+    "title_highlight": "Papers Get Rejected Early",
+    "category": "Reporting & publication",
+    "slides": [
+      {
+        "heading": "Editors use quantitative pyramids",
+        "body": "Medical journal editors often evaluate submissions using evidence pyramids that place qualitative designs in lower ranks.",
+        "image_prompt": "a stepped pyramid diagram showing quantitative designs at upper levels and qualitative designs at lower levels",
+        "photo_query": "journal editor reviewing manuscript",
+        "highlight": "evidence pyramids that place qualitative",
+        "source": ""
+      },
+      {
+        "heading": "Editors evaluate three core criteria",
+        "body": "Journal editors assess all submissions against three basic questions: is it new, is it true, and is it relevant?",
+        "image_prompt": "a manuscript draft marked with three distinct checkmarks next to text labels for newness, trueness, and relevance",
+        "photo_query": "editor approving manuscript draft",
+        "highlight": "",
+        "source": ""
+      },
+      {
+        "heading": "Justify qualitative design in cover letter",
+        "body": "Use your cover letter to explicitly explain why your research question required a qualitative design rather than quantitative methods.",
+        "image_prompt": "a printed letter on a wooden desk with key explanatory text highlighted next to a mailing envelope",
+        "photo_query": "letter envelope desk writing",
+        "highlight": "cover letter to explicitly explain",
+        "source": ""
+      },
+      {
+        "heading": "Attach reporting checklists",
+        "body": "Enhance editor confidence by describing how quality criteria were applied and attaching checklists like COREQ or SRQR.",
+        "image_prompt": "a manuscript stack clipped together with a checklist document displaying completed checkmarks on every line",
+        "photo_query": "checklist paper research form",
+        "highlight": "attaching checklists like COREQ or SRQR",
+        "source": ""
+      }
+    ],
+    "takeaway": "Explain why a qualitative design was required in your cover letter and attach a reporting checklist like COREQ or SRQR.",
+    "takeaway_highlight": "",
+    "references": [
+      "Tong, A., Sainsbury, P., & Craig, J. (2007). Consolidated criteria for reporting qualitative research (COREQ): a 32-item checklist for interviews and focus groups. International Journal for Quality in Health Care, 19(6), 349–357. https://doi.org/10.1093/intqhc/mzm042"
+    ],
+    "caption": "Submitting qualitative research to a medical journal? Editors may evaluate it using quantitative evidence pyramids.\n\nMany medical journal editors are more familiar with quantitative designs and implicitly position qualitative research lower on the evidence pyramid.\n\nTo overcome this, your cover letter needs extra effort. Explicitly justify why your research question demanded a qualitative approach.\n\nIn addition, explain how quality criteria were applied and attach a standard reporting checklist like COREQ or SRQR.\n\nDo you attach reporting checklists to your journal submissions?",
+    "hashtags": [
+      "#QualitativeResearch",
+      "#AcademicPublishing",
+      "#ReportingGuidelines"
+    ],
+    "source_hint": "pages 4-5",
+    "id": "516af966",
+    "source": "Practical guidance to qualitative research.pdf"
   }
 ]
