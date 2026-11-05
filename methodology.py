@@ -8,6 +8,7 @@ from pathlib import Path
 
 from PIL import Image
 
+import content
 import grants
 
 ROOT = Path(__file__).resolve().parent
@@ -53,8 +54,8 @@ PAGE = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Methodology library · {brand}</title>
-<meta name="description" content="Practical clinical research methodology in short carousels: key points and references for every topic we have covered.">
+<title>Clinical research methodology library: study design, reporting &amp; appraisal · {brand}</title>
+<meta name="description" content="Practical clinical research methodology in short carousels: study design, statistics, reporting guidelines and critical appraisal, with key points and references for every topic.">
 {og}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -126,7 +127,8 @@ PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
-  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><br>
+  {lockup}
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><br>
   <span class="badge">DESIGN, REPORTING &amp; APPRAISAL</span>
   <h1>Clinical research methodology, made practical</h1>
   <p class="intro">Every methodology carousel we have published: swipe through the slides here, no Instagram account needed.
@@ -202,7 +204,9 @@ def build_page(data, cfg, today=None):
     today = today or date.today()
     THUMBS.mkdir(parents=True, exist_ok=True)
     cats = {}
-    data = {k: e for k, e in data.items() if not e.get("duplicate_of")}      # post ripetuti: una sola voce
+    data = {k: e for k, e in data.items()
+            if not e.get("duplicate_of") and e.get("category") != content.CLINICAL_CATEGORY}  # post ripetuti e
+                                              # «Latest Science» fuori: hanno la loro pagina (science.py)
     for e in sorted(data.values(), key=lambda e: e.get("date", ""), reverse=True):
         cats.setdefault(e.get("category") or "Research methods", []).append(e)
     sections = []
@@ -247,7 +251,8 @@ def build_page(data, cfg, today=None):
     c = grants.site_palette(cfg)
     cat_opts = "".join(f'<option value="{_slug(k)}">{escape(k)}</option>' for k in sorted(cats))
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
-                       bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"], cat_opts=cat_opts,
+                       bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=grants.site_accent(cfg, "methods") if cfg.get("site_v4") else c["accent"], cat_opts=cat_opts,
                        n=len(data), topics_word="topic" if len(data) == 1 else "topics", tools=tools_block(cfg), sections="\n".join(sections), updated=grants._fmt_date(today),
+                       lockup=grants.page_lockup(cfg, "methods"),
                        og=grants.og_tags(cfg, f"Methodology library · {cfg['brand_name']}",
-                                         "Practical clinical research methodology: key points and references.", "methodology"))
+                                         "Practical clinical research methodology: study design, statistics, reporting guidelines and critical appraisal, with references.", "methodology"))

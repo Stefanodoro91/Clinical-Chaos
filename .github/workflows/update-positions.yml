@@ -44,6 +44,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GEMINI_SEARCH_API_KEY: ${{ secrets.GEMINI_SEARCH_API_KEY }}
           CF_DEPLOY_HOOK: ${{ secrets.CF_DEPLOY_HOOK }}
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}   # Indexing API di Google (se attiva in config)
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           POSITIONS_VERIFY_LIMIT: ${{ inputs.limit }}
         run: python bot.py --positions

@@ -47,7 +47,17 @@ RX_REHAB = re.compile(
     r"child health|radiolog|diagnostic imaging|diagnostica per immagini|radiotherap|radioterapi|nuclear medicine|"
     r"medicina nucleare|neuroimaging|human genetics|medical genetics|genetic counsel|consulenza genetica|"
     r"clinical genomics|autoimmun|arthritis|lupus|MED/36|MED/38|MED/16|MED/03|M-PSI/02|"
-    r"MED/48|MEDS-26|MED/34|MEDS-19|06/F4|MED/01|MEDS-24|ING-IND/34|IBIO-01|sperimentazion\w* clinic|scienze riabilitative", re.I)
+    r"MED/48|MEDS-26|MED/34|MEDS-19|06/F4|MED/01|MEDS-24|ING-IND/34|IBIO-01|sperimentazion\w* clinic|scienze riabilitative|"
+    # focus esteso (11/2026): psicologia clinica, invecchiamento, sanità digitale e AI, ruoli della ricerca clinica
+    r"ageing|aging|gerontolog|geriatri|psycholog|psicolog|dementia|demenz|alzheimer|"
+    r"health data|data science.{0,20}health|medical (ai|artificial intelligence)|ai in (medicine|health)|clinical ai|"
+    r"research nurse|infermier\w* di ricerca|data manager|study coordinator|trial (coordinator|manager)|"
+    r"clinical research (coordinator|associate)|collaborator\w* professional\w* di ricerca|"
+    # Asia e America Latina: termini in spagnolo, portoghese, cinese, giapponese, coreano
+    r"investigaci[oó]n cl[ií]nica|ensayos? cl[ií]nicos?|pesquisa cl[ií]nica|ensaios? cl[ií]nicos?|epidemiolog[ií]a|"
+    r"kinesiolog|terapia ocupacional|fonoaudiolog|ci[eê]ncias? da sa[uú]de|ciencias de la salud|medicina|enfermer|"
+    r"oncolog[ií]a|geriatr[ií]a|psicolog[ií]a|ingenier[ií]a biom[eé]dica|engenharia biom[eé]dica|"
+    r"康复|临床|医学|护理|生物医学工程|リハビリ|臨床|医学|看護|재활|임상|의학|간호", re.I)
 # per la pertinenza «media»: termini riabilitativi clinici; «rehabilitation» da solo non basta
 # (esclude riabilitazione di detenuti, animali, edifici)
 RX_CLINICAL_REHAB = re.compile(
@@ -65,7 +75,13 @@ RX_POSITION = re.compile(
     r"assistant prof|associate prof|reader in|chair in|research (assistant|associate|scientist|officer)|"
     r"clinical academic|clinical research fellow|clinical fellowship|fellowship|bors[ae] di (ricerca|studio)|tecnologo|"
     r"ricercatore sanitario|ricerca sanitaria|contratt\w* di ricerca|incaric\w* (post-?doc|di ricerca)|"
-    r"ricercat\w* \w* ?tenure|ricercat\w*.{0,40}\b(iii|terzo) livello", re.I)
+    r"ricercat\w* \w* ?tenure|ricercat\w*.{0,40}\b(iii|terzo) livello|"
+    r"research nurse|infermier\w* di ricerca|data manager|study coordinator|trial (coordinator|manager)|"
+    r"clinical research (coordinator|associate)|collaborator\w* professional\w* di ricerca|"
+    r"pos-?doc|p[oó]s-?doutor|posdoctora|doctorado|doutorado|becas? (doctoral|posdoctoral|de investigaci)|"
+    r"bolsas? (de )?(p[oó]s|pesquisa|doutorado|PD|DR)|profesor|docente|investigador|pesquisador|"
+    r"concurso (docente|acad[eé]mico|p[uú]blico)|博士后|教授|研究员|讲师|博士研究生|ポスドク|教員|研究員|助教|准教授|"
+    r"교수|박사후|연구원|faculty recruitment|recruitment of faculty", re.I)
 RX_MEDIUM_TITLE = re.compile(
     r"clinical|patient|trial|epidemiolog|public health|population health|global health|rehabilit|physiother|"
     r"occupational therap|speech|medic(al|ine)|health sciences|nursing|psychiatr|orthopa|anaesthes|anesthes|gastro|"
@@ -90,7 +106,8 @@ Return:
   expired, a news item, a course, a list of jobs or not a position, "unclear" otherwise.
 - position_type: "phd" (PhD, doctoral studentship, dottorato), "postdoc" (post-doctoral position,
   research fellow, assegno di ricerca), "research" (research assistant, research associate, research
-  scientist or officer, borsa di ricerca, tecnologo), "clinical" (clinical academic post, clinical research
+  scientist or officer, borsa di ricerca, tecnologo, clinical research coordinator, trial manager, research
+  nurse, clinical data manager, collaboratore professionale di ricerca), "clinical" (clinical academic post, clinical research
   fellowship or training fellowship for clinicians and therapists), "faculty" (assistant/associate/full
   professor, lecturer, reader, tenure-track, RTD/RTT), or "other".
 - relevance: "high" if the position is about rehabilitation research (rehabilitation, physiotherapy,
@@ -100,7 +117,8 @@ Return:
   interventions, neuropsychology and cognitive rehabilitation, paediatric rehabilitation); "medium" if it is
   clinical research in any medical field, especially neurology, neuropsychology, orthopaedics, rheumatology and
   autoimmune diseases, paediatrics and neonatology, radiology, imaging and radiotherapy, geriatrics, oncology,
-  haematology, clinical and human genetics and rare diseases (clinical trials,
+  haematology, clinical and human genetics and rare diseases, clinical and health psychology, ageing and
+  geriatrics, dementia, digital health and AI or data science applied to patient care (clinical trials,
   studies with patients, clinical epidemiology, biostatistics for clinical studies, health services or
   implementation research) or clinical/biomedical engineering applied
   to patients or health care (medical devices, imaging, digital health), or if rehabilitation is one
@@ -683,8 +701,8 @@ PAGE = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Academic positions · {brand}</title>
-<meta name="description" content="Open PhD, post-doc and faculty positions in clinical research, clinical engineering and rehabilitation worldwide, checked against the original advertisement.">
+<title>PhD, postdoc &amp; faculty positions in clinical research &amp; rehabilitation · {brand}</title>
+<meta name="description" content="{description}">
 {og}
 <link rel="alternate" type="application/rss+xml" title="Academic positions" href="feed-positions.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -748,7 +766,8 @@ PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
-  <a class="switch" href="index.html">&larr; Home</a> &nbsp; <a class="switch" href="calls.html">Research funding calls &rarr;</a><br>
+  {lockup}
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><br>
   <span class="badge">ACADEMIC POSITIONS</span>
   <h1>Positions in clinical research, engineering and rehabilitation</h1>
   <p class="intro">Open PhD, post-doc and faculty positions in clinical research, clinical and biomedical engineering and
@@ -836,13 +855,14 @@ def build_page(archive, posted, cfg, today=None):
         parts.append("  </section>")
         sections.append("\n".join(parts))
     c = grants.site_palette(cfg)
+    desc = (f"{len(entries)} open PhD, postdoc, research fellow and faculty positions in clinical research, rehabilitation, "
+            "clinical engineering and health research worldwide, checked against the original advertisement. Updated daily.")
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
-                       accent=grants.site_accent(cfg, "positions"), nav="".join(nav),
-                       sections="\n".join(sections), updated=_fmt(today), filters=filters_form(len(entries)),
+                       accent=grants.site_accent(cfg, "positions"), nav="".join(nav), lockup=grants.page_lockup(cfg, "positions"),
+                       sections="\n".join(sections), updated=_fmt(today), filters=filters_form(len(entries)), description=escape(desc, quote=True),
                        og=grants.og_tags(cfg, f"Academic positions in clinical research, engineering and rehabilitation · {cfg['brand_name']}",
-                                         "Open PhD, post-doc and faculty positions in clinical research, clinical engineering and rehabilitation, "
-                                         "checked against the original advertisement.", "positions"))
+                                         desc, "positions"))
 
 
 # ---------------------------------------------------------------- una pagina per posizione (Google Jobs)
@@ -886,7 +906,7 @@ JOB_PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
-  <a class="switch" href="../positions.html">&larr; All academic positions</a><a class="switch" href="../calls.html">Funding calls &rarr;</a><br>
+  <a class="switch" href="../positions.html">&larr; All academic positions</a><a class="switch" href="../calls.html">Funding calls &rarr;</a><a class="switch" href="../methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="../science.html">Latest Science &rarr;</a><br>
   <span class="badge">{type_label}</span>
   <h1>{title}</h1>
   <p class="inst">{place}</p>

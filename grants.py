@@ -1059,8 +1059,8 @@ PAGE = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Open calls · {brand}</title>
-<meta name="description" content="Open research funding calls checked against the official call text, grouped by funding programme.">
+<title>Open funding calls for clinical research &amp; rehabilitation · {brand}</title>
+<meta name="description" content="{description}">
 {og}
 <link rel="alternate" type="application/rss+xml" title="Open funding calls" href="feed-calls.xml">
 <link rel="alternate" type="application/rss+xml" title="Academic positions" href="feed-positions.xml">
@@ -1102,6 +1102,8 @@ PAGE = """<!doctype html>
          letter-spacing: .05em; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }}
   .tag.soon-tag {{ background: var(--accent); }}
   .call h4 {{ font-size: 18px; margin: 0 0 10px; line-height: 1.3; }}
+  .call h4 a {{ color: inherit; text-decoration: none; }}
+  .call h4 a:hover, .call h4 a:focus-visible {{ text-decoration: underline; text-decoration-color: var(--accent); }}
   .summary {{ color: var(--soft); font-size: 15px; margin: 0 0 12px; }}
   .countries {{ font-size: 14px; margin: 0 0 4px; }}
   .countries b {{ color: var(--soft); font-weight: 600; }}
@@ -1149,8 +1151,8 @@ PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
-  <a class="switch" href="positions.html">Academic positions &rarr;</a><br>
-  <a class="home" href="index.html">&larr; Home</a>
+  {lockup}
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><br>
   <span class="badge">FUNDING CALLS</span>
   <h1>Research funding calls</h1>
   <p class="intro">All open calls for clinical research, clinical and biomedical engineering and rehabilitation found by our monitoring, from funders worldwide, including calls reserved for applicants in a single country: use the filters.
@@ -1216,6 +1218,181 @@ def _group(entries):
     return sorted(groups.items(), key=lambda kv: key(kv[1][0]))
 
 
+def when_html(v, d, today):
+    """Riga della scadenza di un bando (scheda e pagina propria)."""
+    from html import escape
+    if d:
+        soon = '<span class="soon">CLOSING SOON</span>' if (d - today).days <= 21 else ""
+        label, note = deadline_text(v, d) if checked(v) else ("Deadline", "")
+        return f"{label} <b>{_fmt_date(d)}</b>{soon}" + (f'<span class="dlnote">{escape(note)}</span>' if note else "")
+    if v.get("deadline_type") == "rolling":
+        return "Deadline <b>rolling, no fixed date</b>"
+    if v.get("forecast") and _date(v.get("est_deadline")):
+        return f"Expected deadline <b>~{_fmt_date(_date(v['est_deadline']))}</b><span class=\"dlnote\">estimate, call not yet published</span>"
+    return "Deadline <b>see official call</b>"
+
+
+def more_dates(v, d, today):
+    """Scadenze successive, risottomissioni, lettera d'intenti e fine della call."""
+    more = []
+    later = later_dues(v, d) if checked(v) else []
+    if later:
+        more.append("Later deadlines: " + ", ".join(_fmt_date(x) for x in later[:3]))
+    resub = [x for x in (_date(y) for y in v.get("resubmission_dates") or []) if x and x >= today]
+    if resub:
+        more.append(f"Resubmissions: next {_fmt_date(resub[0])}")
+    loi = _date(v.get("loi_deadline"))
+    if loi and loi >= today:
+        more.append(f"Letter of intent{' (required)' if v.get('loi_required') == 'yes' else ''}: {_fmt_date(loi)}")
+    exp = _date(v.get("expires"))
+    if exp and later:
+        more.append(f"Call expires {_fmt_date(exp)}")
+    return more
+
+
+def call_path(g, v):
+    """Percorso della pagina propria di un bando verificato (es. «call/horizon-health-…-3fa9c1»), stabile per id."""
+    import hashlib
+    title = v.get("title") or g.get("titolo") or "funding call"
+    words = re.sub(r"[^a-z0-9]+", "-", unescape(title).lower()).strip("-")[:60].rstrip("-") or "funding-call"
+    return f"call/{words}-{hashlib.sha1(str(g['id']).encode()).hexdigest()[:6]}"
+
+
+def call_jsonld(g, v, cfg, path, title, summary):
+    """Dati strutturati: percorso di navigazione (BreadcrumbList, letto da Google) e bando (MonetaryGrant, schema.org)."""
+    funder = funder_line(g) or v.get("programme") or ""
+    crumbs = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": cfg["brand_name"], "item": site_url(cfg, "")},
+        {"@type": "ListItem", "position": 2, "name": "Funding calls", "item": site_url(cfg, "calls")},
+        {"@type": "ListItem", "position": 3, "name": title}]}
+    grant = {"@context": "https://schema.org", "@type": "MonetaryGrant", "name": title, "url": site_url(cfg, path),
+             "sameAs": g["url"]}
+    if summary:
+        grant["description"] = summary
+    if funder:
+        grant["funder"] = {"@type": "Organization", "name": funder}
+    text = json.dumps([crumbs, grant], ensure_ascii=False, indent=1).replace("</", "<\\/")
+    return f'<script type="application/ld+json">\n{text}\n</script>'
+
+
+CALL_PAGE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title_tag}</title>
+<meta name="description" content="{description}">
+{og}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+{jsonld}
+<style>
+  :root {{ --bg: {bg}; --card: #15304A; --text: #FFFFFF; --muted: {muted}; --soft: {soft}; --accent: {accent}; --teal: {teal}; }}
+  * {{ box-sizing: border-box; }}
+  body {{ margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.5; }}
+  .bar {{ height: 6px; background: var(--accent); }}
+  main {{ max-width: 680px; margin: 0 auto; padding: 28px 16px 48px; }}
+  .switch {{ display: inline-block; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
+            border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px; margin: 0 6px 18px 0; }}
+  .badge {{ display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
+           letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; text-transform: uppercase; }}
+  .badge.it {{ background: var(--teal); margin-left: 6px; }}
+  h1 {{ font-size: 28px; font-weight: 800; margin: 14px 0 8px; line-height: 1.2; overflow-wrap: anywhere; }}
+  .inst {{ color: var(--soft); font-size: 15px; font-weight: 600; margin: 0 0 20px; }}
+  .call {{ background: var(--card); border-radius: 18px; padding: 20px; border-left: 4px solid var(--accent); }}
+  dl {{ display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0 0 16px; font-size: 15px; }}
+  dt {{ color: var(--muted); font-weight: 600; }}
+  dd {{ margin: 0; overflow-wrap: anywhere; }}
+  .summary {{ color: var(--soft); font-size: 15px; margin: 0 0 18px; }}
+  .soon {{ color: var(--accent); font-weight: 800; font-size: 12px; margin-left: 6px; }}
+  .dlnote {{ display: block; color: var(--muted); font-size: 13px; }}
+  .dates {{ color: var(--soft); font-size: 14px; margin: 0 0 16px; }}
+  blockquote {{ font-size: 14px; color: var(--soft); border-left: 2px solid var(--muted); padding-left: 12px; margin: 0 0 18px; font-style: italic; }}
+  .btns {{ display: flex; flex-wrap: wrap; gap: 8px; }}
+  a.btn {{ background: var(--accent); color: var(--bg); text-decoration: none; font-weight: 800; font-size: 15px;
+           padding: 11px 18px; border-radius: 12px; }}
+  a.btn.ghost {{ background: transparent; color: var(--text); border: 1px solid var(--muted); }}
+  a.btn:focus-visible, .switch:focus-visible {{ outline: 3px solid var(--text); outline-offset: 2px; }}
+  footer {{ color: var(--muted); font-size: 13px; margin-top: 30px; }}
+  footer a {{ color: var(--teal); }}
+  @media (max-width: 480px) {{ dl {{ grid-template-columns: 1fr; gap: 2px; }} dd {{ margin-bottom: 8px; }} h1 {{ font-size: 24px; }} }}
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<main>
+  <a class="switch" href="../calls.html#{anchor}">&larr; All funding calls</a><a class="switch" href="../positions.html">Academic positions &rarr;</a><a class="switch" href="../methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="../science.html">Latest Science &rarr;</a><br>
+  <span class="badge">Funding call</span>{italy_badge}
+  <h1>{title}</h1>
+  <p class="inst">{funder}</p>
+  <article class="call">
+    <dl>
+      <dt>Programme</dt><dd>{programme}</dd>
+      <dt>Eligible countries</dt><dd>{countries}</dd>
+      <dt>Open to Italy</dt><dd>{italy}</dd>
+      {lead}<dt>Deadline</dt><dd>{when}</dd>
+    </dl>
+    {dates}
+    {summary}
+    {proof}
+    <div class="btns">{share}{cal}{find}<a class="btn" href="{url}" target="_blank" rel="noopener">Official call &rarr;</a></div>
+  </article>
+  <footer>
+    Checked automatically against the official call text on {checked}: always read the full call before applying;
+    the funder's page is the only official source. <a href="../feedback.html?topic=Report%20an%20error&amp;ref={anchor}">Report an error</a><br>
+    <a href="../index.html">{brand}</a> · <a href="https://www.instagram.com/{ig}/">{handle} on Instagram</a>
+  </footer>
+</main>
+</body>
+</html>
+"""
+
+
+def call_pages(grants_list, verified, cfg, today=None):
+    """{percorso del file: html} con una pagina per ogni bando verificato in pagina (es. «call/….html»)."""
+    from html import escape
+    today = today or date.today()
+    c = site_palette(cfg)
+    italy_words = {"yes": "Yes, organisations based in Italy are eligible", "no": "No",
+                   "unclear": "Not stated in the official text: check the call"}
+    out = {}
+    for g, v, d in page_entries(grants_list, verified, today):
+        if not v:
+            continue
+        path = call_path(g, v)
+        title = v.get("title") or g.get("titolo") or "Funding call"
+        programme = v.get("programme") or programme_detail(g)
+        summary = v.get("summary") or ""
+        funder = funder_line(g) or programme
+        dl = f", deadline {_fmt_date(d)}" if d else ""
+        it = " Open to Italian institutions." if v.get("italy") == "yes" else ""
+        base = f"{programme}: {summary}" if summary else f"Funding call from {funder}{dl}."
+        desc = base if len(base) <= 150 - len(it) else base[:150 - len(it)].rsplit(" ", 1)[0] + "…"
+        desc += it
+        ev = v.get("countries_evidence") or v.get("italy_evidence")
+        ps = partner_search(g)
+        more = more_dates(v, d, today)
+        out[path + ".html"] = CALL_PAGE.format(
+            title_tag=escape(f"{title} – funding call{dl} · {cfg['brand_name']}"), description=escape(desc, quote=True),
+            og=og_tags(cfg, f"Funding call: {title}", desc, path), jsonld=call_jsonld(g, v, cfg, path, title, summary),
+            bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"], accent=site_accent(cfg, "grant"),
+            anchor=card_anchor(g["id"]), title=escape(title), funder=escape(funder),
+            italy_badge='<span class="badge it">Open to Italy</span>' if v.get("italy") == "yes" else "",
+            programme=escape(programme), countries=escape(v.get("eligible_countries") or "check the call"),
+            italy=escape(italy_words.get(v.get("italy"), italy_words["unclear"])),
+            lead=f'<dt>Who can lead</dt><dd>{escape(v["lead"])}</dd>\n      ' if v.get("lead") else "",
+            when=when_html(v, d, today).removeprefix("Deadline "), dates=f'<p class="dates">{escape(" · ".join(more))}</p>' if more else "",
+            summary=f'<p class="summary">{escape(summary)}</p>' if summary else "",
+            proof=f'<blockquote>From the official call: &ldquo;{escape(ev)}&rdquo;</blockquote>' if ev else "",
+            share=share_button(site_url(cfg, path), f"Funding call: {title}" + (f" (deadline {_fmt_date(d)})" if d else "")),
+            cal=calendar_button(d, title, g["url"], programme or ""),
+            find=(f'<a class="btn ghost" href="{escape(ps[0], quote=True)}" target="_blank" rel="noopener">Find partners</a>'
+                  if ps else ""),
+            url=escape(g["url"], quote=True), checked=_fmt_date(_date(v.get("checked")) or today),
+            brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), handle=escape(cfg["handle"]))
+    return out
+
+
 def build_page(grants_list, verified, posted, cfg, today=None):
     from html import escape
     today = today or date.today()
@@ -1228,29 +1405,8 @@ def build_page(grants_list, verified, posted, cfg, today=None):
             by_region[region(e[0], e[1], cfg)].append(e)
 
     def card(g, v, d, css):
-        if d:
-            soon = '<span class="soon">CLOSING SOON</span>' if (d - today).days <= 21 else ""
-            label, note = deadline_text(v, d) if checked(v) else ("Deadline", "")
-            when = f"{label} <b>{_fmt_date(d)}</b>{soon}" + (f'<span class="dlnote">{escape(note)}</span>' if note else "")
-        elif v.get("deadline_type") == "rolling":
-            when = "Deadline <b>rolling, no fixed date</b>"
-        elif v.get("forecast") and _date(v.get("est_deadline")):
-            when = f"Expected deadline <b>~{_fmt_date(_date(v['est_deadline']))}</b><span class=\"dlnote\">estimate, call not yet published</span>"
-        else:
-            when = "Deadline <b>see official call</b>"
-        more = []
-        later = later_dues(v, d) if checked(v) else []
-        if later:
-            more.append("Later deadlines: " + ", ".join(_fmt_date(x) for x in later[:3]))
-        resub = [x for x in (_date(y) for y in v.get("resubmission_dates") or []) if x and x >= today]
-        if resub:
-            more.append(f"Resubmissions: next {_fmt_date(resub[0])}")
-        loi = _date(v.get("loi_deadline"))
-        if loi and loi >= today:
-            more.append(f"Letter of intent{' (required)' if v.get('loi_required') == 'yes' else ''}: {_fmt_date(loi)}")
-        exp = _date(v.get("expires"))
-        if exp and later:
-            more.append(f"Call expires {_fmt_date(exp)}")
+        when = when_html(v, d, today)
+        more = more_dates(v, d, today)
         dates_html = f'<p class="dates">{escape(" · ".join(more))}</p>' if more else ""
         lead_html = (f'      <p class="countries"><b>Who can lead:</b> {escape(v["lead"])}</p>\n' if v.get("lead") else "")
         tag = '<span class="tag">ON INSTAGRAM</span>' if g["id"] in featured else ""
@@ -1277,8 +1433,10 @@ def build_page(grants_list, verified, posted, cfg, today=None):
                     f'{lead_html}'
                     f'      {proof}')
         title = v.get("title") or g.get("titolo") or ""
-        share = share_button(site_url(cfg, "calls#" + card_anchor(g["id"])),
+        own = call_path(g, v) if v else ""       # pagina propria (solo bandi verificati)
+        share = share_button(site_url(cfg, own or "calls#" + card_anchor(g["id"])),
                              f"Funding call: {title}" + (f" (deadline {_fmt_date(d)})" if d else ""))
+        h4 = f'<a href="{own}.html">{escape(title)}</a>' if own else escape(title)
         words = " ".join(x for x in (title, v.get("programme"), programme_detail(g), v.get("summary"),
                                      v.get("eligible_countries"), g.get("ente"), g.get("titolo")) if x).lower()
         attrs = (f'data-region="{escape(region(g, v, cfg), quote=True)}" data-italy="{"yes" if v.get("italy") == "yes" else "no"}" '
@@ -1286,7 +1444,7 @@ def build_page(grants_list, verified, posted, cfg, today=None):
                  f'data-text="{escape(words, quote=True)}"')
         return f"""    <article class="call {css}" id="{card_anchor(g["id"])}" {attrs}>
       <div class="funder">{escape(v.get("programme") or programme_detail(g))}{tag}</div>
-      <h4>{escape(title)}</h4>
+      <h4>{h4}</h4>
       {body}
       {partners}
       <div class="row">
@@ -1319,13 +1477,14 @@ def build_page(grants_list, verified, posted, cfg, today=None):
     nav = [f'<a href="#italy">Open to Italy <b>{len(italy)}</b></a>']
     nav += [f'<a href="#{slug(r)}">{escape(r)} <b>{len(by_region[r])}</b></a>' for r in REGIONS if by_region[r]]
     c = site_palette(cfg)
+    desc = (f"{len(entries)} open research grants and funding calls for clinical research, rehabilitation, clinical "
+            f"engineering and health research, {len(italy)} open to Italian institutions. Checked on the official call text, updated daily.")
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=c["accent"],
-                       accent=site_accent(cfg, "grant"), nav="".join(nav),
+                       accent=site_accent(cfg, "grant"), nav="".join(nav), description=escape(desc, quote=True),
+                       lockup=page_lockup(cfg, "grant"),
                        italy=italy_html, other=other_html, updated=_fmt_date(today), filters=filters_form(entries),
-                       og=og_tags(cfg, f"Open research funding calls · {cfg['brand_name']}",
-                                  "Open funding calls for clinical research, clinical engineering and rehabilitation, checked on the official call text.",
-                                  "calls"))
+                       og=og_tags(cfg, f"Open research funding calls · {cfg['brand_name']}", desc, "calls"))
 
 
 # ---------------------------------------------------------------- pagina iniziale (link in bio)
@@ -1334,7 +1493,7 @@ HOME = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{brand}</title>
+<title>{brand} – Funding calls &amp; academic positions in clinical research</title>
 <meta name="google-site-verification" content="CmqA15pmnid3j9D4hdy5u6P45Dly32YcaeAil7P-6tM">
 <meta name="description" content="Open research funding calls and academic positions in clinical research, clinical engineering and rehabilitation, checked on the official texts.">
 {og}
@@ -1344,28 +1503,21 @@ HOME = """<!doctype html>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {{ --bg: {bg}; --paper: #F3F6F9; --card: #15304A; --text: #FFFFFF; --soft: {soft}; --muted: {muted};
-           --teal: {teal}; --amber: {amber}; --lilac: {lilac}; --sci: {sci}; }}
+           --teal: {teal}; --amber: {amber}; --lilac: {lilac}; --sci: {sci}; --meth: {meth}; }}
   * {{ box-sizing: border-box; }}
   body {{ margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }}
-  .top {{ background: var(--paper); padding: 30px 16px 28px; text-align: center; border-top: 4px solid var(--teal); }}
+  .top {{ background: var(--bg); padding: 34px 16px 36px; text-align: center; border-top: 4px solid var(--teal); }}
   .top img {{ width: 340px; max-width: 100%; height: auto; display: block; margin: 0 auto 14px; }}
-  .top p {{ color: #4A5563; margin: 0 auto; max-width: 440px; font: italic 400 17px/1.45 "Source Serif 4", Georgia, serif; }}
-  main {{ max-width: 520px; margin: 0 auto; padding: 26px 16px 40px; display: grid; gap: 16px; }}
-  a.big {{ --c: var(--teal); display: block; text-decoration: none; color: var(--text); background: #111111;
-            border: 1px solid #262626; border-left: 3px solid var(--c); border-radius: 14px; padding: 18px 22px 17px;
-            transition: border-color .2s, background .2s; }}
-  a.big.calls {{ --c: var(--amber); }}
-  a.big.jobs {{ --c: var(--lilac); }}
-  a.big.method {{ --c: var(--teal); }}
-  a.big.science {{ --c: var(--sci); }}
-  a.big .label {{ color: var(--c); font: 600 11.5px/1.2 Inter, system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; }}
-  a.big .name {{ display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 7px 0 5px;
-                font-family: "Source Serif 4", Georgia, serif; font-size: 25px; font-weight: 600; letter-spacing: -.005em; line-height: 1.2; }}
-  a.big .name span {{ color: var(--c); font-family: Inter, system-ui, sans-serif; font-weight: 400; }}
-  a.big .count {{ color: var(--soft); font-size: 14px; font-weight: 400; }}
-  a.big:focus-visible {{ outline: 2px solid var(--c); outline-offset: 3px; }}
-  a.big:hover {{ border-color: var(--c); background: #151515; }}
-  .social {{ display: flex; justify-content: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }}
+  .top p {{ color: var(--text); margin: 0 auto; max-width: 460px; font: 600 17px/1.45 Inter, system-ui, sans-serif; }}
+  .pills {{ display: flex; flex-direction: column; align-items: center; gap: 17px; margin: 0 auto 22px; max-width: 520px; }}
+  .pills a {{ display: flex; flex-direction: column; align-items: center; gap: 7px; text-decoration: none; }}
+  .pills .tag {{ background: var(--c); color: var(--on); border-radius: 999px; padding: 9px 17px; letter-spacing: .045em;
+                font: 800 12.5px/1 Inter, system-ui, sans-serif; }}
+  .pills .met {{ color: var(--soft); font-size: 14px; line-height: 1.35; }}
+  .pills a:hover .tag, .pills a:focus-visible .tag {{ filter: brightness(1.08); }}
+  .pills a:hover .met {{ color: var(--text); }}
+  main {{ max-width: 520px; margin: 0 auto; padding: 0 16px 40px; display: grid; gap: 16px; }}
+  .social {{ display: flex; justify-content: center; gap: 10px; margin-top: 0; flex-wrap: wrap; }}
   .noig a {{ color: var(--teal); font-weight: 600; }}
   .noig {{ color: var(--soft); font-size: 14px; text-align: center; max-width: 440px; margin: 16px auto 0; line-height: 1.5; }}
   .social a {{ color: var(--soft); text-decoration: none; font-weight: 600; font-size: 14px; border: 1px solid var(--muted);
@@ -1378,29 +1530,10 @@ HOME = """<!doctype html>
 <body>
 <header class="top">
   {logo_block}
-  <p>Design, report and appraise better. Keep up with new evidence. Find your next grant or position.</p>
+  <nav class="pills" aria-label="Sections">{pills}</nav>
+  <p>Pieces of clinical research. In one place.</p>
 </header>
 <main>
-  <a class="big calls" href="calls.html">
-    <span class="label">Open calls</span>
-    <span class="name">Funding Calls <span aria-hidden="true">&rarr;</span></span>
-    <span class="count">{calls_line}</span>
-  </a>
-  <a class="big jobs" href="positions.html">
-    <span class="label">Open positions</span>
-    <span class="name">Academic Positions <span aria-hidden="true">&rarr;</span></span>
-    <span class="count">{jobs_line}</span>
-  </a>
-  <a class="big method" href="methodology.html">
-    <span class="label">Methodology library</span>
-    <span class="name">Design, Reporting &amp; Appraisal <span aria-hidden="true">&rarr;</span></span>
-    <span class="count">{method_line}</span>
-  </a>
-  <a class="big science" href="methodology.html">
-    <span class="label">Every Saturday</span>
-    <span class="name">Latest Science <span aria-hidden="true">&rarr;</span></span>
-    <span class="count">One new clinical paper, one lesson for practice: in the library</span>
-  </a>
   <div class="social">
 {social}
   </div>
@@ -1415,70 +1548,218 @@ HOME = """<!doctype html>
 
 
 # simbolo definitivo per l'intestazione della home (fondo chiaro): (colore, vertici) nel viewBox 26 26 148 148
-HEADER_SYMBOL = [["#1F7FA6",[[30.08,71.44],[38.15,72.72],[36.87,80.78],[28.8,79.5]]],["#1F7FA6",[[29.2,94.21],[38.54,94.97],[37.78,104.31],[28.44,103.55]]],["#0A0A0A",[[50.72,50.72],[61.58,50.72],[61.58,61.58],[50.72,61.58]]],["#1F7FA6",[[47.52,70.21],[61.72,70.21],[61.72,84.41],[47.52,84.41]]],["#0A0A0A",[[46.36,92.26],[61.84,92.26],[61.84,107.74],[46.36,107.74]]],["#6B4FC0",[[50.72,138.42],[61.58,138.42],[61.58,149.28],[50.72,149.28]]],["#1F7FA6",[[74.98,29.08],[82.61,30.31],[81.39,37.94],[73.76,36.72]]],["#0A0A0A",[[70.21,47.52],[84.41,47.52],[84.41,61.72],[70.21,61.72]]],["#0A0A0A",[[67.34,67.34],[85.72,67.34],[85.72,85.72],[67.34,85.72]]],["#0A0A0A",[[76.27,100.0],[76.27,90.0],[86.27,90.0],[86.27,100.0],[86.27,110.0],[76.27,110.0],[66.26,110.0],[66.26,100.0]]],["#0A0A0A",[[67.34,114.28],[85.72,114.28],[85.72,132.66],[67.34,132.66]]],["#0A0A0A",[[70.21,138.28],[84.41,138.28],[84.41,152.48],[70.21,152.48]]],["#6B4FC0",[[76.07,163.13],[84.19,163.02],[84.3,171.14],[76.18,171.25]]],["#0A0A0A",[[95.65,28.08],[104.72,28.4],[104.39,37.47],[95.33,37.15]]],["#0A0A0A",[[92.26,46.36],[107.74,46.36],[107.74,61.84],[92.26,61.84]]],["#0A0A0A",[[90.0,66.26],[110.0,66.26],[110.0,86.27],[90.0,86.27]]],["#0A0A0A",[[89.12,89.12],[110.88,89.12],[110.88,110.88],[89.12,110.88]]],["#0A0A0A",[[90.0,113.73],[100.0,113.73],[110.0,113.73],[110.0,123.73],[100.0,123.73],[100.0,133.74],[90.0,133.74],[90.0,123.73]]],["#3D8F47",[[92.26,138.16],[107.74,138.16],[107.74,153.64],[92.26,153.64]]],["#3D8F47",[[95.5,162.35],[104.36,161.57],[105.13,170.43],[96.27,171.21]]],["#B86A00",[[117.31,28.0],[125.5,29.38],[124.12,37.58],[115.93,36.2]]],["#B86A00",[[115.59,47.52],[129.79,47.52],[129.79,61.72],[115.59,61.72]]],["#0A0A0A",[[114.28,67.34],[123.47,67.34],[123.47,76.53],[132.66,76.53],[132.66,85.72],[123.47,85.72],[114.28,85.72],[114.28,76.53]]],["#0A0A0A",[[113.73,90.0],[133.74,90.0],[133.74,110.0],[113.73,110.0]]],["#0A0A0A",[[114.28,114.28],[132.66,114.28],[132.66,132.66],[114.28,132.66]]],["#3D8F47",[[115.49,162.6],[123.62,162.93],[123.29,171.06],[115.15,170.73]]],["#B86A00",[[138.28,70.21],[152.48,70.21],[152.48,84.41],[138.28,84.41]]],["#3D8F47",[[138.28,115.59],[152.48,115.59],[152.48,129.79],[138.28,129.79]]],["#0A0A0A",[[138.42,138.42],[149.28,138.42],[149.28,149.28],[138.42,149.28]]],["#B86A00",[[163.19,71.71],[171.12,72.26],[170.57,80.19],[162.64,79.64]]],["#3D8F47",[[163.05,96.03],[171.83,96.15],[171.71,104.93],[162.93,104.82]]],["#3D8F47",[[163.41,117.9],[170.68,117.2],[171.38,124.47],[164.11,125.17]]]]
 
 HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
 <svg class="crc-sym" viewBox="26 26 148 148" aria-hidden="true"><defs>{defs}</defs>{glow}{cubes}</svg>
-<img class="crc-word" src="logo-wordmark-header.png" alt="" width="1142" height="360">
+<img class="crc-word" src="{word}" alt="" width="1142" height="360">
 </div>
 <style>
   .top .crc-logo {{ --s: clamp(54px, calc((100vw - 64px) / 4.6), 92px); display: flex; align-items: center; justify-content: center;
-                   gap: calc(var(--s) * .186); margin: 6px auto 20px; }}
+                   gap: calc(var(--s) * .186); margin: 6px auto 36px; }}
   .top .crc-sym {{ width: var(--s); height: var(--s); flex: none; overflow: visible; }}
   .top .crc-word {{ height: calc(var(--s) * .977); width: auto; max-width: none; margin: 0; display: block; }}
 </style>
 <script>
-/* i cubetti del simbolo si allargano e orbitano attorno al centro quando il puntatore si avvicina */
+/* col puntatore sul logo (solo lì) il simbolo si scompone in frammenti che seguono linee di campo, si
+   ricompongono nella «o» verde e restano in orbita lungo l'anello finché il puntatore non se ne va */
 (function () {{
-  var svg = document.querySelector(".crc-sym");
-  if (!svg || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  var cubes = [].map.call(svg.querySelectorAll("g"), function (g) {{
-    var cx = +g.dataset.x, cy = +g.dataset.y, dx = cx - 100, dy = cy - 100, r = Math.sqrt(dx * dx + dy * dy) || 1;
-    return {{ g: g, cx: cx, cy: cy, ux: dx / r, uy: dy / r, r: r, a: 0, w: (r < 20 ? 0.6 : 1.4 * Math.pow(60 / r, 0.6)) }};
-  }});
-  var near = 0, target = 0, last = performance.now(), running = false;
-  function sense(x, y) {{
-    var b = svg.getBoundingClientRect(), mx = b.left + b.width / 2, my = b.top + b.height / 2;
-    var d = Math.sqrt((x - mx) * (x - mx) + (y - my) * (y - my)), R = Math.max(220, b.width * 1.9);
-    target = Math.max(0, Math.min(1, 1 - (d - b.width * 0.25) / R));
-    if (!running) {{ running = true; last = performance.now(); requestAnimationFrame(step); }}
+  var svg = document.querySelector(".crc-sym"), box = document.querySelector(".crc-logo");
+  if (!svg || !box || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var RING = {ring}, PER = RING[0].length, ROWS = RING.length;
+  function rgb(h) {{ return [parseInt(h.substr(1, 2), 16), parseInt(h.substr(3, 2), 16), parseInt(h.substr(5, 2), 16)]; }}
+  function spline(a, f) {{                                 /* Catmull-Rom: il percorso non fa spigoli */
+    var i = Math.floor(f), t = f - i, k = function (d) {{ return a[((((i + d) % PER) + PER) % PER)]; }};
+    var p0 = k(-1), p1 = k(0), p2 = k(1), p3 = k(2), t2 = t * t, t3 = t2 * t, out = [0, 0];
+    for (var c = 0; c < 2; c++) {{
+      out[c] = 0.5 * (2 * p1[c] + (-p0[c] + p2[c]) * t + (2 * p0[c] - 5 * p1[c] + 4 * p2[c] - p3[c]) * t2 +
+                      (-p0[c] + 3 * p1[c] - 3 * p2[c] + p3[c]) * t3);
+    }}
+    return out;
   }}
+  function at(rowF, f) {{                                  /* morbido anche fra un giro e l'altro */
+    var r0 = Math.max(0, Math.min(ROWS - 1, Math.floor(rowF))), r1 = Math.min(ROWS - 1, r0 + 1), rt = rowF - r0;
+    var p = spline(RING[r0], f), q = spline(RING[r1], f);
+    return [p[0] + (q[0] - p[0]) * rt, p[1] + (q[1] - p[1]) * rt];
+  }}
+  var halo = svg.querySelectorAll(".crc-glow");
+  var frags = [].map.call(svg.querySelectorAll("#crcFrags > g"), function (g, i) {{
+    var p = g.firstChild, row = +g.dataset.row, w = +p.getAttribute("width"), h = +p.getAttribute("height");
+    var j = ((i * 2654435761) % 1000) / 1000;             /* un numero suo, stabile: niente moto all'unisono */
+    return {{ g: g, p: p, x: +g.dataset.x, y: +g.dataset.y, row: row, i0: +g.dataset.i,
+             bx: +g.dataset.cx, by: +g.dataset.cy, a: rgb(p.getAttribute("fill")), b: rgb(g.dataset.c1),
+             spd: 125 + 42 * row + 45 * j,                 /* ognuno la sua andatura: la corsa non è meccanica */
+             w1: 0.9 + 2.6 * j, w2: 0.37 + 0.7 * j, w3: 1.7 + 3.1 * j,
+             ph1: 6.3 * j, ph2: 4.1 * j + row, ph3: 2.2 * j + row,
+             tail: 1 - 0.17 * row, rmax: Math.min(w, h) * 0.5, lag: 0.72 + 0.28 * j, shown: -1, dim: -1 }};
+  }});
+  var near = 0, target = 0, phase = 0, last = performance.now(), running = false;
+  function wake() {{ if (!running) {{ running = true; last = performance.now(); requestAnimationFrame(step); }} }}
   function step(t) {{
     var dt = Math.min(0.05, (t - last) / 1000); last = t;
-    near += (target - near) * Math.min(1, dt * (target > near ? 4 : 9));   /* si allarga piano, si ricompone svelto */
-    var still = near < 0.002 && target === 0;
-    cubes.forEach(function (c) {{
-      if (near > 0.01) c.a += c.w * near * dt * 60;            /* gradi al secondo: i cubetti interni girano più piano */
-      else {{ c.a = ((c.a + 180) % 360 + 360) % 360 - 180; c.a *= Math.max(0, 1 - dt * 10); }}   /* tornano al posto per la via più breve, in fretta */
-      var spread = near * (4 + c.r * 0.32);
-      c.g.setAttribute("transform", "rotate(" + c.a.toFixed(2) + " 100 100) translate(" + (c.ux * spread).toFixed(2) + " " +
-                       (c.uy * spread).toFixed(2) + ") rotate(" + (c.a * 0.8).toFixed(2) + " " + c.cx + " " + c.cy + ")");
-    }});
-    if (still && cubes.every(function (c) {{ return Math.abs(c.a) < 0.3; }})) {{
-      cubes.forEach(function (c) {{ c.a = 0; c.g.removeAttribute("transform"); }}); running = false; return;
+    near += (target - near) * Math.min(1, dt * (target > near ? 3.4 : 7));   /* fluisce piano, si ricompone svelto */
+    phase += dt * near;                                     /* l'orbita gira solo mentre il flusso è acceso */
+    var still = near < 0.004 && target === 0;
+    var lum = near * near;                                  /* la luce sale più tardi del moto: prima si sfalda, poi si accende */
+    for (var k = 0; k < halo.length; k++) {{
+      halo[k].style.display = lum < 0.01 ? "none" : "";      /* a riposo il filtro non costa nulla */
+      halo[k].setAttribute("opacity", (lum * (k ? 0.95 : 0.75)).toFixed(2));
+    }}
+    for (var i = 0; i < frags.length; i++) {{
+      var f = frags[i], e = Math.max(0, Math.min(1, (near - (1 - f.lag) * 0.45) / f.lag));
+      e = e * e * (3 - 2 * e);                              /* partenza e arrivo morbidi */
+      var idx = f.i0 + phase * f.spd + 6 * Math.sin(phase * f.w1 * 0.5 + f.ph1)  /* avanza a ondate larghe, non a passo fisso */
+                + 2.4 * Math.sin(phase * f.w3 * 0.3 + f.ph3);                      /* due onde lente e sfasate: traiettoria mai uguale */
+      var rowF = f.row + 1.1 * Math.sin(phase * f.w2 * 0.55 + f.ph2)               /* e intanto va e viene fra i giri */
+                 + 0.35 * Math.sin(phase * f.w3 * 0.22 + f.ph1);
+      var pos = at(rowF, idx), u = 1 - e;
+      var px = u * u * f.x + 2 * u * e * f.bx + e * e * pos[0];    /* curva quadratica: la linea di campo */
+      var py = u * u * f.y + 2 * u * e * f.by + e * e * pos[1];
+      var nx = at(rowF, idx + 0.5);                                /* tangente: il frammento si stira nel verso del moto */
+      var ang = Math.atan2(nx[1] - pos[1], nx[0] - pos[0]) * 180 / Math.PI;
+      var dep = Math.max(-1, Math.min(1, (pos[1] - 100) / 52));    /* 3D: sotto è il davanti, sopra il dietro */
+      var s = (1 - 0.34 * e) * (1 + 0.3 * dep * e);
+      var sx = s * (1 + 3.6 * f.tail * e), sy = s * (1 - 0.36 * e);   /* scie lunghe fuori, corte dentro: una scia
+                                                                         tangente al giro interno lo squadrerebbe */
+      f.g.setAttribute("transform", "translate(" + (px - f.x).toFixed(2) + " " + (py - f.y).toFixed(2) + ") " +
+                       "translate(" + f.x + " " + f.y + ") rotate(" + ang.toFixed(1) + ") scale(" + sx.toFixed(3) + " " +
+                       sy.toFixed(3) + ") rotate(" + (-ang).toFixed(1) + ") translate(" + (-f.x) + " " + (-f.y) + ")");
+      var q = Math.round(e * 10);                           /* colore e raggio a scatti impercettibili: meno lavoro */
+      if (q !== f.shown) {{
+        f.shown = q;
+        var k = q / 10;
+        f.p.setAttribute("fill", "rgb(" + Math.round(f.a[0] + (f.b[0] - f.a[0]) * k) + "," +
+                         Math.round(f.a[1] + (f.b[1] - f.a[1]) * k) + "," +
+                         Math.round(f.a[2] + (f.b[2] - f.a[2]) * k) + ")");
+        f.p.setAttribute("rx", (f.rmax * k).toFixed(2));    /* da spigoli vivi a capsule: code senza angoli */
+      }}
+      var d2 = Math.round((0.6 + 0.4 * (dep + 1) / 2) * e * 12);   /* dietro più velato, davanti pieno */
+      if (d2 !== f.dim) {{ f.dim = d2; f.g.setAttribute("opacity", (1 - e + d2 / 12).toFixed(2)); }}
+    }}
+    if (still) {{
+      frags.forEach(function (f) {{ f.g.removeAttribute("transform"); f.g.removeAttribute("opacity"); }});
+      running = false; return;
     }}
     requestAnimationFrame(step);
   }}
-  window.addEventListener("pointermove", function (e) {{ sense(e.clientX, e.clientY); }}, {{ passive: true }});
-  window.addEventListener("pointerdown", function (e) {{ sense(e.clientX, e.clientY); }}, {{ passive: true }});
-  document.addEventListener("pointerleave", function () {{ target = 0; }});
-  window.addEventListener("blur", function () {{ target = 0; }});
+  box.addEventListener("pointerenter", function () {{ target = 1; wake(); }});
+  box.addEventListener("pointerleave", function () {{ target = 0; wake(); }});
+  window.addEventListener("blur", function () {{ target = 0; wake(); }});
 }})();
 </script>"""
 
 
-def header_logo(cfg):
+def _in_poly(x, y, pts):
+    inside, j = False, len(pts) - 1
+    for i, (xi, yi) in enumerate(pts):
+        xj, yj = pts[j]
+        if (yi > y) != (yj > y) and x < (xj - xi) * (y - yi) / (yj - yi) + xi:
+            inside = not inside
+        j = i
+    return inside
+
+
+def _fragments():
+    """Il simbolo spezzato in tanti pezzi rettangolari irregolari: i tagli cadono a caso (seme fisso, così
+    l'HTML non cambia a ogni build) e i pezzi si sovrappongono di un filo, perché a riposo non si veda
+    nessuna cucitura fra l'uno e l'altro: il simbolo fermo resta il logo di sempre. Anche i cubetti a elle
+    vengono decomposti, così ogni pezzo è un rettangolo e può arrotondarsi mentre scorre."""
+    import logo as logo_v3
+    out, seed = [], 7
+
+    def rnd(lo, hi):                                # generatore ripetibile: stesso HTML a ogni build
+        nonlocal seed
+        seed = (seed * 1103515245 + 12345) % 2147483648
+        return lo + (hi - lo) * (seed / 2147483648)
+
+    def cuts(a, b, n):                              # n tagli scentrati a caso fra a e b
+        return [a] + [a + (b - a) * ((k + 1) / (n + 1) + rnd(-0.12, 0.12)) for k in range(n)] + [b]
+
+    import math
+    o = 1.2                                         # sovrapposizione fra pezzi vicini: niente righine. Può
+                                                    # essere generosa: i pezzi crescono solo l'uno dentro
+                                                    # l'altro, quindi la sagoma del cubetto non cambia di un pelo
+    for role, pts in logo_v3.SYMBOL:
+        if any(abs(a[0] - b[0]) > 0.01 and abs(a[1] - b[1]) > 0.01
+               for a, b in zip(pts, pts[1:] + pts[:1])):   # cubetto inclinato: resta storto com'è nel logo,
+            cx = sum(p[0] for p in pts) / len(pts)         # raddrizzarlo darebbe al simbolo un'aria a reticolo
+            cy = sum(p[1] for p in pts) / len(pts)
+            dx, dy = pts[1][0] - pts[0][0], pts[1][1] - pts[0][1]
+            side = math.hypot(dx, dy)
+            out.append((role, cx - side / 2, cy - side / 2, side, side, math.degrees(math.atan2(dy, dx))))
+            continue
+        xs, ys = sorted({p[0] for p in pts}), sorted({p[1] for p in pts})
+        if len(xs) == 2 and len(ys) == 2:           # cubetto pieno: lo spezzo secondo quanto è grande
+            w = xs[1] - xs[0]
+            nx, ny = ((2, 1) if rnd(0, 1) < 0.5 else (1, 2)) if w >= 15 else ((1, 0) if rnd(0, 1) < 0.5 else (0, 1)) if w >= 8.5 else (0, 0)
+            gx, gy = cuts(xs[0], xs[1], nx), cuts(ys[0], ys[1], ny)
+        else:                                       # cubetto a elle o a croce: lo divido dove si piega
+            gx, gy = xs, ys
+        inside = {(i, j): _in_poly((gx[i] + gx[i + 1]) / 2, (gy[j] + gy[j + 1]) / 2, pts)
+                  for i in range(len(gx) - 1) for j in range(len(gy) - 1)}
+        for (i, j), yes in inside.items():
+            if not yes:
+                continue                            # il pezzo si allarga solo verso un altro pezzo, mai verso
+            a = o if inside.get((i - 1, j)) else 0   # fuori: così il bordo del cubetto resta quello di sempre
+            b = o if inside.get((i, j - 1)) else 0
+            c = o if inside.get((i + 1, j)) else 0
+            d = o if inside.get((i, j + 1)) else 0
+            out.append((role, gx[i] - a, gy[j] - b, gx[i + 1] - gx[i] + a + c, gy[j + 1] - gy[j] + b + d, 0.0))
+    return out
+
+
+def header_logo(cfg, accent=None, ink="#FFFFFF"):
     """Logo dell'intestazione della home: con «site_v4» il simbolo definitivo in SVG (cubetti animati) e la scritta;
-    altrimenti l'immagine di prima."""
+    altrimenti l'immagine di prima. Su fondo scuro i cubetti principali sono bianchi e quelli d'accento nel colore
+    indicato (verde del sito per la home, colore della rubrica per le pagine di sezione)."""
     from html import escape
+    import logo as logo_v3
     brand = escape(cfg["brand_name"], quote=True)
     if not cfg.get("site_v4"):
         return f'<img src="logo-horizontal.png" alt="{brand}" width="340" height="128">'
-    cubes = []                                  # simbolo piatto, come nel logo definitivo
-    for col, pts in HEADER_SYMBOL:
-        cx = sum(p[0] for p in pts) / len(pts); cy = sum(p[1] for p in pts) / len(pts)
-        cubes.append(f'<g data-x="{cx:.2f}" data-y="{cy:.2f}"><polygon points="{" ".join(f"{x},{y}" for x, y in pts)}" fill="{col}"/></g>')
-    return HEADER_LOGO.format(brand=brand, cubes="".join(cubes), defs="", glow="")
+    import json
+    import math
+    acc = accent or SITE_GREEN
+    deep = logo_v3.deep_of(acc)
+    cols = {"ink": ink, "teal": acc, "deep": deep}
+
+    def lighten(hexa, k):                               # verso il bianco: il nucleo acceso del tubo luminoso
+        r, g, b = (int(hexa.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+        return "#%02x%02x%02x" % tuple(round(v + (255 - v) * k) for v in (r, g, b))
+
+    core, core_in = lighten(acc, 0.68), lighten(acc, 0.42)
+    frags = _fragments()
+    centres = [(x + w / 2, y + h / 2) for _, x, y, w, h, _r in frags]
+    per, rows = 96, 4                                   # l'orbita: 4 giri concentrici da 96 posizioni
+    ring = logo_v3.ring_rows(per, rows, roundness=1, oval=0.42)   # cerchio pieno poi stirato: ovale senza un angolo
+    ang = lambda p: math.atan2(p[1] - 100, p[0] - 100)
+    order = sorted(range(len(frags)), key=lambda i: ang(centres[i]))      # per angolo: i frammenti non si incrociano
+    step = per / max(1, -(-len(frags) // rows))
+    cubes = [""] * len(frags)
+    for slot, i in enumerate(order):
+        (role, x, y, w, h, rot), (cx, cy) = frags[i], centres[i]
+        row, idx = slot % rows, (slot // rows) * step
+        tx, ty = ring[row][int(idx) % per]
+        bend = 0.55 * math.hypot(tx - cx, ty - cy) * math.cos(ang((tx, ty)))   # linea di campo: piega al contrario sui due lati
+        mx, my = (cx + tx) / 2, (cy + ty) / 2
+        nx, ny = -(ty - cy), (tx - cx)
+        nrm = math.hypot(nx, ny) or 1
+        cubes[i] = (f'<g data-x="{cx:.1f}" data-y="{cy:.1f}" data-row="{row}" data-i="{idx:.2f}" '
+                    f'data-cx="{mx + nx / nrm * bend:.1f}" data-cy="{my + ny / nrm * bend:.1f}" '
+                    f'data-c1="{core_in if row >= rows - 2 else core}">'  # nucleo acceso, quasi bianco; il verde sta nell'alone
+                    f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" rx="0" fill="{cols[role]}"'
+                    + (f' transform="rotate({rot:.1f} {cx:.2f} {cy:.2f})"' if rot else "") + "/></g>")
+    # luminescenza: due aloni verdi sfocati dietro i frammenti (una copia sola, non il doppio dei nodi)
+    defs = (f'<filter id="crcGlowA" x="-45%" y="-45%" width="190%" height="190%">'
+            f'<feGaussianBlur in="SourceAlpha" stdDeviation="2.4" result="b"/>'
+            f'<feFlood flood-color="{acc}" flood-opacity="0.95"/><feComposite in2="b" operator="in"/></filter>'
+            f'<filter id="crcGlowB" x="-70%" y="-70%" width="240%" height="240%">'
+            f'<feGaussianBlur in="SourceAlpha" stdDeviation="6.5" result="b"/>'
+            f'<feFlood flood-color="{acc}" flood-opacity="0.8"/><feComposite in2="b" operator="in"/></filter>')
+    glow = ('<use class="crc-glow" href="#crcFrags" filter="url(#crcGlowB)" opacity="0" style="display:none"/>'
+            '<use class="crc-glow" href="#crcFrags" filter="url(#crcGlowA)" opacity="0" style="display:none"/>')
+    ring_js = json.dumps([[[round(x, 1), round(y, 1)] for x, y in r] for r in ring], separators=(",", ":"))
+    return HEADER_LOGO.format(brand=brand, cubes=f'<g id="crcFrags">{"".join(cubes)}</g>',
+                              defs=defs, glow=glow, ring=ring_js, word="logo-wordmark-dark.png")
 
 
 ICONS_DIR = __import__("pathlib").Path(__file__).resolve().parent / "icons"
@@ -1501,25 +1782,44 @@ def social_links(cfg):
         links.append(("bluesky", "Bluesky", f"https://bsky.app/profile/{cfg['bluesky_handle'].lstrip('@')}"))
     if cfg.get("threads_handle"):
         links.append(("threads", "Threads", f"https://www.threads.com/@{cfg['threads_handle'].lstrip('@')}"))
+    if cfg.get("linkedin_url"):
+        links.append(("linkedin", "LinkedIn", cfg["linkedin_url"]))
     links.append(("rss", "RSS", "rss.html"))            # pagina che spiega come iscriversi (il feed grezzo è XML)
     return "\n".join(f'    <a href="{url}" rel="me">{icon(name)}<span>{label}</span></a>' for name, label, url in links)
 
 
-def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0):
+def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0, n_science=0):
     from html import escape
     today = today or date.today()
     c = site_palette(cfg)
-    calls_line = f"{n_calls} open calls worldwide" + (f" · {n_italy} open to Italian institutions" if n_italy else "")
-    jobs_line = f"{n_positions} open PhD, post-doc and faculty positions" if n_positions else "PhD, post-doc and faculty positions"
+    metrics = {       # la metrica di ogni rubrica, sotto la sua pillola
+        "grant": f"{n_calls} open calls worldwide" + (f" · {n_italy} open to Italian institutions" if n_italy else ""),
+        "positions": f"{n_positions} open PhD, post-doc and faculty positions" if n_positions
+                     else "PhD, post-doc and faculty positions",
+        "methods": f"{n_methods} carousel{'s' if n_methods != 1 else ''}, with key points and references" if n_methods
+                   else "Practical topics with key points and references",
+        "science": f"{n_science} clinical lesson{'s' if n_science != 1 else ''}, one new every Saturday" if n_science
+                   else "One clinical paper, one lesson for practice: every Saturday"}
     return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"], social=social_links(cfg),
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
-                       amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"), sci=site_accent(cfg, "science"),
-                       calls_line=escape(calls_line), jobs_line=escape(jobs_line), updated=_fmt_date(today),
-                       logo_block=header_logo(cfg),
-                       method_line=escape(f"{n_methods} carousel{'s' if n_methods != 1 else ''} to swipe, with key points and references" if n_methods
-                                          else "Practical topics with key points and references"),
+                       amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"), sci=site_accent(cfg, "science"), meth=site_accent(cfg, "methods"),
+                       updated=_fmt_date(today),
+                       logo_block=header_logo(cfg), pills=section_pills(cfg, metrics),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
-                                  "engineering and rehabilitation, checked on the official texts.", ""))
+                                  "engineering and rehabilitation, checked on the official texts.", "") + org_jsonld(cfg))
+
+
+def org_jsonld(cfg):
+    """Dati strutturati dell'organizzazione (schema.org): collegano il sito ai profili social per Google."""
+    ig = cfg["handle"].lstrip("@")
+    same = [f"https://www.instagram.com/{ig}/", f"https://www.facebook.com/{ig}"]
+    if cfg.get("bluesky_handle"):
+        same.append(f"https://bsky.app/profile/{cfg['bluesky_handle'].lstrip('@')}")
+    if cfg.get("linkedin_url"):
+        same.append(cfg["linkedin_url"])
+    data = {"@context": "https://schema.org", "@type": "Organization", "name": cfg["brand_name"],
+            "url": site_url(cfg, ""), "logo": site_url(cfg, "og.png"), "sameAs": same}
+    return '\n<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False) + "</script>"
 
 
 def filters_form(entries):
@@ -1646,7 +1946,7 @@ def calls_feed(grants_list, verified, cfg, today=None):
             f"Who can lead: {v.get('lead')}." if v.get("lead") else "",
             f"{label}: {_fmt_date(d)}" + (f" ({note})." if note else ".") if d else "Deadline: see the official call.",
             f"Official call: {g['url']}") if x)
-        items.append((title, site_url(cfg, "calls#" + card_anchor(g["id"])), desc, _date(v.get("checked")), g["id"]))
+        items.append((title, site_url(cfg, call_path(g, v)), desc, _date(v.get("checked")), g["id"]))
     items.sort(key=lambda it: it[3] or date.min, reverse=True)
     return rss(cfg, f"{cfg['brand_name']} – open funding calls",
                "Open funding calls in clinical research, clinical engineering and rehabilitation, checked on the official text.",
@@ -1977,11 +2277,12 @@ def site_palette(cfg):
     """Colori del sito: quelli del config, oppure (config «mono») nero e grigi con azzurrino come colore base."""
     c = cfg["colors"]
     if cfg.get("mono"):
-        return {**c, "background": "#0A0A0A", "muted": "#8A8A8A", "muted_text": "#CFCFCF", "accent": site_accent(cfg, "methods")}
+        return {**c, "background": "#0A0A0A", "muted": "#8A8A8A", "muted_text": "#CFCFCF", "accent": SITE_GREEN if cfg.get("site_v4") else site_accent(cfg, "methods")}
     return c
 
 
-SITE_V4 = {"grant": "#FFB74D", "positions": "#B9A2F0", "methods": "#6EC1E4", "science": "#8FD694"}   # rubriche, palette «Corallo & Mare»
+SITE_V4 = {"grant": "#F8B048", "positions": "#8858F0", "methods": "#88B0F8", "science": "#FFFFFF"}   # rubriche (colori del logo v3)
+SITE_GREEN = "#3CC9B0"   # colore del sito (logo verde)
 
 
 def site_accent(cfg, kind):
@@ -1991,6 +2292,50 @@ def site_accent(cfg, kind):
         return SITE_V4[kind]
     return {"grant": cfg.get("grant_accent", "#FFB547"), "positions": cfg.get("positions_accent", "#A78BFA"),
             "methods": "#6EC1FF", "science": "#6EC1FF"}[kind]
+
+
+SECTIONS = [("methods", "methodology.html", "Design, Reporting &amp; Appraisal"),
+            ("science", "science.html", "Latest Science"),
+            ("grant", "calls.html", "Funding calls"),
+            ("positions", "positions.html", "Academic positions")]
+
+
+def on_color(hexa):
+    """Nero o bianco, quello che si legge meglio sul colore dato."""
+    r, g, b = (int(hexa.lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    return "#0A0A0A" if lum > 0.55 else "#FFFFFF"
+
+
+def section_pills(cfg, metrics=None, current=None):
+    """Le quattro rubriche in colonna: pillola nel colore della rubrica e, sotto, la sua metrica."""
+    from html import escape as esc
+    out = []
+    for kind, href, label in SECTIONS:
+        col = site_accent(cfg, kind)
+        here = ' aria-current="page"' if kind == current else ""
+        met = (metrics or {}).get(kind, "")
+        out.append(f'<a href="{href}" style="--c:{col};--on:{on_color(col)}"{here}>'
+                   f'<span class="tag">{label.upper()}</span>'
+                   + (f'<span class="met">{esc(met)}</span>' if met else "") + "</a>")
+    return "\n".join(out)
+
+
+LOCKUP_SRC = {"methods": "lockup-methods.png", "science": "lockup-science.png",
+              "grant": "lockup-calls.png", "positions": "lockup-positions.png"}
+
+
+def page_lockup(cfg, kind):
+    """Logo in cima a una pagina di sezione, nel colore della rubrica (bandi giallo, posizioni violetto,
+    metodologia azzurro, Latest Science bianco), collegato alla home."""
+    from html import escape as esc
+    if not cfg.get("site_v4"):
+        return ""
+    brand = esc(cfg["brand_name"], quote=True)
+    return (f'<a class="crc-top" href="index.html" aria-label="{brand}, home">'
+            f'<img src="{LOCKUP_SRC[kind]}" alt="{brand}" width="857" height="200"></a>'
+            '<style>.crc-top { display: block; width: max-content; max-width: 100%; margin: 0 0 18px; }'
+            ' .crc-top img { height: 44px; width: auto; max-width: 100%; display: block; }</style>')
 
 
 def site_colors(cfg):

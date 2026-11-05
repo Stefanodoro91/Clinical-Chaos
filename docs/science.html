@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Latest Science: one clinical concept a week · Clinical Research Chaos</title>
+<meta name="description" content="One real paper, one clinical lesson every Saturday: what it means for the therapeutic approach and the patient, not for study design or reporting.">
+<link rel="canonical" href="https://clinicalresearchchaos.com/science">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Clinical Research Chaos">
+<meta property="og:title" content="Latest Science · Clinical Research Chaos">
+<meta property="og:description" content="One real paper, one clinical lesson every Saturday: what it means for the therapeutic approach and the patient.">
+<meta property="og:url" content="https://clinicalresearchchaos.com/science">
+<meta property="og:image" content="https://clinicalresearchchaos.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #0A0A0A; --card: #161616; --text: #FFFFFF; --muted: #8A8A8A; --soft: #CFCFCF; --accent: #FFFFFF; --teal: #FFFFFF; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.5; }
+  .bar { height: 6px; background: var(--accent); }
+  main { max-width: 760px; margin: 0 auto; padding: 28px 16px 48px; }
+  .switch { display: inline-block; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
+            border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px; margin: 0 6px 18px 0; }
+  .badge { display: inline-block; background: var(--accent); color: var(--bg); font-weight: 800; font-size: 13px;
+           letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; }
+  h1 { font-size: 30px; font-weight: 800; margin: 14px 0 6px; line-height: 1.15; }
+  .intro { color: var(--soft); margin: 0 0 22px; font-size: 15px; }
+  .method { background: var(--card); border-radius: 18px; padding: 16px; margin-bottom: 14px; display: grid;
+            grid-template-columns: 264px 1fr; gap: 18px; }
+  .slides { position: relative; }
+  .strip { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+           border-radius: 10px; scrollbar-width: none; background: var(--bg); }
+  .strip::-webkit-scrollbar { display: none; }
+  .strip img { flex: 0 0 100%; width: 100%; height: auto; aspect-ratio: 4/5; object-fit: cover; scroll-snap-align: start; display: block; }
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 13px; color: var(--muted); font-weight: 600; }
+  .nav button { background: transparent; color: var(--text); border: 1px solid var(--muted); border-radius: 999px; width: 34px; height: 34px;
+                font: 700 16px Inter, system-ui, sans-serif; cursor: pointer; }
+  .nav button:disabled { opacity: .35; cursor: default; }
+  .method h3 { font-size: 18px; margin: 0 0 6px; line-height: 1.3; }
+  .date { color: var(--muted); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .take { color: var(--soft); font-size: 15px; margin: 0 0 10px; }
+  details { font-size: 14px; color: var(--soft); }
+  details summary { cursor: pointer; color: var(--accent); font-weight: 700; }
+  details h4 { color: var(--text); font-size: 15px; margin: 12px 0 2px; }
+  details p { margin: 0 0 6px; }
+  .refs { border-top: 1px solid #2E2E2E; margin-top: 12px; padding-top: 8px; font-size: 13px; }
+  @media (max-width: 520px) { .method { grid-template-columns: 1fr; } .slides { max-width: 420px; } }
+  .nomatch { color: var(--soft); background: var(--card); border-radius: 18px; padding: 18px 20px; font-size: 15px; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 36px; }
+  footer a { color: var(--teal); }
+</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style id="crc-editorial">
+  /* stile editoriale dei post (design_v3): titoli serif, testata da rivista, schede con filetto, etichette piene */
+  h1, h2, h3, .t, .big .name, .num {font-family: "Source Serif 4", Georgia, serif !important; letter-spacing: -.01em;}
+  h1 {font-weight: 800; font-size: clamp(30px, 6vw, 40px); line-height: 1.1;}
+  .bar {height: 10px !important;}
+  main::before {content: attr(data-brand); display: block;}
+  .badge {border-radius: 999px; letter-spacing: .08em;}
+  section > h2, .tools h2 {border-bottom: 1px solid #2E2E2E; padding-bottom: 6px;}
+  article.method, .job, .call, form.filters, .nomatch, .tools .tool {background: #0F0F0F !important; border: 1px solid #2E2E2E !important;
+      border-radius: 14px !important; box-shadow: none !important;}
+  article.method, .job, .call {border-left-color: var(--accent) !important;}
+    .take, .intro {font-family: "Source Serif 4", Georgia, serif; font-size: 17px !important; line-height: 1.5;}
+  details summary, .k {letter-spacing: .04em;}
+  .refs {border-top-color: #2E2E2E !important;}
+  footer {border-top: 1px solid #2E2E2E; padding-top: 14px;}
+  footer, .date {font-family: "Source Serif 4", Georgia, serif; font-style: italic;}
+  mark, .hl {background: var(--accent); color: #0A0A0A; padding: 0 .15em;}
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<main>
+  <a class="crc-top" href="index.html" aria-label="Clinical Research Chaos, home"><img src="lockup-science.png" alt="Clinical Research Chaos" width="857" height="200"></a><style>.crc-top { display: block; width: max-content; max-width: 100%; margin: 0 0 18px; } .crc-top img { height: 44px; width: auto; max-width: 100%; display: block; }</style>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><br>
+  <span class="badge">LATEST SCIENCE</span>
+  <h1>One clinical concept a week, from a real paper</h1>
+  <p class="intro">Every Saturday, one new clinical paper and one lesson for practice: what it means for the
+  therapeutic approach and for the patient, never a lesson on study design or reporting. Swipe through the slides
+  here, no Instagram account needed.</p>
+  <p class="nomatch">No «Latest Science» post yet: check back next Saturday.</p>
+  <footer>
+    Educational content for researchers and health professionals; not medical advice. Always check the original
+    reference.<br>
+    Updated 5 Nov 2026 · <a href="https://www.instagram.com/clinicalresearchchaos/">@clinicalresearchchaos on Instagram</a>
+  </footer>
+</main>
+<script>
+(function () {
+  var all = document.querySelectorAll(".slides");
+  for (var i = 0; i < all.length; i++) (function (box) {
+    var strip = box.querySelector(".strip"), n = strip.children.length;
+    var prev = box.querySelector(".prev"), next = box.querySelector(".next"), pos = box.querySelector(".pos");
+    if (!prev || !next || !pos) return;
+    function cur() { return Math.round(strip.scrollLeft / Math.max(1, strip.clientWidth)); }
+    function show() { var k = cur(); pos.textContent = (k + 1) + " / " + n; prev.disabled = k <= 0; next.disabled = k >= n - 1; }
+    function go(d) { strip.scrollTo ? strip.scrollTo({ left: (cur() + d) * strip.clientWidth, behavior: "smooth" }) : (strip.scrollLeft = (cur() + d) * strip.clientWidth); }
+    prev.onclick = function () { go(-1); }; next.onclick = function () { go(1); };
+    strip.addEventListener("scroll", function () { window.requestAnimationFrame(show); });
+    show();
+  })(all[i]);
+})();
+</script>
+
+<div id="crc-rain" class="crc-side" aria-hidden="true"></div>
+<div id="crc-rain-r" class="crc-side" aria-hidden="true"></div>
+<style>
+  .crc-side { position: fixed; top: 0; bottom: 0; width: calc((100vw - 740px) / 2); pointer-events: none; z-index: 0; display: none; }
+  #crc-rain { left: 0; }
+  #crc-rain-r { right: 0; }
+  .crc-side canvas { display: block; width: 100%; height: 100%; }
+  @media (min-width: 1180px) { .crc-side { display: block; } }
+  main, header, footer, .bar { position: relative; z-index: 1; }
+  .crc-side.over { z-index: 2; }
+</style>
+<script>
+(function () {
+  var wide = window.matchMedia("(min-width: 1180px)");
+  var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var started = false;
+  function start() {
+    if (started || !wide.matches) return;
+    started = true;
+    var COLORS = ["#FFFFFF", "#FFFFFF", "#909090", "#535353"];
+    var GREYS = ["#0A0A0A", "#2E2E2E", "#5A5A5A", "#8A8A8A"];
+    var SIZES = [4, 6, 8, 10, 12], SHAPES = [[], [], [[1, 0]], [[0, 1]], [[1, 0], [0, 1]], [[1, 0], [1, 1]]];
+    function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+    /* zone chiare della pagina (intestazione bianca): lì cubetti e pulviscolo cadono in nero e grigi,
+       poi entrando nella parte scura prendono colore */
+    var light = [];
+    function lum(c) { var m = c.match(/\d+(\.\d+)?/g); if (!m || (m.length > 3 && +m[3] === 0)) return -1;
+      return (0.2126 * m[0] + 0.7152 * m[1] + 0.0722 * m[2]) / 255; }
+    function zones() {
+      light = [];
+      document.querySelectorAll("body > header, body > .top, body > section, body > div:not(.crc-side), [data-light]").forEach(function (e) {
+        var bg = getComputedStyle(e).backgroundColor;
+        if (lum(bg) > 0.6) { var r = e.getBoundingClientRect(); if (r.bottom > 0 && r.height > 0) light.push([r.top, r.bottom]); }
+      });
+    }
+    function mixIn(y) {       /* 0 = su chiaro (grigi), 1 = su scuro (colori); passaggio graduale di 40 px */
+      for (var i = 0; i < light.length; i++) {
+        var z = light[i];
+        if (y >= z[0] - 4 && y < z[1]) return 0;
+        if (y >= z[1] && y < z[1] + 40) return (y - z[1]) / 40;
+      }
+      return 1;
+    }
+    function side(id) {
+      var el = document.getElementById(id), c = document.createElement("canvas"), ctx = c.getContext("2d");
+      el.classList.add("over");
+      el.appendChild(c);
+      var L = { ctx: ctx, drops: [], dust: [], R: null };
+      function drop(y) {
+        return { x: Math.random() * L.R.width, y: (y === undefined ? -40 : y), s: pick(SIZES), v: 7 + Math.random() * 20,
+                 c: pick(COLORS), g: pick(GREYS), a: 0.12 + Math.random() * 0.5, shape: pick(SHAPES) };
+      }
+      function mote(y) {
+        var glow = Math.random() < 0.16;
+        return { x: Math.random() * L.R.width, y: (y === undefined ? -20 : y), r: glow ? 5 + Math.random() * 10 : 0.6 + Math.random() * 1.4,
+                 v: 4 + Math.random() * 10, w: Math.random() * 6.28, glow: glow, c: pick(COLORS), g: pick(GREYS.slice(1)),
+                 a: glow ? 0.06 + Math.random() * 0.12 : 0.25 + Math.random() * 0.55 };
+      }
+      L.fit = function () {
+        var r = el.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+        c.width = r.width * d; c.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); L.R = r;
+        L.drops = []; var n = Math.round(r.width * r.height / 7500);
+        for (var i = 0; i < n; i++) L.drops.push(drop(Math.random() * r.height));
+        L.dust = []; var m = Math.round(r.width * r.height / 2600);
+        for (var j = 0; j < m; j++) L.dust.push(mote(Math.random() * r.height));
+      };
+      function paint(col, alpha, x, y, s) { if (alpha <= 0.003) return; ctx.globalAlpha = alpha; ctx.fillStyle = col; ctx.fillRect(x, y, s, s); }
+      L.step = function (dt, t) {
+        ctx.clearRect(0, 0, L.R.width, L.R.height);
+        L.dust.forEach(function (p) {
+          p.y += p.v * dt; p.x += Math.sin(t / 1800 + p.w) * 4 * dt;
+          if (p.y > L.R.height + 20) { var n = mote(); for (var k in n) p[k] = n[k]; }
+          var k2 = mixIn(p.y);
+          [[p.g, (1 - k2) * 0.7], [p.c, k2]].forEach(function (v) {
+            if (v[1] <= 0.003) return;
+            ctx.globalAlpha = p.a * v[1];
+            if (p.glow) {
+              var gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+              gr.addColorStop(0, v[0]); gr.addColorStop(1, "rgba(0,0,0,0)");
+              ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832); ctx.fill();
+            } else { ctx.fillStyle = v[0]; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832); ctx.fill(); }
+          });
+        });
+        L.drops.forEach(function (d) {
+          d.y += d.v * dt;
+          if (d.y > L.R.height + 40) { var n = drop(); for (var k in n) d[k] = n[k]; }
+          [[0, 0]].concat(d.shape).forEach(function (o) {
+            var x = d.x + o[0] * (d.s + 2), y = d.y + o[1] * (d.s + 2), k3 = mixIn(y + d.s / 2);
+            paint(d.g, d.a * (1 - k3) * 1.25, x, y, d.s);
+            paint(d.c, d.a * k3, x, y, d.s);
+          });
+        });
+      };
+      L.fit();
+      return L;
+    }
+    zones();
+    var sides = [side("crc-rain"), side("crc-rain-r")];
+    var last = performance.now();
+    function frame(t) {
+      var dt = Math.min(0.05, (t - last) / 1000); last = t;
+      sides.forEach(function (L) { L.step(dt, t); });
+      if (!still) requestAnimationFrame(frame);
+    }
+    window.addEventListener("scroll", zones, { passive: true });
+    window.addEventListener("resize", function () { zones(); sides.forEach(function (L) { L.fit(); }); if (still) frame(performance.now()); });
+    requestAnimationFrame(frame);
+  }
+  start();
+  if (wide.addEventListener) wide.addEventListener("change", start);
+})();
+</script>
+</body>
+</html>
