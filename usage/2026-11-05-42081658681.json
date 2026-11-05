@@ -23,6 +23,13 @@
    "ragionamento": 6297,
    "respinte": 0,
    "versione": "gemini-3.6-flash"
+  },
+  "controllo doppioni|groq-gpt-oss-120b": {
+   "richieste": 1,
+   "ingresso": 1498,
+   "uscita": 364,
+   "ragionamento": 0,
+   "respinte": 0
   }
  }
 }
