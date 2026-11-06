@@ -162,5 +162,16 @@
     "kind": "grant",
     "grant_id": "GG-PAR-25-227",
     "deadline": "2027-02-05"
+  },
+  {
+    "date": "2026-11-06",
+    "time": "2026-11-06T14:41:20+00:00",
+    "id": "reel-checklist-consort-outcomes",
+    "title": "Primary outcome: defined before, not after",
+    "source": "Rubrica Checklist",
+    "kind": "reel",
+    "reel_of": "checklist-consort-outcomes",
+    "seconds": 26.5,
+    "simulated": true
   }
 ]
