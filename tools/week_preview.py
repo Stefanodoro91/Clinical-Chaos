@@ -90,6 +90,12 @@ def apply_history(hist):
     if hist["stories"]:
         log = stories.load_log() + hist["stories"]
         stories.LOG_FILE.write_text(json.dumps(log, ensure_ascii=False, indent=2), encoding="utf-8")
+    if "clinical_queue" in hist:                     # post Latest Science già scritti e articoli clinici già letti
+        bot.save(bot.CLINICAL_QUEUE_FILE, hist["clinical_queue"])
+    if hist.get("clinical_sources"):
+        src = bot.load(bot.SOURCES_FILE, [])
+        have = {x.get("drive_id") for x in src}
+        bot.save(bot.SOURCES_FILE, src + [x for x in hist["clinical_sources"] if x.get("drive_id") not in have])
     import grants, positions
     verified = grants.load_verified()
     for gid, v in hist.get("grants", {}).items():
@@ -125,6 +131,8 @@ def save_history(hist, idx, added_posted, added_stories):
         hist["weeks_done"] = sorted(set(hist["weeks_done"]) | {idx})
     hist["posted"] += added_posted
     hist["stories"] += added_stories
+    hist["clinical_queue"] = bot.load(bot.CLINICAL_QUEUE_FILE, [])
+    hist["clinical_sources"] = [x for x in bot.load(bot.SOURCES_FILE, []) if x.get("clinical_used") or x.get("clinical_skipped")]
     hist["grants"] = {k: v for k, v in grants.load_verified().items() if grants.confirmed(v)}
     hist["positions"] = {k: v for k, v in positions.load_archive().items() if (v.get("confirmed") or {}).get("model")}
     HISTORY.write_text(json.dumps(hist, ensure_ascii=False, indent=1), encoding="utf-8")

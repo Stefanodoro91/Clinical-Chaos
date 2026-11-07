@@ -259,53 +259,97 @@ def drop_repeats(queue, posted, threshold=0.72):
     return [q for i, q in enumerate(kept) if i not in drop]
 
 
-def latest_science_post(drive, posted):
-    """Post del sabato «Latest Science»: SOLO da un articolo delle sottocartelle Drive «Clinica…» (es. «Clinica main»),
-    mai dalla coda di metodologia. Un articolo per settimana, mai riusato; il post parla di un trattamento o dello
-    stato di salute dei pazienti (content.clinical_post), poi passa gli stessi controlli dei post normali sul testo
-    dell'articolo (anti-copia, revisione incrociata o verifica dei fatti, reference). Nessun articolo adatto: None."""
+CLINICAL_QUEUE_FILE = ROOT / "clinical_queue.json"     # post Latest Science già scritti dagli articoli di «Clinica…»
+
+
+def _clinical_review(post, material):
+    """Controlli prima dell'uscita sul testo dell'articolo: anti-copia, revisione incrociata (o verifica dei fatti),
+    reference. False se la revisione respinge il post."""
+    content.rewrite_copied(post, material)
+    if CONFIG.get("cross_review", True):
+        rev = content.cross_review(post, material)
+        post["review"] = {k: rev.get(k) for k in ("passed", "scores", "critic", "arbiter", "fixed", "removed", "notes")}
+        if rev.get("passed") is False:
+            print(f"::warning title=Latest Science respinto dalla revisione::{post['title'][:70]}: "
+                  f"{'; '.join(rev.get('notes', [])[:2])[:250]}")
+            return False
+        if rev.get("passed") is None:
+            content.verify_against_source(post, material)
+    else:
+        content.verify_against_source(post, material)
+    content.fix_references(post)
+    return True
+
+
+def _new_clinical_posts(drive, posted, sources, cq):
+    """Legge il prossimo articolo non ancora usato delle sottocartelle «Clinica…» e ne ricava 2-3 post clinici
+    (messaggi diversi), che vanno nella coda clinica. Restituisce quanti post ha aggiunto."""
     inbox = os.environ["GDRIVE_FOLDER_ID"]
-    used = {p.get("source") for p in posted if p.get("category") == content.CLINICAL_CATEGORY or p.get("rubric") == "Clinical Insights"}
-    sources = load(SOURCES_FILE, [])
-    used |= {x.get("name") for x in sources if x.get("clinical_used")}
-    files = [f for f in list_inbox(drive, inbox) if f.get("parent") != inbox and f["name"] not in used and content.is_supported(f)]
-    print(f"Latest Science: {len(files)} articoli clinici non ancora usati nelle cartelle «Clinica…»")
-    published = [x["title"] for x in posted if x.get("title")]
+    read = {x.get("name") for x in sources if x.get("clinical_used") or x.get("clinical_skipped")}
+    read |= {q.get("source") for q in cq} | {p.get("source") for p in posted if p.get("category") == content.CLINICAL_CATEGORY}
+    files = [f for f in list_inbox(drive, inbox) if f.get("parent") != inbox and f["name"] not in read and content.is_supported(f)]
+    print(f"Latest Science: {len(files)} articoli clinici non ancora letti nelle cartelle «Clinica…»")
+    published = [x["title"] for x in posted if x.get("title")] + [q["title"] for q in cq]
     for f in files[:int(CONFIG.get("latest_science_tries", 3))]:
+        note = None
         try:
             part = content.material_part(drive, f)
-            material = content.material_text(part)
-            status_, label = content.license_status(material)
+            status_, label = content.license_status(content.material_text(part))
             if status_ != "ok":
-                print(f"::warning title=Articolo clinico saltato per licenza::{f['name']}: {label or 'nessuna licenza dichiarata nel testo'}")
-                continue
-            post, focus, why = content.clinical_post(part, f["name"], CONFIG["brand_name"], published)
+                note = f"licenza: {label or 'non dichiarata nel testo'}"
+            else:
+                posts, focus, why = content.clinical_posts(part, f["name"], CONFIG["brand_name"], published,
+                                                           int(CONFIG.get("latest_science_posts_per_paper", 3)))
+                if not posts:
+                    note = f"nessun messaggio clinico ({focus}): {why[:150]}"
         except Exception as e:
             print(f"::warning title=Articolo clinico non letto::{f['name']}: {str(e)[:200]}")
             continue
-        if post is None:
-            print(f"::notice title=Articolo senza messaggio clinico::{f['name']} ({focus}): {why[:200]}")
-            continue
-        post.update({"id": uuid.uuid4().hex[:8], "source": f["name"], "rubric": "Clinical Insights"})
-        content.rewrite_copied(post, material)
-        if CONFIG.get("cross_review", True):
-            rev = content.cross_review(post, material)
-            post["review"] = {k: rev.get(k) for k in ("passed", "scores", "critic", "arbiter", "fixed", "removed", "notes")}
-            if rev.get("passed") is False:
-                print(f"::warning title=Latest Science respinto dalla revisione::{f['name']}: {'; '.join(rev.get('notes', [])[:2])[:250]}")
-                continue
-            if rev.get("passed") is None:
-                content.verify_against_source(post, material)
-        else:
-            content.verify_against_source(post, material)
-        content.fix_references(post)
-        if not any(x.get("drive_id") == f["id"] for x in sources):   # per la slide «Based on» e i controlli anti-copia
-            sources.append({"drive_id": f["id"], "name": f["name"], "posts": 1, "clinical_used": True,
+        if note:
+            print(f"::notice title=Articolo clinico saltato::{f['name']}: {note}")
+            sources.append({"drive_id": f["id"], "name": f["name"], "posts": 0, "clinical_skipped": note,
                             "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")})
-            save(SOURCES_FILE, sources)
-        print(f"Latest Science da «{f['name']}» ({focus}): {post['title']}")
-        return post
-    return None
+            continue
+        for p in posts:
+            p.update({"id": uuid.uuid4().hex[:8], "source": f["name"], "rubric": "Clinical Insights"})
+        cq.extend(posts)
+        sources.append({"drive_id": f["id"], "name": f["name"], "posts": len(posts), "clinical_used": True,
+                        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")})
+        print(f"::notice title=Articolo clinico letto::{f['name']} ({focus}): {len(posts)} post per Latest Science")
+        return len(posts)
+    return 0
+
+
+def latest_science_post(drive, posted):
+    """Post del sabato «Latest Science»: SOLO dagli articoli delle sottocartelle Drive «Clinica…» (es. «Clinica main»),
+    mai dalla coda di metodologia. Da ogni articolo escono 2-3 post (coda clinica, uno a sabato); finiti quelli si
+    legge l'articolo successivo. Ogni post parla di un trattamento o dello stato di salute dei pazienti e passa i
+    controlli sul testo dell'articolo prima di uscire. Nessun post adatto: None (il sabato salta, con avviso)."""
+    sources = load(SOURCES_FILE, [])
+    cq = load(CLINICAL_QUEUE_FILE, [])
+    done = {p.get("id") for p in posted}
+    cq = [q for q in cq if q.get("id") not in done]
+    try:
+        for _ in range(2):
+            if not cq and not _new_clinical_posts(drive, posted, sources, cq):
+                return None
+            last = next((p.get("source") for p in reversed(posted) if p.get("category") == content.CLINICAL_CATEGORY), None)
+            if cq and all(q.get("source") == last for q in cq):
+                _new_clinical_posts(drive, posted, sources, cq)   # varietà: se c'è, un articolo nuovo prima del 3° post
+            cq.sort(key=lambda q: q.get("source") == last)    # stabile: se c'è, un articolo diverso dalla settimana prima
+            while cq:
+                post = cq.pop(0)
+                material = source_material(drive, post["source"])
+                if not material:
+                    print(f"  Articolo di «{post['title'][:60]}» non rileggibile: post scartato")
+                    continue
+                if _clinical_review(post, material):
+                    print(f"Latest Science da «{post['source']}»: {post['title']}")
+                    return post
+        return None
+    finally:
+        save(CLINICAL_QUEUE_FILE, cq)
+        save(SOURCES_FILE, sources)
 
 
 METHOD_ONLY_CATEGORIES = {"Study design", "Reporting & publication", "Critical appraisal"}  # pura metodologia:
@@ -850,7 +894,8 @@ def simulate_post(post, kind, slides, caption):
     sims = load(SIM_FILE, [])
     sims.append(entry)
     save(SIM_FILE, sims)
-    commit_and_push(rel + [SIM_NAME], f"Post simulato (social in pausa): {post['title'][:60]}")
+    extra = [CLINICAL_QUEUE_FILE.name, SOURCES_FILE.name] if CLINICAL_QUEUE_FILE.exists() else []
+    commit_and_push(rel + [SIM_NAME] + extra, f"Post simulato (social in pausa): {post['title'][:60]}")
     print(f"::notice title=Post simulato::{post['title'][:80]} → Drive Anteprime, non pubblicato")
 
 
@@ -1194,7 +1239,8 @@ def main():
         methodology.add(post, today, IMAGES_DIR)
     # pagina «link in bio»: rigenerata a ogni post, così i bandi scaduti spariscono da soli
     PAGE_FILE.parent.mkdir(exist_ok=True)
-    commit_and_push([QUEUE_FILE.name, POSTED_FILE.name, "methodology.json"] + (["pixabay_used.json"] if photos else []),
+    commit_and_push([QUEUE_FILE.name, POSTED_FILE.name, "methodology.json"] + (["pixabay_used.json"] if photos else [])
+                    + ([CLINICAL_QUEUE_FILE.name, SOURCES_FILE.name] if CLINICAL_QUEUE_FILE.exists() else []),
                     f"Post del {today}")
     if post.get("kind") == "positions":
         try:

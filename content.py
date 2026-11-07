@@ -1015,7 +1015,11 @@ FIRST decide the clinical focus of the paper (field clinical_focus):
   study design, reporting, engineering of a device without patient results, or anything without a patient-level
   clinical message. In that case return an EMPTY posts list.
 
-THE POST (0 or 1 post):
+THE POSTS (0 to {max_posts} posts, one per week):
+- Write 2 to {max_posts} posts when the paper supports them (only 1 if it truly has a single clinical message;
+  never pad with weak or repeated lessons): each post carries a DIFFERENT clinical
+  message of the paper (e.g. a different treatment, outcome, patient group, time course or risk), so that a reader
+  who sees all of them never reads the same lesson twice. Each post must stand on its own.
 - The whole carousel is about the clinical message: the patients, the treatment, the outcome that matters to the
   patient. NEVER build slides on how a scale or questionnaire works, on study design, sample size, statistics,
   bias or reporting. Name a scale only to say what improved in the patients (e.g. "walking speed improved by…").
@@ -1052,20 +1056,22 @@ def _design_rules():
     return "FORM RULES:\n- " + "\n- ".join(keep).replace("a researcher", "a clinician").rstrip()
 
 
-def clinical_post(part, filename, brand, published=()):
-    """Post «Latest Science» da un articolo clinico: un solo carosello sul trattamento o sullo stato di salute dei
-    pazienti. Restituisce (post, focus, motivo); post None se l'articolo non ha un messaggio clinico sui pazienti."""
+def clinical_posts(part, filename, brand, published=(), max_posts=3):
+    """Post «Latest Science» da un articolo clinico: 1-`max_posts` caroselli, ognuno con un messaggio clinico diverso
+    sul trattamento o sullo stato di salute dei pazienti. Restituisce (post, focus, motivo); lista vuota se
+    l'articolo non ha un messaggio clinico sui pazienti (scale, metodologia, ingegneria senza risultati)."""
     prompt = CLINICAL_POST_PROMPT.format(brand=brand, category=CLINICAL_CATEGORY, design=_design_rules(),
-                                         filename=filename, published="; ".join(published) if published else "none")
+                                         max_posts=max_posts, filename=filename,
+                                         published="; ".join(published) if published else "none")
     out = gemini_json([{"text": prompt}, part], CLINICAL_POST_SCHEMA, 0.4, task="nuovi post da Drive")
     focus, why = out.get("clinical_focus", "none"), out.get("focus_reason", "")
-    posts = [c for c in (_clean_post(p, material_text(part)) for p in out.get("posts", [])) if c]
-    if focus == "none" or not posts:
-        return None, focus, why
-    post = posts[0]
-    post["category"] = CLINICAL_CATEGORY
-    post["clinical_focus"] = focus
-    return post, focus, why
+    if focus == "none":
+        return [], focus, why
+    posts = [c for c in (_clean_post(p, material_text(part)) for p in out.get("posts", [])) if c][:max_posts]
+    for post in posts:
+        post["category"] = CLINICAL_CATEGORY
+        post["clinical_focus"] = focus
+    return posts, focus, why
 
 
 def generate_posts(part, filename, brand, max_posts=12, published=()):
