@@ -180,7 +180,7 @@ TOOLS = [   # strumenti ufficiali per disegno di studio: (etichetta, titolo, [(d
         ("Case reports", "CARE", "https://www.care-statement.org/"),
         ("Measurement properties (PROMs)", "COSMIN", "https://pubmed.ncbi.nlm.nih.gov/33818733/"),
         ("Every design", "EQUATOR Network", "https://www.equator-network.org/")]),
-    ("Clinical appraisal", "Appraise the evidence", [
+    ("Critical appraisal", "Appraise the evidence", [
         ("Trials, cohorts, qualitative…", "CASP checklists", "https://casp-uk.net/casp-tools-checklists/"),
         ("All study types", "JBI tools", "https://jbi.global/critical-appraisal-tools"),
         ("Risk of bias (RCTs, NRSI)", "RoB 2 · ROBINS-I", "https://www.riskofbias.info/"),
