@@ -427,6 +427,8 @@ def parse_spec(kind, spec):
     return {}
 
 
+RX_WRONG = re.compile(r"\b(wrong|mistake|error|fallac|illogical|incorrect|misus|avoid|instead|never|not\b|n't|"
+                      r"bias|mislead|vague|poor|should|must)", re.I)
 KINDS = {"compare", "versus", "flow", "tree", "bars", "distribution", "timeline"}
 
 
@@ -480,6 +482,8 @@ def plan(post, figures=None, credit=""):
         if t == "figure" and v.get("figure") in fig_ids:
             s["visual"] = {"type": "figure", "figure": v["figure"]}
         elif t == "diagram" and _valid_diagram(v) and numbers_ok(v, text):
+            if v.get("kind") == "compare" and not RX_WRONG.search(text):
+                v = {**v, "kind": "versus"}       # ✗/✓ solo se la slide parla davvero di un errore; se no, alla pari
             s["visual"] = {"type": "diagram", **{k: x for k, x in v.items() if k not in ("slide", "type", "why", "spec")}}
         elif t == "photo" and (v.get("photo_query") or "").strip():
             s["visual"] = {"type": "photo"}
