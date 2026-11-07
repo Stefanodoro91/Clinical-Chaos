@@ -318,7 +318,7 @@ def _labels(spec):
     def walk(v):
         if isinstance(v, dict):
             for k, x in v.items():
-                if k not in ("values", "slide", "type", "why", "figure", "photo_query"):
+                if k not in ("values", "slide", "type", "why", "figure", "photo_query", "spec"):
                     walk(x)
         elif isinstance(v, list):
             for x in v:
@@ -345,34 +345,27 @@ make the slide's own idea clearer at a glance. Aim for 1 to {max_visuals} visual
 methodology carousel has at least one slide whose idea is a comparison (wrong vs right, A vs B), a sequence of steps,
 a decision, a few numbers or a distribution, and that slide should get a diagram. Use "none" for the other slides.
 
-For each slide choose one:
-- "diagram": a simple schematic drawn by our software. Pick the kind that shows the slide's idea:
-  "compare" (two columns, e.g. vague vs well-defined, wrong vs right: left_title, left_items, right_title,
-  right_items; the right column is the good one), "flow" (2-5 steps in order: steps [{{label, note}}]),
-  "tree" (a decision: root question, 2-4 branches [{{edge, leaf}}]), "bars" (2-5 values to compare, with unit and an
-  optional threshold {{label, value}}: ONLY numbers written in the slide), "distribution" (a strip of 8-25 illustrative
-  values showing skew or an outlier, with unit: only for slides about distributions, means, medians, outliers),
-  "timeline" (2-5 time points [{{label, note}}]).
-  Labels: 1-6 words each, in English, taken from the slide's words. Never a number that is not in the slide text.
-- "figure": a figure of the source paper (listed below with its caption) that shows EXACTLY the result the slide
-  states. Give its number. Never for a slide whose message the figure does not show.
+For each slide choose a type:
+- "diagram": a simple schematic drawn by our software. Give its kind and write it in "spec" with this exact syntax:
+  compare       →  Left title: item; item || Right title: item; item      (the right column is the good/correct one)
+  flow          →  Step (short note) -> Step (short note) -> Step         (2-5 steps in order)
+  tree          →  Root question? => branch: result; branch: result       (a decision with 2-4 branches)
+  bars          →  Label = value; Label = value | unit | Threshold label = value   (unit and threshold optional)
+  distribution  →  3, 4, 4, 5, 5, 6, 7, 48 | unit                         (8-25 illustrative values: skew, outliers)
+  timeline      →  Baseline (note) -> 8 weeks (note) -> 6 months          (2-5 time points)
+  Labels: 1-6 words, in English, taken from the slide's words. Never a number that is not in the slide text (except
+  the illustrative values of a distribution).
+- "figure": a figure of the source paper (listed below) that shows EXACTLY the result the slide states: give its
+  number in "figure". Never for a slide whose message the figure does not show.
 - "photo": a real stock photo, only when a real scene (patients, therapy, clinicians, devices) shows the slide's
-  concept better than words; give photo_query (2-4 English keywords). Never for abstract or statistical ideas.
+  concept better than words: give 2-4 English keywords in "photo_query". Never for abstract or statistical ideas.
 - "none".
 Prefer "figure" when one fits, then "diagram", then "photo".
 
-Fill EVERY field the kind needs; a diagram with an empty list is thrown away. Leave the fields of other kinds empty.
-Examples (one slide each):
-{{"slide": 2, "type": "diagram", "kind": "compare", "left_title": "Vague outcome", "left_items": ["Pain", "Function"],
-  "right_title": "Prespecified outcome", "right_items": ["0–10 pain scale", "Change from baseline", "Mean at 12 weeks"]}}
-{{"slide": 1, "type": "diagram", "kind": "tree", "root": "What type is the outcome?", "branches": [{{"edge": "Continuous",
-  "leaf": "Linear regression"}}, {{"edge": "Binary", "leaf": "Logistic regression"}}]}}
-{{"slide": 3, "type": "diagram", "kind": "flow", "steps": [{{"label": "Assessed", "note": "for eligibility"}},
-  {{"label": "Randomised"}}, {{"label": "Analysed", "note": "per group"}}]}}
-{{"slide": 2, "type": "diagram", "kind": "bars", "unit": "points", "bars": [{{"label": "Intervention", "value": "2.6"}}],
-  "threshold": {{"label": "clinically important", "value": "5.2"}}}}
-{{"slide": 1, "type": "diagram", "kind": "distribution", "unit": "days", "values": [3, 4, 4, 5, 5, 6, 7, 48]}}
-{{"slide": 4, "type": "diagram", "kind": "timeline", "points": [{{"label": "Baseline"}}, {{"label": "8 weeks", "note": "end of training"}}]}}
+Examples:
+{{"slide": 2, "type": "diagram", "kind": "compare", "spec": "Vague outcome: Pain; Function || Prespecified outcome: 0–10 pain scale; Change from baseline; Mean at 12 weeks"}}
+{{"slide": 1, "type": "diagram", "kind": "tree", "spec": "What type is the outcome? => Continuous: Linear regression; Binary: Logistic regression"}}
+{{"slide": 3, "type": "diagram", "kind": "bars", "spec": "Intervention = 2.6 | points | clinically important = 5.2"}}
 
 CAROUSEL: {title}
 {slides}
@@ -381,18 +374,57 @@ PAPER FIGURES: {figures}"""
 
 PLAN_SCHEMA = {"type": "OBJECT", "properties": {"slides": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {
     "slide": {"type": "INTEGER"}, "type": {"type": "STRING", "enum": ["diagram", "figure", "photo", "none"]},
-    "kind": {"type": "STRING"}, "figure": {"type": "INTEGER"}, "photo_query": {"type": "STRING"},
-    "left_title": {"type": "STRING"}, "left_items": {"type": "ARRAY", "items": {"type": "STRING"}},
-    "right_title": {"type": "STRING"}, "right_items": {"type": "ARRAY", "items": {"type": "STRING"}},
-    "steps": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {"label": {"type": "STRING"}, "note": {"type": "STRING"}}}},
-    "root": {"type": "STRING"},
-    "branches": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {"edge": {"type": "STRING"}, "leaf": {"type": "STRING"}}}},
-    "bars": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {"label": {"type": "STRING"}, "value": {"type": "STRING"}}}},
-    "unit": {"type": "STRING"},
-    "threshold": {"type": "OBJECT", "properties": {"label": {"type": "STRING"}, "value": {"type": "STRING"}}},
-    "values": {"type": "ARRAY", "items": {"type": "NUMBER"}},
-    "points": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {"label": {"type": "STRING"}, "note": {"type": "STRING"}}}},
-    "why": {"type": "STRING"}}, "required": ["slide", "type"]}}}, "required": ["slides"]}
+    "kind": {"type": "STRING"}, "spec": {"type": "STRING"}, "figure": {"type": "INTEGER"},
+    "photo_query": {"type": "STRING"}}, "required": ["slide", "type", "kind", "spec"]}}}, "required": ["slides"]}
+
+
+def _item(t):
+    """«Step (note)» → {"label": "Step", "note": "note"}."""
+    m = re.match(r"^\s*(.*?)\s*(?:\((.*)\))?\s*$", t or "")
+    return {"label": m.group(1).strip(), "note": (m.group(2) or "").strip()} if m else {"label": t.strip(), "note": ""}
+
+
+def parse_spec(kind, spec):
+    """Il testo compatto del modello → i campi che draw() usa. {} se non si capisce."""
+    spec = (spec or "").strip()
+    try:
+        if kind == "compare" and "||" in spec:
+            out = {}
+            for side, part in zip(("left", "right"), spec.split("||", 1)):
+                title, _, items = part.partition(":")
+                out[f"{side}_title"] = title.strip()
+                out[f"{side}_items"] = [x.strip() for x in items.split(";") if x.strip()]
+            return out
+        if kind in ("flow", "timeline"):
+            items = [_item(x) for x in re.split(r"\s*->\s*|\s*→\s*", spec) if x.strip()]
+            return {"steps" if kind == "flow" else "points": items}
+        if kind == "tree" and "=>" in spec:
+            root, _, rest = spec.partition("=>")
+            br = []
+            for x in rest.split(";"):
+                edge, _, leaf = x.partition(":")
+                if edge.strip() and leaf.strip():
+                    br.append({"edge": edge.strip(), "leaf": leaf.strip()})
+            return {"root": root.strip(), "branches": br}
+        if kind == "bars":
+            parts = [x.strip() for x in spec.split("|")]
+            bars = []
+            for x in parts[0].split(";"):
+                lab, _, val = x.rpartition("=")
+                if lab.strip() and val.strip():
+                    bars.append({"label": lab.strip(), "value": val.strip()})
+            out = {"bars": bars, "unit": parts[1] if len(parts) > 1 else ""}
+            if len(parts) > 2 and "=" in parts[2]:
+                lab, _, val = parts[2].rpartition("=")
+                out["threshold"] = {"label": lab.strip(), "value": val.strip()}
+            return out
+        if kind == "distribution":
+            vals, _, unit = spec.partition("|")
+            return {"values": [v for v in (_num(x) for x in vals.split(",")) if v is not None], "unit": unit.strip()}
+    except Exception:
+        return {}
+    return {}
+
 
 KINDS = {"compare", "flow", "tree", "bars", "distribution", "timeline"}
 
@@ -433,6 +465,8 @@ def plan(post, figures=None, credit=""):
     if not out.get("slides"):
         print("  Piano immagini: nessuna proposta")
     for v in out.get("slides") or []:
+        if v.get("type") == "diagram":
+            v = {**v, **parse_spec(v.get("kind"), v.get("spec"))}
         i = (v.get("slide") or 0) - 1
         if not (0 <= i < len(slides)) or used >= MAX_VISUALS:
             continue
@@ -444,7 +478,7 @@ def plan(post, figures=None, credit=""):
         if t == "figure" and v.get("figure") in fig_ids:
             s["visual"] = {"type": "figure", "figure": v["figure"]}
         elif t == "diagram" and _valid_diagram(v) and numbers_ok(v, text):
-            s["visual"] = {"type": "diagram", **{k: x for k, x in v.items() if k not in ("slide", "type", "why")}}
+            s["visual"] = {"type": "diagram", **{k: x for k, x in v.items() if k not in ("slide", "type", "why", "spec")}}
         elif t == "photo" and (v.get("photo_query") or "").strip():
             s["visual"] = {"type": "photo"}
             s["photo_query"] = v["photo_query"].strip()
