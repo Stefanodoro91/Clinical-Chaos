@@ -405,6 +405,7 @@ NO_FALLBACK_TASKS = {"nuovi post da Drive", "post bando", "scelta immagini"}
 THINKING = {}         # livello di ragionamento per attività (config «gemini_thinking»), es. {"verifica bandi": "low"}
 USAGE = {}            # consumo di Gemini in questo giro: {(attività, modello): contatori}
 _EXHAUSTED = set()    # modelli con la quota giornaliera finita: in questo giro non si riprovano
+_MISSING = set()      # modelli che rispondono 404 (assenti o ritirati per questa chiave): in questo giro non si riprovano
 
 
 def record_usage(task, model, data=None, status="ok"):
@@ -474,7 +475,7 @@ def model_used_today(model):
 
 def model_left(model):
     """Richieste gratuite che restano oggi su `model` (stima: quota per modello meno le riuscite)."""
-    if model in _EXHAUSTED or model in _ledger()["exhausted"]:
+    if model in _EXHAUSTED or model in _ledger()["exhausted"] or model in _MISSING:
         return 0
     default = MODEL_RPD["default"] if is_strong(model) else MODEL_RPD.get("lite", 500)
     return max(0, MODEL_RPD.get(model, default) - model_used_today(model))
@@ -635,8 +636,9 @@ GROQ_STRONG = "openai/gpt-oss-120b"
 # 2.5 Flash (3.5 Flash in fondo: rispondeva il 6/11 ma non compare nella pagina delle quote). Leggeri, 500 al giorno
 # ciascuno: 3.5 Flash-Lite e 3.1 Flash-Lite. Gli alias «-latest» puntano a 3.8 Flash e 3.5 Flash-Lite: si usano i
 # nomi espliciti, così il registro delle quote non conta due volte lo stesso modello sotto due nomi.
-STRONG = ["main", "gemini-3.8-flash", "gemini-3.6-flash", "gemini-3-flash-preview", "gemini-2.5-flash",
+STRONG = ["main", "gemini-3.8-flash", "gemini-3.6-flash", "gemini-3-flash-preview",
           "gemini-3.5-flash"]                # ordine di qualità a parità di quota
+# (7/11: 2.5 Flash compare nella pagina delle quote ma l'API risponde 404 «no longer available to new users»)
 LITE = ["lite", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]
 ALIASES = {"gemini-flash-latest": "gemini-3.8-flash", "gemini-flash-lite-latest": "gemini-3.5-flash-lite"}
 MODEL_RPD = {"default": 20, "lite": 500}   # richieste gratuite al giorno per modello (config «gemini_rpd»); i leggeri
@@ -648,7 +650,7 @@ MAX_WAIT = 70                        # attesa massima di un modello forte in pau
 WRITING = {"nuovi post da Drive", "post bando", "arbitro", "verifica fatti", "takeaway clinico", "revisione slide"}
 # modello forte preferito per alcune attività (se ha quota; altrimenti gli altri forti): 2.5 Flash ha una quota
 # separata dai 3.x, così bandi e controllo dei fatti non tolgono richieste ai post scientifici
-PREFERRED = {"post bando": ["gemini-2.5-flash"], "verifica fatti": ["gemini-2.5-flash"]}
+PREFERRED = {}       # es. {"post bando": ["gemini-3-flash-preview"]}: nessuna preferenza finché 2.5 Flash non è disponibile
 # screening (bandi, posizioni): SOLO modelli leggeri e gratuiti esterni, mai i forti. Il secondo parere dei forti
 # arriva con le attività «conferma …», solo per le voci ad alta priorità (quelle che possono finire in un post).
 SCREENING = {"verifica bandi", "verifica posizioni"}
@@ -816,6 +818,8 @@ def _gemini_one(model, parts, schema, temperature, task, thinking):
         raise ModelUnavailable("GEMINI_API_KEY mancante")
     if model in _EXHAUSTED or model in _ledger()["exhausted"]:
         raise ModelUnavailable(f"{model}: quota del giorno finita")
+    if model in _MISSING:
+        raise ModelUnavailable(f"{model}: non disponibile per questa chiave")
     if _COOL.get(model, 0) > time.time():
         raise ModelCooling(f"{model}: in pausa per il limite al minuto", _COOL[model])
     gemma = model.startswith("gemma")
@@ -850,7 +854,8 @@ def _gemini_one(model, parts, schema, temperature, task, thinking):
             record_usage(task, model, status="respinta")
             time.sleep(10 * (attempt + 1))
             continue
-        if r.status_code in (400, 404) and ("not found" in r.text.lower() or "not supported" in r.text.lower()):
+        if r.status_code == 404 or (r.status_code == 400 and ("not found" in r.text.lower() or "not supported" in r.text.lower())):
+            _MISSING.add(model)                    # modello assente o ritirato per questa chiave: escluso per tutto il giro
             raise ModelUnavailable(f"{model} {r.status_code}: {r.text[:200]}")
         if not r.ok:
             raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:500]}")
