@@ -162,7 +162,8 @@ def ingest(drive, queue, limit=None):
     inbox, done_folder = os.environ["GDRIVE_FOLDER_ID"], os.environ["GDRIVE_DONE_FOLDER_ID"]
     sources = load(SOURCES_FILE, [])
     seen = {s["drive_id"] for s in sources}
-    pending = [f for f in list_inbox(drive, inbox) if f["id"] not in seen]
+    # gli articoli delle sottocartelle «Clinica…» non vanno nella coda di metodologia: sono riservati a Latest Science
+    pending = [f for f in list_inbox(drive, inbox) if f["id"] not in seen and f.get("parent") == inbox]
     limit = int(limit or CONFIG.get("max_new_files_per_run", 1))
 
     for f in pending[:limit]:
@@ -256,6 +257,55 @@ def drop_repeats(queue, posted, threshold=0.72):
             drop.add(i)
             print(f"::notice title=Post doppione tolto::«{kept[i]['title']}» ripete «{d.get('same_as', '')}»")
     return [q for i, q in enumerate(kept) if i not in drop]
+
+
+def latest_science_post(drive, posted):
+    """Post del sabato «Latest Science»: SOLO da un articolo delle sottocartelle Drive «Clinica…» (es. «Clinica main»),
+    mai dalla coda di metodologia. Un articolo per settimana, mai riusato; il post parla di un trattamento o dello
+    stato di salute dei pazienti (content.clinical_post), poi passa gli stessi controlli dei post normali sul testo
+    dell'articolo (anti-copia, revisione incrociata o verifica dei fatti, reference). Nessun articolo adatto: None."""
+    inbox = os.environ["GDRIVE_FOLDER_ID"]
+    used = {p.get("source") for p in posted if p.get("category") == content.CLINICAL_CATEGORY or p.get("rubric") == "Clinical Insights"}
+    sources = load(SOURCES_FILE, [])
+    used |= {x.get("name") for x in sources if x.get("clinical_used")}
+    files = [f for f in list_inbox(drive, inbox) if f.get("parent") != inbox and f["name"] not in used and content.is_supported(f)]
+    print(f"Latest Science: {len(files)} articoli clinici non ancora usati nelle cartelle «Clinica…»")
+    published = [x["title"] for x in posted if x.get("title")]
+    for f in files[:int(CONFIG.get("latest_science_tries", 3))]:
+        try:
+            part = content.material_part(drive, f)
+            material = content.material_text(part)
+            status_, label = content.license_status(material)
+            if status_ != "ok":
+                print(f"::warning title=Articolo clinico saltato per licenza::{f['name']}: {label or 'nessuna licenza dichiarata nel testo'}")
+                continue
+            post, focus, why = content.clinical_post(part, f["name"], CONFIG["brand_name"], published)
+        except Exception as e:
+            print(f"::warning title=Articolo clinico non letto::{f['name']}: {str(e)[:200]}")
+            continue
+        if post is None:
+            print(f"::notice title=Articolo senza messaggio clinico::{f['name']} ({focus}): {why[:200]}")
+            continue
+        post.update({"id": uuid.uuid4().hex[:8], "source": f["name"], "rubric": "Clinical Insights"})
+        content.rewrite_copied(post, material)
+        if CONFIG.get("cross_review", True):
+            rev = content.cross_review(post, material)
+            post["review"] = {k: rev.get(k) for k in ("passed", "scores", "critic", "arbiter", "fixed", "removed", "notes")}
+            if rev.get("passed") is False:
+                print(f"::warning title=Latest Science respinto dalla revisione::{f['name']}: {'; '.join(rev.get('notes', [])[:2])[:250]}")
+                continue
+            if rev.get("passed") is None:
+                content.verify_against_source(post, material)
+        else:
+            content.verify_against_source(post, material)
+        content.fix_references(post)
+        if not any(x.get("drive_id") == f["id"] for x in sources):   # per la slide «Based on» e i controlli anti-copia
+            sources.append({"drive_id": f["id"], "name": f["name"], "posts": 1, "clinical_used": True,
+                            "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")})
+            save(SOURCES_FILE, sources)
+        print(f"Latest Science da «{f['name']}» ({focus}): {post['title']}")
+        return post
+    return None
 
 
 METHOD_ONLY_CATEGORIES = {"Study design", "Reporting & publication", "Critical appraisal"}  # pura metodologia:
@@ -969,17 +1019,23 @@ def main():
         post = rubrics.checklist_post(posted) if rubrics_on and rome_now.weekday() == 3 else None
         if post is not None:                       # giovedì: rubrica Checklist (senza AI, fuori dalla coda)
             print(f"Rubrica Checklist: {post['source_hint']}")
+        elif rubrics_on and rome_now.weekday() == 5:
+            post = latest_science_post(drive, posted)          # sabato: solo articoli clinici di «Clinica…»
+            if post is None:
+                notify("Latest Science saltato: nessun articolo clinico adatto",
+                       "Nelle cartelle Drive «Clinica…» non c'è un articolo nuovo con licenza riutilizzabile e un "
+                       "messaggio clinico sui pazienti (trattamento o stato di salute). Il post del sabato non esce: "
+                       "carica un articolo in «Clinica main».")
+                print("::warning title=Latest Science saltato::nessun articolo clinico adatto in «Clinica…»")
+                return
         else:
             if not queue:
                 notify("Coda vuota: il bot è in pausa",
                        "Non ci sono post da pubblicare. Aggiungi nuovo materiale nella cartella Drive.")
                 print("Coda vuota.")
                 sys.exit(1)
-            saturday = rubrics_on and rome_now.weekday() == 5
             sim_ids = {p.get("id") for p in posted} if SIMULATE else set()
-            post = pick_next([q for q in queue if q["id"] not in sim_ids] or queue, posted, prefer_doi=saturday)
-            if saturday:
-                post["rubric"] = "Clinical Insights"   # sabato: un articolo, una lezione (slide «Based on»)
+            post = pick_next([q for q in queue if q["id"] not in sim_ids] or queue, posted)
             post = quality_gate(post, drive, queue)
             if post is None:
                 notify("Nessun post di metodologia oggi",

@@ -68,7 +68,8 @@ def pick_plan(hist):
     if not multi.exists():
         return None, json.loads((ROOT / "week_preview.json").read_text(encoding="utf-8"))
     weeks = json.loads(multi.read_text(encoding="utf-8"))["weeks"]
-    want = os.environ.get("WEEK", "").strip()
+    want = os.environ.get("WEEK", "").strip() or (os.environ.get("ONLY", "").split(":")[0].strip()
+                                                    if ":" in os.environ.get("ONLY", "") else "")
     idx = int(want) - 1 if want else next((i for i in range(len(weeks)) if i not in hist["weeks_done"]), None)
     if idx is None:
         raise SystemExit("Tutte le settimane del piano sono già pronte (preview_history.json)")
@@ -134,6 +135,12 @@ def main():
     idx, plan = pick_plan(hist)
     if idx is not None:
         print(f"Settimana {idx + 1} del piano")
+    only_raw = os.environ.get("ONLY") or ""
+    only = {x.strip() for x in only_raw.split(":")[-1].split(",") if x.strip()}   # «1:16» = settimana 1, uscita 16
+    if only:          # uscite rifatte: la versione precedente non conta più come pubblicata
+        redo = {(sl["date"], iso(sl["date"], sl["time"])) for i, sl in enumerate(plan["slots"], 1) if str(i) in only}
+        hist["posted"] = [p for p in hist["posted"] if (p.get("date"), p.get("time")) not in redo]
+        hist["stories"] = [e for e in hist["stories"] if (e.get("date"), e.get("time")) not in redo]
     apply_history(hist)
     n_posted, n_stories = len(bot.load(bot.POSTED_FILE, [])), len(stories.load_log())
     report = []
@@ -145,7 +152,6 @@ def main():
             print(f"::warning title=Screening::{str(e)[:300]}")
     if plan.get("folder"):
         print(f"Cartella Drive di questa prova: {plan['folder']['name']} (https://drive.google.com/drive/folders/{plan['folder']['id']})")
-    only = {s.strip() for s in (os.environ.get("ONLY") or "").split(",") if s.strip()}
     for i, slot in enumerate(plan["slots"], 1):
         if only and str(i) not in only:
             continue

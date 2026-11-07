@@ -1001,6 +1001,73 @@ def groq_json(prompt_text, schema, temperature=0.0, task="altro"):
     return gemini_json([{"text": prompt_text}], schema, temperature, task)
 
 
+CLINICAL_POST_PROMPT = """You write the "Latest Science" carousel of "{brand}": ONE clinical lesson a week from ONE
+real paper, for clinicians and researchers who treat patients (rehabilitation, neurology, orthopaedics and related
+fields). The reader must learn something about PATIENTS: what a treatment or intervention does to them, or what
+their health status, recovery, prognosis or risks look like.
+
+FIRST decide the clinical focus of the paper (field clinical_focus):
+- "treatment": the paper reports what an intervention, therapy, device or rehabilitation programme does to patients
+  (effects, who benefits, how much, how fast, side effects, dose or timing);
+- "patient_health": the paper describes patients' health status, recovery course, prognosis, symptoms, function or
+  risk factors;
+- "none": the paper is mainly about methodology, measurement scales, questionnaires, psychometrics, statistics,
+  study design, reporting, engineering of a device without patient results, or anything without a patient-level
+  clinical message. In that case return an EMPTY posts list.
+
+THE POST (0 or 1 post):
+- The whole carousel is about the clinical message: the patients, the treatment, the outcome that matters to the
+  patient. NEVER build slides on how a scale or questionnaire works, on study design, sample size, statistics,
+  bias or reporting. Name a scale only to say what improved in the patients (e.g. "walking speed improved by…").
+- Slides follow the clinical story: which patients and what problem → what was done (treatment) or observed →
+  what changed for the patients, with the numbers of the paper (effect, time, proportion) → what it means in the
+  clinic, with the limits the paper states.
+- Use ONLY facts in the paper; never invent numbers. Keep the paper's population and qualifiers ("in chronic
+  stroke", "after 8 weeks", "may"). Describe findings, do not give personal treatment advice.
+- takeaway: the clinical take-home message for a clinician (what to expect, offer, watch for or explain to the
+  patient), max 130 characters, supported by the slides; never a methodological lesson.
+- source (per slide): "Surname et al., Year" of THIS paper when the slide reports its findings.
+- references: THIS paper in APA 7 (authors, year, title, journal, DOI exactly as printed in the paper).
+- category: "{category}".
+
+{design}
+
+Already published posts (do not repeat these topics): {published}
+
+File name of the paper: {filename}"""
+
+CLINICAL_POST_SCHEMA = {"type": "OBJECT", "properties": {
+    "clinical_focus": {"type": "STRING", "enum": ["treatment", "patient_health", "none"]},
+    "focus_reason": {"type": "STRING"},
+    "posts": SCHEMA["properties"]["posts"]}, "required": ["clinical_focus", "focus_reason", "posts"]}
+
+
+def _design_rules():
+    """Regole di forma del prompt principale (slide, immagini, hook, didascalia), riusate per Latest Science."""
+    start = PROMPT.index("- title: a sharp hook")
+    end = PROMPT.index("- category: one of")
+    bullets = ("\n" + PROMPT[start:end]).split("\n- ")[1:]
+    skip = ("takeaway:", "references:", "source (per slide)")    # per Latest Science valgono le regole cliniche sopra
+    keep = [b for b in bullets if not b.startswith(skip)]
+    return "FORM RULES:\n- " + "\n- ".join(keep).replace("a researcher", "a clinician").rstrip()
+
+
+def clinical_post(part, filename, brand, published=()):
+    """Post «Latest Science» da un articolo clinico: un solo carosello sul trattamento o sullo stato di salute dei
+    pazienti. Restituisce (post, focus, motivo); post None se l'articolo non ha un messaggio clinico sui pazienti."""
+    prompt = CLINICAL_POST_PROMPT.format(brand=brand, category=CLINICAL_CATEGORY, design=_design_rules(),
+                                         filename=filename, published="; ".join(published) if published else "none")
+    out = gemini_json([{"text": prompt}, part], CLINICAL_POST_SCHEMA, 0.4, task="nuovi post da Drive")
+    focus, why = out.get("clinical_focus", "none"), out.get("focus_reason", "")
+    posts = [c for c in (_clean_post(p, material_text(part)) for p in out.get("posts", [])) if c]
+    if focus == "none" or not posts:
+        return None, focus, why
+    post = posts[0]
+    post["category"] = CLINICAL_CATEGORY
+    post["clinical_focus"] = focus
+    return post, focus, why
+
+
 def generate_posts(part, filename, brand, max_posts=12, published=()):
     prompt = PROMPT.format(brand=brand, max_posts=max_posts, filename=filename,
                            categories=", ".join(CATEGORIES),
