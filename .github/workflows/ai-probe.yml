@@ -26,11 +26,12 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           DRY_RUN: "true"
         run: |
-          if [ "${{ inputs.mode }}" = "figures" ]; then python tools/figure_probe.py; else python tools/ai_probe.py; fi
+          if [ "${{ inputs.mode }}" = "figures" ]; then python tools/figure_probe.py; elif [ "${{ inputs.mode }}" = "visuals" ]; then python tools/visual_probe.py; else python tools/ai_probe.py; fi
       - name: Figure su un ramo di prova (solo modalità figures)
-        if: always() && inputs.mode == 'figures'
+        if: always() && (inputs.mode == 'figures' || inputs.mode == 'visuals')
         run: |
           git config user.name "research-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
