@@ -1,0 +1,22 @@
+Why Cronbach's Alpha Is Sample-Specific
+
+Cronbach's alpha is specific to the study sample; report it for every tool used. Do not reuse alpha values from other samples. Internal consistency depends on the sample, so sample-specific values are essential.
+
+References:
+• Menon, V., Grover, S., Gupta, S., Indu, P., Chacko, D., & Vidhukumar, K. (2025). A primer on reliability testing of a rating scale. Indian Journal of Psychiatry, 67(7), 725–729. https://doi.org/10.4103/indianjpsychiatry_584_25
+• Tavakol, M., & Dennick, R. (2011). Making sense of Cronbach's alpha. International Journal of Medical Education, 2, 53–55. https://doi.org/10.5116/ijme.4dfb.8dfd
+
+Key points:
+1. Internal Consistency Basics: When a test has high internal consistency, its individual items relate to one another and evaluate the same overall concept.
+2. The Role of Cronbach's Alpha: Internal consistency is typically calculated using Cronbach's alpha; a high alpha indicates that item covariance is high relative to item variance.
+3. Sample-Specific Values: Keep in mind that a tool's Cronbach's alpha depends on the specific group being studied. Because of this, researchers should present this figure for each instrument used.
+
+Takeaway: Cronbach's alpha is specific to a study sample and must be reported for every tool used in your research.
+
+References:
+- Menon, V., Grover, S., Gupta, S., Indu, P., Chacko, D., & Vidhukumar, K. (2025). A primer on reliability testing of a rating scale. Indian Journal of Psychiatry, 67(7), 725–729. https://doi.org/10.4103/indianjpsychiatry_584_25
+- Tavakol, M., & Dennick, R. (2011). Making sense of Cronbach's alpha. International Journal of Medical Education, 2, 53–55. https://doi.org/10.5116/ijme.4dfb.8dfd
+
+Full details: https://clinicalresearchchaos.com/methodology#m-09267e83
+
+#ClinicalResearch #ResearchMethodology #Psychometrics #ResearchMethods #InternalConsistency

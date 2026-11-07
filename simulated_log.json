@@ -173,5 +173,29 @@
     "reel_of": "checklist-consort-outcomes",
     "seconds": 26.5,
     "simulated": true
+  },
+  {
+    "date": "2026-11-07",
+    "time": "2026-11-07T16:22:26+00:00",
+    "id": "09267e83",
+    "title": "Why Cronbach's Alpha Is Sample-Specific",
+    "source": "Reliability.pdf",
+    "simulated": true,
+    "points": [
+      {
+        "heading": "Internal Consistency Basics",
+        "body": "When a test has high internal consistency, its individual items relate to one another and evaluate the same overall concept."
+      },
+      {
+        "heading": "The Role of Cronbach's Alpha",
+        "body": "Internal consistency is typically calculated using Cronbach's alpha; a high alpha indicates that item covariance is high relative to item variance."
+      },
+      {
+        "heading": "Sample-Specific Values",
+        "body": "Keep in mind that a tool's Cronbach's alpha depends on the specific group being studied. Because of this, researchers should present this figure for each instrument used."
+      }
+    ],
+    "takeaway": "Cronbach's alpha is specific to a study sample and must be reported for every tool used in your research.",
+    "category": "Clinical insight"
   }
 ]
