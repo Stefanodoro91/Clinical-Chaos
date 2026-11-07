@@ -309,12 +309,14 @@ def _new_clinical_posts(drive, posted, sources, cq):
             print(f"::notice title=Articolo clinico saltato::{f['name']}: {note}")
             sources.append({"drive_id": f["id"], "name": f["name"], "posts": 0, "clinical_skipped": note,
                             "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")})
+            save(SOURCES_FILE, sources)
             continue
         for p in posts:
             p.update({"id": uuid.uuid4().hex[:8], "source": f["name"], "rubric": "Clinical Insights"})
         cq.extend(posts)
         sources.append({"drive_id": f["id"], "name": f["name"], "posts": len(posts), "clinical_used": True,
                         "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")})
+        save(SOURCES_FILE, sources)    # subito su disco: source_material() rilegge l'articolo da qui per i controlli
         print(f"::notice title=Articolo clinico letto::{f['name']} ({focus}): {len(posts)} post per Latest Science")
         return len(posts)
     return 0

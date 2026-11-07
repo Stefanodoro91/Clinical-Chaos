@@ -804,24 +804,10 @@
  "clinical_queue": [],
  "clinical_sources": [
   {
-   "drive_id": "1zzMyS-bki9KBiVbflJSoTbk8hDXdbmMK",
-   "name": "Motor recovery.pdf",
-   "posts": 3,
-   "clinical_used": true,
-   "date": "2026-11-07"
-  },
-  {
    "drive_id": "1Wy_HvipL4LrgrnGGJ-YWG_iP3zIhl_YZ",
    "name": "Low cost devices.pdf",
    "posts": 0,
    "clinical_skipped": "licenza: non dichiarata nel testo",
-   "date": "2026-11-07"
-  },
-  {
-   "drive_id": "1OFnoDNWnSe5aN-Bxfu4Lc1iP9uzo8Bny",
-   "name": "Smart exoskeleton.pdf",
-   "posts": 3,
-   "clinical_used": true,
    "date": "2026-11-07"
   }
  ]
