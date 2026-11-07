@@ -19,6 +19,7 @@ PROPER = {"Bayesian", "Gaussian", "Poisson", "Cox", "Kaplan", "Meier", "Fisher",
           "America", "American", "English", "Italian", "Italy", "January", "February", "March", "April", "May",
           "June", "July", "August", "September", "October", "November", "December", "Monday", "Friday"}
 RX_CAP = re.compile(r"^([A-Z])([a-z]+)(['’]s)?([^A-Za-z]*)$")
+RX_HYPH = re.compile(r"^([A-Z]?[a-z]*|[A-Z])(-[A-Z][a-z]+)+([^A-Za-z]*)$")      # «Sample-Specific», «P-Values»
 RX_DOI = re.compile(r"10\.\d{4,9}/[^\s\"<>]+", re.I)
 
 
@@ -49,7 +50,16 @@ def sentence_case(text, context=""):
     for i, w in enumerate(words):
         prev = out[-1] if out else ""
         m = RX_CAP.match(w)
-        if i == 0 or prev.endswith((":", "?", "!", ".")) or not m or m.group(1) + m.group(2) in keep:
+        nxt = words[i + 1] if i + 1 < len(words) else ""
+        if m and (m.group(3) or re.match(r"^[\dIVX]+\b", nxt)):   # «Cronbach's», «Table 1», «Phase II»: restano così
+            out.append(w)
+            continue
+        if i > 0 and not prev.endswith((":", "?", "!", ".")) and RX_HYPH.match(w) \
+                and not any(part in keep for part in re.findall(r"[A-Z][a-z]+", w)):
+            head, *rest = w.split("-")               # composti in Title Case: «Sample-Specific» → «sample-specific»
+            head = head if len(head) == 1 else head[:1].lower() + head[1:]
+            out.append("-".join([head] + [r[:1].lower() + r[1:] for r in rest]))
+        elif i == 0 or prev.endswith((":", "?", "!", ".")) or not m or m.group(1) + m.group(2) in keep:
             out.append(w)
         else:
             out.append(w[0].lower() + w[1:])

@@ -339,9 +339,10 @@ def numbers_ok(spec, text):
 
 
 # ---------------------------------------------------------------- piano delle immagini (un modello leggero)
-PLAN_PROMPT = """You choose the visual for each slide of an Instagram carousel for clinical researchers. A visual is
-worth adding ONLY when it makes the slide's own idea clearer at a glance. At most {max_visuals} visuals in the whole
-carousel; most slides stay text-only ("none").
+PLAN_PROMPT = """You choose the visual for each slide of an Instagram carousel for clinical researchers. A visual must
+make the slide's own idea clearer at a glance. Aim for 1 to {max_visuals} visuals in the carousel: almost every
+methodology carousel has at least one slide whose idea is a comparison (wrong vs right, A vs B), a sequence of steps,
+a decision, a few numbers or a distribution, and that slide should get a diagram. Use "none" for the other slides.
 
 For each slide choose one:
 - "diagram": a simple schematic drawn by our software. Pick the kind that shows the slide's idea:
@@ -414,10 +415,14 @@ def plan(post, figures=None, credit=""):
     used, fig_ids = 0, {f["n"] for f in figures}
     for s in slides:
         s["visual"] = {"type": "none"}
+    if not out.get("slides"):
+        print("  Piano immagini: nessuna proposta")
     for v in out.get("slides") or []:
         i = (v.get("slide") or 0) - 1
         if not (0 <= i < len(slides)) or used >= MAX_VISUALS:
             continue
+        if v.get("type") == "diagram" and not (_valid_diagram(v) and numbers_ok(v, f"{slides[i].get('heading', '')} {slides[i].get('body', '')}")):
+            print(f"  Slide {i + 1}: schema «{v.get('kind')}» scartato ({'incompleto' if not _valid_diagram(v) else 'numeri non nel testo'})")
         s, t = slides[i], v.get("type")
         text = f"{s.get('heading', '')} {s.get('body', '')}"
         if t == "figure" and v.get("figure") in fig_ids:
