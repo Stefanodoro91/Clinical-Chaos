@@ -1,0 +1,282 @@
+{
+ "weeks_done": [
+  0
+ ],
+ "posted": [
+  {
+   "date": "2026-11-09",
+   "time": "2026-11-09T17:23:00+00:00",
+   "id": "positions-2026-11-07",
+   "title": "5 open academic positions this week",
+   "source": "Academic positions",
+   "simulated": true,
+   "kind": "positions",
+   "position_ids": [
+    "POS-443c045973a7",
+    "POS-d1fe2994718e",
+    "POS-44c964850256",
+    "POS-c37ffac4e3fb",
+    "POS-8b291a1976c9"
+   ]
+  },
+  {
+   "date": "2026-11-11",
+   "time": "2026-11-11T11:23:00+00:00",
+   "id": "reel-positions-2026-11-07",
+   "title": "5 open academic positions this week",
+   "kind": "reel",
+   "reel_of": "positions-2026-11-07",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-12",
+   "time": "2026-11-12T17:47:00+00:00",
+   "id": "checklist-consort-outcomes",
+   "title": "Primary outcome: defined before, not after",
+   "source": "Rubrica Checklist",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "What the item asks",
+     "body": "Define every pre-specified primary and secondary outcome: the measure, how it was assessed, and exactly when."
+    },
+    {
+     "heading": "Why it matters",
+     "body": "Vague outcomes invite switching after the data are in, one of the best-documented sources of reporting bias."
+    },
+    {
+     "heading": "How to comply",
+     "body": "Write each outcome as: instrument + metric + aggregation + time point. Example: pain on a 0–10 scale, mean change at 12 weeks."
+    }
+   ],
+   "takeaway": "An outcome is pre-specified only if measure, metric and time point are written down first.",
+   "category": "Endpoints & outcomes"
+  },
+  {
+   "date": "2026-11-13",
+   "time": "2026-11-13T14:23:00+00:00",
+   "id": "reel-checklist-consort-outcomes",
+   "title": "Primary outcome: defined before, not after",
+   "kind": "reel",
+   "reel_of": "checklist-consort-outcomes",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-15",
+   "time": "2026-11-15T16:47:00+00:00",
+   "id": "reel-grant-EU-HORIZON-BRIDGING-2027-02-05",
+   "title": "Ready to scale Pillar II solutions? Backing real-world validation",
+   "kind": "reel",
+   "reel_of": "grant-EU-HORIZON-BRIDGING-2027-02-05",
+   "simulated": true
+  }
+ ],
+ "stories": [
+  {
+   "date": "2026-11-09",
+   "time": "2026-11-09T08:31:00+00:00",
+   "kind": "weekly",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-10",
+   "time": "2026-11-10T08:31:00+00:00",
+   "kind": "countdown",
+   "simulated": true,
+   "grant_id": "WEB-1d98be9146cf",
+   "family": "Colfuturo"
+  },
+  {
+   "date": "2026-11-11",
+   "time": "2026-11-11T08:31:00+00:00",
+   "kind": "countdown",
+   "simulated": true,
+   "grant_id": "GG-HHS-2027-ACL-NIDILRR-ARCP-0300",
+   "family": "Administration for Community Living"
+  },
+  {
+   "date": "2026-11-12",
+   "time": "2026-11-12T08:31:00+00:00",
+   "kind": "countdown",
+   "simulated": true,
+   "grant_id": "GG-RFA-OH-26-001",
+   "family": "Centers for Disease Control and Prevention - ERA"
+  },
+  {
+   "date": "2026-11-13",
+   "time": "2026-11-13T08:31:00+00:00",
+   "kind": "countdown",
+   "simulated": true,
+   "grant_id": "GG-HHS-2027-ACL-NIDILRR-AREM-0301",
+   "family": "Administration for Community Living"
+  }
+ ],
+ "grants": {
+  "GG-PAR-25-145": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "official_source": "NIH Guide PAR-25-145",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-145.html",
+   "is_open_call": "yes",
+   "title": "Clinical Characterization of Cancer Therapy-induced Adverse Sequelae and Mechanism-based Interventional Strategies",
+   "programme": "National Cancer Institute (NCI)",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity supports basic, translational, and clinical research to address chronic or delayed adverse effects of cancer therapies. The goal is to identify biological mechanisms, characterize clinical phenotypes, and develop interventional strategies to prevent or minimize long-term sequelae. Projects may include mechanistic studies, longitudinal phenotyping, and validation of clinical endpoints like biomarkers or patient-reported outcomes. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and foreign entities.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3-flash-preview",
+   "due_dates": [
+    "2025-02-05",
+    "2025-06-05",
+    "2025-10-05",
+    "2026-02-05",
+    "2026-06-05",
+    "2026-10-05",
+    "2027-02-05",
+    "2027-06-05",
+    "2027-10-05"
+   ],
+   "resubmission_dates": [
+    "2025-03-05",
+    "2025-07-05",
+    "2025-11-05",
+    "2026-03-05",
+    "2026-07-05",
+    "2026-11-05",
+    "2027-03-05",
+    "2027-07-05",
+    "2027-11-05"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3-flash-preview",
+    "date": "2026-11-07",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "GG-PAR-25-265": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "official_source": "NIH Guide PAR-25-265",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-265.html",
+   "is_open_call": "yes",
+   "title": "Innovative Screening Approaches and Therapies for Screenable Disorders in Newborns (R01 - Clinical Trial Optional)",
+   "programme": "Hunter Kelly Newborn Screening Research Program",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity supports research to develop novel screening approaches and therapeutic interventions for conditions currently in newborn screening panels or fatal/disabling genetic conditions that could benefit from early detection. Supported activities include assay development, preclinical testing, and clinical trials. Higher education institutions, non-profits, for-profit businesses, and non-domestic (foreign) organizations are eligible to apply as lead entities.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.8-flash",
+   "due_dates": [
+    "2025-02-05",
+    "2025-06-05",
+    "2025-10-05",
+    "2026-02-05",
+    "2026-06-05",
+    "2026-10-05",
+    "2027-02-05",
+    "2027-06-05",
+    "2027-10-05"
+   ],
+   "resubmission_dates": [
+    "2025-03-05",
+    "2025-07-05",
+    "2025-11-05",
+    "2026-03-05",
+    "2026-07-05",
+    "2026-11-05",
+    "2027-03-05",
+    "2027-07-05",
+    "2027-11-05"
+   ],
+   "expires": "2027-11-17",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as Program Director/Principal Investigator may apply.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.8-flash",
+    "date": "2026-11-07",
+    "changed": [],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  },
+  "GG-PAR-25-227": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "official_source": "NIH Guide PAR-25-227",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-227.html",
+   "is_open_call": "yes",
+   "title": "Natural History of Disorders Screenable in the Newborn Period (R01 Clinical Trial Optional)",
+   "programme": "NIH R01 Research Project Grant",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity encourages applications to expand knowledge of the natural history of disorders that currently are, or may become, part of newborn screening programs. Funded R01 research project grants (clinical trial optional) aim to improve diagnostic accuracy, characterize disease progression, and support targeted therapeutic interventions. Higher education institutions, non-profits, for-profit businesses, government entities, and foreign (non-U.S.) organizations are eligible to apply as lead applicants.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.6-flash",
+   "due_dates": [
+    "2025-02-05",
+    "2025-06-05",
+    "2025-10-05",
+    "2026-02-05",
+    "2026-06-05",
+    "2026-10-05",
+    "2027-02-05",
+    "2027-06-05",
+    "2027-10-05"
+   ],
+   "resubmission_dates": [
+    "2025-03-05",
+    "2025-07-05",
+    "2025-11-05",
+    "2026-03-05",
+    "2026-07-05",
+    "2026-11-05",
+    "2027-03-05",
+    "2027-07-05",
+    "2027-11-05"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research is invited to work with their organization.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-07",
+    "changed": [],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  }
+ },
+ "positions": {}
+}

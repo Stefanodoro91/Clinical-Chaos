@@ -1,0 +1,69 @@
+{
+ "workflow": "Settimana di prova su Drive",
+ "quota_day": "2026-11-07",
+ "consumo": {
+  "conferma bandi|gemini-3.8-flash": {
+   "richieste": 1,
+   "ingresso": 12706,
+   "uscita": 456,
+   "ragionamento": 1593,
+   "respinte": 0,
+   "versione": "gemini-3.8-flash"
+  },
+  "conferma bandi|gemini-3.6-flash": {
+   "richieste": 1,
+   "ingresso": 12658,
+   "uscita": 466,
+   "ragionamento": 1669,
+   "respinte": 3,
+   "versione": "gemini-3.6-flash"
+  },
+  "conferma bandi|gemini-3-flash-preview": {
+   "richieste": 1,
+   "ingresso": 12778,
+   "uscita": 471,
+   "ragionamento": 5136,
+   "respinte": 0,
+   "versione": "gemini-3-flash-preview"
+  },
+  "scelta immagini|gemini-3.5-flash-lite": {
+   "richieste": 5,
+   "ingresso": 16794,
+   "uscita": 772,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "controllo doppioni|groq-gpt-oss-120b": {
+   "richieste": 4,
+   "ingresso": 5866,
+   "uscita": 1389,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "riscrittura anti-copia|gemini-3.5-flash-lite": {
+   "richieste": 6,
+   "ingresso": 1624,
+   "uscita": 629,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "critica|openrouter-nemotron-3-ultra-550b-a55b:free": {
+   "richieste": 9,
+   "ingresso": 40011,
+   "uscita": 50336,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "copione reel|gemini-3.5-flash-lite": {
+   "richieste": 1,
+   "ingresso": 309,
+   "uscita": 167,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  }
+ },
+ "esauriti": []
+}
