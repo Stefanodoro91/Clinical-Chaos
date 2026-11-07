@@ -361,6 +361,19 @@ For each slide choose one:
 - "none".
 Prefer "figure" when one fits, then "diagram", then "photo".
 
+Fill EVERY field the kind needs; a diagram with an empty list is thrown away. Leave the fields of other kinds empty.
+Examples (one slide each):
+{{"slide": 2, "type": "diagram", "kind": "compare", "left_title": "Vague outcome", "left_items": ["Pain", "Function"],
+  "right_title": "Prespecified outcome", "right_items": ["0–10 pain scale", "Change from baseline", "Mean at 12 weeks"]}}
+{{"slide": 1, "type": "diagram", "kind": "tree", "root": "What type is the outcome?", "branches": [{{"edge": "Continuous",
+  "leaf": "Linear regression"}}, {{"edge": "Binary", "leaf": "Logistic regression"}}]}}
+{{"slide": 3, "type": "diagram", "kind": "flow", "steps": [{{"label": "Assessed", "note": "for eligibility"}},
+  {{"label": "Randomised"}}, {{"label": "Analysed", "note": "per group"}}]}}
+{{"slide": 2, "type": "diagram", "kind": "bars", "unit": "points", "bars": [{{"label": "Intervention", "value": "2.6"}}],
+  "threshold": {{"label": "clinically important", "value": "5.2"}}}}
+{{"slide": 1, "type": "diagram", "kind": "distribution", "unit": "days", "values": [3, 4, 4, 5, 5, 6, 7, 48]}}
+{{"slide": 4, "type": "diagram", "kind": "timeline", "points": [{{"label": "Baseline"}}, {{"label": "8 weeks", "note": "end of training"}}]}}
+
 CAROUSEL: {title}
 {slides}
 
@@ -391,7 +404,8 @@ def _valid_diagram(spec):
     need = {"compare": lambda s: s.get("left_items") and s.get("right_items"),
             "flow": lambda s: 2 <= len(s.get("steps") or []) <= 5,
             "tree": lambda s: s.get("root") and 2 <= len(s.get("branches") or []) <= 4,
-            "bars": lambda s: 2 <= len([b for b in s.get("bars") or [] if _num(b.get("value")) is not None]) <= 5,
+            "bars": lambda s: (2 if _num((s.get("threshold") or {}).get("value")) is None else 1)
+                              <= len([b for b in s.get("bars") or [] if _num(b.get("value")) is not None]) <= 5,
             "distribution": lambda s: len([v for v in s.get("values") or [] if _num(v) is not None]) >= 5,
             "timeline": lambda s: 2 <= len(s.get("points") or []) <= 5}
     return bool(need[k](spec))

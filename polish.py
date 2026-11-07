@@ -44,7 +44,11 @@ def sentence_case(text, context=""):
     words = text.split(" ")
     long_ = [w for w in words[1:] if re.match(r"^[A-Za-z]{4,}", w)]
     if not long_ or sum(w[0].isupper() for w in long_) / len(long_) < 0.6:
-        return text
+        keep = PROPER | _proper_in(context)               # non è Title Case: sistema solo i composti («Sample-Specific»)
+        return " ".join(w if i == 0 or not RX_HYPH.match(w) or any(p in keep for p in re.findall(r"[A-Z][a-z]+", w))
+                        else "-".join([w.split("-")[0][:1].lower() + w.split("-")[0][1:] if len(w.split("-")[0]) > 1 else w.split("-")[0]]
+                                      + [r[:1].lower() + r[1:] for r in w.split("-")[1:]])
+                        for i, w in enumerate(words))
     keep = PROPER | _proper_in(context)
     out = []
     for i, w in enumerate(words):
