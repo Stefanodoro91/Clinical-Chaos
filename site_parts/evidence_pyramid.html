@@ -26,7 +26,8 @@
   .ep .seg text { font: 800 10px Inter, system-ui, sans-serif; letter-spacing: .08em; fill: #FFFFFF; text-transform: uppercase;
                   paint-order: stroke; stroke: rgba(10, 10, 10, .85); stroke-width: 3px; stroke-linejoin: round; }
   .ep .seg:hover rect, .ep .seg:focus-visible rect { fill-opacity: 1; stroke: #FFFFFF; }
-  .ep .pill rect { stroke: #0A0A0A; stroke-width: 1.5; }
+  .ep .pill rect { fill: rgba(10, 10, 10, .66); stroke: rgba(255, 255, 255, .22); stroke-width: 1; }
+  .ep .pill text { fill: #FFFFFF; }
   .ep .guide { stroke: var(--ep-line); stroke-width: 1; stroke-dasharray: 2 4; fill: none; }
 
   /* legend */
@@ -255,11 +256,13 @@ const $ = id => document.getElementById(id);
 /* ---------- pyramid: each level a band between two sine waves that keep flowing; labels stay put ---------- */
 function renderPyramid() {
   /* Drawn at the real pixel width of the panel (re-drawn on resize), so text stays at its true size on any screen.
-     Bars on the left, coloured by the levels they span. Every name sits on the axis; one wider than its band rides on a pill
-     in the band colour. */
+     Bars on the left, coloured by the levels they span. Every level name sits on the same dark pill, centred on the axis.
+     The top level is taller, so the apex stays visible above its label. */
   const el = $('ep-pyr'), avail = Math.max(260, el.clientWidth - 32), small = avail < 480;
   const BW_ = small ? 20 : 24, BG = 6, BX = [0, BW_ + BG, 2 * (BW_ + BG)], X0 = 3 * (BW_ + BG) + (small ? 6 : 14);
-  const W = Math.min(600, avail - X0 - 6), TOP = 8, N = L.length, BH = small ? 34 : 40, BASE = TOP + N * BH;
+  const W = Math.min(600, avail - X0 - 6), TOP = 8, N = L.length, BH = small ? 34 : 40, TH = BH * 2.2;
+  const Y = [TOP]; for (let i = 1; i <= N; i++) Y.push(TOP + TH + (i - 1) * BH);   // level boundaries (mean of the wave)
+  const BASE = Y[N];
   const CX = X0 + W / 2, HALF = W / 2 - 2, TOTAL = X0 + W + 2;
   const AMP = small ? 5 : 6, CYC = 1.15, STEPS = 64, SPLIT = 2, SPEED = 0.55;
   const FS = small ? 12 : 13, SFS = small ? 9 : 10;
@@ -268,7 +271,7 @@ function renderPyramid() {
   const wave = (i, x) => {
     if (i === 0) return TOP - 20;
     if (i === N) return BASE;
-    return TOP + i * BH + AMP * Math.sin(((x - X0) / W) * Math.PI * 2 * CYC + i * 0.9 - t * SPEED);
+    return Y[i] + AMP * Math.sin(((x - X0) / W) * Math.PI * 2 * CYC + i * 0.9 - t * SPEED);
   };
   const line = (i, rev) => {
     const pts = [];
@@ -282,9 +285,9 @@ function renderPyramid() {
     <defs><clipPath id="ep-tri"><path d="M${CX},${TOP} L${CX + HALF},${BASE} L${CX - HALF},${BASE} Z"/></clipPath></defs>`;
   const ys = new Set();                                          // dotted guides from the bars to the pyramid edge
   BARS.flat().forEach(([, a, b]) => { ys.add(a); ys.add(b + 1); });
-  [...ys].forEach(i => { const y = TOP + i * BH; if (i > 0 && i < N) s += `<path class="guide" d="M${BX[2] + BW_ + 3},${y} L${CX - hw(y) - 4},${y}"/>`; });
+  [...ys].forEach(i => { const y = Y[i]; if (i > 0 && i < N) s += `<path class="guide" d="M${BX[2] + BW_ + 3},${y} L${CX - hw(y) - 4},${y}"/>`; });
   BARS.forEach((col, c) => col.forEach(([lab, a, b]) => {
-    const y1 = TOP + a * BH + (a ? 3 : 0), y2 = TOP + (b + 1) * BH - (b + 1 < N ? 3 : 0), h = y2 - y1, x = BX[c];
+    const y1 = Y[a] + (a ? 3 : 0), y2 = Y[b + 1] - (b + 1 < N ? 3 : 0), h = y2 - y1, x = BX[c];
     const gid = `ep-g${c}-${a}`, stops = [];
     for (let k = a; k <= b; k++) stops.push(`<stop offset="${((k - a + .5) / (b - a + 1) * 100).toFixed(1)}%" stop-color="${L[k].c}"/>`);
     s += `<defs><linearGradient id="${gid}" gradientUnits="userSpaceOnUse" x1="0" y1="${y1}" x2="0" y2="${y2}">${stops.join('')}</linearGradient></defs>`;
@@ -303,16 +306,10 @@ function renderPyramid() {
   s += `<path class="cut" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-dasharray="2 5" stroke-linecap="round" pointer-events="none"/>`;
   let pills = '';
   L.forEach((x, k) => {
-    const cy = TOP + (k + 0.5) * BH + (k === 0 ? BH * 0.16 : 0), room = 2 * hw(cy) - 2 * AMP - 18;
-    const full = `${x.n} · ${x.short}`, w = tw(full, `700 ${FS}px Inter, system-ui, sans-serif`);
-    const y = (cy + FS * .36).toFixed(1);
-    if (w <= room) {
-      s += `<text class="lbl" data-k="${k}" x="${CX}" y="${y}" text-anchor="middle" fill="${x.t}" pointer-events="none" style="font-size:${FS}px">${esc(full)}</text>`;
-    } else {
-      const pw = w + 20, ph = FS + 11;
-      pills += `<g class="lbl pill" data-k="${k}" pointer-events="none"><rect x="${(CX - pw / 2).toFixed(1)}" y="${(cy - ph / 2).toFixed(1)}" width="${pw.toFixed(1)}" height="${ph}" rx="${ph / 2}" fill="${x.c}"/>
-        <text x="${CX}" y="${y}" text-anchor="middle" fill="${x.t}" style="font-size:${FS}px">${esc(full)}</text></g>`;
-    }
+    const cy = k === 0 ? Y[1] - BH * 0.55 : (Y[k] + Y[k + 1]) / 2;
+    const full = `${x.n} · ${x.short}`, pw = tw(full, `700 ${FS}px Inter, system-ui, sans-serif`) + 22, ph = FS + 11;
+    pills += `<g class="lbl pill" data-k="${k}" pointer-events="none"><rect x="${(CX - pw / 2).toFixed(1)}" y="${(cy - ph / 2).toFixed(1)}" width="${pw.toFixed(1)}" height="${ph}" rx="${ph / 2}"/>
+      <text x="${CX}" y="${(cy + FS * .36).toFixed(1)}" text-anchor="middle" style="font-size:${FS}px">${esc(full)}</text></g>`;
   });
   s += `</g>${pills}</svg>`;
   el.innerHTML = s;
