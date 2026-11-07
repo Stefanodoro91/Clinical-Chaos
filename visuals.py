@@ -177,14 +177,14 @@ def draw(spec, w, h, colors):
     d = ImageDraw.Draw(img)
     kind = spec.get("kind")
     P = 34
-    if kind == "compare":
+    if kind in ("compare", "versus"):            # compare: sbagliato ✗ / giusto ✓; versus: due opzioni alla pari
         gap = 26
         cw = (w - 2 * P - gap) / 2
         for side, x in (("left", P), ("right", P + cw + gap)):
-            good = side == "right"
+            good = side == "right" or kind == "versus"
             col = acc if good else soft
-            _box(d, (x, P, x + cw, h - P), col, None, 4 if good else 2)
-            mark = "✓" if good else "✗"
+            _box(d, (x, P, x + cw, h - P), col, None, 4 if (good and kind == "compare") else 3)
+            mark = "•" if kind == "versus" else ("✓" if good else "✗")
             title = spec.get(f"{side}_title", "")
             _text_block(d, f"{title}", "ExtraBold", 38, 24, (x + 24, P + 18, x + cw - 24, P + 96), col)
             items = [str(i) for i in (spec.get(f"{side}_items") or [])][:4]
@@ -193,7 +193,7 @@ def draw(spec, w, h, colors):
                 for k, it in enumerate(items):
                     y0 = P + 120 + k * rh
                     d.text((x + 26, y0 + 4), mark, font=_fonts()("Bold", 30), fill=col)
-                    _text_block(d, it, "Regular", 30, 20, (x + 70, y0, x + cw - 22, y0 + rh - 8), ink, "left", "top")
+                    _text_block(d, it, "Regular", 34, 22, (x + 70, y0, x + cw - 22, y0 + rh - 8), ink, "left", "top")
     elif kind == "flow":
         steps = (spec.get("steps") or [])[:5]
         n = max(1, len(steps))
@@ -347,7 +347,8 @@ a decision, a few numbers or a distribution, and that slide should get a diagram
 
 For each slide choose a type:
 - "diagram": a simple schematic drawn by our software. Give its kind and write it in "spec" with this exact syntax:
-  compare       →  Left title: item; item || Right title: item; item      (the right column is the good/correct one)
+  compare       →  Wrong title: item; item || Right title: item; item     (ONLY wrong vs right: left is marked ✗, right ✓)
+  versus        →  Option A: item; item || Option B: item; item           (two options side by side, neither is wrong)
   flow          →  Step (short note) -> Step (short note) -> Step         (2-5 steps in order)
   tree          →  Root question? => branch: result; branch: result       (a decision with 2-4 branches)
   bars          →  Label = value; Label = value | unit | Threshold label = value   (unit and threshold optional)
@@ -388,7 +389,7 @@ def parse_spec(kind, spec):
     """Il testo compatto del modello → i campi che draw() usa. {} se non si capisce."""
     spec = (spec or "").strip()
     try:
-        if kind == "compare" and "||" in spec:
+        if kind in ("compare", "versus") and "||" in spec:
             out = {}
             for side, part in zip(("left", "right"), spec.split("||", 1)):
                 title, _, items = part.partition(":")
@@ -426,7 +427,7 @@ def parse_spec(kind, spec):
     return {}
 
 
-KINDS = {"compare", "flow", "tree", "bars", "distribution", "timeline"}
+KINDS = {"compare", "versus", "flow", "tree", "bars", "distribution", "timeline"}
 
 
 def _valid_diagram(spec):
@@ -434,6 +435,7 @@ def _valid_diagram(spec):
     if k not in KINDS:
         return False
     need = {"compare": lambda s: s.get("left_items") and s.get("right_items"),
+            "versus": lambda s: s.get("left_items") and s.get("right_items"),
             "flow": lambda s: 2 <= len(s.get("steps") or []) <= 5,
             "tree": lambda s: s.get("root") and 2 <= len(s.get("branches") or []) <= 4,
             "bars": lambda s: (2 if _num((s.get("threshold") or {}).get("value")) is None else 1)
