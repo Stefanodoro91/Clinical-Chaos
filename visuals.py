@@ -72,7 +72,12 @@ def paper_figures(pdf_bytes, max_figures=8, zoom=3):
                         region |= g
                         grown = True
             region = (region + (-6, -6, 6, 4)) & page.rect
-            if region.width < 140 or region.height < 90:
+            if region.width < 140 or region.height < 90 or region.height > page.rect.height * 0.75:
+                continue
+            inside = [g for g in graphics if g in region + (-2, -2, 2, 2)]
+            loose = [wd for wd in page.get_text("words", clip=region)            # testo corrente finito nel ritaglio
+                     if not any(pymupdf.Rect(wd[:4]).intersects(g) for g in inside)]
+            if len(loose) > 40:
                 continue
             pix = page.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom), clip=region)
             img = Image.open(io.BytesIO(pix.tobytes("png"))).convert("RGB")
@@ -394,7 +399,7 @@ def plan(post, figures=None, credit=""):
     """Sceglie l'immagine di ogni slide e la scrive in slide["visual"]. Senza modello disponibile: tutte «none»
     (la slide resta di solo testo, come oggi quando un'immagine non è adatta)."""
     slides = post.get("slides") or []
-    figures = figures or []
+    figures = [f for f in figures or [] if f["image"].height <= f["image"].width * 1.25]   # leggibili sul telefono
     if figures:
         FIGURES[post.get("id")] = [dict(f, credit=credit) for f in figures]
     listing = "\n".join(f"{i}. {s.get('heading', '')} — {s.get('body', '')}" for i, s in enumerate(slides, 1))
