@@ -13,6 +13,7 @@
 plan(post) scrive in ogni slide la chiave «visual»: {"type": "diagram"|"figure"|"photo"|"none", ...}; cards.py la usa
 al posto della vecchia regola «immagine sulle slide pari»."""
 import io
+import json
 import re
 import statistics
 
@@ -423,6 +424,7 @@ def plan(post, figures=None, credit=""):
             continue
         if v.get("type") == "diagram" and not (_valid_diagram(v) and numbers_ok(v, f"{slides[i].get('heading', '')} {slides[i].get('body', '')}")):
             print(f"  Slide {i + 1}: schema «{v.get('kind')}» scartato ({'incompleto' if not _valid_diagram(v) else 'numeri non nel testo'})")
+            print("    " + json.dumps({k: x for k, x in v.items() if k not in ("why",)}, ensure_ascii=False)[:400])
         s, t = slides[i], v.get("type")
         text = f"{s.get('heading', '')} {s.get('body', '')}"
         if t == "figure" and v.get("figure") in fig_ids:
