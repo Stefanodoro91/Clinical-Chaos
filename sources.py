@@ -105,6 +105,11 @@ def prepare(post, drive):
         year = ((item.get("issued") or {}).get("date-parts") or [[None]])[0][0]
         meta = {"title": title, "authors": _authors(item), "journal": (item.get("container-title") or [""])[0],
                 "year": year, "doi": item.get("DOI", ""), "license": _cc_license(item)}
+        try:
+            import content
+            meta["apa"] = content._apa_from_crossref(item)   # prima reference del post (polish.lead_reference)
+        except Exception:
+            pass
         META[post["id"]] = meta
         if meta["license"]:
             THUMBS[post["id"]] = header_crop(img)

@@ -51,13 +51,24 @@ POST DESIGN:
   each different from the others. Fewer excellent posts are better than many thin ones.
 - Build each post as ONE argument: the slides follow a logical order (the problem or misconception → why it
   matters, with the mechanism, an example or a number from the material → how to do it right) and lead to the
-  takeaway. No slide may be a loose fact that the reader cannot connect to the title.
+  takeaway. No slide may be a loose fact that the reader cannot connect to the title. Plan the argument first, then
+  write the title LAST, as the claim the slides actually demonstrate: the title and the hook must never promise more
+  than the slides show, and no slide may contradict them.
+- Keep the scope of the material. A simplified rule stays with its conditions ("for a binary outcome…", "when the
+  sample is small…"); if the material names alternatives or exceptions (other models, other outcome types, other
+  designs), mention them rather than turning one option into the only one. Never overstate: no "destroys",
+  "always fails", "useless", "must" unless the material says so in those terms.
+- Examples: use the examples of the material, or a clearly framed generic example in the material's own field
+  ("imagine a trial of 120 patients with…"). Never import a study, trial, drug or clinical field that the material
+  does not discuss, and never use a named study to illustrate a point the material does not attach to it.
 - Every sentence must be true and complete ON ITS OWN: name the subject (never "this", "it", "these patients",
   "the study", "the authors" without saying which), keep the condition under which a claim holds (population,
   design, threshold), keep the qualifiers of the material ("may", "in RCTs", "at least", "only"), and give numbers
   with their unit and comparison. Use exact methodological language: risk vs odds, association vs causation,
   statistical vs clinical significance, efficacy vs effectiveness; never "proves".
-- title: a sharp hook, max 70 characters (e.g. a common misconception, a question, a crisp claim).
+- title: a sharp hook, max 70 characters (e.g. a common misconception, a question, a crisp claim), in sentence
+  case (only the first word and proper names capitalised, e.g. "Linear or logistic regression? Look at your outcome").
+  Slide headings are in sentence case too.
 - slides: 3 to 5 slides (the carousel adds cover and a final takeaway slide: 5–7 slides in total), each with heading (max 55 characters), body (max 140 characters: few words, large type,
   plain language for professionals, concrete, no fluff) and image_prompt.
 - image_prompt: in English, 15-35 words describing ONE simple illustration that a researcher would
@@ -78,18 +89,21 @@ POST DESIGN:
   (0.955, 12%, 95% CI), never spelled out in words.
 - highlight (per slide): the key idea of that slide, 2-6 words copied EXACTLY from its body (same
   words, same order); it is shown with a highlighter.
-- source (per slide): short citation "Surname, Year" or "Surname et al., Year" ONLY if the slide's
-  content comes from a study or paper cited in the material and listed in references; otherwise "".
+- source (per slide): short citation "Surname, Year" or "Surname et al., Year". When the material is itself a
+  published paper, its own citation is the default source of every slide; cite another work only when the material
+  explicitly attributes THAT specific statement to it, and that work must be in references. Otherwise "".
 - title_highlight: 1-4 words copied EXACTLY from the title, the most important part of the hook.
 - takeaway: the take-home message, max 130 characters: one specific, true statement that follows from the slides and
   that a researcher can act on (name the method, check, threshold or decision). Never "X is important", never a
   vague exhortation, never the title restated.
 - takeaway_highlight: 2-5 words copied EXACTLY from the takeaway.
-- references: the papers, guidelines or books CITED IN THE MATERIAL that support this post, in APA 7
-  style (Author, A. A., & Author, B. B. (Year). Title in sentence case. Journal Name, volume(issue),
-  pages. https://doi.org/...). Copy authors, year, title and journal from the material; if an element
-  is missing in the material, leave it out: NEVER invent authors, years, titles, journals or DOIs.
-  Empty list if the material cites nothing relevant.
+- references: in APA 7 style (Author, A. A., & Author, B. B. (Year). Title in sentence case. Journal Name,
+  volume(issue), pages. https://doi.org/...). FIRST the material itself when it is a published paper (as printed on
+  its first page). Then ONLY the works that the material cites for a statement used in this post's slides, so that
+  every slide source is in this list; never list a work just because it is in the material's bibliography, and
+  never a work whose role in the post the reader cannot see. Copy authors, year, title and journal from the
+  material; if an element is missing, leave it out: NEVER invent authors, years, titles, journals or DOIs.
+  Use plain characters ("&", not "&amp;"). Empty list if there is nothing to cite.
 - hook: the FIRST line of the caption, max 120 characters (Instagram shows only about 125 characters
   before "more"). It must make a researcher stop scrolling: name a common mistake, a counter-intuitive
   consequence, or ask a sharp question that the post answers. Use only the material: no invented numbers,
@@ -1033,6 +1047,14 @@ THE POSTS (0 to {max_posts} posts, one per week):
   clinic, with the limits the paper states.
 - Use ONLY facts in the paper; never invent numbers. Keep the paper's population and qualifiers ("in chronic
   stroke", "after 8 weeks", "may"). Describe findings, do not give personal treatment advice.
+- ONE clinical message per post, and every slide serves it: plan the story first, then write the title LAST as the
+  finding the slides support. The title must not contradict any slide (e.g. "X fails without training" while a
+  slide reports a trial where X was given WITH training) and must not judge a treatment more harshly or more
+  favourably than the paper does ("fails", "works", "useless" only in the paper's own terms).
+- A trial or study named on a slide is reported as the paper reports it: what was compared, in whom, the result
+  with its comparison and unit, and the paper's own interpretation. Use it only for the point the paper makes with
+  it; never as an example of something the paper does not say about it.
+- Every number says what it counts ("47 of 117 sessions", not "only 47"), with its comparison or threshold.
 - takeaway: the clinical take-home message for a clinician (what to expect, offer, watch for or explain to the
   patient), max 130 characters, supported by the slides; never a methodological lesson.
 - source (per slide): "Surname et al., Year" of THIS paper when the slide reports its findings.
@@ -1486,13 +1508,20 @@ Flag a sentence when it is:
 - "unsupported": a factual claim that is neither in the SOURCE nor a standard textbook definition (invented numbers,
   studies, authors, rules, dates).
 - "empty": generic filler a researcher cannot use ("X is crucial", "plan carefully", "it matters").
+- "overclaim": the title, hook or takeaway promises more than the slides show, uses a verdict the SOURCE does not
+  use ("destroys", "fails", "useless", "must", "only"), turns one option into the only one when the SOURCE names
+  alternatives, or is contradicted by a slide. Classify it as "imprecise".
+- "misused example": a study, trial, number or example used for a point the SOURCE does not attach to it, an example
+  imported from outside the SOURCE, or a slide "Source" that is not the paper the statement comes from. Classify it
+  as "out_of_context".
 - direction and scale words ("higher", "lower", "better", "worse", "more", "less") when the SOURCE does not say whether
   they mean higher or lower function/risk/score: never choose a reading; keep the SOURCE's own wording, or flag the
   sentence as "imprecise" and propose a fix that avoids the ambiguous word.
 {extra_rules}
 Then judge the post as a whole:
 - thread: it must teach ONE idea, with slides in a logical order (e.g. problem → why it matters → how to do it right)
-  that leads to the takeaway. Flag a slide that is off the thread, repeats another, or contradicts another.
+  that leads to the takeaway. Flag a slide that is off the thread, repeats another, or contradicts another or the
+  title; flag a title that the slides do not demonstrate (fix the title, not the facts).
 - takeaway: it must be a real take-home message: true according to the SOURCE, following from the slides, specific
   (names the method, decision, threshold or check) and useful to a researcher tomorrow. "X is important", a vague
   exhortation or a restated title is NOT a take-home message.

@@ -23,6 +23,7 @@ import cards
 import content
 import grants
 import linkedin
+import polish
 import positions
 import rubrics
 
@@ -454,13 +455,13 @@ def build_caption(post):
         pool = ["#ResearchFunding", "#ClinicalResearch"] + [t for t in post.get("hashtags", []) if t.lower() != "#grantopportunity"]
     elif kind in ("positions", "announcement"):
         pool = post.get("hashtags", []) + CONFIG.get("fixed_hashtags", [])
-    else:                                    # metodologia: i 2 fissi e i 3 specifici del tema
-        pool = CONFIG.get("fixed_hashtags", []) + post.get("hashtags", [])
+    else:                                    # metodologia: i 2 fissi e i 3 specifici; Latest Science senza #ResearchMethodology
+        pool = polish.hashtags(post, CONFIG.get("fixed_hashtags", []))
     for t in pool:
         if t.lower() not in seen:
             seen.add(t.lower())
             tags.append(t)
-    refs = post.get("references") or []
+    refs = [polish.tidy_reference(r) for r in post.get("references") or []]
     ref_block = ("\n\nReferences:\n" + "\n".join(f"• {r}" for r in refs)) if refs else ""
     tail = f"{ref_block}\n\n{' '.join(tags[:MAX_HASHTAGS])}"
     head = f"{post['title']}\n\n{post['caption']}"
@@ -579,7 +580,7 @@ def facebook_text(post, caption, kind=None, link=""):
     tags = _re.findall(r"#\w+", caption)
     body = _re.sub(r"(\s*#\w+)+\s*$", "", caption).strip()
     body = body.replace("link in bio", link or CONFIG.get("links_page_url", ""))
-    points = "\n".join(f"{i}. {s['heading']}: {s['body']}" for i, s in enumerate(post.get("slides", []), 1))
+    points = "\n".join(f"{i}. {polish.point(s['heading'], s['body'])}" for i, s in enumerate(post.get("slides", []), 1))
     refs = "\n".join(f"- {r}" for r in (post.get("references") or [])[:3])
     parts = [body, f"Key points:\n{points}" if points else "", f"Takeaway: {post['takeaway']}" if post.get("takeaway") else "",
              f"References:\n{refs}" if refs else "", f"All our methodology carousels, with references: {link}" if link else "",
@@ -879,7 +880,7 @@ def simulate_post(post, kind, slides, caption):
     drive_preview.carousel_pdf(slides, caption, pdf)
     drive_preview.upload(pdf, {"grant": "grant", "positions": "positions"}.get(kind, "research"), "application/pdf", CONFIG)
     kind_link = {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",
-                 "research": f"methodology#m-{post.get('id', '')}"}.get(kind or "research", "")
+                 "research": polish.page_anchor(post)}.get(kind or "research", "")
     li_link = grants.site_url(CONFIG, kind_link)
     LINKEDIN_DIR.mkdir(exist_ok=True)
     li_path = LINKEDIN_DIR / linkedin.filename(post, kind, today)
@@ -1102,9 +1103,13 @@ def main():
     if (kind == "research" and CONFIG.get("review_slides", True) and post.get("rubric") != "Checklist"
             and not (post.get("review") or {}).get("passed")):
         content.review_slides(post)              # ogni slide un concetto, comprensibile da sola
+    apa = ""
     if kind == "research" and CONFIG.get("source_slide"):
         import sources
-        sources.prepare(post, drive)             # slide «fonte»: articolo di origine (prima pagina solo se CC)
+        meta = sources.prepare(post, drive)      # slide «fonte»: articolo di origine (prima pagina solo se CC)
+        apa = (meta or {}).get("apa", "")
+    if kind == "research":
+        polish.polish_post(post, apa)            # sentence case, reference coerenti con la slide «Based on», fonti
     slides = cards.render_carousel(post, CONFIG)
     caption = build_caption(post)
     print(f"\nPost scelto: {post['title']}  (fonte: {post['source']}, {post.get('source_hint', '')})")
@@ -1122,7 +1127,7 @@ def main():
         # anteprima dei formati per social: Facebook (immagine singola + testo lungo), Bluesky e Threads (testo breve)
         import social
         plink = grants.site_url(CONFIG, {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",
-                                         "research": f"methodology#m-{post.get('id', '')}"}.get(post.get("kind") or "research", ""))
+                                         "research": polish.page_anchor(post)}.get(post.get("kind") or "research", ""))
         if kind == "research":
             (PREVIEW_DIR / "facebook.jpg").write_bytes(cards.facebook_single(post, CONFIG))
         (PREVIEW_DIR / "bluesky.jpg").write_bytes(cards.single_cover(post, CONFIG))
@@ -1179,7 +1184,7 @@ def main():
 
     import social
     kind_link = {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",
-                 "research": f"methodology#m-{post['id']}"}.get(post.get("kind") or "research", "")
+                 "research": polish.page_anchor(post)}.get(post.get("kind") or "research", "")
     link = grants.site_url(CONFIG, kind_link)
     LINKEDIN_DIR.mkdir(exist_ok=True)
     li_path = LINKEDIN_DIR / linkedin.filename(post, kind, today)
@@ -1726,7 +1731,7 @@ def backfill_social():
                 continue
             heads = " · ".join(x["heading"] for x in m.get("points", []))
             pseudo = {"title": m["title"], "caption": f"{m['title']}\n\n{m.get('takeaway', '')}\n\nKey points: {heads}"}
-            link = grants.site_url(CONFIG, f"methodology#m-{p['id']}")
+            link = grants.site_url(CONFIG, polish.page_anchor({"id": p["id"], "category": m.get("category")}))
         safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in p["id"])
         folder = IMAGES_DIR / f"{p['date']}-{safe}"
         slides = sorted(folder.glob("slide-*.jpg"), key=lambda q: int(q.stem.split("-")[1]))
@@ -1783,7 +1788,7 @@ def repost_social():
                     "takeaway": m.get("takeaway", ""), "references": m.get("references", [])}
             heads = " · ".join(x["heading"] for x in m.get("points", []))
             caption = f"{m['title']}\n\n{m.get('takeaway', '')}\n\nKey points: {heads}"
-            link = grants.site_url(CONFIG, f"methodology#m-{p['id']}")
+            link = grants.site_url(CONFIG, polish.page_anchor({"id": p["id"], "category": m.get("category")}))
             kind = "research"
         safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in p["id"])
         folder = IMAGES_DIR / f"{p['date']}-{safe}"
