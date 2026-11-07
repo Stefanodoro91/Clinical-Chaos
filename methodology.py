@@ -171,18 +171,21 @@ TOOLS = [   # strumenti ufficiali per disegno di studio: (etichetta, titolo, [(d
         ("Randomised trials", "SPIRIT", "https://www.spirit-statement.org/"),
         ("Systematic reviews", "PRISMA-P", "https://www.prisma-statement.org/protocols"),
         ("Review registration", "PROSPERO", "https://www.crd.york.ac.uk/prospero/"),
+        ("Measurement properties", "COSMIN Study Design", "https://www.cosmin.nl/"),
         ("All designs", "EQUATOR library", "https://www.equator-network.org/library/")]),
     ("Reporting", "Reporting guidelines", [
         ("Randomised trials", "CONSORT", "https://www.consort-statement.org/"),
         ("Observational studies", "STROBE", "https://www.strobe-statement.org/"),
         ("Systematic reviews", "PRISMA", "https://www.prisma-statement.org/"),
         ("Case reports", "CARE", "https://www.care-statement.org/"),
+        ("Measurement properties (PROMs)", "COSMIN", "https://pubmed.ncbi.nlm.nih.gov/33818733/"),
         ("Every design", "EQUATOR Network", "https://www.equator-network.org/")]),
     ("Clinical appraisal", "Appraise the evidence", [
         ("Trials, cohorts, qualitative…", "CASP checklists", "https://casp-uk.net/casp-tools-checklists/"),
         ("All study types", "JBI tools", "https://jbi.global/critical-appraisal-tools"),
         ("Risk of bias (RCTs, NRSI)", "RoB 2 · ROBINS-I", "https://www.riskofbias.info/"),
-        ("Systematic reviews", "AMSTAR 2", "https://amstar.ca/")]),
+        ("Systematic reviews", "AMSTAR 2", "https://amstar.ca/"),
+        ("Measurement instruments", "COSMIN RoB", "https://doi.org/10.1007/s11136-017-1765-4")]),
 ]
 
 

@@ -13,7 +13,6 @@
 
   /* pyramid + side bars */
   .ep .pyr svg { display: block; margin: 0 auto; overflow: visible; max-width: 100%; }
-  .ep .lbl.out { fill: var(--soft); font-weight: 600; }
   .ep .band { cursor: pointer; outline: none; }
   .ep .band path.fill { transition: filter .18s ease, opacity .2s ease; }
   .ep .band:hover path.fill, .ep .band:focus-visible path.fill { filter: brightness(1.15) saturate(1.1); }
@@ -23,11 +22,12 @@
   .ep .pyr.focus .lbl:not(.in) { opacity: .25; }
   .ep .lbl { font: 700 13px Inter, system-ui, sans-serif; letter-spacing: .01em; transition: opacity .2s ease; }
   .ep .seg { cursor: default; outline: none; }
-  .ep .seg rect { fill: rgba(136, 176, 248, .09); stroke: rgba(136, 176, 248, .45); stroke-width: 1.2; transition: fill .15s ease, stroke .15s ease; }
-  .ep .seg text { font: 800 10px Inter, system-ui, sans-serif; letter-spacing: .08em; fill: var(--accent); text-transform: uppercase; }
-  .ep .seg:hover rect, .ep .seg:focus-visible rect { fill: rgba(136, 176, 248, .24); stroke: var(--accent); }
+  .ep .seg rect { fill-opacity: .85; stroke: #0A0A0A; stroke-width: 1.5; transition: fill-opacity .15s ease, stroke .15s ease; }
+  .ep .seg text { font: 800 10px Inter, system-ui, sans-serif; letter-spacing: .08em; fill: #FFFFFF; text-transform: uppercase;
+                  paint-order: stroke; stroke: rgba(10, 10, 10, .85); stroke-width: 3px; stroke-linejoin: round; }
+  .ep .seg:hover rect, .ep .seg:focus-visible rect { fill-opacity: 1; stroke: #FFFFFF; }
+  .ep .pill rect { stroke: #0A0A0A; stroke-width: 1.5; }
   .ep .guide { stroke: var(--ep-line); stroke-width: 1; stroke-dasharray: 2 4; fill: none; }
-  .ep .cap { font: 700 17px var(--ep-hand); fill: var(--muted); }
 
   /* legend */
   .ep .legend { display: grid; gap: 0 18px; grid-template-columns: 1fr; }
@@ -255,11 +255,12 @@ const $ = id => document.getElementById(id);
 /* ---------- pyramid: each level a band between two sine waves that keep flowing; labels stay put ---------- */
 function renderPyramid() {
   /* Drawn at the real pixel width of the panel (re-drawn on resize), so text stays at its true size on any screen.
-     Bars on the left; a level name that does not fit in its band goes just outside the right edge, else only its number. */
+     Bars on the left, coloured by the levels they span. Every name sits on the axis; one wider than its band rides on a pill
+     in the band colour. */
   const el = $('ep-pyr'), avail = Math.max(260, el.clientWidth - 32), small = avail < 480;
   const BW_ = small ? 20 : 24, BG = 6, BX = [0, BW_ + BG, 2 * (BW_ + BG)], X0 = 3 * (BW_ + BG) + (small ? 6 : 14);
-  const W = Math.min(560, avail - X0 - 6), TOP = 8, N = L.length, BH = small ? 34 : 40, BASE = TOP + N * BH;
-  const CX = X0 + W / 2, HALF = W / 2 - 2, TOTAL = Math.min(avail, X0 + W + 150);
+  const W = Math.min(600, avail - X0 - 6), TOP = 8, N = L.length, BH = small ? 34 : 40, BASE = TOP + N * BH;
+  const CX = X0 + W / 2, HALF = W / 2 - 2, TOTAL = X0 + W + 2;
   const AMP = small ? 5 : 6, CYC = 1.15, STEPS = 64, SPLIT = 2, SPEED = 0.55;
   const FS = small ? 12 : 13, SFS = small ? 9 : 10;
   const ctx = document.createElement('canvas').getContext('2d');
@@ -277,16 +278,19 @@ function renderPyramid() {
   const d = pts => pts.map((p, j) => (j ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join('');
   const bandD = k => d(line(k)) + d(line(k + 1, true)).replace('M', 'L') + 'Z';
   const hw = y => Math.max(0, HALF * (y - TOP) / (BASE - TOP));
-  let s = `<svg width="${TOTAL}" height="${BASE + 40}" viewBox="-2 -4 ${TOTAL + 4} ${BASE + 40}" role="group" aria-label="Evidence pyramid, ${N} levels from meta-analysis at the top to in vitro research at the base, with side bars for secondary and primary, experimental and observational, clinical and preclinical studies">
+  let s = `<svg width="${TOTAL}" height="${BASE + 10}" viewBox="-2 -4 ${TOTAL + 4} ${BASE + 10}" role="group" aria-label="Evidence pyramid, ${N} levels from meta-analysis at the top to in vitro research at the base, with side bars for secondary and primary, experimental and observational, clinical and preclinical studies">
     <defs><clipPath id="ep-tri"><path d="M${CX},${TOP} L${CX + HALF},${BASE} L${CX - HALF},${BASE} Z"/></clipPath></defs>`;
   const ys = new Set();                                          // dotted guides from the bars to the pyramid edge
   BARS.flat().forEach(([, a, b]) => { ys.add(a); ys.add(b + 1); });
   [...ys].forEach(i => { const y = TOP + i * BH; if (i > 0 && i < N) s += `<path class="guide" d="M${BX[2] + BW_ + 3},${y} L${CX - hw(y) - 4},${y}"/>`; });
   BARS.forEach((col, c) => col.forEach(([lab, a, b]) => {
     const y1 = TOP + a * BH + (a ? 3 : 0), y2 = TOP + (b + 1) * BH - (b + 1 < N ? 3 : 0), h = y2 - y1, x = BX[c];
+    const gid = `ep-g${c}-${a}`, stops = [];
+    for (let k = a; k <= b; k++) stops.push(`<stop offset="${((k - a + .5) / (b - a + 1) * 100).toFixed(1)}%" stop-color="${L[k].c}"/>`);
+    s += `<defs><linearGradient id="${gid}" gradientUnits="userSpaceOnUse" x1="0" y1="${y1}" x2="0" y2="${y2}">${stops.join('')}</linearGradient></defs>`;
     let fs = SFS; while (fs > 7.5 && tw(lab.toUpperCase(), `800 ${fs}px Inter, system-ui, sans-serif`, fs * .08) > h - 12) fs -= .5;
     s += `<g class="seg" tabindex="0" data-a="${a}" data-b="${b}" aria-label="${esc(lab)} studies: levels ${a + 1} to ${b + 1}">
-      <rect x="${x}" y="${y1}" width="${BW_}" height="${h}" rx="7"/>
+      <rect x="${x}" y="${y1}" width="${BW_}" height="${h}" rx="7" fill="url(#${gid})"/>
       <text transform="translate(${x + BW_ / 2 + fs * .36},${y1 + h / 2}) rotate(-90)" text-anchor="middle" style="font-size:${fs}px">${esc(lab)}</text></g>`;
   }));
   s += `<g clip-path="url(#ep-tri)">`;
@@ -297,17 +301,20 @@ function renderPyramid() {
   for (let i = 1; i < N; i++)
     s += `<path class="seam" data-i="${i}" fill="none" stroke="#0A0A0A" stroke-width="${i === SPLIT ? 7 : 2}" pointer-events="none"/>`;
   s += `<path class="cut" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-dasharray="2 5" stroke-linecap="round" pointer-events="none"/>`;
-  let outside = '';
+  let pills = '';
   L.forEach((x, k) => {
     const cy = TOP + (k + 0.5) * BH + (k === 0 ? BH * 0.16 : 0), room = 2 * hw(cy) - 2 * AMP - 18;
-    const font = `700 ${FS}px Inter, system-ui, sans-serif`, full = `${x.n} · ${x.short}`;
-    const inside = tw(full, font) <= room;
-    s += `<text class="lbl" data-k="${k}" x="${CX}" y="${(cy + FS * .36).toFixed(1)}" text-anchor="middle" fill="${x.t}" pointer-events="none" style="font-size:${FS}px">${esc(inside ? full : String(x.n))}</text>`;
-    const ox = CX + hw(TOP + (k + 1) * BH) + 10;                     // clear of the band's lower corner
-    if (!inside && ox + tw(x.short, `600 ${FS}px Inter, system-ui, sans-serif`) <= TOTAL)
-      outside += `<text class="lbl out" data-k="${k}" x="${ox}" y="${(cy + FS * .36).toFixed(1)}" pointer-events="none" style="font-size:${FS}px">${esc(x.short)}</text>`;
+    const full = `${x.n} · ${x.short}`, w = tw(full, `700 ${FS}px Inter, system-ui, sans-serif`);
+    const y = (cy + FS * .36).toFixed(1);
+    if (w <= room) {
+      s += `<text class="lbl" data-k="${k}" x="${CX}" y="${y}" text-anchor="middle" fill="${x.t}" pointer-events="none" style="font-size:${FS}px">${esc(full)}</text>`;
+    } else {
+      const pw = w + 20, ph = FS + 11;
+      pills += `<g class="lbl pill" data-k="${k}" pointer-events="none"><rect x="${(CX - pw / 2).toFixed(1)}" y="${(cy - ph / 2).toFixed(1)}" width="${pw.toFixed(1)}" height="${ph}" rx="${ph / 2}" fill="${x.c}"/>
+        <text x="${CX}" y="${y}" text-anchor="middle" fill="${x.t}" style="font-size:${FS}px">${esc(full)}</text></g>`;
+    }
   });
-  s += `</g>${outside}<text class="cap" x="${small ? TOTAL / 2 : CX}" y="${BASE + 30}" text-anchor="middle" style="font-size:${small ? 15 : 17}px">${small ? 'wavy borders: designs overlap' : 'wavy borders: designs overlap in strength'}</text></svg>`;
+  s += `</g>${pills}</svg>`;
   el.innerHTML = s;
   const fills = [...el.querySelectorAll('.band .fill')], rings = [...el.querySelectorAll('.band .ring')];
   const seams = [...el.querySelectorAll('.seam')], cut = el.querySelector('.cut');
