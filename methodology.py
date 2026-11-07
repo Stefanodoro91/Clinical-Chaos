@@ -186,6 +186,17 @@ TOOLS = [   # strumenti ufficiali per disegno di studio: (etichetta, titolo, [(d
 ]
 
 
+PYRAMID_PART = Path(__file__).parent / "site_parts" / "evidence_pyramid.html"
+
+
+def pyramid_block(cfg):
+    """Piramide delle evidenze interattiva, sotto «Tools by study design». Esce solo con "evidence_pyramid": true in
+    config.json (spenta finché Stefano non la approva). Il frammento è autonomo: CSS con prefisso .ep, script chiuso."""
+    if not cfg.get("evidence_pyramid") or not PYRAMID_PART.exists():
+        return ""
+    return "\n" + PYRAMID_PART.read_text(encoding="utf-8")       # passato come valore a format(): graffe intatte
+
+
 def tools_block(cfg):
     """Strumenti ufficiali per disegno di studio: protocollo, reporting, valutazione critica (link alle pagine ufficiali)."""
     if not cfg.get("tools_block", True):
@@ -252,7 +263,7 @@ def build_page(data, cfg, today=None):
     cat_opts = "".join(f'<option value="{_slug(k)}">{escape(k)}</option>' for k in sorted(cats))
     return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=grants.site_accent(cfg, "methods") if cfg.get("site_v4") else c["accent"], cat_opts=cat_opts,
-                       n=len(data), topics_word="topic" if len(data) == 1 else "topics", tools=tools_block(cfg), sections="\n".join(sections), updated=grants._fmt_date(today),
+                       n=len(data), topics_word="topic" if len(data) == 1 else "topics", tools=tools_block(cfg) + pyramid_block(cfg), sections="\n".join(sections), updated=grants._fmt_date(today),
                        lockup=grants.page_lockup(cfg, "methods"),
                        og=grants.og_tags(cfg, f"Methodology library · {cfg['brand_name']}",
                                          "Practical clinical research methodology: study design, statistics, reporting guidelines and critical appraisal, with references.", "methodology"))
