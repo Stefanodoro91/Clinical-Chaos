@@ -516,7 +516,49 @@ def collect(sources=None, guided=True):
 
 
 # ---------------------------------------------------------------- verifica
-def verify(item):
+CONFIRM_FIELDS = ("is_open", "type", "relevance", "deadline", "country")
+
+
+def confirm_candidates(archive, posted, cfg, limit=None, today=None):
+    """Secondo parere di un modello forte sulle posizioni ad ALTA PRIORITÀ: pertinenza «high», aperte, ancora
+    utilizzabili nel post settimanale e mai confermate. Il forte rilegge l'annuncio con lo stesso prompt; se non è
+    d'accordo su un campo che conta, vale il suo risultato (il disaccordo resta in «confirmed.changed»).
+    Senza quota dei forti oltre la riserva per i post ci si ferma: si conferma al giro dopo."""
+    today = today or date.today()
+    limit = int(limit if limit is not None else cfg.get("positions_confirm_per_run", 8))
+    done_ids = {pid for p in posted if p.get("kind") == "positions" for pid in p.get("position_ids", [])}
+    min_left = today + timedelta(days=int(cfg.get("positions_min_days_left", 10)))
+    pool = [(k, v, d) for k, v, d in active(archive, today)
+            if v.get("relevance") == "high" and k not in done_ids and not (v.get("confirmed") or {}).get("model")
+            and v.get("confirm_tried") != today.isoformat() and (d is None or d >= min_left)]
+    pool.sort(key=lambda e: (e[2] is None, e[2] or date.max))
+    n = 0
+    for k, lite, _ in pool[:limit]:
+        try:
+            strong = verify({"url": lite["url"], "source": lite.get("source", ""), "title": lite.get("title", "")},
+                            task="conferma posizioni")
+        except Exception as e:
+            if "Gemini non disponibile" in str(e):
+                print(f"::notice title=Conferma posizioni ferma::nessun modello forte libero oltre la riserva per i post ({n} confermate)")
+                break
+            lite["confirm_tried"] = today.isoformat()      # annuncio non rileggibile (es. pagina JavaScript): resta lo screening
+            print(f"  Conferma non riuscita per {lite.get('title', '')[:60]}: {str(e)[:120]}")
+            continue
+        changed = [f for f in CONFIRM_FIELDS if (lite.get(f) or "") != (strong.get(f) or "")]
+        if lite.get("deadline") and not strong.get("deadline"):
+            strong["deadline"], strong["deadline_evidence"] = lite["deadline"], lite.get("deadline_evidence", "")
+            changed = [f for f in changed if f != "deadline"]
+        strong["first_seen"] = lite.get("first_seen") or strong["first_seen"]
+        strong["confirmed"] = {"model": content.LAST_MODEL, "date": today.isoformat(), "changed": changed}
+        archive[k] = strong
+        print(f"::notice title=Posizione confermata::{strong['title'][:60]} | {content.LAST_MODEL} | "
+              + (f"corretti: {', '.join(changed)}" if changed else "d'accordo con lo screening"))
+        n += 1
+        time.sleep(3)
+    return n
+
+
+def verify(item, task="verifica posizioni"):
     inpa = item.get("inpa")
     if inpa:            # inPA: il testo ufficiale arriva già dall'API (la pagina pubblica si costruisce via JavaScript)
         text = inpa["text"]
@@ -542,7 +584,7 @@ def verify(item):
     if len(text) < (120 if inpa else 300):
         raise RuntimeError(f"annuncio troppo breve ({len(text)} caratteri)")
     out = content.gemini_json([{"text": VERIFY_PROMPT.format(url=item["url"], text=text[:TEXT_CHARS])}], VERIFY_SCHEMA, 0.1,
-                              task="verifica posizioni")
+                              task=task)
     ev = (out.get("deadline_evidence") or "").strip()
     deadline = out.get("deadline") if (_date(out.get("deadline")) and ev and grants._simple(ev) in grants._simple(text)) else ""
     if inpa and _date(inpa.get("deadline")):           # la scadenza strutturata di inPA è quella ufficiale

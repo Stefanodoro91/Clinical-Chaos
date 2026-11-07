@@ -1,0 +1,436 @@
+{
+ "weeks": [
+  {
+   "folder": {
+    "id": "1iayg3IPDLtOu_4Qoz5yLlT47MqLJbQ8F",
+    "name": "Anteprime settimana 1 · 9–15 novembre"
+   },
+   "slots": [
+    {
+     "date": "2026-11-09",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "weekly",
+     "name": "01 Lun 9 nov 09.31 - Storia (numeri della settimana).mp4",
+     "file_id": "1qpsZZqaOzcn8AcAGswdK3KIci7igtnob"
+    },
+    {
+     "date": "2026-11-09",
+     "time": "12:23",
+     "kind": "grant",
+     "story_kind": "",
+     "name": "02 Lun 9 nov 12.23 - Funding calls (carosello).pdf",
+     "file_id": "1oa_Iepp8l7aYFrVWO5u2dA8YrYzPrURv"
+    },
+    {
+     "date": "2026-11-09",
+     "time": "18:23",
+     "kind": "positions",
+     "story_kind": "",
+     "name": "03 Lun 9 nov 18.23 - Academic positions + Career Path (carosello).pdf",
+     "file_id": "13DhEUDS6X10dNkXyUfGeiAUNUPBCP8FZ"
+    },
+    {
+     "date": "2026-11-10",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "countdown",
+     "name": "04 Mar 10 nov 09.31 - Storia (scadenza bando).mp4",
+     "file_id": "1bzciNwiI_yc0V_4Jks3u0LCwoG-A5M7U"
+    },
+    {
+     "date": "2026-11-10",
+     "time": "12:23",
+     "kind": "grant",
+     "story_kind": "",
+     "name": "05 Mar 10 nov 12.23 - Funding calls (carosello).pdf",
+     "file_id": "1M6-bZNcFoK6c58p37erjScOju31E4-kn"
+    },
+    {
+     "date": "2026-11-10",
+     "time": "18:47",
+     "kind": "research",
+     "story_kind": "",
+     "name": "06 Mar 10 nov 18.47 - Ricerca (carosello).pdf",
+     "file_id": "1DyCteRoS6Nm-OKu59bb8j36HaG9OV3-M"
+    },
+    {
+     "date": "2026-11-11",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "countdown",
+     "name": "07 Mer 11 nov 09.31 - Storia (scadenza bando).mp4",
+     "file_id": "1G7OafLun7O1f3o0J6UsGfE02s9WiJ-_9"
+    },
+    {
+     "date": "2026-11-11",
+     "time": "12:23",
+     "kind": "reel",
+     "story_kind": "",
+     "name": "08 Mer 11 nov 12.23 - Reel.mp4",
+     "file_id": "1cAwKNXL58_UuJgyiPZK5tsHWc8yckN71"
+    },
+    {
+     "date": "2026-11-11",
+     "time": "18:47",
+     "kind": "research",
+     "story_kind": "",
+     "name": "09 Mer 11 nov 18.47 - Ricerca (carosello).pdf",
+     "file_id": "1CoTmRSmVuQR6fzr7BJCj9eF2EukJ-kPa"
+    },
+    {
+     "date": "2026-11-12",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "countdown",
+     "name": "10 Gio 12 nov 09.31 - Storia (scadenza bando).mp4",
+     "file_id": "1GhFRAnWXNIwR5gT9jyA-GnKHvIb5MXHd"
+    },
+    {
+     "date": "2026-11-12",
+     "time": "12:23",
+     "kind": "grant",
+     "story_kind": "",
+     "name": "11 Gio 12 nov 12.23 - Funding calls (carosello).pdf",
+     "file_id": "1-N9dJcoWUvP9Ool65LtEVyqbWdHTL4yv"
+    },
+    {
+     "date": "2026-11-12",
+     "time": "18:47",
+     "kind": "research",
+     "story_kind": "",
+     "name": "12 Gio 12 nov 18.47 - Ricerca (carosello).pdf",
+     "file_id": "1KzihcSvwieTMeS7kNwbArllO56LKmCDE"
+    },
+    {
+     "date": "2026-11-13",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "countdown",
+     "name": "13 Ven 13 nov 09.31 - Storia (scadenza bando).mp4",
+     "file_id": "1GxKAoxW0RsQ5jQqAknARBQLc4fX1eXCl"
+    },
+    {
+     "date": "2026-11-13",
+     "time": "12:23",
+     "kind": "grant",
+     "story_kind": "",
+     "name": "14 Ven 13 nov 12.23 - Funding calls (carosello).pdf",
+     "file_id": "1QjTYyyqc_KWrVQLh-OInd4-od265Lc11"
+    },
+    {
+     "date": "2026-11-13",
+     "time": "15:23",
+     "kind": "reel",
+     "story_kind": "",
+     "name": "15 Ven 13 nov 15.23 - Reel.mp4",
+     "file_id": "15NkQ_OKtaluglTArq6yIzYAFVtYZUieR"
+    },
+    {
+     "date": "2026-11-14",
+     "time": "16:47",
+     "kind": "research",
+     "story_kind": "",
+     "name": "16 Sab 14 nov 16.47 - Latest Science (carosello).pdf",
+     "file_id": "1ioze3nXrp67q-65u9a4LjJLoTJjjwK28"
+    },
+    {
+     "date": "2026-11-15",
+     "time": "17:47",
+     "kind": "reel",
+     "story_kind": "",
+     "name": "17 Dom 15 nov 17.47 - Reel.mp4",
+     "file_id": "1PNB4fy1UPRCBV1S-Xgm3OVtb10W8bOwP"
+    }
+   ]
+  },
+  {
+   "folder": {
+    "id": "10l9F0bct2rhuTb74txkjfEDnOen8I4IX",
+    "name": "Anteprime settimana 2 · 16–22 novembre"
+   },
+   "slots": [
+    {
+     "date": "2026-11-16",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "weekly",
+     "name": "01 Lun 16 nov 09.31 - Storia (numeri della settimana).mp4",
+     "file_id": "1ojiSW9fcxRy6uhRZaKoTl8Bttdb8gBh5"
+    },
+    {
+     "date": "2026-11-16",
+     "time": "12:23",
+     "kind": "grant",
+     "story_kind": "",
+     "name": "02 Lun 16 nov 12.23 - Funding calls (carosello).pdf",
+     "file_id": "1ZB9l8YgHug-LOCS_K_Org7m-GabDwMo9"
+    },
+    {
+     "date": "2026-11-16",
+     "time": "18:23",
+     "kind": "positions",
+     "story_kind": "",
+     "name": "03 Lun 16 nov 18.23 - Academic positions + Career Path (carosello).pdf",
+     "file_id": "1bsJii-LsswcoerfBeUF2xP4W8BfmuL_t"
+    },
+    {
+     "date": "2026-11-17",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "countdown",
+     "name": "04 Mar 17 nov 09.31 - Storia (scadenza bando).mp4",
+     "file_id": "1IfHOm4EkjpGoVh_URBOhK5JBO527xjC_"
+    },
+    {
+     "date": "2026-11-17",
+     "time": "12:23",
+     "kind": "grant",
+     "story_kind": "",
+     "name": "05 Mar 17 nov 12.23 - Funding calls (carosello).pdf",
+     "file_id": "1erJz2Uf6tug1QZYlneck2dv5Alu5VU-b"
+    },
+    {
+     "date": "2026-11-17",
+     "time": "18:47",
+     "kind": "research",
+     "story_kind": "",
+     "name": "06 Mar 17 nov 18.47 - Ricerca (carosello).pdf",
+     "file_id": "1wnR7inxGWzXqR7PMEyvceyox8Tp6MEuX"
+    },
+    {
+     "date": "2026-11-18",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "countdown",
+     "name": "07 Mer 18 nov 09.31 - Storia (scadenza bando).mp4",
+     "file_id": "1OtmNWswXaaq_ZvCaPts_-uiavJyd-daR"
+    },
+    {
+     "date": "2026-11-18",
+     "time": "12:23",
+     "kind": "reel",
+     "story_kind": "",
+     "name": "08 Mer 18 nov 12.23 - Reel.mp4",
+     "file_id": "13wD31XiJhd6iue8qGkI3NKQXfqm_1U44"
+    },
+    {
+     "date": "2026-11-18",
+     "time": "18:47",
+     "kind": "research",
+     "story_kind": "",
+     "name": "09 Mer 18 nov 18.47 - Ricerca (carosello).pdf",
+     "file_id": "1Itv0em_idEe0ro0BxqlpHgRW8KrysKnt"
+    },
+    {
+     "date": "2026-11-19",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "countdown",
+     "name": "10 Gio 19 nov 09.31 - Storia (scadenza bando).mp4",
+     "file_id": "14phGheD175qfh_qacbU5kZgI_0_0eMAs"
+    },
+    {
+     "date": "2026-11-19",
+     "time": "12:23",
+     "kind": "grant",
+     "story_kind": "",
+     "name": "11 Gio 19 nov 12.23 - Funding calls (carosello).pdf",
+     "file_id": "1LONT5au0MrBFiIHbO-crMSEY5ZkE6r93"
+    },
+    {
+     "date": "2026-11-19",
+     "time": "18:47",
+     "kind": "research",
+     "story_kind": "",
+     "name": "12 Gio 19 nov 18.47 - Ricerca (carosello).pdf",
+     "file_id": "16JtbYQ8iiqFDfcd6UQ9zBitBLKf7-mQw"
+    },
+    {
+     "date": "2026-11-20",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "countdown",
+     "name": "13 Ven 20 nov 09.31 - Storia (scadenza bando).mp4",
+     "file_id": "19hFaRGvI0HdvvAFc8rsAJ_NcK2URNGwz"
+    },
+    {
+     "date": "2026-11-20",
+     "time": "12:23",
+     "kind": "grant",
+     "story_kind": "",
+     "name": "14 Ven 20 nov 12.23 - Funding calls (carosello).pdf",
+     "file_id": "1ZD2it9_vXPAU8dOTb5Du0xAY44emTmma"
+    },
+    {
+     "date": "2026-11-20",
+     "time": "15:23",
+     "kind": "reel",
+     "story_kind": "",
+     "name": "15 Ven 20 nov 15.23 - Reel.mp4",
+     "file_id": "1DNppsv__iH1CXoz9-Idy_fB0qddvgKML"
+    },
+    {
+     "date": "2026-11-21",
+     "time": "16:47",
+     "kind": "research",
+     "story_kind": "",
+     "name": "16 Sab 21 nov 16.47 - Latest Science (carosello).pdf",
+     "file_id": "1JwnGr-moeOcOxgVWysRdDKhePRU7dpns"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "17:47",
+     "kind": "reel",
+     "story_kind": "",
+     "name": "17 Dom 22 nov 17.47 - Reel.mp4",
+     "file_id": "14wQ4NOMTDak9K7zYqaG5QANciSURjPyJ"
+    }
+   ]
+  },
+  {
+   "folder": {
+    "id": "1WkOmXvmQlIoZMNvP4xV8I5o8l10JgPwI",
+    "name": "Anteprime settimana 3 · 23–29 novembre"
+   },
+   "slots": [
+    {
+     "date": "2026-11-23",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "weekly",
+     "name": "01 Lun 23 nov 09.31 - Storia (numeri della settimana).mp4",
+     "file_id": "1y_aAKaeo-lVz0KLVF6yMB4v-t0yZOutL"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "12:23",
+     "kind": "grant",
+     "story_kind": "",
+     "name": "02 Lun 23 nov 12.23 - Funding calls (carosello).pdf",
+     "file_id": "1_hTPNbCmDWO6j8GjPw0S8SsWOUc0cCxR"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "18:23",
+     "kind": "positions",
+     "story_kind": "",
+     "name": "03 Lun 23 nov 18.23 - Academic positions + Career Path (carosello).pdf",
+     "file_id": "1dLl2X-wL3Y0-8fEm2gNZdYhhSOSzuaYC"
+    },
+    {
+     "date": "2026-11-24",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "countdown",
+     "name": "04 Mar 24 nov 09.31 - Storia (scadenza bando).mp4",
+     "file_id": "1egg2Llp0aOGsLmMdHGvu5q2GzMmXF7Ie"
+    },
+    {
+     "date": "2026-11-24",
+     "time": "12:23",
+     "kind": "grant",
+     "story_kind": "",
+     "name": "05 Mar 24 nov 12.23 - Funding calls (carosello).pdf",
+     "file_id": "1Vc6mdrLrF9aarYSzvVWCOqlj-b8xmsI2"
+    },
+    {
+     "date": "2026-11-24",
+     "time": "18:47",
+     "kind": "research",
+     "story_kind": "",
+     "name": "06 Mar 24 nov 18.47 - Ricerca (carosello).pdf",
+     "file_id": "1nzzS-2_2DBxXa5gI4lQ8zVLAnFyOnQUW"
+    },
+    {
+     "date": "2026-11-25",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "countdown",
+     "name": "07 Mer 25 nov 09.31 - Storia (scadenza bando).mp4",
+     "file_id": "1Umnedij-c_ajlN9M55ADCyXe-GL8Ru4w"
+    },
+    {
+     "date": "2026-11-25",
+     "time": "12:23",
+     "kind": "reel",
+     "story_kind": "",
+     "name": "08 Mer 25 nov 12.23 - Reel.mp4",
+     "file_id": "1eVY0-5p2ViH-DqfECVPkoBjR12yha1Na"
+    },
+    {
+     "date": "2026-11-25",
+     "time": "18:47",
+     "kind": "research",
+     "story_kind": "",
+     "name": "09 Mer 25 nov 18.47 - Ricerca (carosello).pdf",
+     "file_id": "1GjsfZ4mQwbg9qECiMrVb7zpHeQj6qlP7"
+    },
+    {
+     "date": "2026-11-26",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "countdown",
+     "name": "10 Gio 26 nov 09.31 - Storia (scadenza bando).mp4",
+     "file_id": "1bbhNkWcFm_VSXmvkLIbpNEe1BmhfrfGW"
+    },
+    {
+     "date": "2026-11-26",
+     "time": "12:23",
+     "kind": "grant",
+     "story_kind": "",
+     "name": "11 Gio 26 nov 12.23 - Funding calls (carosello).pdf",
+     "file_id": "12MS4u7DZBqOMNxbdrhkypFCVK16w6WV-"
+    },
+    {
+     "date": "2026-11-26",
+     "time": "18:47",
+     "kind": "research",
+     "story_kind": "",
+     "name": "12 Gio 26 nov 18.47 - Ricerca (carosello).pdf",
+     "file_id": "14KlfWy3kDMM53Mifz9TKy-RSDrekzu49"
+    },
+    {
+     "date": "2026-11-27",
+     "time": "09:31",
+     "kind": "story",
+     "story_kind": "countdown",
+     "name": "13 Ven 27 nov 09.31 - Storia (scadenza bando).mp4",
+     "file_id": "1CGhpM8ZieVtI9ZyO0DieTBKxWnBqp2Al"
+    },
+    {
+     "date": "2026-11-27",
+     "time": "12:23",
+     "kind": "grant",
+     "story_kind": "",
+     "name": "14 Ven 27 nov 12.23 - Funding calls (carosello).pdf",
+     "file_id": "1uJW6YiGwpH1-4Pk2p-pcLFgSpfAZSg95"
+    },
+    {
+     "date": "2026-11-27",
+     "time": "15:23",
+     "kind": "reel",
+     "story_kind": "",
+     "name": "15 Ven 27 nov 15.23 - Reel.mp4",
+     "file_id": "1_jWkq1lwqIismknnVZL_-kDc1l8Mk3E3"
+    },
+    {
+     "date": "2026-11-28",
+     "time": "16:47",
+     "kind": "research",
+     "story_kind": "",
+     "name": "16 Sab 28 nov 16.47 - Latest Science (carosello).pdf",
+     "file_id": "1Uj7YFV-pwmpDSEfVxrkETX9Jjc6i5gqu"
+    },
+    {
+     "date": "2026-11-29",
+     "time": "17:47",
+     "kind": "reel",
+     "story_kind": "",
+     "name": "17 Dom 29 nov 17.47 - Reel.mp4",
+     "file_id": "1JjARaw3__K0fha2F5r67eWuttk3fyRSM"
+    }
+   ]
+  }
+ ]
+}

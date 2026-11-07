@@ -1,7 +1,10 @@
 name: Settimana di prova su Drive
 
-# Prepara tutte le uscite di una settimana (week_preview.json) come se il bot pubblicasse e le salva su Drive
-# (Anteprime/Settimana …). Non pubblica e non salva niente nel repository.
+# Prepara tutte le uscite di una settimana come se il bot pubblicasse e le salva su Drive. Con preview_weeks.json
+# (piano a più settimane) fa la prima settimana non ancora pronta: un giro al giorno, dentro la quota giornaliera dei
+# modelli. Prima delle anteprime fa lo screening (bandi nuovi sui modelli leggeri, secondo parere dei forti sui
+# bandi e sulle posizioni ad alta priorità). Non pubblica niente: sul ramo salva solo preview_history.json e il
+# consumo dei modelli (usage/), mai su main.
 on:
   workflow_dispatch:
     inputs:
@@ -10,17 +13,24 @@ on:
         default: ""
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: week-preview
+  cancel-in-progress: false
 
 jobs:
   week:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@v7
-      - name: Registro quote Gemini di oggi (da main)
-        # le quote sono condivise con i giri di main: il bot deve sapere quali modelli sono già esauriti o consumati
-        run: git fetch --depth=1 origin main && git checkout origin/main -- usage || true
+      - name: Dati e quote di oggi da main
+        # quote condivise con i giri di main; bandi, posizioni, coda e pubblicazioni simulate più recenti sono su main
+        run: |
+          git fetch --depth=1 origin main
+          git checkout origin/main -- usage grants_verified.json positions.json posted_log.json queue.json stories_log.json || true
+          git reset -q
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
@@ -29,7 +39,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           which ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
-      - name: Prepara la settimana
+      - name: Screening e settimana di prova
         env:
           GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
@@ -46,6 +56,20 @@ jobs:
       - name: Riepilogo
         if: always()
         run: cat week_report.txt || true
+      - name: Salva avanzamento e consumo sul ramo (mai su main)
+        if: always() && github.ref_name != 'main'
+        run: |
+          git config user.name "research-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p /tmp/keep && cp preview_history.json /tmp/keep/ 2>/dev/null || true
+          cp usage/*-${GITHUB_RUN_ID}.json /tmp/keep/ 2>/dev/null || true
+          git stash -u -q || true
+          git pull -q --rebase origin "$GITHUB_REF_NAME"
+          mkdir -p usage
+          cp /tmp/keep/preview_history.json . 2>/dev/null || true
+          cp /tmp/keep/*-${GITHUB_RUN_ID}.json usage/ 2>/dev/null || true
+          git add preview_history.json usage/*-${GITHUB_RUN_ID}.json 2>/dev/null || true
+          git diff --cached --quiet || (git commit -q -m "Anteprime: avanzamento del piano e consumo modelli" && git push -q origin "HEAD:$GITHUB_REF_NAME")
       - name: Copia delle uscite e consumo modelli
         if: always()
         uses: actions/upload-artifact@v7
@@ -54,5 +78,6 @@ jobs:
           path: |
             preview_week/
             week_report.txt
+            preview_history.json
             usage/
           retention-days: 14

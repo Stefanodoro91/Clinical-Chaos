@@ -801,15 +801,16 @@ def lead_line(out, text):
     return (lead[:160], ev[:300]) if lead and ev else ("", "")
 
 
-def verify(g, cfg):
-    """Legge la call ufficiale e restituisce i dati verificati del bando (per la pagina e per i post)."""
+def verify(g, cfg, task="verifica bandi"):
+    """Legge la call ufficiale e restituisce i dati verificati del bando (per la pagina e per i post).
+    `task` decide i modelli: «verifica bandi» = screening sui leggeri, «conferma bandi» = secondo parere dei forti."""
     text, source, source_url = official_text(g)
     if len(text) < 400:
         raise RuntimeError(f"testo ufficiale troppo breve ({len(text)} caratteri) da {source}")
     data = "\n".join(f"{k}: {g.get(k)}" for k in FIELDS if g.get(k))
     out = content.gemini_json([{"text": VERIFY_PROMPT.format(source=source, official=text[:60000], data=data,
                                                               today=date.today().isoformat())}],
-                              VERIFY_SCHEMA, 0.1, task="verifica bandi")
+                              VERIFY_SCHEMA, 0.1, task=task)
     dl = find_deadlines(g, text, source, source_url, out)
     lead, lead_ev = lead_line(out, text)
     elig = check_eligibility(g, text, out)
@@ -896,6 +897,50 @@ def refresh_verified(grants, verified, cfg, limit=None, today=None):
             print(f"::warning title=Bando non verificato::{g['id']} - {str(e)[:250]}")
         done += 1
         time.sleep(7)   # resta sotto il limite di richieste al minuto di Gemini
+    return done
+
+
+CONFIRM_FIELDS = ("is_open_call", "italy", "due_dates", "deadline_type", "eligible_countries", "loi_required")
+
+
+def confirmed(v):
+    return bool((v or {}).get("confirmed", {}).get("model"))
+
+
+def confirm_candidates(grants, verified, posted, cfg, limit=None, today=None):
+    """Secondo parere di un modello forte sui bandi ad ALTA PRIORITÀ: quelli che lo screening (modelli leggeri)
+    rende pubblicabili, nell'ordine in cui andrebbero nei post. Il forte rilegge la call ufficiale con lo stesso
+    prompt; se su un campo che conta (aperto, Italia, date, Paesi) non è d'accordo, vale il suo risultato e il
+    disaccordo resta scritto in «confirmed.changed». Senza quota dei forti (oltre la riserva per i post) ci si
+    ferma: i bandi restano col solo screening e si confermano al giro dopo."""
+    import time
+    limit = int(limit if limit is not None else cfg.get("grant_confirm_per_run", 6))
+    done = 0
+    for g in candidates(grants, posted, verified, cfg, today):
+        if done >= limit:
+            break
+        lite = verified.get(g["id"], {})
+        if confirmed(lite):
+            continue
+        try:
+            strong = verify(g, cfg, task="conferma bandi")
+        except Exception as e:
+            if "non disponibile" in str(e):
+                print(f"::notice title=Conferma bandi ferma::nessun modello forte libero oltre la riserva per i post ({done} confermati)")
+                break
+            print(f"::warning title=Conferma non riuscita::{g['id']} - {str(e)[:200]}")
+            done += 1
+            continue
+        changed = [k for k in CONFIRM_FIELDS if (lite.get(k) or "") != (strong.get(k) or "")]
+        strong["confirmed"] = {"model": strong.get("model", ""), "date": date.today().isoformat(), "changed": changed,
+                               "screening_model": lite.get("model", "")}
+        if lite.get("dl_tries"):
+            strong["dl_tries"] = lite["dl_tries"]
+        verified[g["id"]] = strong
+        print(f"::notice title=Bando confermato::{g['id']} | {strong['confirmed']['model']} | "
+              + (f"corretti: {', '.join(changed)}" if changed else "d'accordo con lo screening"))
+        done += 1
+        time.sleep(3)
     return done
 
 

@@ -630,8 +630,15 @@ OR_STRONG = os.environ.get("OPENROUTER_STRONG") or "nvidia/nemotron-3-ultra-550b
 GEMMA = os.environ.get("GEMMA_MODEL") or "gemma-4-31b-it"
 GROQ_STRONG = "openai/gpt-oss-120b"
 
-STRONG = ["main", "gemini-3.6-flash", "gemini-3.5-flash", "gemini-3-flash-preview"]   # ordine di qualità a parità di quota
-LITE = ["lite", "gemini-3.1-flash-lite"]
+# Pool del 7/11/2026 (pagina «Rate limit» di AI Studio del progetto): ogni modello ha una quota PROPRIA, quindi più
+# modelli forti = più scrittura al giorno. Forti, 20 richieste al giorno ciascuno: 3.8 Flash, 3.6 Flash, 3 Flash,
+# 2.5 Flash (3.5 Flash in fondo: rispondeva il 6/11 ma non compare nella pagina delle quote). Leggeri, 500 al giorno
+# ciascuno: 3.5 Flash-Lite e 3.1 Flash-Lite. Gli alias «-latest» puntano a 3.8 Flash e 3.5 Flash-Lite: si usano i
+# nomi espliciti, così il registro delle quote non conta due volte lo stesso modello sotto due nomi.
+STRONG = ["main", "gemini-3.8-flash", "gemini-3.6-flash", "gemini-3-flash-preview", "gemini-2.5-flash",
+          "gemini-3.5-flash"]                # ordine di qualità a parità di quota
+LITE = ["lite", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]
+ALIASES = {"gemini-flash-latest": "gemini-3.8-flash", "gemini-flash-lite-latest": "gemini-3.5-flash-lite"}
 MODEL_RPD = {"default": 20, "lite": 500}   # richieste gratuite al giorno per modello (config «gemini_rpd»); i leggeri
                                            # hanno una quota molto più ampia: per loro conta il 429 «per day»
 STRONG_RESERVE = 10                  # richieste per modello forte tenute per la scrittura (config «gemini_strong_reserve»)
@@ -639,6 +646,13 @@ MIN_GAP = {"strong": 13.0, "lite": 4.5}   # secondi minimi tra due richieste all
 MAX_WAIT = 70                        # attesa massima di un modello forte in pausa per la scrittura
 
 WRITING = {"nuovi post da Drive", "post bando", "arbitro", "verifica fatti", "takeaway clinico", "revisione slide"}
+# modello forte preferito per alcune attività (se ha quota; altrimenti gli altri forti): 2.5 Flash ha una quota
+# separata dai 3.x, così bandi e controllo dei fatti non tolgono richieste ai post scientifici
+PREFERRED = {"post bando": ["gemini-2.5-flash"], "verifica fatti": ["gemini-2.5-flash"]}
+# screening (bandi, posizioni): SOLO modelli leggeri e gratuiti esterni, mai i forti. Il secondo parere dei forti
+# arriva con le attività «conferma …», solo per le voci ad alta priorità (quelle che possono finire in un post).
+SCREENING = {"verifica bandi", "verifica posizioni"}
+CONFIRM = {"conferma bandi", "conferma posizioni"}
 FLASH_ALT = [f"gemini:{m}" for m in STRONG[1:]]      # compatibilità con strumenti che li leggono
 LITE_ALT = [f"gemini:{m}" for m in LITE[1:]]
 VERIFY_CHAIN = ["gemini:lite"] + LITE_ALT + [f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}"]
@@ -674,16 +688,55 @@ _COOL = {}            # modello → istante (epoch) in cui torna disponibile dop
 _LAST_CALL = {}       # modello → istante dell'ultima richiesta (intervallo minimo tra richieste)
 
 
+_AVAILABLE = None     # modelli che la chiave vede davvero (elenco di Google, gratuito): None = elenco non letto
+
+
+def available_models():
+    """Nomi dei modelli Gemini con generateContent visibili alla chiave (una sola lettura per giro, non consuma
+    quota). Se l'elenco non si legge, insieme vuoto: si provano tutti e un 404 esclude quello mancante."""
+    global _AVAILABLE
+    if _AVAILABLE is None:
+        _AVAILABLE = set()
+        key = os.environ.get("GEMINI_API_KEY")
+        if key:
+            try:
+                url = "https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000"
+                r = requests.get(url, headers={"x-goog-api-key": key}, timeout=30)
+                if r.ok:
+                    _AVAILABLE = {m["name"].split("/")[-1] for m in r.json().get("models", [])
+                                  if "generateContent" in m.get("supportedGenerationMethods", [])}
+            except requests.RequestException:
+                pass
+    return _AVAILABLE
+
+
 def _resolve(m):
-    return {"main": GEMINI_MODEL, "lite": GEMINI_FALLBACK}.get(m, m)
+    m = {"main": GEMINI_MODEL, "lite": GEMINI_FALLBACK}.get(m, m)
+    return ALIASES.get(m, m)
+
+
+def _usable(models):
+    """Toglie i modelli che l'elenco di Google non ha (se l'elenco è stato letto) e i doppioni."""
+    avail = available_models()
+    models = list(dict.fromkeys(models))
+    if not avail:
+        return models
+    back = {v: k for k, v in ALIASES.items()}
+    out = []
+    for m in models:
+        if m in avail:
+            out.append(m)
+        elif back.get(m) in avail:                 # c'è solo l'alias «-latest»: si usa quello
+            out.append(back[m])
+    return list(dict.fromkeys(out))
 
 
 def strong_models():
-    return list(dict.fromkeys(_resolve(m) for m in STRONG))
+    return _usable(_resolve(m) for m in STRONG)
 
 
 def lite_models():
-    return [m for m in dict.fromkeys(_resolve(m) for m in LITE) if m not in strong_models()]
+    return [m for m in _usable(_resolve(m) for m in LITE) if m not in strong_models()]
 
 
 def is_strong(model):
@@ -696,13 +749,24 @@ def _strong_by_quota():
     return sorted([m for m in ms if model_left(m) > 0], key=lambda m: (-model_left(m), ms.index(m)))
 
 
+def _strong_for(base):
+    """Forti con quota per l'attività: prima i preferiti (PREFERRED), poi gli altri per quota residua."""
+    ms = _strong_by_quota()
+    first = [m for m in PREFERRED.get(base, []) if m in ms]
+    return first + [m for m in ms if m not in first]
+
+
 def route_for(task):
     base = task.split(" [", 1)[0]                  # «verifica bandi [A]» del confronto A/B → «verifica bandi»
     chain = ROUTE_OVERRIDES.get(base)
     if chain is None and base in WRITING:
-        chain = ([f"gemini:{m}" for m in _strong_by_quota()]
+        chain = ([f"gemini:{m}" for m in _strong_for(base)]
                  + ([f"openrouter:{OR_STRONG}"] if base != "nuovi post da Drive" else [])
                  + [f"gemini:{m}" for m in lite_models()])
+    elif chain is None and base in CONFIRM:        # secondo parere: solo forti, mai un ripiego leggero
+        chain = [f"gemini:{m}" for m in _strong_for(base)]
+    elif chain is None and base in SCREENING:      # screening: solo leggeri e gratuiti esterni, mai i forti
+        chain = [f"gemini:{m}" for m in lite_models()] + [f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}"]
     elif chain is None:
         chain = (ROUTES.get(base) or DEFAULT_ROUTE) + [f"gemini:{m}" for m in _strong_by_quota()]
     out = []

@@ -14,7 +14,7 @@
   ],
   "max_new_files_per_run": 1,
   "max_posts_per_file": 5,
-  "gemini_daily_cap_checks": 60,
+  "gemini_daily_cap_checks": 300,
   "linkedin_doc_id": "1O4zZ3iH5Kv44oyKU9obSaezp7pVPiOfNmhr0IJP5Vdc",
   "low_queue_warning": 5,
   "ai_images": true,

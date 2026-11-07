@@ -1204,6 +1204,9 @@ def update_positions(posted=None, verify_limit=None):
     if verify_limit != 0:
         positions.refresh(archive, limit=int(verify_limit or CONFIG.get("positions_verify_per_run", 25)))
         save(ROOT / positions.ARCHIVE_FILE, archive)
+    if os.environ.get("CONFIRM_STRONG", "1") != "0":      # secondo parere dei forti sulle posizioni ad alta priorità
+        if positions.confirm_candidates(archive, posted, CONFIG):
+            save(ROOT / positions.ARCHIVE_FILE, archive)
     POSITIONS_PAGE.parent.mkdir(exist_ok=True)
     POSITIONS_PAGE.write_text(grants.add_decor(positions.build_page(archive, posted, CONFIG)), encoding="utf-8")
     write_job_pages(archive)
@@ -1388,6 +1391,9 @@ def update_grants(posted=None, verify_limit=None):
     if verify_limit != 0:
         grants.refresh_verified(grants_list, verified, CONFIG, limit=verify_limit)
         save(ROOT / grants.VERIFIED_FILE, verified)
+    if os.environ.get("CONFIRM_STRONG", "1") != "0":      # secondo parere dei forti sui bandi ad alta priorità
+        if grants.confirm_candidates(grants_list, verified, posted, CONFIG):
+            save(ROOT / grants.VERIFIED_FILE, verified)
     PAGE_FILE.parent.mkdir(exist_ok=True)
     PAGE_FILE.write_text(grants.add_decor(grants.build_page(grants_list, verified, posted, CONFIG)), encoding="utf-8")
     (ROOT / "docs" / "feed-calls.xml").write_text(grants.calls_feed(grants_list, verified, CONFIG), encoding="utf-8")
