@@ -448,6 +448,23 @@ def quality_gate(post, drive, queue):
     return None
 
 
+def plan_visuals(post):
+    """Immagini specifiche (visuals.py): le figure dell'articolo solo con licenza CC BY / BY-SA / CC0."""
+    import sources
+    import visuals
+    figures, credit = [], ""
+    meta = sources.META.get(post.get("id"))
+    data = sources.PDF.get(post.get("id"))
+    if meta and data and visuals.figure_license_ok(meta):
+        try:
+            figures = visuals.paper_figures(data)
+            credit = f"{polish._cite_of(meta.get('apa', ''))} · {meta.get('license_label', 'CC')}".strip(" ·")
+            print(f"  Figure dell'articolo: {len(figures)}")
+        except Exception as e:
+            print(f"  Figure non estratte ({str(e)[:120]})")
+    visuals.plan(post, figures, credit)
+
+
 def build_caption(post):
     tags, seen = [], set()
     kind = post.get("kind")
@@ -1110,6 +1127,8 @@ def main():
         apa = (meta or {}).get("apa", "")
     if kind == "research":
         polish.polish_post(post, apa)            # sentence case, reference coerenti con la slide «Based on», fonti
+    if kind == "research" and CONFIG.get("visual_plan"):
+        plan_visuals(post)                       # schema, figura dell'articolo, foto o niente: slide per slide
     slides = cards.render_carousel(post, CONFIG)
     caption = build_caption(post)
     print(f"\nPost scelto: {post['title']}  (fonte: {post['source']}, {post.get('source_hint', '')})")

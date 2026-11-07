@@ -1,6 +1,10 @@
 name: Sonda e confronto modelli AI per operazione
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "ai = confronto modelli; figures = prova estrazione figure dagli articoli clinici"
+        default: "ai"
 permissions:
   contents: read
 jobs:
@@ -23,10 +27,13 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DRY_RUN: "true"
-        run: python tools/ai_probe.py
+        run: |
+          if [ "${{ inputs.mode }}" = "figures" ]; then python tools/figure_probe.py; else python tools/ai_probe.py; fi
       - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: probe
-          path: probe.md
+          path: |
+            probe.md
+            probe_fig/
           if-no-files-found: ignore

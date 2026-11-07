@@ -667,7 +667,7 @@ WRITING = {"nuovi post da Drive", "post bando", "arbitro", "verifica fatti", "ta
 PREFERRED = {}       # es. {"post bando": ["gemini-3-flash-preview"]}: nessuna preferenza finché 2.5 Flash non è disponibile
 # screening (bandi, posizioni): SOLO modelli leggeri e gratuiti esterni, mai i forti. Il secondo parere dei forti
 # arriva con le attività «conferma …», solo per le voci ad alta priorità (quelle che possono finire in un post).
-SCREENING = {"verifica bandi", "verifica posizioni"}
+SCREENING = {"verifica bandi", "verifica posizioni", "schemi slide"}   # + piano delle immagini (visuals.py)
 CONFIRM = {"conferma bandi", "conferma posizioni"}
 FLASH_ALT = [f"gemini:{m}" for m in STRONG[1:]]      # compatibilità con strumenti che li leggono
 LITE_ALT = [f"gemini:{m}" for m in LITE[1:]]

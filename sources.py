@@ -9,7 +9,7 @@ import requests
 CROSSREF = "https://api.crossref.org/works/"
 UA = {"User-Agent": "ClinicalResearchChaosBot/1.0 (mailto:noreply@clinicalresearchchaos.com)"}
 RX_DOI = re.compile(r"\b(10\.\d{4,9}/[^\s\"<>]+)", re.I)
-META, THUMBS = {}, {}          # id del post → metadati / immagine della prima pagina (solo licenza CC)
+META, THUMBS, PDF = {}, {}, {}  # id del post → metadati / immagine della prima pagina (solo CC) / PDF (figure)
 
 
 def _pdf_bytes(drive, name):
@@ -89,6 +89,7 @@ def prepare(post, drive):
         data = _pdf_bytes(drive, post.get("source", ""))
         if not data:
             return None
+        PDF[post["id"]] = data                # per le figure dell'articolo (visuals.py)
         text, img = _first_page(data)
         m = RX_DOI.search(text)
         doi = m.group(1) if m else None

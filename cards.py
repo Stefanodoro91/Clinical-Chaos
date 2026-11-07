@@ -1088,7 +1088,15 @@ def illustrated(slide, number, cfg, index, total, picture):
     body_h = len(bl) * bs * 1.4
     pic_h = int(max(340, min(520, bottom - y - 70 - body_h)))
 
-    pic, mask = _rounded(picture, text_w, pic_h, 28)
+    if callable(picture):                      # schema o figura disegnati alla misura esatta (visuals.py): mai tagliati
+        drawn = picture(text_w, pic_h)
+        if drawn is None:
+            return content(slide, number, cfg, index, total)
+        mask = Image.new("L", (text_w, pic_h), 0)
+        ImageDraw.Draw(mask).rounded_rectangle((0, 0, text_w - 1, pic_h - 1), radius=28, fill=255)
+        pic = drawn.resize((text_w, pic_h)) if drawn.size != (text_w, pic_h) else drawn
+    else:
+        pic, mask = _rounded(picture, text_w, pic_h, 28)
     img.paste(pic, (MARGIN, int(y)), mask)
     d.rounded_rectangle((MARGIN, int(y), W - MARGIN, int(y) + pic_h), radius=28, outline=c["accent"], width=3)
 
@@ -1678,9 +1686,25 @@ def render_carousel(post, cfg):
     if facts_first:
         pages.append(facts_slide(post, cfg, len(pages) + 1, total))
         metas.append(fill_meta(post.get("facts_label", "key facts"), post.get("title", "")))
+    planned = bool(post.get("visuals_planned"))      # visuals.plan: schema, figura, foto o niente, slide per slide
     for i, slide in enumerate(post["slides"], start=1):
         index = len(pages) + 1
         picture = None
+        if planned:
+            import visuals
+            v = (slide.get("visual") or {}).get("type")
+            if v in ("diagram", "figure"):
+                picture = visuals.picture_for(post, slide, {**cfg["colors"], "accent": HL or cfg["colors"]["accent"]})
+            elif v == "photo" and use_images and used < max_images:
+                print(f"Cerco la foto per la slide {index}: {slide.get('photo_query', '')}")
+                picture = images.generate(slide, cfg)
+                used += 1
+            if picture is not None:
+                pages.append(illustrated(slide, i, cfg, index, total, picture))
+            else:
+                pages.append(content(slide, i, cfg, index, total))
+            metas.append(None)                    # niente foto di riempimento: l'immagine c'è solo se serve
+            continue
         if use_images and index % 2 == 0 and used < max_images:
             print(f"Genero l'immagine per la slide {index}: {slide['heading']}")
             picture = images.generate(slide, cfg)
