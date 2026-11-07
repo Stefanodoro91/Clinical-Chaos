@@ -33,11 +33,11 @@ for f in files[:14]:
         stem = "".join(ch if ch.isalnum() else "-" for ch in f["name"][:30])
         for fig in figs:
             im = fig["image"].copy()
-            im.thumbnail((1100, 1100))
-            im.save(out / f"{stem}-fig{fig['n']}.png")
+            im.thumbnail((800, 800))
+            im.save(out / f"{stem}-fig{fig['n']}.jpg", quality=80)
             lines.append(f"- Figure {fig['n']} ({fig['image'].width}×{fig['image'].height}): {fig['caption'][:160]}")
         if figs:
-            visuals.figure_panel(figs[0], "Author et al., year · CC BY 4.0", 880, 440).save(out / f"{stem}-panel.png")
+            visuals.figure_panel(figs[0], "Author et al., year · CC BY 4.0", 880, 440).save(out / f"{stem}-panel.jpg", quality=85)
         lines.append("")
     except Exception as e:
         lines.append(f"## {f['name']}\nerrore: {str(e)[:200]}\n")

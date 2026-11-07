@@ -6,7 +6,7 @@ on:
         description: "ai = confronto modelli; figures = prova estrazione figure dagli articoli clinici"
         default: "ai"
 permissions:
-  contents: read
+  contents: write
 jobs:
   bakeoff:
     runs-on: ubuntu-latest
@@ -29,6 +29,14 @@ jobs:
           DRY_RUN: "true"
         run: |
           if [ "${{ inputs.mode }}" = "figures" ]; then python tools/figure_probe.py; else python tools/ai_probe.py; fi
+      - name: Figure su un ramo di prova (solo modalità figures)
+        if: always() && inputs.mode == 'figures'
+        run: |
+          git config user.name "research-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p /tmp/pf && cp -r probe_fig probe.md /tmp/pf/ 2>/dev/null || true
+          git checkout -q --orphan probe-figures && git rm -rq --cached . && git clean -fdq -e probe_fig
+          cp -r /tmp/pf/* . && git add probe_fig probe.md && git commit -qm "Prova figure" && git push -qf origin probe-figures
       - uses: actions/upload-artifact@v7
         if: always()
         with:
