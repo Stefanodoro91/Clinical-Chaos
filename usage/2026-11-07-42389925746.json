@@ -1,0 +1,14 @@
+{
+ "workflow": "Post giornaliero ricerca clinica",
+ "quota_day": "2026-11-07",
+ "consumo": {
+  "nuovi post da Drive|gemini-flash-latest": {
+   "richieste": 1,
+   "ingresso": 10778,
+   "uscita": 992,
+   "ragionamento": 2250,
+   "respinte": 0,
+   "versione": "gemini-3.8-flash"
+  }
+ }
+}

@@ -1636,5 +1636,60 @@
     "source_hint": "pages 4-5",
     "id": "516af966",
     "source": "Practical guidance to qualitative research.pdf"
+  },
+  {
+    "title": "Why Patient Co-Creation in Digital Health Fails",
+    "title_highlight": "Digital Health Fails",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "The permanent pilot trap",
+        "body": "Many Health 4.0 projects stall as test projects and never advance beyond pilot phases to full clinical implementation.",
+        "image_prompt": "A small digital health tablet trapped inside an open glass display bell jar on a researcher desk, surrounded by stopped arrows.",
+        "photo_query": "tablet screen clinical setting",
+        "highlight": "stall as test projects",
+        "source": "Laurisz et al., 2023"
+      },
+      {
+        "heading": "Insufficient stakeholder cooperation",
+        "body": "Inertia occurs when developers fail to partner actively with doctors, hospitals, and patient end users across early development phases.",
+        "image_prompt": "A group of software engineers talking around blueprints while two figures in patient gowns stand outside a glass doorway looking in.",
+        "photo_query": "software developers meeting office",
+        "highlight": "fail to partner actively",
+        "source": "Laurisz et al., 2023"
+      },
+      {
+        "heading": "Patients treated merely as data sources",
+        "body": "Developers often collect user metrics while offering only symbolic involvement, excluding patients from actual design decisions.",
+        "image_prompt": "A researcher observing biometric charts on a digital monitor while a patient sits silently beside an empty drawing notepad.",
+        "photo_query": "patient health consultation data",
+        "highlight": "offering only symbolic involvement",
+        "source": "Laurisz et al., 2023"
+      },
+      {
+        "heading": "Co-creation across all service phases",
+        "body": "Sustainable adoption requires active co-creation across planning, design, delivery, and maintenance, engaging providers and patients.",
+        "image_prompt": "A clinician, an engineer, and a patient sitting around a round table assembling interlocking wooden puzzle pieces together.",
+        "photo_query": "medical team discussion collaboration",
+        "highlight": "active co-creation across planning",
+        "source": "Laurisz et al., 2023"
+      }
+    ],
+    "takeaway": "To scale digital health tools, engage patients and clinicians as active co-designers, not merely as passive data sources.",
+    "takeaway_highlight": "active co-designers",
+    "references": [
+      "Laurisz, N., Ćwiklicki, M., Żabiński, M., Canestrino, R., & Magliocca, P. (2023). Co-Creation in Health 4.0 as a New Solution for a New Era. Healthcare, 11(3), 363. https://doi.org/10.3390/healthcare11030363",
+      "Palumbo, R. (2017). The bright side and the dark side of patient empowerment. Co-creation and co-destruction of value in the healthcare environment. Springer International Publishing.",
+      "Lo Presti, L., Testa, M., Marino, V., & Singer, P. (2019). Engagement in Healthcare Systems: Adopting Digital Tools for a Sustainable Approach. Sustainability, 11(1), 220. https://doi.org/10.3390/su11010220"
+    ],
+    "caption": "Why do so many Health 4.0 and digital health innovations remain trapped in permanent pilot phases?\n\nMany digital health innovations never move from testing to clinical delivery.\nA major driver of this inertia is treating co-creation as a buzzword rather than an active partnership.\nWhen patients and clinicians are merely observed as data sources or study subjects during the design phase, tools fail to meet practical workflow needs and user expectations.\nStructured engagement across planning, design, delivery, and maintenance is essential to build durable healthcare solutions.\nHow do you engage patients and clinicians during the design of your digital health interventions?",
+    "hashtags": [
+      "#DigitalHealth",
+      "#eHealth",
+      "#HealthTech"
+    ],
+    "source_hint": "pages 1-6, sections 1 to 2.4 and Table 2",
+    "id": "3a4c072c",
+    "source": "Co-Creation in Health 4.0.pdf"
   }
 ]
