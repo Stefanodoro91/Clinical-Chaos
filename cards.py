@@ -1211,7 +1211,7 @@ def closing(post, cfg, total):
     c = cfg["colors"]
     navy = c["background"]
     img, d = light_canvas(cfg, total, total)
-    if post.get("takeaway") and post.get("kind") != "grant":     # rubrica Funding calls: niente key takeaway (5/11)
+    if post.get("takeaway") and post.get("kind") not in ("grant", "positions"):   # Funding calls (5/11) e Academic positions (8/11): niente key takeaway
         d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 34), fill=hlc(False, DARK_ACCENT.get(c["accent"], navy)))
         card_top = H - 660
         fnt, lines, size = fit(d, post["takeaway"], H_("ExtraBold"), 72, 44, W - 2 * MARGIN, card_top - 240 - 50, 1.2)

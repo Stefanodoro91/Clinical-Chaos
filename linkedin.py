@@ -15,7 +15,7 @@ def draft(post, caption, kind, link):
     refs = "\n".join(f"- {r}" for r in (post.get("references") or [])[:3])
     parts = [body,
              f"Key points:\n{points}" if points else "",
-             f"Takeaway: {post['takeaway']}" if post.get("takeaway") else "",
+             f"Takeaway: {post['takeaway']}" if post.get("takeaway") and post.get("kind") not in ("grant", "positions") else "",
              f"References:\n{refs}" if refs else "",
              f"Full details: {link}" if link and "link in bio" not in caption and link not in body else "",
              " ".join(tags[:5])]

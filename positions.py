@@ -1109,8 +1109,6 @@ def weekly_post(archive, posted, cfg, today=None):
                   else "Open academic position this week"),
         "title_highlight": "academic positions" if len(jobs) > 1 else "academic position",
         "category": "Academic positions", "week": week, "jobs": jobs, "slides": [],
-        "takeaway": "New PhD, post-doc and faculty positions every week.",
-        "takeaway_highlight": "every week",
         "closing_cta": ("Read the full advertisement before applying", "All positions: link in bio"),
         "caption": caption, "hashtags": ["#AcademicJobs", "#PhDPosition", "#Postdoc", "#FacultyJobs",
                                          "#RehabilitationResearch", "#Physiotherapy", "#Neurorehabilitation"],
