@@ -264,6 +264,7 @@ def _cosmin_html():
 
 
 TOOLS_V2_CSS = """<style>
+  h2.lib { font-size: 21px; font-weight: 800; margin: 36px 0 6px; color: var(--accent); border-bottom: 1px solid #2E2E2E; padding-bottom: 6px; }
   .tools .dt { display: none; margin-top: 4px; }
   .tools .sub .w { display: none; }
   @media (min-width: 700px) { .tools .dt { display: block; } .tools .tc, .tools .sub .n { display: none; } .tools .sub .w { display: inline; } }
@@ -353,7 +354,7 @@ def _tools_v2(cfg):
         rows = [r for r in dt.ROWS if r[0] == k]
         if not rows:
             continue
-        link = (f'<a class="toep" href="#evidence-pyramid" data-ep="{k}">Notes in the pyramid &darr;</a>' if pyr else "")
+        link = (f'<a class="toep" href="#evidence-pyramid" data-ep="{k}">Notes in the pyramid &uarr;</a>' if pyr else "")
         body = [f'<tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:{col}"><span class="ch" '
                 f'style="background:{col};color:{txt}">{k + 1}</span>{escape(name)}{link}</th></tr>']
         for _, design, p, r, a in rows:
@@ -378,7 +379,7 @@ def _tools_v2(cfg):
             '<p class="sub"><span class="w">Official tools to plan, report and appraise each study design, in the order of '
             'the evidence pyramid. Linked names open the official page or paper; the others are methods to plan for.</span>'
             '<span class="n">Official tools to draft the protocol, report it properly and appraise the evidence. '
-            'Each level of the pyramid below lists the tools for its designs.</span></p>'
+            'Each level of the pyramid above lists the tools for its designs.</span></p>'
             f'<div class="row tc">{_tool_cards()}</div>{table}{_cosmin_html()}{TOOLS_V2_CSS}{TOOLS_V2_JS}</section>')
 
 
@@ -432,9 +433,16 @@ def build_page(data, cfg, today=None):
         sections.append("\n".join(parts))
     c = grants.site_palette(cfg)
     cat_opts = "".join(f'<option value="{_slug(k)}">{escape(k)}</option>' for k in sorted(cats))
-    return PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
+    top = pyramid_block(cfg)                       # piramide accesa: in cima alla pagina, poi gli strumenti, poi i caroselli
+    if top:
+        top += "\n" + tools_block(cfg)
+    html = PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=grants.site_accent(cfg, "methods") if cfg.get("site_v4") else c["accent"], cat_opts=cat_opts,
-                       n=len(data), topics_word="topic" if len(data) == 1 else "topics", tools=tools_block(cfg) + pyramid_block(cfg), sections="\n".join(sections), updated=grants._fmt_date(today),
+                       n=len(data), topics_word="topic" if len(data) == 1 else "topics", tools="" if top else tools_block(cfg), sections="\n".join(sections), updated=grants._fmt_date(today),
                        lockup=grants.page_lockup(cfg, "methods"),
                        og=grants.og_tags(cfg, f"Methodology library · {cfg['brand_name']}",
                                          "Practical clinical research methodology: study design, statistics, reporting guidelines and critical appraisal, with references.", "methodology"))
+    if top:
+        i, j = html.index('  <p class="intro">'), html.index('  <form class="filters"')
+        html = (html[:i] + top + '\n  <h2 class="lib" id="carousels">Methodology carousels</h2>\n' + html[i:j] + html[j:])
+    return html
