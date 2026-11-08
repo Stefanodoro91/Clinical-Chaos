@@ -2395,6 +2395,16 @@ def page_cubes(html):
     return _re.sub(r"var COLORS = \[[^\]]*\];", "var COLORS = " + _json.dumps(cols) + ";", html)
 
 
+def fit_decor(html):
+    """Larghezza delle cascate laterali adattata alla colonna della pagina: i cubetti si fermano alla stessa distanza
+    dal contenuto su tutte le pagine (6 px, come Latest Science), qualunque sia la max-width di <main>."""
+    import re as _re
+    m = _re.search(r"main\s*\{[^}]*?max-width:\s*(\d+)px", html)
+    w = int(m.group(1)) - 20 if m else 740
+    return _re.sub(r"(\.crc-side \{ position: fixed; top: 0; bottom: 0; width: calc\(\(100vw - )\d+(px\) / 2\))",
+                   lambda x: f"{x.group(1)}{w}{x.group(2)}", html, count=1)
+
+
 def add_decor(html):
     """Aggiunge prima di </body> la decorazione animata ai lati (cascata di quadratini) e, se la pagina ha
     pulsanti «Share», il menu di condivisione."""
@@ -2404,6 +2414,7 @@ def add_decor(html):
             html = html.replace("</head>", EDITORIAL_SITE + "</head>", 1)
     if "crc-rain" not in html:
         html = html.replace("</body>", DECOR + "</body>", 1)
+    html = fit_decor(html)
     if 'class="share"' in html and "crc-share-menu" not in html:
         html = html.replace("</body>", SHARE + "</body>", 1)
     if 'class="share cal"' in html and "crc-cal-menu" not in html:
