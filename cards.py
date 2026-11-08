@@ -1570,8 +1570,8 @@ def fill_meta(text, extra=""):
 def fill_gaps(pages, metas, post, cfg):
     """Riempie con un'immagine pertinente lo spazio vuoto delle schede (config «fill_gaps» con design_v3).
     metas[i] = slide-tipo della pagina i, oppure None (copertina, chiusura, pagine già illustrate)."""
-    if not (cfg.get("design_v3") and cfg.get("fill_gaps", True)):
-        return pages
+    if not (cfg.get("design_v3") and cfg.get("fill_gaps", True)) or post.get("no_images"):
+        return pages                          # annunci e post senza immagini: niente foto di riempimento
     limit, used = int(cfg.get("max_fill_images", 3)), 0
     for i, meta in enumerate(metas):
         if meta is None or used >= limit:
