@@ -12,6 +12,13 @@ import html
 import re
 
 CLINICAL = "Latest Science"
+CLINICAL_TAGS = {"latest science", "clinical insight", "clinical insights"}   # categoria o rubrica del post del sabato
+
+
+def is_clinical(post):
+    """Post Latest Science: il bot lo marca con categoria «Clinical insight» (content.CLINICAL_CATEGORY) e rubrica
+    «Clinical Insights»; qui vale qualunque delle due etichette."""
+    return any((post.get(k) or "").strip().lower() in CLINICAL_TAGS for k in ("category", "rubric"))
 PROPER = {"Bayesian", "Gaussian", "Poisson", "Cox", "Kaplan", "Meier", "Fisher", "Student", "Wilcoxon", "Mann",
           "Whitney", "Pearson", "Spearman", "Likert", "Cohen", "Bonferroni", "Bland", "Altman", "Delphi", "Wald",
           "Markov", "Monte", "Carlo", "Hawthorne", "Berkson", "Simpson", "Neyman", "Rubin", "Bradford", "Hill",
@@ -131,7 +138,7 @@ def point(heading, body):
 def hashtags(post, fixed):
     """Hashtag del post: per Latest Science solo #ClinicalResearch fisso, mai #ResearchMethodology."""
     own = [t for t in post.get("hashtags") or [] if t]
-    if post.get("category") == CLINICAL:
+    if is_clinical(post):
         pool = ["#ClinicalResearch"] + [t for t in own if t.lower() != "#researchmethodology"]
     else:
         pool = list(fixed) + own
@@ -146,7 +153,7 @@ def hashtags(post, fixed):
 def page_anchor(post):
     """Pagina del sito che ospita il post."""
     pid = post.get("id", "")
-    return f"science#s-{pid}" if post.get("category") == CLINICAL else f"methodology#m-{pid}"
+    return f"science#s-{pid}" if is_clinical(post) else f"methodology#m-{pid}"
 
 
 def polish_post(post, apa=""):
