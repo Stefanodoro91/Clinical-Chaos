@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root { --bg: #0A0A0A; --card: #161616; --text: #FFFFFF; --muted: #8A8A8A; --soft: #CFCFCF; --accent: #88B0F8; --teal: #88B0F8; }
+  :root { --bg: #0A0A0A; --card: #15304A; --text: #FFFFFF; --muted: #8A8A8A; --soft: #CFCFCF; --accent: #88B0F8; --teal: #88B0F8; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.5; }
   .bar { height: 6px; background: var(--accent); }
@@ -46,7 +46,7 @@
   details summary { cursor: pointer; color: var(--accent); font-weight: 700; }
   details h4 { color: var(--text); font-size: 15px; margin: 12px 0 2px; }
   details p { margin: 0 0 6px; }
-  .refs { border-top: 1px solid #2E2E2E; margin-top: 12px; padding-top: 8px; font-size: 13px; }
+  .refs { border-top: 1px solid #2A4058; margin-top: 12px; padding-top: 8px; font-size: 13px; }
   @media (max-width: 520px) { .method { grid-template-columns: 1fr; } .slides { max-width: 420px; } }
   form.filters { background: var(--card); border-radius: 18px; padding: 16px; margin: 0 0 8px; display: grid; gap: 10px;
                  grid-template-columns: 2fr 1fr; }
@@ -79,26 +79,6 @@
   footer { color: var(--muted); font-size: 13px; margin-top: 36px; }
   footer a { color: var(--teal); }
 </style>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<style id="crc-editorial">
-  /* stile editoriale dei post (design_v3): titoli serif, testata da rivista, schede con filetto, etichette piene */
-  h1, h2, h3, .t, .big .name, .num {font-family: "Source Serif 4", Georgia, serif !important; letter-spacing: -.01em;}
-  h1 {font-weight: 800; font-size: clamp(30px, 6vw, 40px); line-height: 1.1;}
-  .bar {height: 10px !important;}
-  main::before {content: attr(data-brand); display: block;}
-  .badge {border-radius: 999px; letter-spacing: .08em;}
-  section > h2, .tools h2 {border-bottom: 1px solid #2E2E2E; padding-bottom: 6px;}
-  article.method, .job, .call, form.filters, .nomatch, .tools .tool {background: #0F0F0F !important; border: 1px solid #2E2E2E !important;
-      border-radius: 14px !important; box-shadow: none !important;}
-  article.method, .job, .call {border-left-color: var(--accent) !important;}
-    .take, .intro {font-family: "Source Serif 4", Georgia, serif; font-size: 17px !important; line-height: 1.5;}
-  details summary, .k {letter-spacing: .04em;}
-  .refs {border-top-color: #2E2E2E !important;}
-  footer {border-top: 1px solid #2E2E2E; padding-top: 14px;}
-  footer, .date {font-family: "Source Serif 4", Georgia, serif; font-style: italic;}
-  mark, .hl {background: var(--accent); color: #0A0A0A; padding: 0 .15em;}
-</style>
 </head>
 <body>
 <div class="bar"></div>
@@ -107,6 +87,614 @@
   <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><br>
   <span class="badge">DESIGN, REPORTING &amp; APPRAISAL</span>
   <h1>Clinical research methodology, made practical</h1>
+
+<!-- Evidence pyramid: section for methodology.html, placed under «Tools by study design».
+     Self-contained (scoped CSS under .ep, script in an IIFE, ids prefixed ep-). It uses the page tokens
+     (--bg, --card, --text, --muted, --soft, --accent) and adds Caveat + Kalam only for the blackboard notes. -->
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  .ep { --ep-line: #2E2E2E; --ep-panel: #0F0F0F; --ep-hover: #1A1A1A; --ep-board: #0B0C0B; --ep-board-line: #232523;
+        --ep-chalk: #F2F2EC; --ep-red: #FF6B6B; --ep-blue: #6FA8FF;
+        --ep-hand: Caveat, "Comic Sans MS", cursive; --ep-note: Kalam, "Comic Sans MS", cursive; margin-top: 8px; }
+  .ep > h2 { font-size: 21px; font-weight: 800; margin: 30px 0 4px; color: var(--accent);
+             border-bottom: 1px solid var(--ep-line); padding-bottom: 6px; }
+  .ep .sub { color: var(--soft); font-size: 14px; margin: 0 0 14px; }
+  .ep .panel { background: var(--ep-panel); border: 1px solid var(--ep-line); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+
+  /* pyramid + side bars */
+  .ep .pyr svg { display: block; margin: 0 auto; overflow: visible; max-width: 100%; }
+  .ep .band { cursor: pointer; outline: none; }
+  .ep .band path.fill { transition: filter .18s ease, opacity .2s ease; }
+  .ep .band:hover path.fill, .ep .band:focus-visible path.fill { filter: brightness(1.15) saturate(1.1); }
+  .ep .band .ring { fill: none; stroke: #FFFFFF; stroke-width: 0; transition: stroke-width .18s ease; }
+  .ep .band:focus-visible .ring, .ep .band[aria-pressed="true"] .ring { stroke-width: 2.5; }
+  .ep .pyr.focus .band:not(.in) path.fill { opacity: .22; }
+  .ep .pyr.focus .lbl:not(.in) { opacity: .25; }
+  .ep .lbl { font: 700 13px Inter, system-ui, sans-serif; letter-spacing: .01em; transition: opacity .2s ease; }
+  .ep .seg { cursor: default; outline: none; }
+  .ep .seg rect { fill-opacity: .85; stroke: #0A0A0A; stroke-width: 1.5; transition: fill-opacity .15s ease, stroke .15s ease; }
+  .ep .seg text { font: 800 10px Inter, system-ui, sans-serif; letter-spacing: .08em; fill: #FFFFFF; text-transform: uppercase;
+                  paint-order: stroke; stroke: rgba(10, 10, 10, .85); stroke-width: 3px; stroke-linejoin: round; }
+  .ep .seg:hover rect, .ep .seg:focus-visible rect { fill-opacity: 1; stroke: #FFFFFF; }
+  .ep .pill rect { fill: rgba(10, 10, 10, .66); stroke: rgba(255, 255, 255, .22); stroke-width: 1; }
+  .ep .pill text { fill: #FFFFFF; }
+  .ep .guide { stroke: var(--ep-line); stroke-width: 1; stroke-dasharray: 2 4; fill: none; }
+
+  /* legend */
+  .ep .legend { display: grid; gap: 0 18px; grid-template-columns: 1fr; }
+  @media (min-width: 600px) { .ep .legend { grid-template-columns: 1fr 1fr; } }
+  .ep .grp h3 { font: 800 12px Inter, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 12px 0 2px; }
+  .ep .lv { display: flex; align-items: center; gap: 10px; width: 100%; background: none; border: 0; color: var(--text);
+            padding: 5px 6px; border-radius: 8px; text-align: left; font: 500 15px Inter, system-ui, sans-serif; cursor: pointer;
+            transition: background .15s ease, transform .15s ease; }
+  .ep .lv:hover { background: var(--ep-hover); transform: translateX(2px); }
+  .ep .lv[aria-pressed="true"] { background: var(--ep-hover); }
+  .ep .lv:focus-visible, .ep .btn:focus-visible, .ep .seg:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ep .chip { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 12px;
+              flex: none; font-variant-numeric: tabular-nums; }
+
+  /* blackboard card: marker notes */
+  .ep .board { background: var(--ep-board); border: 1px solid var(--ep-board-line); border-radius: 14px; padding: 22px 20px 24px;
+               margin-bottom: 12px; color: var(--ep-chalk); position: relative; overflow: hidden; transition: opacity .18s ease;
+               background-image: radial-gradient(rgba(255,255,255,.035) 1px, transparent 1px); background-size: 22px 22px; }
+  .ep .board.swap { opacity: 0; }
+  .ep .fam { font: 700 22px/1 var(--ep-hand); margin: 0; opacity: .9; }
+  .ep .ttl { display: inline-block; position: relative; font: 700 clamp(32px, 6vw, 44px)/1.05 var(--ep-hand) !important;
+             margin: 6px 0 14px; text-wrap: balance; letter-spacing: 0; }
+  .ep .ttl svg, .ep .hh svg { position: absolute; left: -2px; bottom: -10px; width: calc(100% + 6px); height: 14px; overflow: visible; }
+  .ep .askq { font: 400 19px/1.45 var(--ep-note); color: var(--ep-chalk); margin: 0; max-width: 60ch; }
+  .ep .diag svg { width: 100%; max-width: 480px; display: block; margin: 14px auto 4px; overflow: visible; }
+  .ep .diag text { font-family: var(--ep-hand); }
+  .ep .cols { display: grid; gap: 6px 22px; grid-template-columns: 1fr; }
+  @media (min-width: 560px) { .ep .cols { grid-template-columns: 1fr 1fr; } }
+  .ep .hh { display: inline-block; position: relative; font: 700 26px/1 var(--ep-hand) !important; margin: 18px 0 12px; letter-spacing: 0; }
+  .ep .notes { list-style: none; margin: 0; padding: 0; }
+  .ep .notes li { font: 400 17px/1.4 var(--ep-note); color: var(--ep-chalk); margin: 6px 0; padding-left: 20px; position: relative; }
+  .ep .notes li::before { content: ""; position: absolute; left: 3px; top: .62em; width: 7px; height: 7px; border-radius: 50%;
+                          background: currentColor; opacity: .85; }
+  .ep .postit { margin: 20px 0 4px; padding: 12px 16px 14px; border: 2px dashed var(--ep-board-line); border-radius: 12px;
+                font: 400 17px/1.45 var(--ep-note); color: var(--ep-chalk); transform: rotate(-.4deg); }
+  .ep .postit b { font: 700 22px/1 var(--ep-hand); margin-right: 6px; }
+  .ep .vars dl { margin: 0; display: grid; gap: 2px; }
+  .ep .vrow { padding: 6px 0; }
+  .ep .vrow dt { font: 700 22px/1.1 var(--ep-hand); margin: 0; }
+  .ep .vrow dd { margin: 0; font: 400 16px/1.4 var(--ep-note); color: var(--soft); }
+  .ep .tls { margin-top: 6px; display: grid; gap: 4px; }
+  .ep .trow { padding: 8px 0 6px; border-top: 1px dashed var(--ep-board-line); }
+  .ep .trow:first-child { border-top: 0; }
+  .ep .trow dt { font: 700 22px/1.1 var(--ep-hand); margin: 0 0 4px; }
+  .ep .trow dd { margin: 2px 0; display: grid; grid-template-columns: 74px 1fr; gap: 8px; align-items: baseline; }
+  .ep .trow .tk { font: 800 10.5px Inter, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .ep .trow .ti { font: 500 14px/1.45 Inter, system-ui, sans-serif; color: var(--soft); }
+  .ep .trow .ti a { color: var(--ep-chalk); font-weight: 700; text-decoration: underline; text-decoration-style: dotted;
+                    text-underline-offset: 3px; text-decoration-color: currentColor; }
+  .ep .trow .ti a:hover, .ep .trow .ti a:focus-visible { text-decoration-style: solid; }
+  .ep .trow .ti .sep { color: var(--muted); padding: 0 4px; }
+  .ep .totable { display: none; margin: 10px 0 0; font: 600 13px Inter, system-ui, sans-serif; color: var(--soft); background: none;
+                 border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  @media (min-width: 700px) { .ep .totable.on { display: inline-block; } }
+  .ep .drawn { stroke-dasharray: 1; stroke-dashoffset: 1; animation: ep-draw .55s ease-out forwards; }
+  @keyframes ep-draw { to { stroke-dashoffset: 0; } }
+
+  /* finder */
+  .ep .finder h3 { font-size: 18px; font-weight: 800; margin: 0 0 4px; }
+  .ep .finder .q { font: 600 16px/1.4 Inter, system-ui, sans-serif; color: var(--soft); margin: 0; }
+  .ep .finder .note { color: var(--muted); font-size: 13px; margin: 12px 0 0; }
+  .ep .btn { background: transparent; color: var(--text); border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px;
+             font: 600 14px Inter, system-ui, sans-serif; cursor: pointer; margin: 12px 6px 0 0; transition: border-color .15s ease; }
+  .ep .btn:hover { border-color: var(--text); }
+  .ep .draft { color: var(--muted); font-size: 13px; font-style: italic; margin: 4px 0 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .ep .drawn { animation: none; stroke-dashoffset: 0; stroke-dasharray: none; }
+    .ep .board, .ep .lv, .ep .band path.fill, .ep .lbl { transition: none; }
+  }
+</style>
+
+<section class="ep" id="evidence-pyramid" aria-labelledby="ep-h">
+  <h2 id="ep-h">The evidence pyramid</h2>
+  <p class="sub">Study designs from the strongest to the weakest evidence for a clinical question. The wavy borders are a reminder that designs overlap: a well-run study on a lower level can beat a poor one above it. Tap a level for its notes and named variants.</p>
+  <div class="panel pyr" id="ep-pyr"></div>
+  <div class="board" id="ep-card" aria-live="polite"></div>
+  <div class="panel"><div class="legend" id="ep-legend"></div></div>
+  <div class="panel finder">
+    <h3>Which design is my study?</h3>
+    <div id="ep-cls" aria-live="polite"></div>
+    <p class="note">Reviews and meta-analyses are not classified this way: they pool studies that already exist.</p>
+  </div>
+</section>
+
+<script>
+(function () {
+/* c = band colour (classic pyramid palette), t = text on the band, ink = marker colour on the blackboard */
+const L = [
+ { name:'Meta-analysis and guidelines', short:'Meta-analysis', fam:'Synthesis', c:'#BFBFBF', t:'#111', ink:'#E6E6E6',
+   q:'What do all the available studies say, taken together?',
+   d:{ l:{t:'Included studies', i:['Study 1','Study 2','Study n']}, r:{t:'Pooled estimate', i:['Average effect']}, k:[[0,0],[1,0],[2,0]], a:'none' },
+   pro:['Combines many studies into one more precise estimate','Shows whether results agree across studies'],
+   con:['Only as good as the studies it includes','Guidelines also weigh values, costs and context'],
+   ex:'a meta-analysis of RCTs estimates the average effect of a drug across all the patients studied.',
+   designs:[['Pairwise meta-analysis','Combines head-to-head studies of the same comparison.'],
+     ['Network meta-analysis (NMA)','Compares several treatments that were never tested head-to-head.'],
+     ['Individual patient data (IPD) meta-analysis','Re-analyses raw data from each study, not just summaries.'],
+     ['Living systematic review','Updated on a rolling basis as new evidence appears.'],
+     ['Clinical practice guideline','Recommendations built from the evidence plus values and costs.']] },
+ { name:'Systematic review', short:'Systematic review', fam:'Synthesis', c:'#1F4E79', t:'#FFF', ink:'#7FB2E5',
+   q:'What do all studies on one question say, using a stated method?',
+   d:{ l:{t:'Search and selection', i:['Databases','Inclusion criteria','Bias assessment']}, r:{t:'Synthesis', i:['Summary answer']}, k:[[0,0],[1,0],[2,0]], a:'none' },
+   pro:['Reproducible search and selection (PRISMA guideline)','Pulls scattered evidence together'],
+   con:['Weak if the studies are low quality or too different','Takes time and methodological skill'],
+   ex:'a review searches several databases, applies inclusion criteria written in advance, and rates the risk of bias in each study.',
+   designs:[['Systematic review','Full search, explicit criteria, formal synthesis.'],
+     ['Scoping review','Maps the size and type of evidence on a broad question.'],
+     ['Rapid review','A systematic review done on a shortened timeline.'],
+     ['Umbrella review','A review of other systematic reviews.'],
+     ['Qualitative evidence synthesis','Pools qualitative studies rather than numeric results.']] },
+ { name:'Randomised controlled trial (RCT)', short:'RCT', fam:'Experimental', c:'#CFE0F3', t:'#111', ink:'#C9DDF2',
+   q:'Does an intervention cause an effect?',
+   d:{ l:{t:'Groups', i:['Intervention','Control']}, r:{t:'Outcome', i:['Outcome']}, k:[[0,0],[1,0]], a:'fwd', time:'t (prospective, random assignment)' },
+   pro:['Randomisation balances known and unknown factors between groups','Strongest single design for causal effects'],
+   con:['Costly and slow','Strict eligibility criteria; sometimes unethical or unfeasible'],
+   ex:'patients are randomly assigned to intensive or standard rehabilitation, and the outcome is measured at 6 months.',
+   designs:[['Parallel-group RCT','Each participant gets one arm for the whole trial.'],
+     ['Single-blind','Only the participant does not know their group.'],
+     ['Double-blind','Neither participant nor assessor knows the group.'],
+     ['Triple-blind','Participant, assessor and analyst are all blinded.'],
+     ['Double-dummy','Both arms take a placebo of the other arm’s treatment to preserve blinding.'],
+     ['Crossover RCT','Each participant receives both treatments, in sequence.'],
+     ['Cluster RCT','Whole groups (clinics, wards) are randomised, not individuals.'],
+     ['Stepped-wedge RCT','Clusters cross over to the intervention in a staggered sequence.'],
+     ['Factorial RCT','Tests two or more interventions at once, in combination.'],
+     ['Platform / adaptive trial','Arms can be added, dropped or re-weighted as data accrue.'],
+     ['Non-inferiority / equivalence trial','Tests that a new treatment is not meaningfully worse.'],
+     ['Pragmatic RCT','Tests the intervention in usual care, with broad eligibility and flexible delivery.'],
+     ['Zelen design (randomised consent)','Randomises before consent; only the intervention group is asked to consent to the new treatment.'],
+     ['cmRCT (trials within cohorts)','Randomises patients drawn from an existing observational cohort.']] },
+ { name:'Non-randomised controlled trial', short:'Non-randomised trial', fam:'Experimental', c:'#B3CFEE', t:'#111', ink:'#A6C6EA',
+   q:'Does the intervention work when randomisation is not possible?',
+   d:{ l:{t:'Groups', i:['Intervention','Control']}, r:{t:'Outcome', i:['Outcome']}, k:[[0,0],[1,0]], a:'fwd', time:'t (prospective, no random assignment)' },
+   pro:['Useful when randomising is not possible, unethical or too slow','Has a comparison group, unlike an uncontrolled trial'],
+   con:['Groups may differ in ways that distort the result','Historical controls may differ in care, era and measurement'],
+   ex:'patients chosen by their clinician receive a new device, and their outcomes are compared with a similar group treated as usual.',
+   designs:[['Non-randomised controlled trial','A control group is used, but assignment is not random.'],
+     ['Quasi-experimental study','Intervention assigned by circumstance, not chance.'],
+     ['Controlled before-after study','Before-after measurements in an intervention group and a concurrent control group.'],
+     ['Interrupted time series','Repeated measurements before and after a policy or change.'],
+     ['Matched controlled study','Each treated patient is compared with similar untreated patients (e.g. propensity score matching).'],
+     ['Historically controlled trial','New treatment compared with outcomes from past patients.'],
+     ['Geographically controlled study','The intervention runs in one area and a comparable area acts as control.']] },
+ { name:'Uncontrolled trial', short:'Uncontrolled trial', fam:'Experimental · no control group', c:'#97BDE8', t:'#111', ink:'#97BDE8',
+   q:'Does the outcome change after an intervention, with no comparison group?',
+   d:{ l:{t:'One group', i:['Baseline']}, r:{t:'Follow-up', i:['Outcome']}, k:[[0,0]], a:'fwd', time:'t (prospective, no control group)' },
+   pro:['Quick, cheap first test of feasibility and safety','Useful in rare diseases and early-phase research'],
+   con:['Change may come from natural recovery, placebo or regression to the mean','Cannot show that the intervention caused the change'],
+   ex:'twenty patients start a new gait-training protocol; walking speed is measured before and after 8 weeks.',
+   designs:[['Single-arm trial','All participants receive the intervention; no comparison group.'],
+     ['Pre-post (before-after) study','The same group measured before and after the intervention.'],
+     ['Phase I / II trial','Early trials on safety, dosing and first signs of effect, often single-arm.'],
+     ['Dose-escalation trial','Small cohorts receive rising doses until a safe dose is found (e.g. 3+3, CRM).'],
+     ['Feasibility / pilot study','Tests whether a full trial can be run; often without a control group.']] },
+ { name:'Cohort study', short:'Cohort studies', fam:'Observational', c:'#75A6DE', t:'#111', ink:'#8CC152',
+   q:'Is an exposure linked to an outcome over time?',
+   d:{ l:{t:'Exposure', i:['Present','Absent']}, r:{t:'Outcome', i:['A','B','C']}, k:[[0,0],[0,1],[1,2]], a:'fwd', time:'(prospective) t' },
+   pro:['Good for rare exposures','Can look at several outcomes; clear time sequence'],
+   con:['Slow and expensive for rare outcomes','Loss to follow-up can bias the results'],
+   ex:'people with and without diabetes are followed for 10 years to see who has a heart attack.',
+   designs:[['Prospective cohort','Exposure recorded now, outcomes followed forward in time.'],
+     ['Retrospective cohort','Exposure and outcome are both already in existing records.'],
+     ['Ambidirectional cohort','Combines retrospective and prospective follow-up.'],
+     ['Registry-based cohort','Built from an existing clinical or disease registry.']] },
+ { name:'Cross-sectional study', short:'Cross-sectional', fam:'Observational', c:'#4F8BCB', t:'#0A0A0A', ink:'#B9A5FF',
+   q:'How common is a condition, and what is it linked to, at one point in time?',
+   d:{ l:{t:'Exposure', i:['Present','Absent']}, r:{t:'Outcome', i:['Present','Absent']}, k:[[0,0],[0,1],[1,0],[1,1]], a:'snap', time:'one point in time' },
+   pro:['Measures prevalence quickly and cheaply','Can study several exposures and outcomes at once'],
+   con:['Exposure and outcome are measured together, so the time order is unclear','Cannot show cause; long-lasting cases are over-represented'],
+   ex:'a survey of 2,000 adults records physical activity and chronic back pain on the same day.',
+   designs:[['Prevalence survey','Estimates how common a condition is in a population.'],
+     ['Analytical cross-sectional study','Tests associations between exposures and outcomes measured together.'],
+     ['Repeated cross-sectional study','New samples drawn at several time points, not the same people.'],
+     ['Diagnostic accuracy study','A test and a reference standard applied to the same patients at the same time.']] },
+ { name:'Case-control study', short:'Case-control studies', fam:'Observational', c:'#2E75B6', t:'#FFF', ink:'#FFE45C',
+   q:'Which exposures are more common in people who have the outcome?',
+   d:{ l:{t:'Exposure', i:['A','B','C']}, r:{t:'Outcome', i:['Present','Absent']}, k:[[0,0],[1,0],[2,1]], a:'back', time:'t (retrospective)' },
+   pro:['Good for rare outcomes','Quick and cheap; can examine several exposures'],
+   con:['Recall bias and poor choice of controls can distort results','Evidence is weaker than a cohort'],
+   ex:'patients with a rare disease are compared with healthy controls on their past exposure to a drug.',
+   designs:[['Case-control study','Cases and controls compared on past exposure.'],
+     ['Matched case-control','Each case paired with controls of similar characteristics.'],
+     ['Nested case-control','Cases and controls sampled from within an existing cohort.'],
+     ['Case-cohort study','One random subcohort serves as the comparison for several outcomes.']] },
+ { name:'Case series', short:'Case series', fam:'Observational · descriptive', c:'#548235', t:'#FFF', ink:'#9BD36A',
+   q:'How do patients with a condition present and evolve?',
+   d:{ l:{t:'Patients', i:['Patient 1','Patient 2','Patient n']}, r:{t:'Observed', i:['Outcome']}, k:[[0,0],[1,0],[2,0]], a:'fwd', time:'t (descriptive)' },
+   pro:['Spots new signals and rare events','Rich clinical description'],
+   con:['No comparison group, so no effect can be estimated'],
+   ex:'twenty patients develop a new complication after a surgical procedure.',
+   designs:[['Case series','A group of patients with the same condition or exposure, no comparison group.'],
+     ['Registry case series','Drawn systematically from a clinical registry.']] },
+ { name:'Case report', short:'Case reports', fam:'Observational · descriptive', c:'#3DBE3D', t:'#0A0A0A', ink:'#5BE35B',
+   q:'What happened to this patient?',
+   d:{ l:{t:'Patient', i:['Patient']}, r:{t:'Event', i:['Event']}, k:[[0,0]], a:'fwd', time:'t (descriptive)' },
+   pro:['Flags new or unexpected events','Generates hypotheses for further study'],
+   con:['One case proves little on its own','Risk of anecdote'],
+   ex:'an unusual adverse reaction described in a single patient.',
+   designs:[['Case report','One patient’s presentation and course.'],
+     ['Case report with review','A single case placed in the context of the published literature.']] },
+ { name:'Editorials, opinions and ideas', short:'Editorials, opinions, ideas', fam:'Opinion · no study design', c:'#FFF2CC', t:'#111', ink:'#FFF2CC',
+   q:'What do experts or authors argue?',
+   d:{ l:{t:'Basis', i:['Observations','Data and cases']}, r:{t:'Opinion', i:['Opinion']}, k:[[0,0],[1,0]], a:'none' },
+   pro:['Proposes ideas and debates open questions','Guides research agendas'],
+   con:['Not a measurement','May reflect the authors’ interests or beliefs'],
+   ex:'an editorial proposes a new way to measure disability in trials.',
+   designs:[['Editorial','A journal’s own position on a topic.'],
+     ['Commentary / perspective','An author’s argued viewpoint on recent evidence.'],
+     ['Narrative review','A non-systematic summary shaped by the author’s selection.']] },
+ { name:'Animal research', short:'Animal research', fam:'Preclinical', c:'#F79646', t:'#111', ink:'#FFA552',
+   q:'Does a mechanism work in a living organism?',
+   d:{ l:{t:'Model', i:['Animal model']}, r:{t:'Effect', i:['Effect']}, k:[[0,0]], a:'fwd', time:'t (laboratory, in vivo)' },
+   pro:['Shows whole-body effects and toxicity before human testing'],
+   con:['Results do not always transfer to humans','Ethical questions; the 3Rs (replace, reduce, refine) apply'],
+   ex:'mice with a spinal cord injury are treated with a new molecule.',
+   designs:[['In vivo efficacy study','Tests whether a treatment works in a living animal model.'],
+     ['Toxicology study','Tests safety and dosing limits before human trials.'],
+     ['Preclinical pharmacokinetics','How a drug is absorbed, distributed and cleared in the model.']] },
+ { name:'In vitro research', short:'In vitro research', fam:'Preclinical', c:'#C00000', t:'#FFF', ink:'#FF6B6B',
+   q:'Does a mechanism work in cells or test tubes?',
+   d:{ l:{t:'Model', i:['Cells in culture']}, r:{t:'Effect', i:['Effect']}, k:[[0,0]], a:'fwd', time:'t (laboratory, in vitro)' },
+   pro:['Fast, cheap and controlled','Isolates a single mechanism'],
+   con:['Far from the complexity of a living body','Many findings do not hold in humans'],
+   ex:'muscle cells in the lab are exposed to a growth factor.',
+   designs:[['Cell-based assay','Cells in culture exposed to a substance or condition.'],
+     ['Biochemical / molecular assay','Isolated proteins, enzymes or molecular pathways.'],
+     ['Organoid / organ-on-chip study','Lab-grown tissue models standing in for an organ.']] }
+];
+L.forEach((x, k) => { x.n = k + 1; });
+/* tools by design for each level (design_tools.py, filled in by methodology.pyramid_block): {level: [[design, plan, report, appraise]]} */
+const TOOLS = {"0":[["Pairwise meta-analysis",[["PRISMA-P","https://www.prisma-statement.org/protocols"],["PROSPERO","https://www.crd.york.ac.uk/prospero/"],["Cochrane Handbook","https://training.cochrane.org/handbook"]],[["PRISMA 2020","https://www.prisma-statement.org/"]],[["AMSTAR 2","https://amstar.ca/"],["ROBIS","https://www.bristol.ac.uk/population-health-sciences/projects/robis/"],["GRADE (certainty)","https://www.gradeworkinggroup.org/"]]],["Network meta-analysis (NMA)",[["PRISMA-P","https://www.prisma-statement.org/protocols"],["PROSPERO","https://www.crd.york.ac.uk/prospero/"]],[["PRISMA-NMA","https://doi.org/10.7326/M14-2385"]],[["CINeMA","https://cinema.ispm.unibe.ch/"],["AMSTAR 2","https://amstar.ca/"]]],["Individual patient data (IPD) meta-analysis",[["PRISMA-P","https://www.prisma-statement.org/protocols"],["PROSPERO","https://www.crd.york.ac.uk/prospero/"]],[["PRISMA-IPD","https://doi.org/10.1001/jama.2015.3656"]],[["AMSTAR 2","https://amstar.ca/"],["ROBIS","https://www.bristol.ac.uk/population-health-sciences/projects/robis/"]]],["Clinical practice guideline",[["GRADE Evidence to Decision","https://www.gradeworkinggroup.org/"]],[["RIGHT","https://www.right-statement.org/"]],[["AGREE II","https://www.agreetrust.org/"]]]],"1":[["Systematic review",[["PRISMA-P","https://www.prisma-statement.org/protocols"],["PROSPERO","https://www.crd.york.ac.uk/prospero/"],["Cochrane Handbook","https://training.cochrane.org/handbook"]],[["PRISMA 2020","https://www.prisma-statement.org/"]],[["AMSTAR 2","https://amstar.ca/"],["ROBIS","https://www.bristol.ac.uk/population-health-sciences/projects/robis/"]]],["Scoping review",[["JBI scoping guidance","https://doi.org/10.11124/JBIES-20-00167"]],[["PRISMA-ScR","https://doi.org/10.7326/M18-0850"]],[["Not formally appraised",null]]]],"2":[["Parallel-group RCT",[["SPIRIT 2025","https://doi.org/10.1136/bmj-2024-081477"],["Sample size calculation",null],["Allocation concealment",null],["Randomisation software",null]],[["CONSORT 2025","https://doi.org/10.1136/bmj-2024-081123"]],[["RoB 2","https://www.riskofbias.info/welcome/rob-2-0-tool"],["GRADE (across trials)","https://www.gradeworkinggroup.org/"]]],["Crossover RCT",[["Washout planning",null],["Sequence randomisation",null],["Carry-over assessment",null]],[["CONSORT crossover","https://doi.org/10.1136/bmj.l4378"]],[["RoB 2 crossover","https://www.riskofbias.info/welcome/rob-2-0-tool/rob-2-for-crossover-trials"]]],["Cluster RCT",[["Intracluster correlation in the sample size",null]],[["CONSORT cluster","https://doi.org/10.1136/bmj.e5661"]],[["RoB 2 cluster","https://www.riskofbias.info/welcome/rob-2-0-tool/rob-2-for-cluster-randomized-trials"]]],["Stepped-wedge RCT",[["Staggered crossover schedule",null]],[["CONSORT stepped-wedge","https://doi.org/10.1136/bmj.k1614"]],[["RoB 2 cluster","https://www.riskofbias.info/welcome/rob-2-0-tool/rob-2-for-cluster-randomized-trials"]]],["Factorial RCT",[["Interaction in the sample size",null]],[["CONSORT factorial","https://pubmed.ncbi.nlm.nih.gov/38051324/"]],[["RoB 2","https://www.riskofbias.info/welcome/rob-2-0-tool"]]],["Platform / adaptive trial",[["Pre-specified adaptation rules",null],["Simulation of operating characteristics",null]],[["CONSORT ACE","https://doi.org/10.1136/bmj.m115"]],[["RoB 2","https://www.riskofbias.info/welcome/rob-2-0-tool"]]],["Non-inferiority / equivalence trial",[["Justified margin",null]],[["CONSORT non-inferiority","https://doi.org/10.1001/jama.2012.87802"]],[["RoB 2","https://www.riskofbias.info/welcome/rob-2-0-tool"]]],["Pragmatic RCT",[["PRECIS-2","https://www.precis-2.org/"],["Real-world eligibility",null],["Flexible delivery",null]],[["CONSORT pragmatic","https://doi.org/10.1136/bmj.a2390"]],[["RoB 2","https://www.riskofbias.info/welcome/rob-2-0-tool"],["PRECIS-2 (applicability)","https://doi.org/10.1136/bmj.h2147"]]],["Zelen design (randomised consent)",[["Zelen, 1979","https://doi.org/10.1056/NEJM197905313002203"],["Consent pathway mapping",null],["Ethics review of the consent model",null]],[["CONSORT 2025, consent pathway stated","https://doi.org/10.1136/bmj-2024-081123"]],[["RoB 2 (selection and consent bias)","https://www.riskofbias.info/welcome/rob-2-0-tool"]]],["cmRCT (trials within cohorts)",[["Relton et al., 2010","https://doi.org/10.1136/bmj.c1066"],["Cohort and outcome registry",null],["Embedded randomisation",null]],[["CONSORT-ROUTINE","https://doi.org/10.1136/bmj.n857"]],[["RoB 2 (selection bias)","https://www.riskofbias.info/welcome/rob-2-0-tool"]]]],"3":[["Quasi-experimental study",[["Interrupted time series design",null],["Causal diagrams (DAGs)",null],["Controlled before-after design",null]],[["TREND","https://doi.org/10.2105/AJPH.94.3.361"]],[["ROBINS-I","https://www.riskofbias.info/"]]],["Matched controlled study",[["Propensity score methods",null],["Covariate balance diagnostics",null]],[["STROBE","https://www.strobe-statement.org/"]],[["ROBINS-I","https://www.riskofbias.info/"]]],["Historically controlled trial",[["Historical data harmonisation",null],["Time-trend bias control",null]],[["STROBE","https://www.strobe-statement.org/"]],[["ROBINS-I","https://www.riskofbias.info/"]]],["Geographically controlled study",[["Cluster definition",null],["Spatial analysis",null]],[["STROBE","https://www.strobe-statement.org/"]],[["ROBINS-I (cluster bias)","https://www.riskofbias.info/"]]]],"4":[["Single-arm trial",[["Simon two-stage design","https://doi.org/10.1016/0197-2456(89)90015-9"],["Feasibility criteria",null]],[["Non-randomised pilot guideline","https://doi.org/10.1186/s40814-019-0499-1"],["CONSORT pilot (randomised pilots)","https://doi.org/10.1136/bmj.i5239"]],[["NIH pre-post tool","https://www.nhlbi.nih.gov/health-topics/study-quality-assessment-tools"],["ROBINS-I (if comparing)","https://www.riskofbias.info/"]]],["Pre-post (before-after) study",[["Repeated measures planning",null],["Secular trend control",null]],[["TREND (planned intervention)","https://doi.org/10.2105/AJPH.94.3.361"],["STROBE (routine data)","https://www.strobe-statement.org/"]],[["NIH pre-post tool","https://www.nhlbi.nih.gov/health-topics/study-quality-assessment-tools"]]],["Dose-escalation trial",[["3+3 design",null],["Continual reassessment method","https://doi.org/10.2307/2531628"],["SPIRIT-DEFINE","https://doi.org/10.1136/bmj-2023-076386"]],[["CONSORT-DEFINE","https://pubmed.ncbi.nlm.nih.gov/37863501/"]],[["No dedicated tool: check CONSORT-DEFINE items",null]]]],"5":[["Cohort study",[["Causal diagrams (DAGs)",null],["Target trial emulation","https://doi.org/10.1093/aje/kwv254"]],[["STROBE","https://www.strobe-statement.org/"]],[["Newcastle-Ottawa Scale","https://www.ohri.ca/programs/clinical_epidemiology/oxford.asp"],["ROBINS-E","https://www.riskofbias.info/welcome/robins-e-tool"]]],["Registry-based cohort",[["Data linkage and validation",null]],[["RECORD","https://doi.org/10.1371/journal.pmed.1001885"]],[["Newcastle-Ottawa Scale","https://www.ohri.ca/programs/clinical_epidemiology/oxford.asp"],["ROBINS-E","https://www.riskofbias.info/welcome/robins-e-tool"]]]],"6":[["Analytical cross-sectional study",[["Representative sampling frame",null]],[["STROBE","https://www.strobe-statement.org/"],["CHERRIES (online surveys)","https://doi.org/10.2196/jmir.6.3.e34"]],[["AXIS","https://doi.org/10.1136/bmjopen-2016-011458"],["JBI checklist","https://jbi.global/critical-appraisal-tools"]]],["Diagnostic accuracy study",[["Reference standard",null],["Consecutive patient spectrum",null]],[["STARD 2015","https://doi.org/10.1136/bmj.h5527"]],[["QUADAS-2","https://doi.org/10.7326/0003-4819-155-8-201110180-00009"]]]],"7":[["Case-control study",[["Control selection",null],["Matching",null]],[["STROBE","https://www.strobe-statement.org/"]],[["Newcastle-Ottawa Scale","https://www.ohri.ca/programs/clinical_epidemiology/oxford.asp"],["JBI checklist","https://jbi.global/critical-appraisal-tools"]]]],"8":[["Case series",[["Consecutive inclusion",null],["Pre-defined outcomes",null]],[["PROCESS (surgical)","https://pubmed.ncbi.nlm.nih.gov/37988417/"]],[["JBI checklist","https://jbi.global/critical-appraisal-tools"]]]],"9":[["Case report",[["Patient consent",null]],[["CARE","https://www.care-statement.org/"]],[["JBI checklist","https://jbi.global/critical-appraisal-tools"]]]],"10":[["Narrative review",[["Stated scope",null]],[["SANRA","https://doi.org/10.1186/s41073-019-0064-8"]],[["JBI text and opinion","https://jbi.global/critical-appraisal-tools"]]]],"11":[["In vivo efficacy study",[["PREPARE","https://norecopa.no/prepare"]],[["ARRIVE 2.0","https://arriveguidelines.org/"]],[["SYRCLE risk of bias","https://doi.org/10.1186/1471-2288-14-43"]]]],"12":[["Cell-based assay",[["Randomised, blinded plate layout",null],["Biological replicates",null]],[["MDAR checklist","https://doi.org/10.1073/pnas.2103238118"]],[["SciRAP (in vitro)","https://www.scirap.org/"]]]]};
+const IDX = name => L.findIndex(x => x.short === name);
+/* side bars: [label, first level, last level] (0-based, inclusive). Editorials have no study design: no bar in the
+   first two columns. Animal and in vitro studies are preclinical, outside the clinical design axes. */
+const BARS = [
+  [['Secondary', 0, 1], ['Primary', 2, 9]],
+  [['Experimental', 2, 4], ['Observational', 5, 9]],
+  [['Clinical', 0, 10], ['Preclinical', 11, 12]]
+];
+const GROUPS = [['Secondary · syntheses', [0, 1]], ['Primary · experimental', [2, 3, 4]], ['Primary · observational', [5, 6, 7]],
+                ['Primary · descriptive', [8, 9]], ['No study design', [10]], ['Preclinical', [11, 12]]];
+const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = id => document.getElementById(id);
+
+/* ---------- pyramid: each level a band between two sine waves that keep flowing; labels stay put ---------- */
+function renderPyramid() {
+  /* Drawn at the real pixel width of the panel (re-drawn on resize), so text stays at its true size on any screen.
+     Bars on the left, coloured by the levels they span. Every level name sits on the same dark pill, centred on the axis.
+     The top level is taller, so the apex stays visible above its label. */
+  const el = $('ep-pyr'), avail = Math.max(260, el.clientWidth - 32), small = avail < 480;
+  const BW_ = small ? 20 : 24, BG = 6, BX = [0, BW_ + BG, 2 * (BW_ + BG)], X0 = 3 * (BW_ + BG) + (small ? 6 : 14);
+  const W = Math.min(600, avail - X0 - 6), TOP = 8, N = L.length, BH = small ? 34 : 40, TH = BH * 2.2;
+  const Y = [TOP]; for (let i = 1; i <= N; i++) Y.push(TOP + TH + (i - 1) * BH);   // level boundaries (mean of the wave)
+  const BASE = Y[N];
+  const CX = X0 + W / 2, HALF = W / 2 - 2, TOTAL = X0 + W + 2;
+  const AMP = small ? 5 : 6, CYC = 1.15, STEPS = 64, SPLIT = 2, SPEED = 0.55;
+  const FS = small ? 12 : 13, SFS = small ? 9 : 10;
+  const ctx = document.createElement('canvas').getContext('2d');
+  const tw = (txt, font, ls = 0) => { ctx.font = font; return ctx.measureText(txt).width + ls * txt.length; };
+  const wave = (i, x) => {
+    if (i === 0) return TOP - 20;
+    if (i === N) return BASE;
+    return Y[i] + AMP * Math.sin(((x - X0) / W) * Math.PI * 2 * CYC + i * 0.9 - t * SPEED);
+  };
+  const line = (i, rev) => {
+    const pts = [];
+    for (let s = 0; s <= STEPS; s++) { const x = X0 + (rev ? STEPS - s : s) * W / STEPS; pts.push([x, wave(i, x)]); }
+    return pts;
+  };
+  const d = pts => pts.map((p, j) => (j ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join('');
+  const bandD = k => d(line(k)) + d(line(k + 1, true)).replace('M', 'L') + 'Z';
+  const hw = y => Math.max(0, HALF * (y - TOP) / (BASE - TOP));
+  let s = `<svg width="${TOTAL}" height="${BASE + 10}" viewBox="-2 -4 ${TOTAL + 4} ${BASE + 10}" role="group" aria-label="Evidence pyramid, ${N} levels from meta-analysis at the top to in vitro research at the base, with side bars for secondary and primary, experimental and observational, clinical and preclinical studies">
+    <defs><clipPath id="ep-tri"><path d="M${CX},${TOP} L${CX + HALF},${BASE} L${CX - HALF},${BASE} Z"/></clipPath></defs>`;
+  const ys = new Set();                                          // dotted guides from the bars to the pyramid edge
+  BARS.flat().forEach(([, a, b]) => { ys.add(a); ys.add(b + 1); });
+  [...ys].forEach(i => { const y = Y[i]; if (i > 0 && i < N) s += `<path class="guide" d="M${BX[2] + BW_ + 3},${y} L${CX - hw(y) - 4},${y}"/>`; });
+  BARS.forEach((col, c) => col.forEach(([lab, a, b]) => {
+    const y1 = Y[a] + (a ? 3 : 0), y2 = Y[b + 1] - (b + 1 < N ? 3 : 0), h = y2 - y1, x = BX[c];
+    const gid = `ep-g${c}-${a}`, stops = [];
+    for (let k = a; k <= b; k++) stops.push(`<stop offset="${((k - a + .5) / (b - a + 1) * 100).toFixed(1)}%" stop-color="${L[k].c}"/>`);
+    s += `<defs><linearGradient id="${gid}" gradientUnits="userSpaceOnUse" x1="0" y1="${y1}" x2="0" y2="${y2}">${stops.join('')}</linearGradient></defs>`;
+    let fs = SFS; while (fs > 7.5 && tw(lab.toUpperCase(), `800 ${fs}px Inter, system-ui, sans-serif`, fs * .08) > h - 12) fs -= .5;
+    s += `<g class="seg" tabindex="0" data-a="${a}" data-b="${b}" aria-label="${esc(lab)} studies: levels ${a + 1} to ${b + 1}">
+      <rect x="${x}" y="${y1}" width="${BW_}" height="${h}" rx="7" fill="url(#${gid})"/>
+      <text transform="translate(${x + BW_ / 2 + fs * .36},${y1 + h / 2}) rotate(-90)" text-anchor="middle" style="font-size:${fs}px">${esc(lab)}</text></g>`;
+  }));
+  s += `<g clip-path="url(#ep-tri)">`;
+  L.forEach((x, k) => {
+    s += `<g class="band" tabindex="0" role="button" data-k="${k}" aria-pressed="false" aria-label="${x.n}. ${esc(x.name)}">
+      <path class="fill" fill="${x.c}"/><path class="ring"/></g>`;
+  });
+  for (let i = 1; i < N; i++)
+    s += `<path class="seam" data-i="${i}" fill="none" stroke="#0A0A0A" stroke-width="${i === SPLIT ? 7 : 2}" pointer-events="none"/>`;
+  s += `<path class="cut" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-dasharray="2 5" stroke-linecap="round" pointer-events="none"/>`;
+  let pills = '';
+  L.forEach((x, k) => {
+    const cy = k === 0 ? Y[1] - BH * 0.55 : (Y[k] + Y[k + 1]) / 2;
+    const full = `${x.n} · ${x.short}`, pw = tw(full, `700 ${FS}px Inter, system-ui, sans-serif`) + 22, ph = FS + 11;
+    pills += `<g class="lbl pill" data-k="${k}" pointer-events="none"><rect x="${(CX - pw / 2).toFixed(1)}" y="${(cy - ph / 2).toFixed(1)}" width="${pw.toFixed(1)}" height="${ph}" rx="${ph / 2}"/>
+      <text x="${CX}" y="${(cy + FS * .36).toFixed(1)}" text-anchor="middle" style="font-size:${FS}px">${esc(full)}</text></g>`;
+  });
+  s += `</g>${pills}</svg>`;
+  el.innerHTML = s;
+  const fills = [...el.querySelectorAll('.band .fill')], rings = [...el.querySelectorAll('.band .ring')];
+  const seams = [...el.querySelectorAll('.seam')], cut = el.querySelector('.cut');
+  draw = () => {
+    L.forEach((_, k) => { const dk = bandD(k); fills[k].setAttribute('d', dk); rings[k].setAttribute('d', dk); });
+    seams.forEach(p => p.setAttribute('d', d(line(+p.dataset.i))));
+    cut.setAttribute('d', d(line(SPLIT)));
+  };
+  draw();
+  const focusRange = (a, b) => {                                // a bar segment lights up its levels
+    el.classList.toggle('focus', a !== null);
+    el.querySelectorAll('.band, .lbl').forEach(g => g.classList.toggle('in', a !== null && +g.dataset.k >= a && +g.dataset.k <= b));
+  };
+  el.querySelectorAll('.seg').forEach(g => {
+    const on_ = () => focusRange(+g.dataset.a, +g.dataset.b), off = () => focusRange(null);
+    g.addEventListener('mouseenter', on_); g.addEventListener('focus', on_);
+    g.addEventListener('mouseleave', off); g.addEventListener('blur', off);
+  });
+  el.querySelectorAll('.band').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.k === selected)));
+}
+let t = 0, draw = () => {}, selected = 0, lastW = 0;
+function startPyramid() {
+  const el = $('ep-pyr');
+  renderPyramid(); lastW = el.clientWidth;
+  el.addEventListener('click', e => { const g = e.target.closest('.band'); if (g) showCard(+g.dataset.k, true); });
+  el.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.band')) { e.preventDefault(); showCard(+e.target.dataset.k, true); }
+  });
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => {
+    if (el.clientWidth !== lastW) { lastW = el.clientWidth; renderPyramid(); } }, 120); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderPyramid);   // re-measure with Inter loaded
+  if (REDUCE) return;
+  let last = performance.now(), on = true;
+  if ('IntersectionObserver' in window) new IntersectionObserver(e => { on = e[0].isIntersecting; }).observe(el);
+  (function loop(now) {
+    t += Math.min(0.05, (now - last) / 1000); last = now;
+    if (on && !document.hidden) draw();
+    requestAnimationFrame(loop);
+  })(last);
+}
+
+function renderLegend() {
+  $('ep-legend').innerHTML = GROUPS.map(([g, ks]) => `<div class="grp"><h3>${g}</h3>` + ks.map(k => {
+    const x = L[k];
+    return `<button class="lv" data-k="${k}" aria-pressed="false"><span class="chip" style="background:${x.c};color:${x.t}">${x.n}</span>${esc(x.name)}</button>`;
+  }).join('') + `</div>`).join('');
+}
+
+/* ---------- marker sketching: steady wobble, seeded so a card always looks the same ---------- */
+function rng(seed) { let h = 2166136261; for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  return () => { h += 0x6D2B79F5; let t = h; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const j = (r, a) => (r() - .5) * 2 * a;
+function sLine(x1, y1, x2, y2, r, wob = 1.6) {
+  const mx = (x1 + x2) / 2 + j(r, wob), my = (y1 + y2) / 2 + j(r, wob);
+  return `M${(x1 + j(r, .8)).toFixed(1)},${(y1 + j(r, .8)).toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${(x2 + j(r, .8)).toFixed(1)},${(y2 + j(r, .8)).toFixed(1)}`;
+}
+function sRect(x, y, w, h, r) {
+  const rr = 9, p = [];
+  const pts = [[x + rr, y], [x + w - rr, y], [x + w, y + rr], [x + w, y + h - rr], [x + w - rr, y + h], [x + rr, y + h], [x, y + h - rr], [x, y + rr], [x + rr + 6, y - 1]];
+  pts.forEach(([a, b], i) => p.push(`${i ? 'L' : 'M'}${(a + j(r, 1.3)).toFixed(1)},${(b + j(r, 1.3)).toFixed(1)}`));
+  return p.join('');
+}
+function sCircle(cx, cy, rad, r) {
+  const p = [], n = 26, start = r() * 6.28;
+  for (let i = 0; i <= n + 2; i++) { const a = start + i / n * Math.PI * 2, rr = rad + j(r, 1.6) + i * .05;
+    p.push(`${i ? 'L' : 'M'}${(cx + Math.cos(a) * rr).toFixed(1)},${(cy + Math.sin(a) * rr).toFixed(1)}`); }
+  return p.join('');
+}
+const stroke = (dPath, col, w = 2.4, cls = 'drawn', delay = 0) =>
+  `<path d="${dPath}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" pathLength="1" class="${cls}" style="animation-delay:${delay}ms"/>`;
+function underline(width, col, seed) {
+  const r = rng(seed);
+  return `<svg viewBox="0 0 ${width} 14" preserveAspectRatio="none" aria-hidden="true">${stroke(`M2,${7 + j(r, 2)} C${width * .3},${4 + j(r, 3)} ${width * .7},${10 + j(r, 3)} ${width - 2},${6 + j(r, 2)}`, col, 3)}</svg>`;
+}
+
+function diagram(x) {
+  const dd = x.d, r = rng(x.name), BLUE = '#6FA8FF', RED = '#FF6B6B', INK = x.ink;
+  const n = Math.max(dd.l.i.length, dd.r.i.length), RH = 58, TOP = 56, W = 360, BW = 132, LX = 8, RX = W - 8 - BW;
+  const H = TOP + n * RH + (dd.a === 'none' ? 6 : 60);
+  const yl = i => TOP + (n - dd.l.i.length) * RH / 2 + i * RH, yr = i => TOP + (n - dd.r.i.length) * RH / 2 + i * RH;
+  const isDot = t => t.length <= 2;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(dd.l.t + ' to ' + dd.r.t)}">`;
+  s += `<text x="${LX + BW / 2}" y="26" text-anchor="middle" font-size="26" font-weight="700" fill="${BLUE}">${esc(dd.l.t)}</text>`;
+  s += stroke(sLine(LX + 6, 34, LX + BW - 6, 35, r), BLUE, 2.2);
+  s += `<text x="${RX + BW / 2}" y="26" text-anchor="middle" font-size="26" font-weight="700" fill="${RED}">${esc(dd.r.t)}</text>`;
+  s += stroke(sLine(RX + 6, 35, RX + BW - 6, 34, r), RED, 2.2);
+  if (dd.a === 'snap')                                             // one moment: a vertical marker line, links cross it
+    s += stroke(sLine(W / 2, TOP - 4, W / 2 + j(r, 2), TOP + n * RH + 8, r, 2), INK, 3, 'drawn', 200);
+  const node = (t, cx, cy, col, delay) => isDot(t)
+    ? stroke(sCircle(cx, cy, 19, r), col, 2.6, 'drawn', delay) + `<text x="${cx}" y="${cy + 8}" text-anchor="middle" font-size="24" font-weight="700" fill="${col}">${esc(t)}</text>`
+    : stroke(sRect(cx - BW / 2, cy - 19, BW, 38, r), col, 2.6, 'drawn', delay) + `<text x="${cx}" y="${cy + 8}" text-anchor="middle" font-size="${t.length > 14 ? 19 : 23}" font-weight="700" fill="${col}">${esc(t)}</text>`;
+  const edgeL = i => isDot(dd.l.i[i]) ? LX + BW / 2 + 22 : LX + BW, edgeR = i => isDot(dd.r.i[i]) ? RX + BW / 2 - 22 : RX;
+  dd.k.forEach(([a, b]) => {
+    const x1 = edgeL(a), y1 = yl(a) + 19, x2 = edgeR(b), y2 = yr(b) + 19;
+    s += `<path d="M${x1 + 4},${y1} C${x1 + 40},${y1 + j(r, 4)} ${x2 - 40},${y2 + j(r, 4)} ${x2 - 4},${y2}" fill="none" stroke="${INK}" stroke-width="4" stroke-linecap="round" stroke-dasharray="0.1 9" opacity=".95"/>`;
+  });
+  dd.l.i.forEach((t, i) => s += node(t, LX + BW / 2, yl(i) + 19, BLUE, i * 70));
+  dd.r.i.forEach((t, i) => s += node(t, RX + BW / 2, yr(i) + 19, RED, 120 + i * 70));
+  if (dd.a === 'snap') {
+    s += `<text x="${W / 2}" y="${TOP + n * RH + 40}" text-anchor="middle" font-size="24" font-weight="700" fill="${INK}">${esc(dd.time)}</text>`;
+  } else if (dd.a !== 'none') {
+    const ay = TOP + n * RH + 14, back = dd.a === 'back', x1 = back ? W - 40 : 40, x2 = back ? 40 : W - 40, dir = back ? 1 : -1;
+    s += stroke(sLine(x1, ay, x2, ay + j(r, 2), r, 2.5), INK, 3.2, 'drawn', 260);
+    s += stroke(`M${x2 + dir * 14},${ay - 10} L${x2},${ay} L${x2 + dir * 14},${ay + 10}`, INK, 3.2, 'drawn', 420);
+    s += `<text x="${W / 2}" y="${ay + 34}" text-anchor="middle" font-size="24" font-weight="700" fill="${INK}">${esc(dd.time)}</text>`;
+  }
+  return s + '</svg>';
+}
+
+function showCard(k, scroll) {
+  selected = k;
+  const x = L[k], card = $('ep-card');
+  const fill = () => {
+    card.innerHTML = `
+      <p class="fam" style="color:${x.ink}">${esc(x.fam)}</p>
+      <h3 class="ttl" style="color:${x.ink}">${x.n}. ${esc(x.name)}${underline(300, x.ink, x.name + 'u')}</h3>
+      <p class="askq">${esc(x.q)}</p>
+      <div class="diag">${diagram(x)}</div>
+      <div class="cols">
+        <div><h4 class="hh" style="color:${x.ink}">Why it matters${underline(160, x.ink, x.name + 'p')}</h4>
+          <ul class="notes" style="color:${x.ink}">${x.pro.map(p => `<li><span style="color:var(--ep-chalk)">${esc(p)}</span></li>`).join('')}</ul></div>
+        <div><h4 class="hh" style="color:var(--ep-red)">Limits${underline(80, '#FF6B6B', x.name + 'c')}</h4>
+          <ul class="notes" style="color:var(--ep-red)">${x.con.map(p => `<li><span style="color:var(--ep-chalk)">${esc(p)}</span></li>`).join('')}</ul></div>
+      </div>
+      <p class="postit"><b style="color:${x.ink}">e.g.</b>${esc(x.ex)}</p>
+      <div class="vars"><h4 class="hh" style="color:${x.ink}">Variants in this family${underline(240, x.ink, x.name + 'v')}</h4>
+        <dl>${x.designs.map(([nm, note]) => `<div class="vrow"><dt style="color:${x.ink}">${esc(nm)}</dt><dd>${esc(note)}</dd></div>`).join('')}</dl></div>
+      ${toolsHtml(k)}`;
+    document.querySelectorAll('.ep .lv, .ep .band').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.k === k)));
+  };
+  if (scroll) {                                                    // bring the card into view only if it is off screen
+    const r = card.getBoundingClientRect();
+    if (r.top > window.innerHeight * 0.85 || r.bottom < 0) card.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' });
+  }
+  if (REDUCE) return fill();
+  card.classList.add('swap');
+  setTimeout(() => { fill(); card.classList.remove('swap'); }, 150);
+}
+
+/* ---------- finder ---------- */
+const T = {
+  start: { q:'Does the researcher assign the intervention to participants?', y:'ctrl', n:'obs' },
+  ctrl:  { q:'Is there a comparison (control) group?', y:'rand', n:{ r:IDX('Uncontrolled trial') } },
+  rand:  { q:'Is the assignment random?', y:{ r:IDX('RCT') }, n:{ r:IDX('Non-randomised trial') } },
+  obs:   { q:'Do you start from the outcome and look back at exposures?', y:{ r:IDX('Case-control studies') }, n:'time' },
+  time:  { q:'Do you follow people with and without the exposure over time?', y:{ r:IDX('Cohort studies') }, n:'snap' },
+  snap:  { q:'Do you measure exposure and outcome at the same moment, in a sample of a population?', y:{ r:IDX('Cross-sectional') }, n:'desc' },
+  desc:  { q:'Are you describing a single patient?', y:{ r:IDX('Case reports') }, n:{ r:IDX('Case series') } }
+};
+let cur = 'start', hist = [];
+function renderFinder() {
+  const box = $('ep-cls');
+  box.innerHTML = typeof cur === 'object'
+    ? `<p class="q">The closest design is:</p><p style="margin:6px 0 0"><strong>${L[cur.r].n}. ${esc(L[cur.r].name)}</strong></p>
+       <button class="btn" data-open="${cur.r}">Open the notes</button><button class="btn" data-a="back">Back</button><button class="btn" data-a="reset">Start again</button>`
+    : `<p class="q">${esc(T[cur].q)}</p><button class="btn" data-a="y">Yes</button><button class="btn" data-a="n">No</button>
+       ${hist.length ? '<button class="btn" data-a="back">Back</button>' : ''}`;
+}
+$('evidence-pyramid').addEventListener('click', e => {
+  const lv = e.target.closest('.lv'); if (lv) return showCard(+lv.dataset.k, true);
+  const b = e.target.closest('#ep-cls button'); if (!b) return;
+  if (b.dataset.open !== undefined) return showCard(+b.dataset.open, true);
+  const a = b.dataset.a;
+  if (a === 'reset') { hist = []; cur = 'start'; } else if (a === 'back') { cur = hist.pop() || 'start'; } else { hist.push(cur); cur = T[cur][a]; }
+  renderFinder();
+});
+
+function toolsHtml(k) {
+  const rows = TOOLS[k]; if (!rows || !rows.length) return '';
+  const x = L[k];
+  const list = items => items.map(([n, u]) => u
+    ? `<a href="${esc(u)}" rel="noopener" target="_blank">${esc(n)}</a>` : esc(n)).join('<span class="sep">·</span>');
+  const wide = !!$('design-tools');                              // the table shows from 700px (CSS)
+  return `<div class="vars"><h4 class="hh" style="color:${x.ink}">Plan, report, appraise${underline(220, x.ink, x.name + 't')}</h4>
+    <dl class="tls">${rows.map(([nm, p, r, a]) => `<div class="trow"><dt style="color:${x.ink}">${esc(nm)}</dt>
+      <dd><span class="tk">Plan</span><span class="ti">${list(p)}</span></dd>
+      <dd><span class="tk">Report</span><span class="ti">${list(r)}</span></dd>
+      <dd><span class="tk">Appraise</span><span class="ti">${list(a)}</span></dd></div>`).join('')}</dl>
+    <button class="totable${wide ? ' on' : ''}" type="button" data-table="${k}">See this level in the tools table &darr;</button></div>`;
+}
+document.addEventListener('ep:show', e => {                     // from the tools table: open the level and show the pyramid
+  const k = +e.detail; if (!(k >= 0 && k < L.length)) return;
+  showCard(k, false);
+  $('ep-pyr').scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' });
+});
+$('evidence-pyramid').addEventListener('click', e => {
+  const b = e.target.closest('.totable'); if (!b) return;
+  document.dispatchEvent(new CustomEvent('ep:table', { detail: b.dataset.table }));
+  $('design-tools').scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' });
+});
+
+startPyramid();
+renderLegend();
+renderFinder();
+showCard(0, false);
+})();
+</script>
+
+<section class="tools" id="tools"><h2>Tools by study design</h2><p class="sub"><span class="w">Official tools to plan, report and appraise each study design, in the order of the evidence pyramid. Linked names open the official page or paper; the others are methods to plan for.</span><span class="n">Official tools to draft the protocol, report it properly and appraise the evidence. Each level of the pyramid above lists the tools for its designs.</span></p><div class="row tc"><div class="tool"><span class="k">Protocol draft</span><span class="t">Draft your protocol</span><ul><li><a href="https://www.spirit-statement.org/" rel="noopener" target="_blank"><b>SPIRIT</b><span>Randomised trials</span></a></li><li><a href="https://www.prisma-statement.org/protocols" rel="noopener" target="_blank"><b>PRISMA-P</b><span>Systematic reviews</span></a></li><li><a href="https://www.crd.york.ac.uk/prospero/" rel="noopener" target="_blank"><b>PROSPERO</b><span>Review registration</span></a></li><li><a href="https://www.cosmin.nl/" rel="noopener" target="_blank"><b>COSMIN Study Design</b><span>Measurement properties</span></a></li><li><a href="https://www.equator-network.org/library/" rel="noopener" target="_blank"><b>EQUATOR library</b><span>All designs</span></a></li></ul></div><div class="tool"><span class="k">Reporting</span><span class="t">Reporting guidelines</span><ul><li><a href="https://www.consort-statement.org/" rel="noopener" target="_blank"><b>CONSORT</b><span>Randomised trials</span></a></li><li><a href="https://www.strobe-statement.org/" rel="noopener" target="_blank"><b>STROBE</b><span>Observational studies</span></a></li><li><a href="https://www.prisma-statement.org/" rel="noopener" target="_blank"><b>PRISMA</b><span>Systematic reviews</span></a></li><li><a href="https://www.care-statement.org/" rel="noopener" target="_blank"><b>CARE</b><span>Case reports</span></a></li><li><a href="https://pubmed.ncbi.nlm.nih.gov/33818733/" rel="noopener" target="_blank"><b>COSMIN</b><span>Measurement properties (PROMs)</span></a></li><li><a href="https://www.equator-network.org/" rel="noopener" target="_blank"><b>EQUATOR Network</b><span>Every design</span></a></li></ul></div><div class="tool"><span class="k">Critical appraisal</span><span class="t">Appraise the evidence</span><ul><li><a href="https://casp-uk.net/casp-tools-checklists/" rel="noopener" target="_blank"><b>CASP checklists</b><span>Trials, cohorts, qualitative…</span></a></li><li><a href="https://jbi.global/critical-appraisal-tools" rel="noopener" target="_blank"><b>JBI tools</b><span>All study types</span></a></li><li><a href="https://www.riskofbias.info/" rel="noopener" target="_blank"><b>RoB 2 · ROBINS-I</b><span>Risk of bias (RCTs, NRSI)</span></a></li><li><a href="https://amstar.ca/" rel="noopener" target="_blank"><b>AMSTAR 2</b><span>Systematic reviews</span></a></li><li><a href="https://doi.org/10.1007/s11136-017-1765-4" rel="noopener" target="_blank"><b>COSMIN RoB</b><span>Measurement instruments</span></a></li></ul></div></div><div class="dt" id="design-tools"><div class="dt-f" role="group" aria-label="Show one level of the pyramid"><button type="button" data-f="" aria-pressed="true">All designs</button><button type="button" data-f="0" aria-pressed="false"><span class="ch" style="background:#BFBFBF;color:#111">1</span>Meta-analysis</button><button type="button" data-f="1" aria-pressed="false"><span class="ch" style="background:#1F4E79;color:#FFF">2</span>Systematic review</button><button type="button" data-f="2" aria-pressed="false"><span class="ch" style="background:#CFE0F3;color:#111">3</span>RCT</button><button type="button" data-f="3" aria-pressed="false"><span class="ch" style="background:#B3CFEE;color:#111">4</span>Non-randomised</button><button type="button" data-f="4" aria-pressed="false"><span class="ch" style="background:#97BDE8;color:#111">5</span>Uncontrolled</button><button type="button" data-f="5" aria-pressed="false"><span class="ch" style="background:#75A6DE;color:#111">6</span>Cohort</button><button type="button" data-f="6" aria-pressed="false"><span class="ch" style="background:#4F8BCB;color:#0A0A0A">7</span>Cross-sectional</button><button type="button" data-f="7" aria-pressed="false"><span class="ch" style="background:#2E75B6;color:#FFF">8</span>Case-control</button><button type="button" data-f="8" aria-pressed="false"><span class="ch" style="background:#548235;color:#FFF">9</span>Case series</button><button type="button" data-f="9" aria-pressed="false"><span class="ch" style="background:#3DBE3D;color:#0A0A0A">10</span>Case report</button><button type="button" data-f="10" aria-pressed="false"><span class="ch" style="background:#FFF2CC;color:#111">11</span>Opinion</button><button type="button" data-f="11" aria-pressed="false"><span class="ch" style="background:#F79646;color:#111">12</span>Animal</button><button type="button" data-f="12" aria-pressed="false"><span class="ch" style="background:#C00000;color:#FFF">13</span>In vitro</button><button type="button" data-f="cosmin" aria-pressed="false"><span class="ch cm">M</span>COSMIN</button></div><table><caption hidden>Tools to design, report and appraise each study design</caption><colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"></colgroup><thead><tr><th scope="col">Study design</th><th scope="col">Design &amp; protocol</th><th scope="col">Reporting</th><th scope="col">Critical appraisal</th></tr></thead><tbody data-k="0"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#BFBFBF"><span class="ch" style="background:#BFBFBF;color:#111">1</span>Meta-analysis and guidelines<a class="toep" href="#evidence-pyramid" data-ep="0">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">Pairwise meta-analysis</th><td><ul><li><a href="https://www.prisma-statement.org/protocols" rel="noopener" target="_blank">PRISMA-P</a></li><li><a href="https://www.crd.york.ac.uk/prospero/" rel="noopener" target="_blank">PROSPERO</a></li><li><a href="https://training.cochrane.org/handbook" rel="noopener" target="_blank">Cochrane Handbook</a></li></ul></td><td><ul><li><a href="https://www.prisma-statement.org/" rel="noopener" target="_blank">PRISMA 2020</a></li></ul></td><td><ul><li><a href="https://amstar.ca/" rel="noopener" target="_blank">AMSTAR 2</a></li><li><a href="https://www.bristol.ac.uk/population-health-sciences/projects/robis/" rel="noopener" target="_blank">ROBIS</a></li><li><a href="https://www.gradeworkinggroup.org/" rel="noopener" target="_blank">GRADE (certainty)</a></li></ul></td></tr><tr><th scope="row">Network meta-analysis (NMA)</th><td><ul><li><a href="https://www.prisma-statement.org/protocols" rel="noopener" target="_blank">PRISMA-P</a></li><li><a href="https://www.crd.york.ac.uk/prospero/" rel="noopener" target="_blank">PROSPERO</a></li></ul></td><td><ul><li><a href="https://doi.org/10.7326/M14-2385" rel="noopener" target="_blank">PRISMA-NMA</a></li></ul></td><td><ul><li><a href="https://cinema.ispm.unibe.ch/" rel="noopener" target="_blank">CINeMA</a></li><li><a href="https://amstar.ca/" rel="noopener" target="_blank">AMSTAR 2</a></li></ul></td></tr><tr><th scope="row">Individual patient data (IPD) meta-analysis</th><td><ul><li><a href="https://www.prisma-statement.org/protocols" rel="noopener" target="_blank">PRISMA-P</a></li><li><a href="https://www.crd.york.ac.uk/prospero/" rel="noopener" target="_blank">PROSPERO</a></li></ul></td><td><ul><li><a href="https://doi.org/10.1001/jama.2015.3656" rel="noopener" target="_blank">PRISMA-IPD</a></li></ul></td><td><ul><li><a href="https://amstar.ca/" rel="noopener" target="_blank">AMSTAR 2</a></li><li><a href="https://www.bristol.ac.uk/population-health-sciences/projects/robis/" rel="noopener" target="_blank">ROBIS</a></li></ul></td></tr><tr><th scope="row">Clinical practice guideline</th><td><ul><li><a href="https://www.gradeworkinggroup.org/" rel="noopener" target="_blank">GRADE Evidence to Decision</a></li></ul></td><td><ul><li><a href="https://www.right-statement.org/" rel="noopener" target="_blank">RIGHT</a></li></ul></td><td><ul><li><a href="https://www.agreetrust.org/" rel="noopener" target="_blank">AGREE II</a></li></ul></td></tr></tbody><tbody data-k="1"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#1F4E79"><span class="ch" style="background:#1F4E79;color:#FFF">2</span>Systematic review<a class="toep" href="#evidence-pyramid" data-ep="1">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">Systematic review</th><td><ul><li><a href="https://www.prisma-statement.org/protocols" rel="noopener" target="_blank">PRISMA-P</a></li><li><a href="https://www.crd.york.ac.uk/prospero/" rel="noopener" target="_blank">PROSPERO</a></li><li><a href="https://training.cochrane.org/handbook" rel="noopener" target="_blank">Cochrane Handbook</a></li></ul></td><td><ul><li><a href="https://www.prisma-statement.org/" rel="noopener" target="_blank">PRISMA 2020</a></li></ul></td><td><ul><li><a href="https://amstar.ca/" rel="noopener" target="_blank">AMSTAR 2</a></li><li><a href="https://www.bristol.ac.uk/population-health-sciences/projects/robis/" rel="noopener" target="_blank">ROBIS</a></li></ul></td></tr><tr><th scope="row">Scoping review</th><td><ul><li><a href="https://doi.org/10.11124/JBIES-20-00167" rel="noopener" target="_blank">JBI scoping guidance</a></li></ul></td><td><ul><li><a href="https://doi.org/10.7326/M18-0850" rel="noopener" target="_blank">PRISMA-ScR</a></li></ul></td><td><ul><li class="m">Not formally appraised</li></ul></td></tr></tbody><tbody data-k="2"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#CFE0F3"><span class="ch" style="background:#CFE0F3;color:#111">3</span>Randomised controlled trial (RCT)<a class="toep" href="#evidence-pyramid" data-ep="2">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">Parallel-group RCT</th><td><ul><li><a href="https://doi.org/10.1136/bmj-2024-081477" rel="noopener" target="_blank">SPIRIT 2025</a></li><li class="m">Sample size calculation</li><li class="m">Allocation concealment</li><li class="m">Randomisation software</li></ul></td><td><ul><li><a href="https://doi.org/10.1136/bmj-2024-081123" rel="noopener" target="_blank">CONSORT 2025</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/welcome/rob-2-0-tool" rel="noopener" target="_blank">RoB 2</a></li><li><a href="https://www.gradeworkinggroup.org/" rel="noopener" target="_blank">GRADE (across trials)</a></li></ul></td></tr><tr><th scope="row">Crossover RCT</th><td><ul><li class="m">Washout planning</li><li class="m">Sequence randomisation</li><li class="m">Carry-over assessment</li></ul></td><td><ul><li><a href="https://doi.org/10.1136/bmj.l4378" rel="noopener" target="_blank">CONSORT crossover</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/welcome/rob-2-0-tool/rob-2-for-crossover-trials" rel="noopener" target="_blank">RoB 2 crossover</a></li></ul></td></tr><tr><th scope="row">Cluster RCT</th><td><ul><li class="m">Intracluster correlation in the sample size</li></ul></td><td><ul><li><a href="https://doi.org/10.1136/bmj.e5661" rel="noopener" target="_blank">CONSORT cluster</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/welcome/rob-2-0-tool/rob-2-for-cluster-randomized-trials" rel="noopener" target="_blank">RoB 2 cluster</a></li></ul></td></tr><tr><th scope="row">Stepped-wedge RCT</th><td><ul><li class="m">Staggered crossover schedule</li></ul></td><td><ul><li><a href="https://doi.org/10.1136/bmj.k1614" rel="noopener" target="_blank">CONSORT stepped-wedge</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/welcome/rob-2-0-tool/rob-2-for-cluster-randomized-trials" rel="noopener" target="_blank">RoB 2 cluster</a></li></ul></td></tr><tr><th scope="row">Factorial RCT</th><td><ul><li class="m">Interaction in the sample size</li></ul></td><td><ul><li><a href="https://pubmed.ncbi.nlm.nih.gov/38051324/" rel="noopener" target="_blank">CONSORT factorial</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/welcome/rob-2-0-tool" rel="noopener" target="_blank">RoB 2</a></li></ul></td></tr><tr><th scope="row">Platform / adaptive trial</th><td><ul><li class="m">Pre-specified adaptation rules</li><li class="m">Simulation of operating characteristics</li></ul></td><td><ul><li><a href="https://doi.org/10.1136/bmj.m115" rel="noopener" target="_blank">CONSORT ACE</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/welcome/rob-2-0-tool" rel="noopener" target="_blank">RoB 2</a></li></ul></td></tr><tr><th scope="row">Non-inferiority / equivalence trial</th><td><ul><li class="m">Justified margin</li></ul></td><td><ul><li><a href="https://doi.org/10.1001/jama.2012.87802" rel="noopener" target="_blank">CONSORT non-inferiority</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/welcome/rob-2-0-tool" rel="noopener" target="_blank">RoB 2</a></li></ul></td></tr><tr><th scope="row">Pragmatic RCT</th><td><ul><li><a href="https://www.precis-2.org/" rel="noopener" target="_blank">PRECIS-2</a></li><li class="m">Real-world eligibility</li><li class="m">Flexible delivery</li></ul></td><td><ul><li><a href="https://doi.org/10.1136/bmj.a2390" rel="noopener" target="_blank">CONSORT pragmatic</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/welcome/rob-2-0-tool" rel="noopener" target="_blank">RoB 2</a></li><li><a href="https://doi.org/10.1136/bmj.h2147" rel="noopener" target="_blank">PRECIS-2 (applicability)</a></li></ul></td></tr><tr><th scope="row">Zelen design (randomised consent)</th><td><ul><li><a href="https://doi.org/10.1056/NEJM197905313002203" rel="noopener" target="_blank">Zelen, 1979</a></li><li class="m">Consent pathway mapping</li><li class="m">Ethics review of the consent model</li></ul></td><td><ul><li><a href="https://doi.org/10.1136/bmj-2024-081123" rel="noopener" target="_blank">CONSORT 2025, consent pathway stated</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/welcome/rob-2-0-tool" rel="noopener" target="_blank">RoB 2 (selection and consent bias)</a></li></ul></td></tr><tr><th scope="row">cmRCT (trials within cohorts)</th><td><ul><li><a href="https://doi.org/10.1136/bmj.c1066" rel="noopener" target="_blank">Relton et al., 2010</a></li><li class="m">Cohort and outcome registry</li><li class="m">Embedded randomisation</li></ul></td><td><ul><li><a href="https://doi.org/10.1136/bmj.n857" rel="noopener" target="_blank">CONSORT-ROUTINE</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/welcome/rob-2-0-tool" rel="noopener" target="_blank">RoB 2 (selection bias)</a></li></ul></td></tr></tbody><tbody data-k="3"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#B3CFEE"><span class="ch" style="background:#B3CFEE;color:#111">4</span>Non-randomised controlled trial<a class="toep" href="#evidence-pyramid" data-ep="3">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">Quasi-experimental study</th><td><ul><li class="m">Interrupted time series design</li><li class="m">Causal diagrams (DAGs)</li><li class="m">Controlled before-after design</li></ul></td><td><ul><li><a href="https://doi.org/10.2105/AJPH.94.3.361" rel="noopener" target="_blank">TREND</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/" rel="noopener" target="_blank">ROBINS-I</a></li></ul></td></tr><tr><th scope="row">Matched controlled study</th><td><ul><li class="m">Propensity score methods</li><li class="m">Covariate balance diagnostics</li></ul></td><td><ul><li><a href="https://www.strobe-statement.org/" rel="noopener" target="_blank">STROBE</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/" rel="noopener" target="_blank">ROBINS-I</a></li></ul></td></tr><tr><th scope="row">Historically controlled trial</th><td><ul><li class="m">Historical data harmonisation</li><li class="m">Time-trend bias control</li></ul></td><td><ul><li><a href="https://www.strobe-statement.org/" rel="noopener" target="_blank">STROBE</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/" rel="noopener" target="_blank">ROBINS-I</a></li></ul></td></tr><tr><th scope="row">Geographically controlled study</th><td><ul><li class="m">Cluster definition</li><li class="m">Spatial analysis</li></ul></td><td><ul><li><a href="https://www.strobe-statement.org/" rel="noopener" target="_blank">STROBE</a></li></ul></td><td><ul><li><a href="https://www.riskofbias.info/" rel="noopener" target="_blank">ROBINS-I (cluster bias)</a></li></ul></td></tr></tbody><tbody data-k="4"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#97BDE8"><span class="ch" style="background:#97BDE8;color:#111">5</span>Uncontrolled trial<a class="toep" href="#evidence-pyramid" data-ep="4">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">Single-arm trial</th><td><ul><li><a href="https://doi.org/10.1016/0197-2456(89)90015-9" rel="noopener" target="_blank">Simon two-stage design</a></li><li class="m">Feasibility criteria</li></ul></td><td><ul><li><a href="https://doi.org/10.1186/s40814-019-0499-1" rel="noopener" target="_blank">Non-randomised pilot guideline</a></li><li><a href="https://doi.org/10.1136/bmj.i5239" rel="noopener" target="_blank">CONSORT pilot (randomised pilots)</a></li></ul></td><td><ul><li><a href="https://www.nhlbi.nih.gov/health-topics/study-quality-assessment-tools" rel="noopener" target="_blank">NIH pre-post tool</a></li><li><a href="https://www.riskofbias.info/" rel="noopener" target="_blank">ROBINS-I (if comparing)</a></li></ul></td></tr><tr><th scope="row">Pre-post (before-after) study</th><td><ul><li class="m">Repeated measures planning</li><li class="m">Secular trend control</li></ul></td><td><ul><li><a href="https://doi.org/10.2105/AJPH.94.3.361" rel="noopener" target="_blank">TREND (planned intervention)</a></li><li><a href="https://www.strobe-statement.org/" rel="noopener" target="_blank">STROBE (routine data)</a></li></ul></td><td><ul><li><a href="https://www.nhlbi.nih.gov/health-topics/study-quality-assessment-tools" rel="noopener" target="_blank">NIH pre-post tool</a></li></ul></td></tr><tr><th scope="row">Dose-escalation trial</th><td><ul><li class="m">3+3 design</li><li><a href="https://doi.org/10.2307/2531628" rel="noopener" target="_blank">Continual reassessment method</a></li><li><a href="https://doi.org/10.1136/bmj-2023-076386" rel="noopener" target="_blank">SPIRIT-DEFINE</a></li></ul></td><td><ul><li><a href="https://pubmed.ncbi.nlm.nih.gov/37863501/" rel="noopener" target="_blank">CONSORT-DEFINE</a></li></ul></td><td><ul><li class="m">No dedicated tool: check CONSORT-DEFINE items</li></ul></td></tr></tbody><tbody data-k="5"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#75A6DE"><span class="ch" style="background:#75A6DE;color:#111">6</span>Cohort study<a class="toep" href="#evidence-pyramid" data-ep="5">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">Cohort study</th><td><ul><li class="m">Causal diagrams (DAGs)</li><li><a href="https://doi.org/10.1093/aje/kwv254" rel="noopener" target="_blank">Target trial emulation</a></li></ul></td><td><ul><li><a href="https://www.strobe-statement.org/" rel="noopener" target="_blank">STROBE</a></li></ul></td><td><ul><li><a href="https://www.ohri.ca/programs/clinical_epidemiology/oxford.asp" rel="noopener" target="_blank">Newcastle-Ottawa Scale</a></li><li><a href="https://www.riskofbias.info/welcome/robins-e-tool" rel="noopener" target="_blank">ROBINS-E</a></li></ul></td></tr><tr><th scope="row">Registry-based cohort</th><td><ul><li class="m">Data linkage and validation</li></ul></td><td><ul><li><a href="https://doi.org/10.1371/journal.pmed.1001885" rel="noopener" target="_blank">RECORD</a></li></ul></td><td><ul><li><a href="https://www.ohri.ca/programs/clinical_epidemiology/oxford.asp" rel="noopener" target="_blank">Newcastle-Ottawa Scale</a></li><li><a href="https://www.riskofbias.info/welcome/robins-e-tool" rel="noopener" target="_blank">ROBINS-E</a></li></ul></td></tr></tbody><tbody data-k="6"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#4F8BCB"><span class="ch" style="background:#4F8BCB;color:#0A0A0A">7</span>Cross-sectional study<a class="toep" href="#evidence-pyramid" data-ep="6">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">Analytical cross-sectional study</th><td><ul><li class="m">Representative sampling frame</li></ul></td><td><ul><li><a href="https://www.strobe-statement.org/" rel="noopener" target="_blank">STROBE</a></li><li><a href="https://doi.org/10.2196/jmir.6.3.e34" rel="noopener" target="_blank">CHERRIES (online surveys)</a></li></ul></td><td><ul><li><a href="https://doi.org/10.1136/bmjopen-2016-011458" rel="noopener" target="_blank">AXIS</a></li><li><a href="https://jbi.global/critical-appraisal-tools" rel="noopener" target="_blank">JBI checklist</a></li></ul></td></tr><tr><th scope="row">Diagnostic accuracy study</th><td><ul><li class="m">Reference standard</li><li class="m">Consecutive patient spectrum</li></ul></td><td><ul><li><a href="https://doi.org/10.1136/bmj.h5527" rel="noopener" target="_blank">STARD 2015</a></li></ul></td><td><ul><li><a href="https://doi.org/10.7326/0003-4819-155-8-201110180-00009" rel="noopener" target="_blank">QUADAS-2</a></li></ul></td></tr></tbody><tbody data-k="7"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#2E75B6"><span class="ch" style="background:#2E75B6;color:#FFF">8</span>Case-control study<a class="toep" href="#evidence-pyramid" data-ep="7">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">Case-control study</th><td><ul><li class="m">Control selection</li><li class="m">Matching</li></ul></td><td><ul><li><a href="https://www.strobe-statement.org/" rel="noopener" target="_blank">STROBE</a></li></ul></td><td><ul><li><a href="https://www.ohri.ca/programs/clinical_epidemiology/oxford.asp" rel="noopener" target="_blank">Newcastle-Ottawa Scale</a></li><li><a href="https://jbi.global/critical-appraisal-tools" rel="noopener" target="_blank">JBI checklist</a></li></ul></td></tr></tbody><tbody data-k="8"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#548235"><span class="ch" style="background:#548235;color:#FFF">9</span>Case series<a class="toep" href="#evidence-pyramid" data-ep="8">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">Case series</th><td><ul><li class="m">Consecutive inclusion</li><li class="m">Pre-defined outcomes</li></ul></td><td><ul><li><a href="https://pubmed.ncbi.nlm.nih.gov/37988417/" rel="noopener" target="_blank">PROCESS (surgical)</a></li></ul></td><td><ul><li><a href="https://jbi.global/critical-appraisal-tools" rel="noopener" target="_blank">JBI checklist</a></li></ul></td></tr></tbody><tbody data-k="9"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#3DBE3D"><span class="ch" style="background:#3DBE3D;color:#0A0A0A">10</span>Case report<a class="toep" href="#evidence-pyramid" data-ep="9">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">Case report</th><td><ul><li class="m">Patient consent</li></ul></td><td><ul><li><a href="https://www.care-statement.org/" rel="noopener" target="_blank">CARE</a></li></ul></td><td><ul><li><a href="https://jbi.global/critical-appraisal-tools" rel="noopener" target="_blank">JBI checklist</a></li></ul></td></tr></tbody><tbody data-k="10"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#FFF2CC"><span class="ch" style="background:#FFF2CC;color:#111">11</span>Editorials, opinions and ideas<a class="toep" href="#evidence-pyramid" data-ep="10">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">Narrative review</th><td><ul><li class="m">Stated scope</li></ul></td><td><ul><li><a href="https://doi.org/10.1186/s41073-019-0064-8" rel="noopener" target="_blank">SANRA</a></li></ul></td><td><ul><li><a href="https://jbi.global/critical-appraisal-tools" rel="noopener" target="_blank">JBI text and opinion</a></li></ul></td></tr></tbody><tbody data-k="11"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#F79646"><span class="ch" style="background:#F79646;color:#111">12</span>Animal research<a class="toep" href="#evidence-pyramid" data-ep="11">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">In vivo efficacy study</th><td><ul><li><a href="https://norecopa.no/prepare" rel="noopener" target="_blank">PREPARE</a></li></ul></td><td><ul><li><a href="https://arriveguidelines.org/" rel="noopener" target="_blank">ARRIVE 2.0</a></li></ul></td><td><ul><li><a href="https://doi.org/10.1186/1471-2288-14-43" rel="noopener" target="_blank">SYRCLE risk of bias</a></li></ul></td></tr></tbody><tbody data-k="12"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:#C00000"><span class="ch" style="background:#C00000;color:#FFF">13</span>In vitro research<a class="toep" href="#evidence-pyramid" data-ep="12">Notes in the pyramid &uarr;</a></th></tr><tr><th scope="row">Cell-based assay</th><td><ul><li class="m">Randomised, blinded plate layout</li><li class="m">Biological replicates</li></ul></td><td><ul><li><a href="https://doi.org/10.1073/pnas.2103238118" rel="noopener" target="_blank">MDAR checklist</a></li></ul></td><td><ul><li><a href="https://www.scirap.org/" rel="noopener" target="_blank">SciRAP (in vitro)</a></li></ul></td></tr></tbody><tbody data-k="cosmin"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:var(--accent)"><span class="ch cm">M</span>Outside the pyramid · measurement instruments (COSMIN)<a class="toep" href="#cosmin">Taxonomy &darr;</a></th></tr><tr><th scope="row">Measurement properties study (PROMs and other outcome instruments)</th><td><ul><li><a href="https://www.cosmin.nl/" rel="noopener" target="_blank">COSMIN Study Design checklist</a></li></ul></td><td><ul><li><a href="https://pubmed.ncbi.nlm.nih.gov/33818733/" rel="noopener" target="_blank">COSMIN reporting guideline (PROMs)</a></li><li><a href="https://pubmed.ncbi.nlm.nih.gov/38977535/" rel="noopener" target="_blank">PRISMA-COSMIN for OMIs (reviews)</a></li></ul></td><td><ul><li><a href="https://doi.org/10.1007/s11136-017-1765-4" rel="noopener" target="_blank">COSMIN Risk of Bias checklist</a></li><li><a href="https://doi.org/10.1007/s11136-018-1798-3" rel="noopener" target="_blank">COSMIN guideline for reviews of PROMs</a></li></ul></td></tr></tbody><tfoot><tr><th scope="row">Every design</th><td colspan="3"><a href="https://www.equator-network.org/library/" rel="noopener" target="_blank">EQUATOR library</a> <a href="https://casp-uk.net/casp-tools-checklists/" rel="noopener" target="_blank">CASP checklists</a> <a href="https://jbi.global/critical-appraisal-tools" rel="noopener" target="_blank">JBI checklist</a></td></tr></tfoot></table></div><div class="cosmin" id="cosmin"><span class="k">Outside the pyramid · measurement instruments</span><span class="t">COSMIN taxonomy: 9 measurement properties</span><p class="cs">What to check before trusting a questionnaire, scale or test as an outcome measure.</p><div class="cds"><div class="cd cd-reliability"><h3>Reliability</h3><ul class="pr"><li><b>Internal consistency</b></li><li><b>Reliability</b><span>test-retest, inter-rater, intra-rater</span></li><li><b>Measurement error</b><span>test-retest, inter-rater, intra-rater</span></li></ul></div><div class="cd cd-validity"><h3>Validity</h3><ul class="pr"><li><b>Content validity</b><span>including face validity</span></li><li><b>Criterion validity</b><span>concurrent, predictive</span></li></ul><div class="cg"><span class="cgt">Construct validity</span><ul class="pr"><li><b>Structural validity</b></li><li><b>Hypotheses testing</b><span>for construct validity</span></li><li><b>Cross-cultural validity</b><span>measurement invariance</span></li></ul></div></div><div class="cd cd-responsiveness"><h3>Responsiveness</h3><ul class="pr"><li><b>Responsiveness</b></li></ul></div></div><p class="cr">Taxonomy: <a href="https://doi.org/10.1016/j.jclinepi.2010.02.006" rel="noopener" target="_blank">Mokkink et al., 2010</a> · <a href="https://www.cosmin.nl/" rel="noopener" target="_blank">cosmin.nl</a></p></div><style>
+  h2.lib { font-size: 21px; font-weight: 800; margin: 36px 0 6px; color: var(--accent); border-bottom: 1px solid #2E2E2E; padding-bottom: 6px; }
+  .tools .dt { display: none; margin-top: 4px; }
+  .tools .sub .w { display: none; }
+  @media (min-width: 700px) { .tools .dt { display: block; } .tools .tc, .tools .sub .n { display: none; } .tools .sub .w { display: inline; } }
+  .tools .dt-f { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+  .tools .dt-f button { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--soft);
+       border: 1px solid #2E2E2E; border-radius: 999px; padding: 4px 10px 4px 5px; font: 600 12px Inter, system-ui, sans-serif; cursor: pointer; }
+  .tools .dt-f button[data-f=""] { padding-left: 10px; }
+  .tools .dt-f button:hover { border-color: var(--muted); color: var(--text); }
+  .tools .dt-f button[aria-pressed="true"] { border-color: var(--accent); color: var(--text); background: #161616; }
+  .tools .ch { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; flex: none;
+       font: 800 11px Inter, system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+  .tools .ch.cm { background: var(--accent); color: #0A0A0A; }
+  .tools table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; font-size: 13.5px;
+       background: #0F0F0F; border: 1px solid #2E2E2E; border-radius: 14px; }
+  .tools col.c1 { width: 23%; } .tools col.c2 { width: 27%; } .tools col.c3, .tools col.c4 { width: 25%; }
+  .tools thead th { position: sticky; top: 0; z-index: 2; background: #0F0F0F; text-align: left; padding: 12px 12px 8px;
+       font: 800 11.5px Inter, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--accent);
+       border-bottom: 1px solid #2E2E2E; }
+  .tools thead th:first-child { border-top-left-radius: 14px; } .tools thead th:last-child { border-top-right-radius: 14px; }
+  .tools tbody th, .tools td { vertical-align: top; text-align: left; padding: 9px 12px; border-top: 1px solid #1F1F1F; }
+  .tools tbody th[scope="row"] { font-weight: 700; color: var(--text); line-height: 1.35; }
+  .tools tr.lh th { background: #141414; padding: 9px 12px; border-top: 1px solid #2E2E2E; font: 700 15px "Source Serif 4", Georgia, serif;
+       color: var(--text); box-shadow: inset 4px 0 0 var(--lc); }
+  .tools tr.lh th > span.ch { margin-right: 8px; vertical-align: 1px; }
+  .tools tr.lh a.toep { float: right; font: 600 12px Inter, system-ui, sans-serif; color: var(--soft); text-decoration: none; margin-top: 2px; }
+  .tools tr.lh a.toep:hover { color: var(--text); text-decoration: underline; }
+  .tools td ul { list-style: none; margin: 0; padding: 0; }
+  .tools td li { margin: 0 0 3px; line-height: 1.35; }
+  .tools td li a { display: inline; padding: 0; border-top: 0; font-size: inherit; color: var(--accent); font-weight: 700; text-decoration: none; }
+  .tools td li a:hover, .tools td li a:focus-visible { text-decoration: underline; }
+  .tools td li.m { color: var(--soft); }
+  .tools td li.m::before { content: "· "; color: var(--muted); }
+  .tools tfoot th, .tools tfoot td { padding: 11px 12px; border-top: 1px solid #2E2E2E; text-align: left; vertical-align: top; }
+  .tools tfoot td a { color: var(--accent); font-weight: 700; text-decoration: none; margin-right: 14px; }
+  .tools tfoot td a:hover { text-decoration: underline; }
+  .tools tbody[hidden] { display: none; }
+  .tools .dt a:focus-visible, .tools .dt button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  .tools .cosmin { margin-top: 14px; background: #0F0F0F; border: 1px solid #2E2E2E; border-radius: 14px; padding: 16px; }
+  .tools .cosmin .cs { color: var(--soft); font-size: 14px; margin: 0 0 12px; }
+  .tools .cds { display: grid; gap: 12px; grid-template-columns: 1fr; }
+  @media (min-width: 700px) { .tools .cds { grid-template-columns: 1fr 1.55fr 1fr; align-items: start; } }
+  .tools .cd { border: 1px solid #2E2E2E; border-radius: 12px; padding: 12px; background: #121212; }
+  .tools .cd h3 { margin: 0 0 8px; font-size: 17px; color: var(--accent); }
+  .tools .pr { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .tools .pr li { background: #1A1A1A; border-radius: 8px; padding: 6px 10px; font-size: 13.5px; line-height: 1.3; }
+  .tools .pr li b { display: block; font-weight: 700; }
+  .tools .pr li span { color: var(--soft); font-size: 12px; }
+  .tools .cg { margin-top: 8px; border: 1px dashed #3A3A3A; border-radius: 10px; padding: 8px; }
+  .tools .cgt { display: block; font: 800 11.5px Inter, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase;
+       color: var(--muted); margin: 0 0 6px 2px; }
+  .tools .cosmin .cr { color: var(--muted); font-size: 12.5px; margin: 12px 0 0; }
+  .tools .cosmin .cr a { color: var(--soft); }
+</style><script>
+(function () {
+  var box = document.getElementById("design-tools"); if (!box) return;
+  var bodies = box.querySelectorAll("tbody[data-k]"), btns = box.querySelectorAll(".dt-f button");
+  function show(f) {
+    for (var i = 0; i < bodies.length; i++) bodies[i].hidden = f !== "" && bodies[i].getAttribute("data-k") !== f;
+    for (var j = 0; j < btns.length; j++) btns[j].setAttribute("aria-pressed", String(btns[j].getAttribute("data-f") === f));
+  }
+  box.addEventListener("click", function (e) {
+    var b = e.target.closest(".dt-f button"); if (b) { show(b.getAttribute("data-f")); return; }
+    var a = e.target.closest("a.toep"); if (!a) return;
+    if (a.hasAttribute("data-ep") && document.getElementById("evidence-pyramid")) {
+      e.preventDefault();
+      document.dispatchEvent(new CustomEvent("ep:show", { detail: +a.getAttribute("data-ep") }));
+    }
+  });
+  document.addEventListener("ep:table", function (e) { show(String(e.detail)); });
+})();
+</script></section>
+  <h2 class="lib" id="carousels">Methodology carousels</h2>
   <p class="intro">Every methodology carousel we have published: swipe through the slides here, no Instagram account needed.
   Key points and references under each one. New topics every day.</p>
   <form class="filters" role="search" aria-label="Filter topics" data-noun="topics" onsubmit="return false">
@@ -114,7 +702,7 @@
     <label>Topic<select name="area"><option value="">All topics</option></select></label>
     <div class="status"><span class="count" aria-live="polite">0 topics</span><button type="reset" hidden>Clear filters</button></div>
   </form>
-<section class="tools" id="tools"><h2>Tools by study design</h2><p class="sub">Official tools to draft the protocol, report it properly and appraise the evidence, by study design.</p><div class="row"><div class="tool"><span class="k">Protocol draft</span><span class="t">Draft your protocol</span><ul><li><a href="https://www.spirit-statement.org/" rel="noopener" target="_blank"><b>SPIRIT</b><span>Randomised trials</span></a></li><li><a href="https://www.prisma-statement.org/protocols" rel="noopener" target="_blank"><b>PRISMA-P</b><span>Systematic reviews</span></a></li><li><a href="https://www.crd.york.ac.uk/prospero/" rel="noopener" target="_blank"><b>PROSPERO</b><span>Review registration</span></a></li><li><a href="https://www.equator-network.org/library/" rel="noopener" target="_blank"><b>EQUATOR library</b><span>All designs</span></a></li></ul></div><div class="tool"><span class="k">Reporting</span><span class="t">Reporting guidelines</span><ul><li><a href="https://www.consort-statement.org/" rel="noopener" target="_blank"><b>CONSORT</b><span>Randomised trials</span></a></li><li><a href="https://www.strobe-statement.org/" rel="noopener" target="_blank"><b>STROBE</b><span>Observational studies</span></a></li><li><a href="https://www.prisma-statement.org/" rel="noopener" target="_blank"><b>PRISMA</b><span>Systematic reviews</span></a></li><li><a href="https://www.care-statement.org/" rel="noopener" target="_blank"><b>CARE</b><span>Case reports</span></a></li><li><a href="https://www.equator-network.org/" rel="noopener" target="_blank"><b>EQUATOR Network</b><span>Every design</span></a></li></ul></div><div class="tool"><span class="k">Clinical appraisal</span><span class="t">Appraise the evidence</span><ul><li><a href="https://casp-uk.net/casp-tools-checklists/" rel="noopener" target="_blank"><b>CASP checklists</b><span>Trials, cohorts, qualitative…</span></a></li><li><a href="https://jbi.global/critical-appraisal-tools" rel="noopener" target="_blank"><b>JBI tools</b><span>All study types</span></a></li><li><a href="https://www.riskofbias.info/" rel="noopener" target="_blank"><b>RoB 2 · ROBINS-I</b><span>Risk of bias (RCTs, NRSI)</span></a></li><li><a href="https://amstar.ca/" rel="noopener" target="_blank"><b>AMSTAR 2</b><span>Systematic reviews</span></a></li></ul></div></div></section>
+
 
   <footer>
     Educational content for researchers and health professionals; always refer to the original references.<br>
@@ -157,7 +745,7 @@
   function start() {
     if (started || !wide.matches) return;
     started = true;
-    var COLORS = ["#88B0F8", "#88B0F8", "#4F658C", "#2F3B51"];
+    var COLORS = ["#3DD9C1", "#14A085", "#FFFFFF", "#7F96AB"];
     var GREYS = ["#0A0A0A", "#2E2E2E", "#5A5A5A", "#8A8A8A"];
     var SIZES = [4, 6, 8, 10, 12], SHAPES = [[], [], [[1, 0]], [[0, 1]], [[1, 0], [0, 1]], [[1, 0], [1, 1]]];
     function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
