@@ -1,0 +1,14 @@
+{
+ "workflow": "Aggiorna posizioni accademiche",
+ "quota_day": "2026-11-08",
+ "consumo": {
+  "verifica posizioni|gemini-flash-latest": {
+   "richieste": 1,
+   "ingresso": 2830,
+   "uscita": 355,
+   "ragionamento": 1164,
+   "respinte": 0,
+   "versione": "gemini-3.8-flash"
+  }
+ }
+}

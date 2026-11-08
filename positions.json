@@ -4167,5 +4167,25 @@
     "deadline_evidence": "Closes: 10th November 2026",
     "summary": "Join the Oxford Respiratory Trials Unit as a Clinical Research Nurse. You will coordinate patient care, collect biological samples, and manage trial data for observational studies, CTIMPs, and medical device trials focusing on respiratory conditions. Key requirements include being an NMC Registered Adult Nurse with excellent record-keeping skills.",
     "topic": "Clinical research nursing in respiratory diseases and trials"
+  },
+  "POS-23fa7540a65d": {
+    "status": "ok",
+    "checked": "2026-11-08",
+    "first_seen": "2026-11-08",
+    "url": "https://www.jobs.ac.uk/job/DTN912/postdoctoral-research-fellow-technology-enabled-rehabilitation",
+    "source": "jobs.ac.uk – rehabilitation",
+    "is_open": "yes",
+    "type": "postdoc",
+    "relevance": "high",
+    "area": "rehabilitation",
+    "title": "Postdoctoral Research Fellow (Technology Enabled Rehabilitation)",
+    "institution": "University of Exeter",
+    "country": "United Kingdom",
+    "city": "Exeter",
+    "deadline": "2026-11-19",
+    "deadline_evidence": "Closes: 19th November 2026",
+    "summary": "The Postdoctoral Fellow will develop and evaluate home-based, technology-enabled rehabilitation protocols for stroke and neurological/ageing disorders using motion capture, virtual reality, and fNIRS. Key responsibilities include leading clinical assessments and data collection. Candidates must hold a relevant PhD and be a qualified, state-registered Health Professional.",
+    "topic": "Technology-enabled rehabilitation for neurological disorders",
+    "duration": "until 31st December 2029"
   }
 }
