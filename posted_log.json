@@ -608,5 +608,17 @@
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mzdhyqifpa2k",
     "threads_id": "18148443970497211",
     "reposted": "2026-11-02"
+  },
+  {
+    "date": "2026-11-08",
+    "time": "2026-11-08T20:15:38+00:00",
+    "id": "kickoff-funding-calls",
+    "title": "Research funding calls, four days a week",
+    "source": "Announcement",
+    "media_id": "18182362720431104",
+    "facebook_id": "1277022912171972_122116519671432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mzt7z22clz2q",
+    "threads_id": "18040879985894522",
+    "kind": "announcement"
   }
 ]
