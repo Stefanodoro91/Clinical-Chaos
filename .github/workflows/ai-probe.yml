@@ -29,14 +29,14 @@ jobs:
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           DRY_RUN: "true"
         run: |
-          if [ "${{ inputs.mode }}" = "figures" ]; then python tools/figure_probe.py; elif [ "${{ inputs.mode }}" = "visuals" ]; then python tools/visual_probe.py; elif [ "${{ inputs.mode }}" = "links" ]; then python tools/link_probe.py; else python tools/ai_probe.py; fi
+          if [ "${{ inputs.mode }}" = "figures" ]; then python tools/figure_probe.py; elif [ "${{ inputs.mode }}" = "visuals" ]; then python tools/visual_probe.py; elif [ "${{ inputs.mode }}" = "links" ]; then python tools/link_probe.py; elif [ "${{ inputs.mode }}" = "reels" ]; then python tools/kickoff_reels.py; else python tools/ai_probe.py; fi
       - name: Figure su un ramo di prova (solo modalità figures)
-        if: always() && (inputs.mode == 'figures' || inputs.mode == 'visuals')
+        if: always() && (inputs.mode == 'figures' || inputs.mode == 'visuals' || inputs.mode == 'reels')
         run: |
           git config user.name "research-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           mkdir -p /tmp/pf && cp -r probe_fig probe.md /tmp/pf/ 2>/dev/null || true
-          git checkout -q --orphan probe-figures && git rm -rq --cached . && git clean -fdq -e probe_fig
+          git checkout -q --orphan probe-figures && git rm -rq --cached . && git clean -fdq -e probe_fig -e probe.md
           cp -r /tmp/pf/* . && git add probe_fig probe.md && git commit -qm "Prova figure" && git push -qf origin probe-figures
       - uses: actions/upload-artifact@v7
         if: always()
