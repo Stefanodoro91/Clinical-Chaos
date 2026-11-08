@@ -3881,20 +3881,21 @@
   },
   "GG-PAR-25-145": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-08",
     "official_source": "NIH Guide PAR-25-145",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-145.html",
     "is_open_call": "yes",
     "title": "Clinical Characterization of Cancer Therapy-induced Adverse Sequelae and Mechanism-based Interventional Strategies",
-    "programme": "NIH – US National Institutes of Health",
+    "programme": "National Cancer Institute (NCI)",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity promotes research studies addressing chronic or delayed adverse sequelae resulting from cancer therapies. It supports basic, translational, and clinical research projects to identify mechanisms of therapy-induced adverse sequelae, clinically characterize them, and translate findings into preventive or therapeutic approaches. Eligible applicants include higher education institutions, non-profits, for-profit organizations, governments, and foreign organizations. Projects can include clinical trials.",
+    "summary": "This call supports basic, translational, and clinical research to address chronic or delayed adverse effects of cancer therapies. It aims to identify mechanisms, characterize clinical phenotypes, and develop interventional strategies to prevent or minimize long-term sequelae. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and foreign entities. Research should focus on persistent toxicities like neuropathy or cardiovascular issues, utilizing biomarkers, imaging, or patient-reported outcomes to validate clinical endpoints for future trials.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2025-02-05",
       "2025-06-05",
@@ -3923,9 +3924,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2025-02-05 | February 05, 2025 * March 05, 2025 * Not Applicable July 2025 October 2025 December 2025"
+    "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-08",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-PAR-25-136": {
     "status": "ok",
@@ -7827,21 +7834,21 @@
   },
   "GG-PAR-25-265": {
     "status": "ok",
-    "checked": "2026-10-26",
+    "checked": "2026-11-08",
     "official_source": "NIH Guide PAR-25-265",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-265.html",
     "is_open_call": "yes",
     "title": "Innovative Screening Approaches and Therapies for Screenable Disorders in Newborns (R01 - Clinical Trial Optional)",
-    "programme": "NIH – US National Institutes of Health",
+    "programme": "Hunter Kelly Newborn Screening Research Program",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity encourages research to develop novel screening approaches and therapeutic interventions for conditions identified through newborn screening, or genetic conditions that could benefit from early detection. It funds basic, translational, and clinical studies, including optional clinical trials, aimed at improving health outcomes for infants with genetic or congenital disorders. Eligible applicants include higher education institutions, non-profits, for-profit organizations, local and state governments, and non-domestic foreign organizations.",
+    "summary": "This funding opportunity supports research on novel screening approaches and therapeutic interventions for conditions included in newborn screening panels, or potentially fatal or disabling conditions that could benefit from early detection. It funds R01 research project grants, with optional clinical trials, for up to five years. Higher education institutions, non-profits, for-profit entities, and foreign organizations are eligible to apply as lead applicants.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
-    "model": "gemini-3.5-flash-lite",
+    "model": "gemini-3.8-flash",
     "due_dates": [
       "2025-02-05",
       "2025-06-05",
@@ -7870,9 +7877,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research may be the PD/PI.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2027-02-05 | February 05, 2027 *"
+    "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3.8-flash",
+      "date": "2026-11-08",
+      "changed": [],
+      "screening_model": "gemini-3.5-flash-lite"
+    }
   },
   "GG-PAR-25-266": {
     "status": "ok",
