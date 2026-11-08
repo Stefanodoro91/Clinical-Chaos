@@ -194,24 +194,192 @@ PYRAMID_PART = Path(__file__).parent / "site_parts" / "evidence_pyramid.html"
 
 def pyramid_block(cfg):
     """Piramide delle evidenze interattiva, sotto «Tools by study design». Esce solo con "evidence_pyramid": true in
-    config.json (spenta finché Stefano non la approva). Il frammento è autonomo: CSS con prefisso .ep, script chiuso."""
+    config.json (spenta finché Stefano non la approva). Il frammento è autonomo: CSS con prefisso .ep, script chiuso.
+    Con "tools_table_v2" le schede dei livelli mostrano anche gli strumenti di ogni variante (design_tools.ROWS)."""
     if not cfg.get("evidence_pyramid") or not PYRAMID_PART.exists():
         return ""
-    return "\n" + PYRAMID_PART.read_text(encoding="utf-8")       # passato come valore a format(): graffe intatte
+    part = PYRAMID_PART.read_text(encoding="utf-8")
+    if cfg.get("tools_table_v2"):
+        import design_tools as dt
+        data = {}
+        for k, name, p, r, a in dt.ROWS:                       # livello → [[disegno, progetto, reporting, valutazione]]
+            data.setdefault(k, []).append([name, p, r, a])
+        blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+        part = part.replace("/*EP_TOOLS*/{}", blob, 1)
+    return "\n" + part                                          # passato come valore a format(): graffe intatte
 
 
-def tools_block(cfg):
-    """Strumenti ufficiali per disegno di studio: protocollo, reporting, valutazione critica (link alle pagine ufficiali)."""
-    if not cfg.get("tools_block", True):
-        return ""
+def _tool_cards():
     cards_ = []
     for kicker, title, links in TOOLS:
         rows = "".join(f'<li><a href="{escape(u, quote=True)}" rel="noopener" target="_blank"><b>{escape(n)}</b>'
                        f'<span>{escape(d)}</span></a></li>' for d, n, u in links)
         cards_.append(f'<div class="tool"><span class="k">{kicker}</span><span class="t">{title}</span><ul>{rows}</ul></div>')
+    return "".join(cards_)
+
+
+def tools_block(cfg):
+    """Strumenti ufficiali per disegno di studio: protocollo, reporting, valutazione critica (link alle pagine ufficiali).
+    Con "tools_table_v2": tabella ampliata per disegno, nell'ordine della piramide (computer e tablet), schede compatte
+    di oggi sul telefono, tassonomia COSMIN sotto per tutti."""
+    if not cfg.get("tools_block", True):
+        return ""
+    if not cfg.get("tools_table_v2"):
+        return ('<section class="tools" id="tools"><h2>Tools by study design</h2>'
+                '<p class="sub">Official tools to draft the protocol, report it properly and appraise the evidence, by study design.</p>'
+                f'<div class="row">{_tool_cards()}</div></section>')
+    return _tools_v2(cfg)
+
+
+def _tlist(items):
+    out = []
+    for name, url in items:
+        if url:
+            out.append(f'<li><a href="{escape(url, quote=True)}" rel="noopener" target="_blank">{escape(name)}</a></li>')
+        else:
+            out.append(f'<li class="m">{escape(name)}</li>')
+    return f'<ul>{"".join(out)}</ul>'
+
+
+def _cosmin_html():
+    import design_tools as dt
+    c = dt.COSMIN
+
+    def props(items):
+        return "".join(f'<li><b>{escape(n)}</b>{f"<span>{escape(d)}</span>" if d else ""}</li>' for n, d in items)
+    doms = []
+    for name, items, group in c["domains"]:
+        inner = f'<ul class="pr">{props(items)}</ul>'
+        if group:
+            inner += (f'<div class="cg"><span class="cgt">{escape(group[0])}</span>'
+                      f'<ul class="pr">{props(group[1])}</ul></div>')
+        doms.append(f'<div class="cd cd-{_slug(name)}"><h3>{escape(name)}</h3>{inner}</div>')
+    tax_n, tax_u = c["taxonomy"]
+    return ('<div class="cosmin" id="cosmin"><span class="k">Outside the pyramid · measurement instruments</span>'
+            '<span class="t">COSMIN taxonomy: 9 measurement properties</span>'
+            '<p class="cs">What to check before trusting a questionnaire, scale or test as an outcome measure.</p>'
+            f'<div class="cds">{"".join(doms)}</div>'
+            f'<p class="cr">Taxonomy: <a href="{escape(tax_u, quote=True)}" rel="noopener" target="_blank">{escape(tax_n)}</a>'
+            ' · <a href="https://www.cosmin.nl/" rel="noopener" target="_blank">cosmin.nl</a></p></div>')
+
+
+TOOLS_V2_CSS = """<style>
+  .tools .dt { display: none; margin-top: 4px; }
+  .tools .sub .w { display: none; }
+  @media (min-width: 700px) { .tools .dt { display: block; } .tools .tc, .tools .sub .n { display: none; } .tools .sub .w { display: inline; } }
+  .tools .dt-f { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+  .tools .dt-f button { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--soft);
+       border: 1px solid #2E2E2E; border-radius: 999px; padding: 4px 10px 4px 5px; font: 600 12px Inter, system-ui, sans-serif; cursor: pointer; }
+  .tools .dt-f button[data-f=""] { padding-left: 10px; }
+  .tools .dt-f button:hover { border-color: var(--muted); color: var(--text); }
+  .tools .dt-f button[aria-pressed="true"] { border-color: var(--accent); color: var(--text); background: #161616; }
+  .tools .ch { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; flex: none;
+       font: 800 11px Inter, system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+  .tools .ch.cm { background: var(--accent); color: #0A0A0A; }
+  .tools table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; font-size: 13.5px;
+       background: #0F0F0F; border: 1px solid #2E2E2E; border-radius: 14px; }
+  .tools col.c1 { width: 23%; } .tools col.c2 { width: 27%; } .tools col.c3, .tools col.c4 { width: 25%; }
+  .tools thead th { position: sticky; top: 0; z-index: 2; background: #0F0F0F; text-align: left; padding: 12px 12px 8px;
+       font: 800 11.5px Inter, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--accent);
+       border-bottom: 1px solid #2E2E2E; }
+  .tools thead th:first-child { border-top-left-radius: 14px; } .tools thead th:last-child { border-top-right-radius: 14px; }
+  .tools tbody th, .tools td { vertical-align: top; text-align: left; padding: 9px 12px; border-top: 1px solid #1F1F1F; }
+  .tools tbody th[scope="row"] { font-weight: 700; color: var(--text); line-height: 1.35; }
+  .tools tr.lh th { background: #141414; padding: 9px 12px; border-top: 1px solid #2E2E2E; font: 700 15px "Source Serif 4", Georgia, serif;
+       color: var(--text); box-shadow: inset 4px 0 0 var(--lc); }
+  .tools tr.lh th > span.ch { margin-right: 8px; vertical-align: 1px; }
+  .tools tr.lh a.toep { float: right; font: 600 12px Inter, system-ui, sans-serif; color: var(--soft); text-decoration: none; margin-top: 2px; }
+  .tools tr.lh a.toep:hover { color: var(--text); text-decoration: underline; }
+  .tools td ul { list-style: none; margin: 0; padding: 0; }
+  .tools td li { margin: 0 0 3px; line-height: 1.35; }
+  .tools td li a { display: inline; padding: 0; border-top: 0; font-size: inherit; color: var(--accent); font-weight: 700; text-decoration: none; }
+  .tools td li a:hover, .tools td li a:focus-visible { text-decoration: underline; }
+  .tools td li.m { color: var(--soft); }
+  .tools td li.m::before { content: "· "; color: var(--muted); }
+  .tools tfoot th, .tools tfoot td { padding: 11px 12px; border-top: 1px solid #2E2E2E; text-align: left; vertical-align: top; }
+  .tools tfoot td a { color: var(--accent); font-weight: 700; text-decoration: none; margin-right: 14px; }
+  .tools tfoot td a:hover { text-decoration: underline; }
+  .tools tbody[hidden] { display: none; }
+  .tools .dt a:focus-visible, .tools .dt button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  .tools .cosmin { margin-top: 14px; background: #0F0F0F; border: 1px solid #2E2E2E; border-radius: 14px; padding: 16px; }
+  .tools .cosmin .cs { color: var(--soft); font-size: 14px; margin: 0 0 12px; }
+  .tools .cds { display: grid; gap: 12px; grid-template-columns: 1fr; }
+  @media (min-width: 700px) { .tools .cds { grid-template-columns: 1fr 1.55fr 1fr; align-items: start; } }
+  .tools .cd { border: 1px solid #2E2E2E; border-radius: 12px; padding: 12px; background: #121212; }
+  .tools .cd h3 { margin: 0 0 8px; font-size: 17px; color: var(--accent); }
+  .tools .pr { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .tools .pr li { background: #1A1A1A; border-radius: 8px; padding: 6px 10px; font-size: 13.5px; line-height: 1.3; }
+  .tools .pr li b { display: block; font-weight: 700; }
+  .tools .pr li span { color: var(--soft); font-size: 12px; }
+  .tools .cg { margin-top: 8px; border: 1px dashed #3A3A3A; border-radius: 10px; padding: 8px; }
+  .tools .cgt { display: block; font: 800 11.5px Inter, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase;
+       color: var(--muted); margin: 0 0 6px 2px; }
+  .tools .cosmin .cr { color: var(--muted); font-size: 12.5px; margin: 12px 0 0; }
+  .tools .cosmin .cr a { color: var(--soft); }
+</style>"""
+
+TOOLS_V2_JS = """<script>
+(function () {
+  var box = document.getElementById("design-tools"); if (!box) return;
+  var bodies = box.querySelectorAll("tbody[data-k]"), btns = box.querySelectorAll(".dt-f button");
+  function show(f) {
+    for (var i = 0; i < bodies.length; i++) bodies[i].hidden = f !== "" && bodies[i].getAttribute("data-k") !== f;
+    for (var j = 0; j < btns.length; j++) btns[j].setAttribute("aria-pressed", String(btns[j].getAttribute("data-f") === f));
+  }
+  box.addEventListener("click", function (e) {
+    var b = e.target.closest(".dt-f button"); if (b) { show(b.getAttribute("data-f")); return; }
+    var a = e.target.closest("a.toep"); if (!a) return;
+    if (a.hasAttribute("data-ep") && document.getElementById("evidence-pyramid")) {
+      e.preventDefault();
+      document.dispatchEvent(new CustomEvent("ep:show", { detail: +a.getAttribute("data-ep") }));
+    }
+  });
+  document.addEventListener("ep:table", function (e) { show(String(e.detail)); });
+})();
+</script>"""
+
+
+def _tools_v2(cfg):
+    import design_tools as dt
+    pyr = bool(cfg.get("evidence_pyramid"))
+    chips = ['<button type="button" data-f="" aria-pressed="true">All designs</button>']
+    for k, (name, col, txt) in enumerate(dt.LEVELS):
+        if any(r[0] == k for r in dt.ROWS):
+            chips.append(f'<button type="button" data-f="{k}" aria-pressed="false"><span class="ch" '
+                         f'style="background:{col};color:{txt}">{k + 1}</span>{escape(dt.SHORT[k])}</button>')
+    chips.append('<button type="button" data-f="cosmin" aria-pressed="false"><span class="ch cm">M</span>COSMIN</button>')
+    groups = []
+    for k, (name, col, txt) in enumerate(dt.LEVELS):
+        rows = [r for r in dt.ROWS if r[0] == k]
+        if not rows:
+            continue
+        link = (f'<a class="toep" href="#evidence-pyramid" data-ep="{k}">Notes in the pyramid &darr;</a>' if pyr else "")
+        body = [f'<tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:{col}"><span class="ch" '
+                f'style="background:{col};color:{txt}">{k + 1}</span>{escape(name)}{link}</th></tr>']
+        for _, design, p, r, a in rows:
+            body.append(f'<tr><th scope="row">{escape(design)}</th><td>{_tlist(p)}</td><td>{_tlist(r)}</td><td>{_tlist(a)}</td></tr>')
+        groups.append(f'<tbody data-k="{k}">{"".join(body)}</tbody>')
+    c = dt.COSMIN
+    groups.append('<tbody data-k="cosmin"><tr class="lh"><th colspan="4" scope="rowgroup" style="--lc:var(--accent)">'
+                  '<span class="ch cm">M</span>Outside the pyramid · measurement instruments (COSMIN)'
+                  '<a class="toep" href="#cosmin">Taxonomy &darr;</a></th></tr>'
+                  '<tr><th scope="row">Measurement properties study (PROMs and other outcome instruments)</th>'
+                  f'<td>{_tlist(c["design"])}</td><td>{_tlist(c["report"])}</td><td>{_tlist(c["appraise"])}</td></tr></tbody>')
+    every = " ".join(f'<a href="{escape(u, quote=True)}" rel="noopener" target="_blank">{escape(n)}</a>' for n, u in dt.EVERY)
+    table = ('<div class="dt" id="design-tools">'
+             f'<div class="dt-f" role="group" aria-label="Show one level of the pyramid">{"".join(chips)}</div>'
+             '<table><caption hidden>Tools to design, report and appraise each study design</caption>'
+             '<colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"></colgroup>'
+             '<thead><tr><th scope="col">Study design</th><th scope="col">Design &amp; protocol</th>'
+             '<th scope="col">Reporting</th><th scope="col">Critical appraisal</th></tr></thead>'
+             + "".join(groups) +
+             f'<tfoot><tr><th scope="row">Every design</th><td colspan="3">{every}</td></tr></tfoot></table></div>')
     return ('<section class="tools" id="tools"><h2>Tools by study design</h2>'
-            '<p class="sub">Official tools to draft the protocol, report it properly and appraise the evidence, by study design.</p>'
-            f'<div class="row">{"".join(cards_)}</div></section>')
+            '<p class="sub"><span class="w">Official tools to plan, report and appraise each study design, in the order of '
+            'the evidence pyramid. Linked names open the official page or paper; the others are methods to plan for.</span>'
+            '<span class="n">Official tools to draft the protocol, report it properly and appraise the evidence. '
+            'Each level of the pyramid below lists the tools for its designs.</span></p>'
+            f'<div class="row tc">{_tool_cards()}</div>{table}{_cosmin_html()}{TOOLS_V2_CSS}{TOOLS_V2_JS}</section>')
 
 
 def build_page(data, cfg, today=None):

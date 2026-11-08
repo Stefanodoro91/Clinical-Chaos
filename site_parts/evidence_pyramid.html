@@ -69,6 +69,20 @@
   .ep .vrow { padding: 6px 0; }
   .ep .vrow dt { font: 700 22px/1.1 var(--ep-hand); margin: 0; }
   .ep .vrow dd { margin: 0; font: 400 16px/1.4 var(--ep-note); color: var(--soft); }
+  .ep .tls { margin-top: 6px; display: grid; gap: 4px; }
+  .ep .trow { padding: 8px 0 6px; border-top: 1px dashed var(--ep-board-line); }
+  .ep .trow:first-child { border-top: 0; }
+  .ep .trow dt { font: 700 22px/1.1 var(--ep-hand); margin: 0 0 4px; }
+  .ep .trow dd { margin: 2px 0; display: grid; grid-template-columns: 74px 1fr; gap: 8px; align-items: baseline; }
+  .ep .trow .tk { font: 800 10.5px Inter, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .ep .trow .ti { font: 500 14px/1.45 Inter, system-ui, sans-serif; color: var(--soft); }
+  .ep .trow .ti a { color: var(--ep-chalk); font-weight: 700; text-decoration: underline; text-decoration-style: dotted;
+                    text-underline-offset: 3px; text-decoration-color: currentColor; }
+  .ep .trow .ti a:hover, .ep .trow .ti a:focus-visible { text-decoration-style: solid; }
+  .ep .trow .ti .sep { color: var(--muted); padding: 0 4px; }
+  .ep .totable { display: none; margin: 10px 0 0; font: 600 13px Inter, system-ui, sans-serif; color: var(--soft); background: none;
+                 border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  @media (min-width: 700px) { .ep .totable.on { display: inline-block; } }
   .ep .drawn { stroke-dasharray: 1; stroke-dashoffset: 1; animation: ep-draw .55s ease-out forwards; }
   @keyframes ep-draw { to { stroke-dashoffset: 0; } }
 
@@ -142,6 +156,8 @@ const L = [
      ['Factorial RCT','Tests two or more interventions at once, in combination.'],
      ['Platform / adaptive trial','Arms can be added, dropped or re-weighted as data accrue.'],
      ['Non-inferiority / equivalence trial','Tests that a new treatment is not meaningfully worse.'],
+     ['Pragmatic RCT','Tests the intervention in usual care, with broad eligibility and flexible delivery.'],
+     ['Zelen design (randomised consent)','Randomises before consent; only the intervention group is asked to consent to the new treatment.'],
      ['cmRCT (trials within cohorts)','Randomises patients drawn from an existing observational cohort.']] },
  { name:'Non-randomised controlled trial', short:'Non-randomised trial', fam:'Experimental', c:'#B3CFEE', t:'#111', ink:'#A6C6EA',
    q:'Does the intervention work when randomisation is not possible?',
@@ -153,7 +169,9 @@ const L = [
      ['Quasi-experimental study','Intervention assigned by circumstance, not chance.'],
      ['Controlled before-after study','Before-after measurements in an intervention group and a concurrent control group.'],
      ['Interrupted time series','Repeated measurements before and after a policy or change.'],
-     ['Historically controlled trial','New treatment compared with outcomes from past patients.']] },
+     ['Matched controlled study','Each treated patient is compared with similar untreated patients (e.g. propensity score matching).'],
+     ['Historically controlled trial','New treatment compared with outcomes from past patients.'],
+     ['Geographically controlled study','The intervention runs in one area and a comparable area acts as control.']] },
  { name:'Uncontrolled trial', short:'Uncontrolled trial', fam:'Experimental · no control group', c:'#97BDE8', t:'#111', ink:'#97BDE8',
    q:'Does the outcome change after an intervention, with no comparison group?',
    d:{ l:{t:'One group', i:['Baseline']}, r:{t:'Follow-up', i:['Outcome']}, k:[[0,0]], a:'fwd', time:'t (prospective, no control group)' },
@@ -163,6 +181,7 @@ const L = [
    designs:[['Single-arm trial','All participants receive the intervention; no comparison group.'],
      ['Pre-post (before-after) study','The same group measured before and after the intervention.'],
      ['Phase I / II trial','Early trials on safety, dosing and first signs of effect, often single-arm.'],
+     ['Dose-escalation trial','Small cohorts receive rising doses until a safe dose is found (e.g. 3+3, CRM).'],
      ['Feasibility / pilot study','Tests whether a full trial can be run; often without a control group.']] },
  { name:'Cohort study', short:'Cohort studies', fam:'Observational', c:'#75A6DE', t:'#111', ink:'#8CC152',
    q:'Is an exposure linked to an outcome over time?',
@@ -239,6 +258,8 @@ const L = [
      ['Organoid / organ-on-chip study','Lab-grown tissue models standing in for an organ.']] }
 ];
 L.forEach((x, k) => { x.n = k + 1; });
+/* tools by design for each level (design_tools.py, filled in by methodology.pyramid_block): {level: [[design, plan, report, appraise]]} */
+const TOOLS = /*EP_TOOLS*/{};
 const IDX = name => L.findIndex(x => x.short === name);
 /* side bars: [label, first level, last level] (0-based, inclusive). Editorials have no study design: no bar in the
    first two columns. Animal and in vitro studies are preclinical, outside the clinical design axes. */
@@ -438,7 +459,8 @@ function showCard(k, scroll) {
       </div>
       <p class="postit"><b style="color:${x.ink}">e.g.</b>${esc(x.ex)}</p>
       <div class="vars"><h4 class="hh" style="color:${x.ink}">Variants in this family${underline(240, x.ink, x.name + 'v')}</h4>
-        <dl>${x.designs.map(([nm, note]) => `<div class="vrow"><dt style="color:${x.ink}">${esc(nm)}</dt><dd>${esc(note)}</dd></div>`).join('')}</dl></div>`;
+        <dl>${x.designs.map(([nm, note]) => `<div class="vrow"><dt style="color:${x.ink}">${esc(nm)}</dt><dd>${esc(note)}</dd></div>`).join('')}</dl></div>
+      ${toolsHtml(k)}`;
     document.querySelectorAll('.ep .lv, .ep .band').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.k === k)));
   };
   if (scroll) {                                                    // bring the card into view only if it is off screen
@@ -476,6 +498,30 @@ $('evidence-pyramid').addEventListener('click', e => {
   const a = b.dataset.a;
   if (a === 'reset') { hist = []; cur = 'start'; } else if (a === 'back') { cur = hist.pop() || 'start'; } else { hist.push(cur); cur = T[cur][a]; }
   renderFinder();
+});
+
+function toolsHtml(k) {
+  const rows = TOOLS[k]; if (!rows || !rows.length) return '';
+  const x = L[k];
+  const list = items => items.map(([n, u]) => u
+    ? `<a href="${esc(u)}" rel="noopener" target="_blank">${esc(n)}</a>` : esc(n)).join('<span class="sep">·</span>');
+  const wide = !!$('design-tools');                              // the table shows from 700px (CSS)
+  return `<div class="vars"><h4 class="hh" style="color:${x.ink}">Plan, report, appraise${underline(220, x.ink, x.name + 't')}</h4>
+    <dl class="tls">${rows.map(([nm, p, r, a]) => `<div class="trow"><dt style="color:${x.ink}">${esc(nm)}</dt>
+      <dd><span class="tk">Plan</span><span class="ti">${list(p)}</span></dd>
+      <dd><span class="tk">Report</span><span class="ti">${list(r)}</span></dd>
+      <dd><span class="tk">Appraise</span><span class="ti">${list(a)}</span></dd></div>`).join('')}</dl>
+    <button class="totable${wide ? ' on' : ''}" type="button" data-table="${k}">See this level in the tools table &uarr;</button></div>`;
+}
+document.addEventListener('ep:show', e => {                     // from the tools table: open the level and show the pyramid
+  const k = +e.detail; if (!(k >= 0 && k < L.length)) return;
+  showCard(k, false);
+  $('ep-pyr').scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' });
+});
+$('evidence-pyramid').addEventListener('click', e => {
+  const b = e.target.closest('.totable'); if (!b) return;
+  document.dispatchEvent(new CustomEvent('ep:table', { detail: b.dataset.table }));
+  $('design-tools').scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' });
 });
 
 startPyramid();

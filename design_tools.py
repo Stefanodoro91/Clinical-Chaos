@@ -10,7 +10,7 @@ senza una pagina ufficiale. Link verificati con tools/link_probe.py (GitHub Acti
 SPIRIT25 = ("SPIRIT 2025", "https://doi.org/10.1136/bmj-2024-081477")
 CONSORT25 = ("CONSORT 2025", "https://doi.org/10.1136/bmj-2024-081123")
 ROB2 = ("RoB 2", "https://www.riskofbias.info/welcome/rob-2-0-tool")
-ROBINS_I = ("ROBINS-I", "https://www.riskofbias.info/welcome/home/current-version-of-robins-i")
+ROBINS_I = ("ROBINS-I", "https://www.riskofbias.info/")
 ROBINS_E = ("ROBINS-E", "https://www.riskofbias.info/welcome/robins-e-tool")
 GRADE = ("GRADE", "https://www.gradeworkinggroup.org/")
 STROBE = ("STROBE", "https://www.strobe-statement.org/")
@@ -25,6 +25,17 @@ NOS = ("Newcastle-Ottawa Scale", "https://www.ohri.ca/programs/clinical_epidemio
 JBI = ("JBI checklist", "https://jbi.global/critical-appraisal-tools")
 NIH_PP = ("NIH pre-post tool", "https://www.nhlbi.nih.gov/health-topics/study-quality-assessment-tools")
 DAG = ("Causal diagrams (DAGs)", None)
+
+# Livelli della piramide (nome, colore della fascia, colore del testo): gli stessi di site_parts/evidence_pyramid.html.
+LEVELS = [("Meta-analysis and guidelines", "#BFBFBF", "#111"), ("Systematic review", "#1F4E79", "#FFF"),
+          ("Randomised controlled trial (RCT)", "#CFE0F3", "#111"), ("Non-randomised controlled trial", "#B3CFEE", "#111"),
+          ("Uncontrolled trial", "#97BDE8", "#111"), ("Cohort study", "#75A6DE", "#111"),
+          ("Cross-sectional study", "#4F8BCB", "#0A0A0A"), ("Case-control study", "#2E75B6", "#FFF"),
+          ("Case series", "#548235", "#FFF"), ("Case report", "#3DBE3D", "#0A0A0A"),
+          ("Editorials, opinions and ideas", "#FFF2CC", "#111"), ("Animal research", "#F79646", "#111"),
+          ("In vitro research", "#C00000", "#FFF")]
+SHORT = ["Meta-analysis", "Systematic review", "RCT", "Non-randomised", "Uncontrolled", "Cohort", "Cross-sectional",
+         "Case-control", "Case series", "Case report", "Opinion", "Animal", "In vitro"]
 
 # ---- righe: livello della piramide (0 = vertice) → disegno → (progettazione, reporting, valutazione critica) ----
 ROWS = [
@@ -153,11 +164,15 @@ COSMIN = {
     "appraise": [("COSMIN Risk of Bias checklist", "https://doi.org/10.1007/s11136-017-1765-4"),
                  ("COSMIN guideline for reviews of PROMs", "https://doi.org/10.1007/s11136-018-1798-3")],
     "taxonomy": ("Mokkink et al., 2010", "https://doi.org/10.1016/j.jclinepi.2010.02.006"),
-    # tassonomia COSMIN: 3 domini, 9 proprietà di misura
-    "domains": [("Reliability", ["Internal consistency", "Reliability", "Measurement error"]),
-                ("Validity", ["Content validity", "Structural validity", "Hypotheses testing",
-                              "Cross-cultural validity", "Criterion validity"]),
-                ("Responsiveness", ["Responsiveness"])],
+    # tassonomia COSMIN: 3 domini, 9 proprietà di misura (nome, dettaglio); la validità di costrutto ne raggruppa tre
+    "domains": [("Reliability", [("Internal consistency", ""),
+                                 ("Reliability", "test-retest, inter-rater, intra-rater"),
+                                 ("Measurement error", "test-retest, inter-rater, intra-rater")], None),
+                ("Validity", [("Content validity", "including face validity"),
+                              ("Criterion validity", "concurrent, predictive")],
+                 ("Construct validity", [("Structural validity", ""), ("Hypotheses testing", "for construct validity"),
+                                         ("Cross-cultural validity", "measurement invariance")])),
+                ("Responsiveness", [("Responsiveness", "")], None)],
 }
 
 # Per ogni disegno: strumenti generali.
