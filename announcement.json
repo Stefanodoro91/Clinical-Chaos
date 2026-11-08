@@ -1,57 +1,57 @@
 {
-  "id": "kickoff-funding-calls",
+  "id": "kickoff-academic-positions",
   "kind": "announcement",
   "no_images": true,
-  "accent": "#FFB547",
-  "title": "Research funding calls, four days a week",
-  "title_highlight": "Research funding calls",
+  "accent": "#8B5CF6",
+  "title": "Academic positions, every Monday",
+  "title_highlight": "Academic positions",
   "category": "New rubric",
   "slides": [
     {
-      "heading": "One open call per post",
-      "body": "Monday, Tuesday, Thursday and Friday: one funding call for clinical research, clinical engineering or rehabilitation.",
-      "highlight": "one funding call",
+      "heading": "A weekly round-up",
+      "body": "Every Monday evening: new PhD, post-doc and faculty positions in clinical research, engineering and rehabilitation.",
+      "highlight": "every Monday evening",
       "source": ""
     },
     {
-      "heading": "What each post tells you",
-      "body": "Who funds it, the budget, which countries are eligible, who can lead, the deadline and the link to the official call.",
-      "highlight": "the official call",
+      "heading": "What each listing shows",
+      "body": "The role, the institution, the country and the deadline, with the link to the full advertisement.",
+      "highlight": "the full advertisement",
       "source": ""
     },
     {
-      "heading": "Compiled from the official text",
-      "body": "Details come from the funder's own call page, never from second-hand summaries. Always check them before applying.",
-      "highlight": "the funder's own call page",
+      "heading": "Collected and checked",
+      "body": "Positions are collected automatically and checked against the advertisement. Always read the full text before applying.",
+      "highlight": "checked against the advertisement",
       "source": ""
     },
     {
-      "heading": "Before you apply",
-      "body": "Every other Friday, the call comes with three practical tips to prepare a stronger application.",
-      "highlight": "three practical tips",
+      "heading": "Career Path",
+      "body": "First Monday of the month: how to read an advertisement, and what each academic role actually means.",
+      "highlight": "how to read an advertisement",
       "source": ""
     },
     {
-      "heading": "Every open call on one page",
-      "body": "Filter by country and medical area, add deadlines to your calendar, or follow new calls via RSS.",
-      "highlight": "add deadlines to your calendar",
+      "heading": "Every open position on one page",
+      "body": "Browse all open positions by role type and region on our site, no account needed.",
+      "highlight": "by role type and region",
       "source": ""
     }
   ],
   "takeaway": "",
   "takeaway_highlight": "",
   "closing_cta": [
-    "Share it with a colleague writing a grant",
-    "All open calls: link in bio"
+    "Share it with someone looking for their next role",
+    "All positions: link in bio"
   ],
-  "caption": "New rubric: Funding calls.\n\nFour days a week (Monday, Tuesday, Thursday and Friday) we post one open funding call for clinical research, clinical and biomedical engineering or rehabilitation.\n\nEach post gives you:\n• who funds it and the budget\n• eligible countries and who can lead\n• the deadline\n• the link to the official call\n\nEvery other Friday: Before you apply, three practical tips to prepare a stronger application.\n\nAll open calls are on our site, with filters by country and medical area, calendar reminders and RSS: link in bio.\n\nDetails are compiled from the official call: always check eligibility, amounts and dates before applying.\n\nWhich funder should we follow next? Tell us in the comments.",
+  "caption": "New rubric: Academic positions.\n\nEvery Monday evening we post a round-up of new PhD, post-doc and faculty positions in clinical research, clinical and biomedical engineering and rehabilitation.\n\nEach listing gives you the role, the institution, the country, the deadline and the link to the full advertisement.\n\nFirst Monday of the month: Career Path, how to read an advertisement and what each academic role means.\n\nAll open positions, by role type and region: link in bio.\n\nPositions are collected and checked automatically: always read the full advertisement before applying.\n\nKnow someone looking for their next role? Share this post with them.",
   "hashtags": [
-    "#ResearchFunding",
-    "#GrantOpportunity",
+    "#AcademicJobs",
+    "#PhDPosition",
+    "#Postdoc",
+    "#FacultyJobs",
     "#ClinicalResearch",
-    "#Rehabilitation",
-    "#BiomedicalEngineering",
-    "#GrantWriting"
+    "#RehabilitationResearch"
   ],
   "references": [],
   "source": "Announcement"
