@@ -1,6 +1,7 @@
 {
  "weeks_done": [
-  0
+  0,
+  1
  ],
  "posted": [
   {
@@ -182,6 +183,178 @@
    ],
    "takeaway": "Always pair adjuvants with evidence-informed motor training; adjuvants alone lack a foundation for enhancing motor recovery.",
    "category": "Clinical insight"
+  },
+  {
+   "date": "2026-11-16",
+   "time": "2026-11-16T17:23:00+00:00",
+   "id": "positions-2026-11-08",
+   "title": "5 open academic positions this week",
+   "source": "Academic positions",
+   "simulated": true,
+   "kind": "positions",
+   "position_ids": [
+    "POS-7cd1d61f86b2",
+    "POS-e5e94d37373a",
+    "POS-42891b57adab",
+    "POS-490eb50d5aec",
+    "POS-b9840450088b"
+   ]
+  },
+  {
+   "date": "2026-11-17",
+   "time": "2026-11-17T11:23:00+00:00",
+   "id": "grant-EU-HORIZON-HLTH-2027-01-CARE-02",
+   "title": "Targeting adverse drug reactions? Backing polypharmacy research",
+   "source": "GrantFinder",
+   "simulated": true,
+   "kind": "grant",
+   "grant_id": "EU-HORIZON-HLTH-2027-01-CARE-02",
+   "deadline": "2027-02-17"
+  },
+  {
+   "date": "2026-11-17",
+   "time": "2026-11-17T17:47:00+00:00",
+   "id": "af630a09",
+   "title": "Parametric vs nonparametric: The cost of power",
+   "source": "Parametric vs non parametric.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "Asymptotic Relative Efficiency",
+     "body": "Asymptotic Relative Efficiency defines how many more subjects are needed for a nonparametric test to have equivalent power as a parametric test for a fixed Type I error rate."
+    },
+    {
+     "heading": "The price of using nonparametric tests",
+     "body": "The ARE of the Wilcoxon Rank Sum Test versus the t-test when underlying assumptions are satisfied is zero point nine five five. There is minimal power loss when data are normal."
+    },
+    {
+     "heading": "Massive gains when normality fails",
+     "body": "Nonparametric alternatives outperform parametric ones when underlying distributions are heavy tailed or heavily skewed. In some cases ARE became infinite."
+    }
+   ],
+   "takeaway": "Using nonparametric tests when data are normal results in minimal power loss, but brings massive power gains when normality fails.",
+   "category": "Statistics"
+  },
+  {
+   "date": "2026-11-18",
+   "time": "2026-11-18T11:23:00+00:00",
+   "id": "reel-positions-2026-11-08",
+   "title": "5 open academic positions this week",
+   "kind": "reel",
+   "reel_of": "positions-2026-11-08",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-18",
+   "time": "2026-11-18T17:47:00+00:00",
+   "id": "7bc8e19b",
+   "title": "Why opaque reporting undermines research reliability",
+   "source": "Critical appraisal",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The danger of opaque reporting",
+     "body": "Opaque reporting is directly associated with biased conclusions and, less directly, with errors in biomedical publishing and inefficient use of resources."
+    },
+    {
+     "heading": "Judging reliability becomes impossible",
+     "body": "Without knowing study methods, readers cannot determine if results are trustworthy."
+    }
+   ],
+   "takeaway": "Without clear reporting of how a study was done, readers cannot judge whether findings are reliable.",
+   "category": "Reporting & publication"
+  },
+  {
+   "date": "2026-11-19",
+   "time": "2026-11-19T11:23:00+00:00",
+   "id": "grant-GG-PAR-25-136",
+   "title": "Optimizing digital mental health interventions? Grants for R01 trials",
+   "source": "GrantFinder",
+   "simulated": true,
+   "kind": "grant",
+   "grant_id": "GG-PAR-25-136",
+   "deadline": "2027-02-05"
+  },
+  {
+   "date": "2026-11-19",
+   "time": "2026-11-19T17:47:00+00:00",
+   "id": "checklist-prisma-search",
+   "title": "Could a colleague rerun your literature search?",
+   "source": "Rubrica Checklist",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "What the item asks",
+     "body": "Present the full search strategy for every database and register, including filters and limits, exactly as run."
+    },
+    {
+     "heading": "Why it matters",
+     "body": "The search defines the evidence base. If it cannot be repeated, the review cannot be checked or updated."
+    },
+    {
+     "heading": "How to comply",
+     "body": "Export each database's full query string into an appendix, with the date of the search and any language or date limits."
+    }
+   ],
+   "takeaway": "Report every search string, database, filter and date: reproducible or it is not systematic.",
+   "category": "Reporting & publication"
+  },
+  {
+   "date": "2026-11-20",
+   "time": "2026-11-20T11:23:00+00:00",
+   "id": "grant-EU-HORIZON-HLTH-2027-02-IND-02-two-stage",
+   "title": "Developing point-of-care diagnostics? Support for clinical validation",
+   "source": "GrantFinder",
+   "simulated": true,
+   "kind": "grant",
+   "grant_id": "EU-HORIZON-HLTH-2027-02-IND-02-two-stage",
+   "deadline": "2027-02-17"
+  },
+  {
+   "date": "2026-11-20",
+   "time": "2026-11-20T14:23:00+00:00",
+   "id": "reel-checklist-prisma-search",
+   "title": "Could a colleague rerun your literature search?",
+   "kind": "reel",
+   "reel_of": "checklist-prisma-search",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-21",
+   "time": "2026-11-21T15:47:00+00:00",
+   "id": "ef9f479f",
+   "title": "Why exoskeleton gains don't always mean faster walking or better daily function",
+   "source": "Wearable exoskeleton.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The functional performance gap",
+     "body": "Exoskeleton trials found gains in motor function and balance, but no significant gains in 10-Meter Walk Test (10MWT) speed or Timed Up and Go (TUG) mobility."
+    },
+    {
+     "heading": "Daily life remains unchanged",
+     "body": "Activities of daily living (ADL) measured by the Modified Barthel Index showed no significant between-group difference, though certainty was very low."
+    },
+    {
+     "heading": "High variability in results",
+     "body": "Most prediction intervals crossed the null, indicating that true effects may vary across clinical settings and patient populations."
+    },
+    {
+     "heading": "Complexity of functional transfer",
+     "body": "Speed and daily activities require complex integration of motor and environmental demands; improvements in structured training may not immediately translate."
+    }
+   ],
+   "takeaway": "Exoskeleton training improves walking independence but needs task-specific practice to improve speed and daily function.",
+   "category": "Clinical insight"
+  },
+  {
+   "date": "2026-11-22",
+   "time": "2026-11-22T16:47:00+00:00",
+   "id": "reel-grant-EU-HORIZON-HLTH-2027-02-IND-02-two-stage",
+   "title": "Developing point-of-care diagnostics? Support for clinical validation",
+   "kind": "reel",
+   "reel_of": "grant-EU-HORIZON-HLTH-2027-02-IND-02-two-stage",
+   "simulated": true
   }
  ],
  "stories": [
@@ -222,9 +395,134 @@
    "simulated": true,
    "grant_id": "GG-HHS-2027-ACL-NIDILRR-AREM-0301",
    "family": "Administration for Community Living"
+  },
+  {
+   "date": "2026-11-16",
+   "time": "2026-11-16T08:31:00+00:00",
+   "kind": "weekly",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-17",
+   "time": "2026-11-17T08:31:00+00:00",
+   "kind": "countdown",
+   "simulated": true,
+   "grant_id": "GG-HHS-2027-ACL-NIDILRR-ARHF-0302",
+   "family": "Administration for Community Living"
   }
  ],
  "grants": {
+  "EU-HORIZON-HLTH-2027-01-CARE-02": {
+   "status": "ok",
+   "checked": "2026-11-08",
+   "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-CARE-02",
+   "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-CARE-02",
+   "is_open_call": "yes",
+   "title": "Personalised approaches to reduce risks from Adverse Drug Reactions due to administration of multiple medications",
+   "programme": "Horizon Europe – Cluster 1: Health",
+   "programme_family": "Horizon Europe",
+   "summary": "This call supports research to reduce the incidence of adverse drug reactions caused by multiple medications. Funded activities focus on leveraging pharmacogenomics, biomarkers, and digital technologies such as clinical decision support systems to implement personalized medicine approaches and optimize medication management. The call aims to generate evidence on clinical utility and cost-effectiveness. The participation of start-ups and SMEs is encouraged, and proposals are expected to include clinical studies.",
+   "coming_soon": false,
+   "eligible_countries": "EU Member States and associated countries",
+   "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "italy": "yes",
+   "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "version": 3,
+   "model": "gemini-3.8-flash",
+   "due_dates": [
+    "2027-02-17"
+   ],
+   "resubmission_dates": [],
+   "expires": "",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "EU Funding & Tenders Portal: single-stage, deadline 2027-02-17",
+   "deadline_type": "single",
+   "deadline_source": "eu_portal",
+   "lead": "",
+   "lead_evidence": "",
+   "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17.",
+   "confirmed": {
+    "model": "gemini-3.8-flash",
+    "date": "2026-11-08",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "EU-HORIZON-HLTH-2027-01-DISEASE-05": {
+   "status": "ok",
+   "checked": "2026-11-08",
+   "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-DISEASE-05",
+   "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-DISEASE-05",
+   "is_open_call": "yes",
+   "title": "Development of novel small molecule antiviral therapeutics for pathogens with epidemic potential",
+   "programme": "Horizon Europe – Cluster 1: Health",
+   "programme_family": "Horizon Europe",
+   "summary": "This call aims to advance the development of antiviral prophylactic and therapeutic candidates (excluding antibodies) targeting specific emerging or re-emerging viruses with epidemic or pandemic potential. Supported activities include candidate selection and optimization, in-vitro and in-vivo testing, GMP production, and first-in-human clinical safety trials. Applicants must target specified viral groups and are encouraged to involve SMEs, regulatory bodies, and third countries where targeted viruses are endemic.",
+   "coming_soon": false,
+   "eligible_countries": "EU Member States and associated countries",
+   "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "italy": "yes",
+   "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "version": 3,
+   "model": "gemini-3.6-flash",
+   "due_dates": [
+    "2027-02-17"
+   ],
+   "resubmission_dates": [],
+   "expires": "",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "EU Funding & Tenders Portal: single-stage, deadline 2027-02-17",
+   "deadline_type": "single",
+   "deadline_source": "eu_portal",
+   "lead": "",
+   "lead_evidence": "",
+   "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17.",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-08",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "EU-HORIZON-HLTH-2027-02-IND-02-two-stage": {
+   "status": "ok",
+   "checked": "2026-11-08",
+   "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-02-IND-02-two-stage",
+   "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-02-IND-02-two-stage",
+   "is_open_call": "yes",
+   "title": "Portable and versatile Point-of-care diagnostics",
+   "programme": "Horizon Europe – Cluster 1: Health",
+   "programme_family": "Horizon Europe",
+   "summary": "This call aims to develop and optimize Point-of-Care (PoC) diagnostic devices to accelerate therapeutic decisions and improve patient outcomes. Proposals should focus on making devices more sensitive, selective, and user-friendly, particularly for resource-limited settings. Required activities include device optimization, comparative performance studies against current standards, and clinical validation to ensure compliance with EU regulatory requirements (IVDR or MDR). It targets both infectious and non-communicable diseases, prioritizing life-saving applications in emergency cases.",
+   "coming_soon": false,
+   "eligible_countries": "EU Member States and associated countries",
+   "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "italy": "yes",
+   "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "version": 3,
+   "model": "gemini-3-flash-preview",
+   "due_dates": [
+    "2027-02-17"
+   ],
+   "resubmission_dates": [],
+   "expires": "",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "EU Funding & Tenders Portal: two-stage, deadline 2027-02-17, 2027-09-16",
+   "deadline_type": "two_stage",
+   "deadline_source": "eu_portal",
+   "lead": "",
+   "lead_evidence": "",
+   "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17, 2027-09-16.",
+   "confirmed": {
+    "model": "gemini-3-flash-preview",
+    "date": "2026-11-08",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
   "GG-PAR-25-145": {
    "status": "ok",
    "checked": "2026-11-07",
@@ -498,6 +796,119 @@
     "date": "2026-11-07",
     "changed": [],
     "screening_model": ""
+   }
+  },
+  "EU-HORIZON-MSCA-2027-COFUND-02-01": {
+   "status": "ok",
+   "checked": "2026-11-08",
+   "official_source": "EU Funding & Tenders Portal, topic HORIZON-MSCA-2027-COFUND-02-01",
+   "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-MSCA-2027-COFUND-02-01",
+   "is_open_call": "yes",
+   "title": "MSCA Choose Europe for Science 2027",
+   "programme": "Horizon Europe",
+   "programme_family": "Horizon Europe",
+   "summary": "This call supports talent recruitment programmes aimed at tackling brain drain and researcher career precarity in Europe. Applicants submit proposals for postdoctoral research programmes covering any discipline, structured in two phases: an EU-funded phase (24-36 months) covering direct and indirect project costs, followed by a beneficiary-funded phase (24 months) offering attractive salaries and long-term career prospects. Participating organisations from academic and non-academic sectors can apply.",
+   "coming_soon": false,
+   "eligible_countries": "EU Member States and associated countries",
+   "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "italy": "yes",
+   "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "version": 3,
+   "model": "gemini-3.6-flash",
+   "due_dates": [
+    "2027-04-06"
+   ],
+   "resubmission_dates": [],
+   "expires": "",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "EU Funding & Tenders Portal: single-stage, deadline 2027-04-06",
+   "deadline_type": "single",
+   "deadline_source": "eu_portal",
+   "lead": "Supported researchers must hold a doctoral degree.",
+   "lead_evidence": "Applicants submit proposals for talent recruitment programmes that will provide researchers holding a doctoral degree with excellent research and academic opportunities, potentially coupled with management activities, to lead them to concrete and attractive career prospects.",
+   "deadline_raw": "2027-04-06 | Deadline dates: 2027-04-06.",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-08",
+    "changed": [],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  },
+  "EU-HORIZON-MSCA-2027-SE-01-01": {
+   "status": "ok",
+   "checked": "2026-11-08",
+   "official_source": "EU Funding & Tenders Portal, topic HORIZON-MSCA-2027-SE-01-01",
+   "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-MSCA-2027-SE-01-01",
+   "is_open_call": "yes",
+   "title": "MSCA Staff Exchanges 2027",
+   "programme": "Horizon Europe",
+   "programme_family": "Horizon Europe",
+   "summary": "MSCA Staff Exchanges support international, inter-sectoral, and interdisciplinary mobility of research and innovation staff through physical secondments between independent legal entities. The scheme aims to foster knowledge transfer, boost R&I capacity, and enhance staff skills and employability. Collaborative projects must involve academic and non-academic organisations from across the globe, including universities, research organisations, and SMEs, contributing directly to a joint project through staff secondments.",
+   "coming_soon": false,
+   "eligible_countries": "EU Member States and associated countries",
+   "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "italy": "yes",
+   "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "version": 3,
+   "model": "gemini-3.8-flash",
+   "due_dates": [
+    "2027-04-13"
+   ],
+   "resubmission_dates": [],
+   "expires": "",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "EU Funding & Tenders Portal: single-stage, deadline 2027-04-13",
+   "deadline_type": "single",
+   "deadline_source": "eu_portal",
+   "lead": "",
+   "lead_evidence": "",
+   "deadline_raw": "2027-04-13 | Deadline dates: 2027-04-13.",
+   "confirmed": {
+    "model": "gemini-3.8-flash",
+    "date": "2026-11-08",
+    "changed": [
+     "due_dates"
+    ],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  },
+  "EU-HORIZON-MSCA-2027-PF-01-01": {
+   "status": "ok",
+   "checked": "2026-11-08",
+   "official_source": "EU Funding & Tenders Portal, topic HORIZON-MSCA-2027-PF-01-01",
+   "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-MSCA-2027-PF-01-01",
+   "is_open_call": "yes",
+   "title": "MSCA Postdoctoral Fellowships 2027",
+   "programme": "Horizon Europe – MSCA Postdoctoral Fellowships",
+   "programme_family": "Horizon Europe",
+   "summary": "MSCA Postdoctoral Fellowships support excellent researchers through international mobility to enhance their skills and career prospects. European Fellowships are open to researchers of any nationality moving within or to Europe for 12-24 months. Global Fellowships support European nationals or long-term residents for research outside Europe (12-24 months) with a mandatory 12-month return phase. Applications are submitted jointly by the researcher and a host organization from the academic or non-academic sector.",
+   "coming_soon": false,
+   "eligible_countries": "EU Member States and associated countries",
+   "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "italy": "yes",
+   "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "version": 3,
+   "model": "gemini-3-flash-preview",
+   "due_dates": [
+    "2027-09-08"
+   ],
+   "resubmission_dates": [],
+   "expires": "",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "EU Funding & Tenders Portal: single-stage, deadline 2027-09-08",
+   "deadline_type": "single",
+   "deadline_source": "eu_portal",
+   "lead": "Excellent researchers of any nationality (European) or European nationals/long-term residents (Global) applying jointly with a host beneficiary.",
+   "lead_evidence": "Applications will be made jointly by the researcher and a beneficiary in the academic or non-academic sector.",
+   "deadline_raw": "2027-09-08 | Deadline dates: 2027-09-08.",
+   "confirmed": {
+    "model": "gemini-3-flash-preview",
+    "date": "2026-11-08",
+    "changed": [],
+    "screening_model": "gemini-3.5-flash-lite"
    }
   },
   "GG-PAR-25-265": {
@@ -844,6 +1255,27 @@
    "posts": 3,
    "clinical_used": true,
    "date": "2026-11-07"
+  },
+  {
+   "drive_id": "1OFnoDNWnSe5aN-Bxfu4Lc1iP9uzo8Bny",
+   "name": "Smart exoskeleton.pdf",
+   "posts": 2,
+   "clinical_used": true,
+   "date": "2026-11-08"
+  },
+  {
+   "drive_id": "1SAGynyr02zt6oN7u3pgBHUYEJGgV-MT4",
+   "name": "Biointegrated system.pdf",
+   "posts": 0,
+   "clinical_skipped": "nessun messaggio clinico (none): The paper is a narrative mini-review focusing on engineering design trade-offs, actuation technologies, control strategies, and technological paradigm",
+   "date": "2026-11-08"
+  },
+  {
+   "drive_id": "1P3Ceqw2CoUMWTv961jkMCv6Is0tF46S8",
+   "name": "Wearable exoskeleton.pdf",
+   "posts": 2,
+   "clinical_used": true,
+   "date": "2026-11-08"
   }
  ]
 }
