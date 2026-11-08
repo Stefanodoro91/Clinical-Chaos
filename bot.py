@@ -23,6 +23,7 @@ import cards
 import content
 import grants
 import linkedin
+import polish
 import positions
 import rubrics
 
@@ -42,7 +43,9 @@ HOME_FILE = ROOT / "docs" / "index.html"   # pagina iniziale del link in bio: du
 GRAPH_VERSION = os.environ.get("GRAPH_API_VERSION") or "v23.0"
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
 SIM_NAME = "simulated_log.json"            # social in pausa: contenuti preparati ma non pubblicati (config social_paused)
-SIMULATE = bool(CONFIG.get("social_paused")) and not DRY_RUN
+LIVE_KINDS = set(CONFIG.get("social_live_kinds") or [])      # social in pausa tranne queste rubriche (es. grant, positions)
+SIMULATE = (bool(CONFIG.get("social_paused")) and not DRY_RUN
+            and (os.environ.get("POST_TYPE") or "research").strip().lower() not in LIVE_KINDS)
 SIM_FILE = ROOT / SIM_NAME
 MAX_CAPTION_CHARS = 2200
 MAX_HASHTAGS = 5          # limite di Instagram (dicembre 2025): oltre, meno portata
@@ -54,7 +57,10 @@ def _social_guard():
     """Sicura: con i social in pausa (config «social_paused») nessuna pubblicazione può partire, da nessun percorso."""
     import json as _json
     from pathlib import Path as _P
-    if _json.loads((_P(__file__).resolve().parent / "config.json").read_text(encoding="utf-8")).get("social_paused"):
+    import os as _os
+    cfg = _json.loads((_P(__file__).resolve().parent / "config.json").read_text(encoding="utf-8"))
+    kind = (_os.environ.get("POST_TYPE") or "").strip().lower()       # rubriche riattivate: config «social_live_kinds»
+    if cfg.get("social_paused") and kind not in (cfg.get("social_live_kinds") or []):
         raise RuntimeError("social in pausa (config social_paused): pubblicazione bloccata")
 
 def load(path, default):
@@ -71,7 +77,9 @@ def git(*args):
 
 content.THINKING = dict(CONFIG.get("gemini_thinking") or {})
 content.ROUTE_OVERRIDES = dict(CONFIG.get("ai_routes") or {})
-content.CHECK_CAP = int(CONFIG.get("gemini_daily_cap_checks", 34))   # oltre: verifiche ferme, quota lasciata ai post
+content.CHECK_CAP = int(CONFIG.get("gemini_daily_cap_checks", 60))   # richieste dei modelli leggeri oltre le quali le verifiche si fermano
+content.MODEL_RPD.update(CONFIG.get("gemini_rpd") or {})
+content.STRONG_RESERVE = int(CONFIG.get("gemini_strong_reserve", content.STRONG_RESERVE))
 positions.TEXT_CHARS = int(CONFIG.get("positions_text_chars") or positions.TEXT_CHARS)
 
 def _head():
@@ -160,7 +168,8 @@ def ingest(drive, queue, limit=None):
     inbox, done_folder = os.environ["GDRIVE_FOLDER_ID"], os.environ["GDRIVE_DONE_FOLDER_ID"]
     sources = load(SOURCES_FILE, [])
     seen = {s["drive_id"] for s in sources}
-    pending = [f for f in list_inbox(drive, inbox) if f["id"] not in seen]
+    # gli articoli delle sottocartelle «Clinica…» non vanno nella coda di metodologia: sono riservati a Latest Science
+    pending = [f for f in list_inbox(drive, inbox) if f["id"] not in seen and f.get("parent") == inbox]
     limit = int(limit or CONFIG.get("max_new_files_per_run", 1))
 
     for f in pending[:limit]:
@@ -256,6 +265,101 @@ def drop_repeats(queue, posted, threshold=0.72):
     return [q for i, q in enumerate(kept) if i not in drop]
 
 
+CLINICAL_QUEUE_FILE = ROOT / "clinical_queue.json"     # post Latest Science già scritti dagli articoli di «Clinica…»
+
+
+def _clinical_review(post, material):
+    """Controlli prima dell'uscita sul testo dell'articolo: anti-copia, revisione incrociata (o verifica dei fatti),
+    reference. False se la revisione respinge il post."""
+    content.rewrite_copied(post, material)
+    if CONFIG.get("cross_review", True):
+        rev = content.cross_review(post, material)
+        post["review"] = {k: rev.get(k) for k in ("passed", "scores", "critic", "arbiter", "fixed", "removed", "notes")}
+        if rev.get("passed") is False:
+            print(f"::warning title=Latest Science respinto dalla revisione::{post['title'][:70]}: "
+                  f"{'; '.join(rev.get('notes', [])[:2])[:250]}")
+            return False
+        if rev.get("passed") is None:
+            content.verify_against_source(post, material)
+    else:
+        content.verify_against_source(post, material)
+    content.fix_references(post)
+    return True
+
+
+def _new_clinical_posts(drive, posted, sources, cq):
+    """Legge il prossimo articolo non ancora usato delle sottocartelle «Clinica…» e ne ricava 2-3 post clinici
+    (messaggi diversi), che vanno nella coda clinica. Restituisce quanti post ha aggiunto."""
+    inbox = os.environ["GDRIVE_FOLDER_ID"]
+    read = {x.get("name") for x in sources if x.get("clinical_used") or x.get("clinical_skipped")}
+    read |= {q.get("source") for q in cq} | {p.get("source") for p in posted if p.get("category") == content.CLINICAL_CATEGORY}
+    files = [f for f in list_inbox(drive, inbox) if f.get("parent") != inbox and f["name"] not in read and content.is_supported(f)]
+    print(f"Latest Science: {len(files)} articoli clinici non ancora letti nelle cartelle «Clinica…»")
+    published = [x["title"] for x in posted if x.get("title")] + [q["title"] for q in cq]
+    for f in files[:int(CONFIG.get("latest_science_tries", 3))]:
+        note = None
+        try:
+            part = content.material_part(drive, f)
+            status_, label = content.license_status(content.material_text(part))
+            if status_ != "ok":
+                note = f"licenza: {label or 'non dichiarata nel testo'}"
+            else:
+                posts, focus, why = content.clinical_posts(part, f["name"], CONFIG["brand_name"], published,
+                                                           int(CONFIG.get("latest_science_posts_per_paper", 3)))
+                if not posts:
+                    note = f"nessun messaggio clinico ({focus}): {why[:150]}"
+        except Exception as e:
+            print(f"::warning title=Articolo clinico non letto::{f['name']}: {str(e)[:200]}")
+            continue
+        if note:
+            print(f"::notice title=Articolo clinico saltato::{f['name']}: {note}")
+            sources.append({"drive_id": f["id"], "name": f["name"], "posts": 0, "clinical_skipped": note,
+                            "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")})
+            save(SOURCES_FILE, sources)
+            continue
+        for p in posts:
+            p.update({"id": uuid.uuid4().hex[:8], "source": f["name"], "rubric": "Clinical Insights"})
+        cq.extend(posts)
+        sources.append({"drive_id": f["id"], "name": f["name"], "posts": len(posts), "clinical_used": True,
+                        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")})
+        save(SOURCES_FILE, sources)    # subito su disco: source_material() rilegge l'articolo da qui per i controlli
+        print(f"::notice title=Articolo clinico letto::{f['name']} ({focus}): {len(posts)} post per Latest Science")
+        return len(posts)
+    return 0
+
+
+def latest_science_post(drive, posted):
+    """Post del sabato «Latest Science»: SOLO dagli articoli delle sottocartelle Drive «Clinica…» (es. «Clinica main»),
+    mai dalla coda di metodologia. Da ogni articolo escono 2-3 post (coda clinica, uno a sabato); finiti quelli si
+    legge l'articolo successivo. Ogni post parla di un trattamento o dello stato di salute dei pazienti e passa i
+    controlli sul testo dell'articolo prima di uscire. Nessun post adatto: None (il sabato salta, con avviso)."""
+    sources = load(SOURCES_FILE, [])
+    cq = load(CLINICAL_QUEUE_FILE, [])
+    done = {p.get("id") for p in posted}
+    cq = [q for q in cq if q.get("id") not in done]
+    try:
+        for _ in range(2):
+            if not cq and not _new_clinical_posts(drive, posted, sources, cq):
+                return None
+            last = next((p.get("source") for p in reversed(posted) if p.get("category") == content.CLINICAL_CATEGORY), None)
+            if cq and all(q.get("source") == last for q in cq):
+                _new_clinical_posts(drive, posted, sources, cq)   # varietà: se c'è, un articolo nuovo prima del 3° post
+            cq.sort(key=lambda q: q.get("source") == last)    # stabile: se c'è, un articolo diverso dalla settimana prima
+            while cq:
+                post = cq.pop(0)
+                material = source_material(drive, post["source"])
+                if not material:
+                    print(f"  Articolo di «{post['title'][:60]}» non rileggibile: post scartato")
+                    continue
+                if _clinical_review(post, material):
+                    print(f"Latest Science da «{post['source']}»: {post['title']}")
+                    return post
+        return None
+    finally:
+        save(CLINICAL_QUEUE_FILE, cq)
+        save(SOURCES_FILE, sources)
+
+
 METHOD_ONLY_CATEGORIES = {"Study design", "Reporting & publication", "Critical appraisal"}  # pura metodologia:
                                         # esclusa dalla scelta del sabato (Latest Science vuole un angolo clinico)
 
@@ -349,6 +453,23 @@ def quality_gate(post, drive, queue):
     return None
 
 
+def plan_visuals(post):
+    """Immagini specifiche (visuals.py): le figure dell'articolo solo con licenza CC BY / BY-SA / CC0."""
+    import sources
+    import visuals
+    figures, credit = [], ""
+    meta = sources.META.get(post.get("id"))
+    data = sources.PDF.get(post.get("id"))
+    if meta and data and visuals.figure_license_ok(meta):
+        try:
+            figures = visuals.paper_figures(data)
+            credit = f"{polish._cite_of(meta.get('apa', ''))} · {meta.get('license_label', 'CC')}".strip(" ·")
+            print(f"  Figure dell'articolo: {len(figures)}")
+        except Exception as e:
+            print(f"  Figure non estratte ({str(e)[:120]})")
+    visuals.plan(post, figures, credit)
+
+
 def build_caption(post):
     tags, seen = [], set()
     kind = post.get("kind")
@@ -356,13 +477,13 @@ def build_caption(post):
         pool = ["#ResearchFunding", "#ClinicalResearch"] + [t for t in post.get("hashtags", []) if t.lower() != "#grantopportunity"]
     elif kind in ("positions", "announcement"):
         pool = post.get("hashtags", []) + CONFIG.get("fixed_hashtags", [])
-    else:                                    # metodologia: i 2 fissi e i 3 specifici del tema
-        pool = CONFIG.get("fixed_hashtags", []) + post.get("hashtags", [])
+    else:                                    # metodologia: i 2 fissi e i 3 specifici; Latest Science senza #ResearchMethodology
+        pool = polish.hashtags(post, CONFIG.get("fixed_hashtags", []))
     for t in pool:
         if t.lower() not in seen:
             seen.add(t.lower())
             tags.append(t)
-    refs = post.get("references") or []
+    refs = [polish.tidy_reference(r) for r in post.get("references") or []]
     ref_block = ("\n\nReferences:\n" + "\n".join(f"• {r}" for r in refs)) if refs else ""
     tail = f"{ref_block}\n\n{' '.join(tags[:MAX_HASHTAGS])}"
     head = f"{post['title']}\n\n{post['caption']}"
@@ -481,7 +602,7 @@ def facebook_text(post, caption, kind=None, link=""):
     tags = _re.findall(r"#\w+", caption)
     body = _re.sub(r"(\s*#\w+)+\s*$", "", caption).strip()
     body = body.replace("link in bio", link or CONFIG.get("links_page_url", ""))
-    points = "\n".join(f"{i}. {s['heading']}: {s['body']}" for i, s in enumerate(post.get("slides", []), 1))
+    points = "\n".join(f"{i}. {polish.point(s['heading'], s['body'])}" for i, s in enumerate(post.get("slides", []), 1))
     refs = "\n".join(f"- {r}" for r in (post.get("references") or [])[:3])
     parts = [body, f"Key points:\n{points}" if points else "", f"Takeaway: {post['takeaway']}" if post.get("takeaway") else "",
              f"References:\n{refs}" if refs else "", f"All our methodology carousels, with references: {link}" if link else "",
@@ -781,11 +902,12 @@ def simulate_post(post, kind, slides, caption):
     drive_preview.carousel_pdf(slides, caption, pdf)
     drive_preview.upload(pdf, {"grant": "grant", "positions": "positions"}.get(kind, "research"), "application/pdf", CONFIG)
     kind_link = {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",
-                 "research": f"methodology#m-{post.get('id', '')}"}.get(kind or "research", "")
+                 "research": polish.page_anchor(post)}.get(kind or "research", "")
     li_link = grants.site_url(CONFIG, kind_link)
     LINKEDIN_DIR.mkdir(exist_ok=True)
     li_path = LINKEDIN_DIR / linkedin.filename(post, kind, today)
     li_path.write_text(linkedin.draft(post, caption, kind, li_link), encoding="utf-8")
+    drive_preview.linkedin_doc(LINKEDIN_DIR, CONFIG)     # bozze LinkedIn anche su Drive (documento «Bozze LinkedIn»)
     rel.append(li_path.relative_to(ROOT).as_posix())
     entry = {"date": today, "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "id": post["id"],
              "title": post["title"], "source": post.get("source", ""), "simulated": True,
@@ -797,7 +919,8 @@ def simulate_post(post, kind, slides, caption):
     sims = load(SIM_FILE, [])
     sims.append(entry)
     save(SIM_FILE, sims)
-    commit_and_push(rel + [SIM_NAME], f"Post simulato (social in pausa): {post['title'][:60]}")
+    extra = [CLINICAL_QUEUE_FILE.name, SOURCES_FILE.name] if CLINICAL_QUEUE_FILE.exists() else []
+    commit_and_push(rel + [SIM_NAME] + extra, f"Post simulato (social in pausa): {post['title'][:60]}")
     print(f"::notice title=Post simulato::{post['title'][:80]} → Drive Anteprime, non pubblicato")
 
 
@@ -966,17 +1089,23 @@ def main():
         post = rubrics.checklist_post(posted) if rubrics_on and rome_now.weekday() == 3 else None
         if post is not None:                       # giovedì: rubrica Checklist (senza AI, fuori dalla coda)
             print(f"Rubrica Checklist: {post['source_hint']}")
+        elif rubrics_on and rome_now.weekday() == 5:
+            post = latest_science_post(drive, posted)          # sabato: solo articoli clinici di «Clinica…»
+            if post is None:
+                notify("Latest Science saltato: nessun articolo clinico adatto",
+                       "Nelle cartelle Drive «Clinica…» non c'è un articolo nuovo con licenza riutilizzabile e un "
+                       "messaggio clinico sui pazienti (trattamento o stato di salute). Il post del sabato non esce: "
+                       "carica un articolo in «Clinica main».")
+                print("::warning title=Latest Science saltato::nessun articolo clinico adatto in «Clinica…»")
+                return
         else:
             if not queue:
                 notify("Coda vuota: il bot è in pausa",
                        "Non ci sono post da pubblicare. Aggiungi nuovo materiale nella cartella Drive.")
                 print("Coda vuota.")
                 sys.exit(1)
-            saturday = rubrics_on and rome_now.weekday() == 5
             sim_ids = {p.get("id") for p in posted} if SIMULATE else set()
-            post = pick_next([q for q in queue if q["id"] not in sim_ids] or queue, posted, prefer_doi=saturday)
-            if saturday:
-                post["rubric"] = "Clinical Insights"   # sabato: un articolo, una lezione (slide «Based on»)
+            post = pick_next([q for q in queue if q["id"] not in sim_ids] or queue, posted)
             post = quality_gate(post, drive, queue)
             if post is None:
                 notify("Nessun post di metodologia oggi",
@@ -996,9 +1125,15 @@ def main():
     if (kind == "research" and CONFIG.get("review_slides", True) and post.get("rubric") != "Checklist"
             and not (post.get("review") or {}).get("passed")):
         content.review_slides(post)              # ogni slide un concetto, comprensibile da sola
+    apa = ""
     if kind == "research" and CONFIG.get("source_slide"):
         import sources
-        sources.prepare(post, drive)             # slide «fonte»: articolo di origine (prima pagina solo se CC)
+        meta = sources.prepare(post, drive)      # slide «fonte»: articolo di origine (prima pagina solo se CC)
+        apa = (meta or {}).get("apa", "")
+    if kind == "research":
+        polish.polish_post(post, apa)            # sentence case, reference coerenti con la slide «Based on», fonti
+    if kind == "research" and CONFIG.get("visual_plan"):
+        plan_visuals(post)                       # schema, figura dell'articolo, foto o niente: slide per slide
     slides = cards.render_carousel(post, CONFIG)
     caption = build_caption(post)
     print(f"\nPost scelto: {post['title']}  (fonte: {post['source']}, {post.get('source_hint', '')})")
@@ -1016,7 +1151,7 @@ def main():
         # anteprima dei formati per social: Facebook (immagine singola + testo lungo), Bluesky e Threads (testo breve)
         import social
         plink = grants.site_url(CONFIG, {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",
-                                         "research": f"methodology#m-{post.get('id', '')}"}.get(post.get("kind") or "research", ""))
+                                         "research": polish.page_anchor(post)}.get(post.get("kind") or "research", ""))
         if kind == "research":
             (PREVIEW_DIR / "facebook.jpg").write_bytes(cards.facebook_single(post, CONFIG))
         (PREVIEW_DIR / "bluesky.jpg").write_bytes(cards.single_cover(post, CONFIG))
@@ -1073,11 +1208,13 @@ def main():
 
     import social
     kind_link = {"grant": f"calls#{grants.card_anchor(post.get('grant_id', ''))}", "positions": "positions",
-                 "research": f"methodology#m-{post['id']}"}.get(post.get("kind") or "research", "")
+                 "research": polish.page_anchor(post)}.get(post.get("kind") or "research", "")
     link = grants.site_url(CONFIG, kind_link)
     LINKEDIN_DIR.mkdir(exist_ok=True)
     li_path = LINKEDIN_DIR / linkedin.filename(post, kind, today)
     li_path.write_text(linkedin.draft(post, caption, kind, link), encoding="utf-8")
+    import drive_preview
+    drive_preview.linkedin_doc(LINKEDIN_DIR, CONFIG)     # bozze LinkedIn anche su Drive (documento «Bozze LinkedIn»)
     commit_and_push([li_path.relative_to(ROOT).as_posix()], "Draft LinkedIn")
     fb_id = None
     if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID"):
@@ -1133,7 +1270,8 @@ def main():
         methodology.add(post, today, IMAGES_DIR)
     # pagina «link in bio»: rigenerata a ogni post, così i bandi scaduti spariscono da soli
     PAGE_FILE.parent.mkdir(exist_ok=True)
-    commit_and_push([QUEUE_FILE.name, POSTED_FILE.name, "methodology.json"] + (["pixabay_used.json"] if photos else []),
+    commit_and_push([QUEUE_FILE.name, POSTED_FILE.name, "methodology.json"] + (["pixabay_used.json"] if photos else [])
+                    + ([CLINICAL_QUEUE_FILE.name, SOURCES_FILE.name] if CLINICAL_QUEUE_FILE.exists() else []),
                     f"Post del {today}")
     if post.get("kind") == "positions":
         try:
@@ -1199,6 +1337,9 @@ def update_positions(posted=None, verify_limit=None):
     if verify_limit != 0:
         positions.refresh(archive, limit=int(verify_limit or CONFIG.get("positions_verify_per_run", 25)))
         save(ROOT / positions.ARCHIVE_FILE, archive)
+    if os.environ.get("CONFIRM_STRONG", "1") != "0":      # secondo parere dei forti sulle posizioni ad alta priorità
+        if positions.confirm_candidates(archive, posted, CONFIG):
+            save(ROOT / positions.ARCHIVE_FILE, archive)
     POSITIONS_PAGE.parent.mkdir(exist_ok=True)
     POSITIONS_PAGE.write_text(grants.add_decor(positions.build_page(archive, posted, CONFIG)), encoding="utf-8")
     write_job_pages(archive)
@@ -1383,6 +1524,9 @@ def update_grants(posted=None, verify_limit=None):
     if verify_limit != 0:
         grants.refresh_verified(grants_list, verified, CONFIG, limit=verify_limit)
         save(ROOT / grants.VERIFIED_FILE, verified)
+    if os.environ.get("CONFIRM_STRONG", "1") != "0":      # secondo parere dei forti sui bandi ad alta priorità
+        if grants.confirm_candidates(grants_list, verified, posted, CONFIG):
+            save(ROOT / grants.VERIFIED_FILE, verified)
     PAGE_FILE.parent.mkdir(exist_ok=True)
     PAGE_FILE.write_text(grants.add_decor(grants.build_page(grants_list, verified, posted, CONFIG)), encoding="utf-8")
     (ROOT / "docs" / "feed-calls.xml").write_text(grants.calls_feed(grants_list, verified, CONFIG), encoding="utf-8")
@@ -1611,7 +1755,7 @@ def backfill_social():
                 continue
             heads = " · ".join(x["heading"] for x in m.get("points", []))
             pseudo = {"title": m["title"], "caption": f"{m['title']}\n\n{m.get('takeaway', '')}\n\nKey points: {heads}"}
-            link = grants.site_url(CONFIG, f"methodology#m-{p['id']}")
+            link = grants.site_url(CONFIG, polish.page_anchor({"id": p["id"], "category": m.get("category")}))
         safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in p["id"])
         folder = IMAGES_DIR / f"{p['date']}-{safe}"
         slides = sorted(folder.glob("slide-*.jpg"), key=lambda q: int(q.stem.split("-")[1]))
@@ -1668,7 +1812,7 @@ def repost_social():
                     "takeaway": m.get("takeaway", ""), "references": m.get("references", [])}
             heads = " · ".join(x["heading"] for x in m.get("points", []))
             caption = f"{m['title']}\n\n{m.get('takeaway', '')}\n\nKey points: {heads}"
-            link = grants.site_url(CONFIG, f"methodology#m-{p['id']}")
+            link = grants.site_url(CONFIG, polish.page_anchor({"id": p["id"], "category": m.get("category")}))
             kind = "research"
         safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in p["id"])
         folder = IMAGES_DIR / f"{p['date']}-{safe}"

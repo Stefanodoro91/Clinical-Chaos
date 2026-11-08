@@ -3,16 +3,19 @@ Stesso stile del testo lungo di Facebook (didascalia per esteso, punti chiave, t
 salvato come file .txt in linkedin_drafts/ a ogni post reale o simulato, cosi' da poterlo incollare su LinkedIn."""
 import re
 
+import polish
+
 
 def draft(post, caption, kind, link):
     tags = re.findall(r"#\w+", caption)
     body = re.sub(r"(\s*#\w+)+\s*$", "", caption).strip()
     body = body.replace("link in bio", link or "")
-    points = "\n".join(f"{i}. {s['heading']}: {s['body']}" for i, s in enumerate(post.get("slides", []), 1))
+    body = re.sub(r"\n*References:\n(?:[•-] .*(?:\n|$))+", "\n", body).strip()   # le reference vanno una volta sola, in fondo
+    points = "\n".join(f"{i}. {polish.point(s['heading'], s['body'])}" for i, s in enumerate(post.get("slides", []), 1))
     refs = "\n".join(f"- {r}" for r in (post.get("references") or [])[:3])
     parts = [body,
              f"Key points:\n{points}" if points else "",
-             f"Takeaway: {post['takeaway']}" if post.get("takeaway") else "",
+             f"Takeaway: {post['takeaway']}" if post.get("takeaway") and post.get("kind") not in ("grant", "positions") else "",
              f"References:\n{refs}" if refs else "",
              f"Full details: {link}" if link and "link in bio" not in caption and link not in body else "",
              " ".join(tags[:5])]

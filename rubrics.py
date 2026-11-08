@@ -15,8 +15,9 @@ ROOT = Path(__file__).resolve().parent
 
 # ---------------------------------------------------------------- Checklist (giovedì)
 REFS = {
-    "CONSORT": "Schulz, K. F., Altman, D. G., & Moher, D. (2010). CONSORT 2010 statement: Updated guidelines "
-               "for reporting parallel group randomised trials. BMJ, 340, c332. https://doi.org/10.1136/bmj.c332",
+    "CONSORT": "Hopewell, S., Chan, A.-W., Collins, G. S., Hróbjartsson, A., Moher, D., Schulz, K. F., et al. "
+               "(2025). CONSORT 2025 statement: Updated guideline for reporting randomised trials. BMJ, 389, "
+               "e081123. https://doi.org/10.1136/bmj-2024-081123",
     "PRISMA": "Page, M. J., McKenzie, J. E., Bossuyt, P. M., Boutron, I., Hoffmann, T. C., Mulrow, C. D., et al. "
               "(2021). The PRISMA 2020 statement: An updated guideline for reporting systematic reviews. BMJ, "
               "372, n71. https://doi.org/10.1136/bmj.n71",
@@ -32,16 +33,16 @@ REFS = {
               "measures. Quality of Life Research, 27(5), 1147–1157. https://doi.org/10.1007/s11136-018-1798-3",
 }
 
-CITE = {"CONSORT": "Schulz et al., 2010", "PRISMA": "Page et al., 2021", "STROBE": "von Elm et al., 2007",
+CITE = {"CONSORT": "Hopewell et al., 2025", "PRISMA": "Page et al., 2021", "STROBE": "von Elm et al., 2007",
         "SPIRIT": "Chan et al., 2013", "COSMIN": "Prinsen et al., 2018"}
 
 # Una voce a settimana: (slug, linea guida, voce, titolo ≤70, hook ≤120, gancio didascalia,
 # 3 slide [cosa chiede / perché conta / come si fa], takeaway ≤130, evidenziato, hashtag, categoria)
 ITEMS = [
-    dict(slug="consort-flow", guide="CONSORT", item="Item 13 – Participant flow",
+    dict(slug="consort-flow", guide="CONSORT", item="Item 22 – Participant flow",
          title="Can readers trace every patient in your trial?",
          title_highlight="every patient",
-         hook="CONSORT item 13: if readers cannot trace every randomised patient, your results are hard to trust.",
+         hook="CONSORT 2025 item 22: if readers cannot trace every randomised patient, your results are hard to trust.",
          slides=[("What the item asks", "Report how many people were assessed, randomised, treated, lost and "
                   "analysed, in each group: a flow diagram is strongly recommended."),
                  ("Why it matters", "Losses after randomisation can bias results. A trial that randomised 120 "
@@ -51,17 +52,17 @@ ITEMS = [
          takeaway="Report the flow of all participants, stage by stage, with reasons for every exclusion.",
          takeaway_highlight="stage by stage",
          hashtags=["#CONSORT", "#ClinicalTrials", "#ReportingGuidelines"], category="Reporting & publication"),
-    dict(slug="consort-outcomes", guide="CONSORT", item="Item 6a – Outcomes",
+    dict(slug="consort-outcomes", guide="CONSORT", item="Item 14 – Outcomes",
          title="Primary outcome: defined before, not after",
          title_highlight="before",
-         hook="CONSORT item 6a: your primary outcome must be fully pre-specified: measure, metric and time point.",
-         slides=[("What the item asks", "Define every pre-specified primary and secondary outcome: the measure, "
-                  "how it was assessed, and exactly when."),
+         hook="CONSORT 2025 item 14: a prespecified outcome names variable, metric, aggregation and time point.",
+         slides=[("What the item asks", "Report every prespecified primary and secondary outcome: measurement "
+                  "variable, analysis metric, method of aggregation and time point."),
                  ("Why it matters", "Vague outcomes invite switching after the data are in, one of the "
                   "best-documented sources of reporting bias."),
-                 ("How to comply", "Write each outcome as: instrument + metric + aggregation + time point. "
-                  "Example: pain on a 0–10 scale, mean change at 12 weeks.")],
-         takeaway="An outcome is pre-specified only if measure, metric and time point are written down first.",
+                 ("How to comply", "Example: pain on a 0–10 numeric scale (variable), change from baseline "
+                  "(metric), mean (aggregation), at 12 weeks (time point).")],
+         takeaway="An outcome is prespecified only if variable, metric, aggregation and time point are written first.",
          takeaway_highlight="written down first",
          hashtags=["#CONSORT", "#ClinicalTrials", "#Endpoints"], category="Endpoints & outcomes"),
     dict(slug="prisma-search", guide="PRISMA", item="Item 7 – Search strategy",
@@ -116,10 +117,10 @@ ITEMS = [
          takeaway="Assess risk of bias with a named tool and two reviewers, and report it per study.",
          takeaway_highlight="named tool",
          hashtags=["#PRISMA", "#RiskOfBias", "#SystematicReview"], category="Critical appraisal"),
-    dict(slug="consort-sample", guide="CONSORT", item="Item 7a – Sample size",
+    dict(slug="consort-sample", guide="CONSORT", item="Item 16a – Sample size",
          title="Show the maths behind your sample size",
          title_highlight="sample size",
-         hook="CONSORT item 7a: report how the sample size was determined, with every assumption on the table.",
+         hook="CONSORT 2025 item 16a: report how the sample size was determined, with every assumption on the table.",
          slides=[("What the item asks", "Explain how the sample size was determined: expected effect, "
                   "variability, alpha, power and allowance for drop-out."),
                  ("Why it matters", "Without the assumptions, readers cannot tell an honest estimate from a "
@@ -142,10 +143,10 @@ ITEMS = [
          takeaway="Report participant numbers and losses at every stage, with reasons: a diagram helps.",
          takeaway_highlight="every stage",
          hashtags=["#STROBE", "#Epidemiology", "#CohortStudy"], category="Reporting & publication"),
-    dict(slug="consort-random", guide="CONSORT", item="Items 8–9 – Randomisation",
+    dict(slug="consort-random", guide="CONSORT", item="Items 17–19 – Randomisation",
          title="“Randomised” is a method, not a magic word",
          title_highlight="not a magic word",
-         hook="CONSORT items 8–9: report who generated the random sequence, how, and how allocation was concealed.",
+         hook="CONSORT 2025 items 17–19: report who generated the random sequence, how, and how allocation was concealed.",
          slides=[("What the item asks", "Describe the method used to generate the random sequence and the "
                   "mechanism used to conceal it until assignment."),
                  ("Why it matters", "Trials with unclear concealment tend to overestimate effects: foreseeable "

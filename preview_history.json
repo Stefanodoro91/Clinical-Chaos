@@ -1,0 +1,1281 @@
+{
+ "weeks_done": [
+  0,
+  1
+ ],
+ "posted": [
+  {
+   "date": "2026-11-09",
+   "time": "2026-11-09T11:23:00+00:00",
+   "id": "grant-GG-PAR-25-145",
+   "title": "Studying chronic cancer treatment toxicities? Support for R01 projects",
+   "source": "GrantFinder",
+   "simulated": true,
+   "kind": "grant",
+   "grant_id": "GG-PAR-25-145",
+   "deadline": "2027-02-05"
+  },
+  {
+   "date": "2026-11-09",
+   "time": "2026-11-09T17:23:00+00:00",
+   "id": "positions-2026-11-07",
+   "title": "5 open academic positions this week",
+   "source": "Academic positions",
+   "simulated": true,
+   "kind": "positions",
+   "position_ids": [
+    "POS-d1fe2994718e",
+    "POS-c37ffac4e3fb",
+    "POS-6bf6431ab818",
+    "POS-8b291a1976c9",
+    "POS-6d55c11a7920"
+   ]
+  },
+  {
+   "date": "2026-11-10",
+   "time": "2026-11-10T17:47:00+00:00",
+   "id": "40cb2ae7",
+   "title": "Why Even One Outlier Destroys the Mean",
+   "source": "Parametric vs non parametric.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The Mean Has Zero Breakdown",
+     "body": "The sample mean is defined as the sum of observations divided by n. If any single observation gets arbitrarily large, the mean becomes arbitrarily large. Thus the breakdown point for the mean is 0."
+    },
+    {
+     "heading": "The Median Survives Extremes",
+     "body": "The median is the central value in a distribution where equal numbers of values lie above and below. If a minority of observations go to infinity, the median will not be arbitrarily bad. Its breakdown point is one half."
+    },
+    {
+     "heading": "When Is the Mean Actually Good?",
+     "body": "Considering stability and breakdown limits, the mean only works well when datasets lack outliers, skewness, and multiple modes. The median is far less affected by these departures from normality."
+    }
+   ],
+   "takeaway": "Even a single outlier makes the sample mean completely arbitrary, giving it a breakdown point of zero.",
+   "category": "Statistics"
+  },
+  {
+   "date": "2026-11-11",
+   "time": "2026-11-11T11:23:00+00:00",
+   "id": "reel-positions-2026-11-07",
+   "title": "5 open academic positions this week",
+   "kind": "reel",
+   "reel_of": "positions-2026-11-07",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-11",
+   "time": "2026-11-11T17:47:00+00:00",
+   "id": "035742c6",
+   "title": "Linear or Logistic Regression? Look at Your Outcome",
+   "source": "Regression.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The outcome dictates the model",
+     "body": "Regression helps identify how multiple factors connect to disease outcomes. Choosing between linear and logistic models depends directly on how you measure your dependent variable."
+    },
+    {
+     "heading": "Linear models require continuous data",
+     "body": "In linear regression, the dependent variable must be continuous, such as intraocular pressure or visual acuity. Independent variables may be continuous, binary, or categorical."
+    },
+    {
+     "heading": "Logistic models need binary outcomes",
+     "body": "Logistic regression specifically requires a binary dependent variable, meaning the outcome only has two possible values, such as yes or no."
+    },
+    {
+     "heading": "Comparing the effect metrics",
+     "body": "Linear regression reports coefficients showing unit changes in the outcome. Logistic regression expresses predictor effects using an odds ratio to compare relative odds of the event."
+    }
+   ],
+   "takeaway": "Linear regression requires a continuous outcome, whereas logistic regression demands a binary dependent variable.",
+   "category": "Statistics"
+  },
+  {
+   "date": "2026-11-12",
+   "time": "2026-11-12T11:23:00+00:00",
+   "id": "grant-EU-HORIZON-BRIDGING-2027-06-02",
+   "title": "Tech transfer and innovation hubs: bridge research results to market",
+   "source": "GrantFinder",
+   "simulated": true,
+   "kind": "grant",
+   "grant_id": "EU-HORIZON-BRIDGING-2027-06-02",
+   "deadline": "2027-02-16"
+  },
+  {
+   "date": "2026-11-12",
+   "time": "2026-11-12T17:47:00+00:00",
+   "id": "checklist-consort-outcomes",
+   "title": "Primary outcome: defined before, not after",
+   "source": "Rubrica Checklist",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "What the item asks",
+     "body": "Define every pre-specified primary and secondary outcome: the measure, how it was assessed, and exactly when."
+    },
+    {
+     "heading": "Why it matters",
+     "body": "Vague outcomes invite switching after the data are in, one of the best-documented sources of reporting bias."
+    },
+    {
+     "heading": "How to comply",
+     "body": "Write each outcome as: instrument + metric + aggregation + time point. Example: pain on a 0–10 scale, mean change at 12 weeks."
+    }
+   ],
+   "takeaway": "An outcome is pre-specified only if measure, metric and time point are written down first.",
+   "category": "Endpoints & outcomes"
+  },
+  {
+   "date": "2026-11-13",
+   "time": "2026-11-13T11:23:00+00:00",
+   "id": "grant-GG-PAR-25-265",
+   "title": "Newborn screening research: support for novel assays and therapies",
+   "source": "GrantFinder",
+   "simulated": true,
+   "kind": "grant",
+   "grant_id": "GG-PAR-25-265",
+   "deadline": "2027-02-05"
+  },
+  {
+   "date": "2026-11-13",
+   "time": "2026-11-13T14:23:00+00:00",
+   "id": "reel-checklist-consort-outcomes",
+   "title": "Primary outcome: defined before, not after",
+   "kind": "reel",
+   "reel_of": "checklist-consort-outcomes",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-15",
+   "time": "2026-11-15T16:47:00+00:00",
+   "id": "reel-grant-GG-PAR-25-265",
+   "title": "Newborn screening research: support for novel assays and therapies",
+   "kind": "reel",
+   "reel_of": "grant-GG-PAR-25-265",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-14",
+   "time": "2026-11-14T15:47:00+00:00",
+   "id": "45306609",
+   "title": "Why adjuvants fail without training",
+   "source": "Motor recovery.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "What are adjuvants?",
+     "body": "Adjuvants (e.g., drugs, non-invasive brain stimulation) aim to modify the effect of a primary behavioural intervention."
+    },
+    {
+     "heading": "The foundation must be there",
+     "body": "Adjuvants must be paired with evidence-informed motor training; without it, the adjuvant has no foundation to enhance."
+    },
+    {
+     "heading": "Lessons from recent trials",
+     "body": "The ESTREL trial of levodopa reported neutral results. Participants received fewer than 80 of 117 intended sessions, with only 47 including motor learning."
+    },
+    {
+     "heading": "Vagus Nerve Stimulation",
+     "body": "The VNS-REHAB trial paired Vagus Nerve Stimulation with training. It showed a 2.6-point Fugl-Meyer Assessment improvement, below the 5.2-point threshold."
+    }
+   ],
+   "takeaway": "Always pair adjuvants with evidence-informed motor training; adjuvants alone lack a foundation for enhancing motor recovery.",
+   "category": "Clinical insight"
+  },
+  {
+   "date": "2026-11-16",
+   "time": "2026-11-16T17:23:00+00:00",
+   "id": "positions-2026-11-08",
+   "title": "5 open academic positions this week",
+   "source": "Academic positions",
+   "simulated": true,
+   "kind": "positions",
+   "position_ids": [
+    "POS-7cd1d61f86b2",
+    "POS-e5e94d37373a",
+    "POS-42891b57adab",
+    "POS-490eb50d5aec",
+    "POS-b9840450088b"
+   ]
+  },
+  {
+   "date": "2026-11-17",
+   "time": "2026-11-17T11:23:00+00:00",
+   "id": "grant-EU-HORIZON-HLTH-2027-01-CARE-02",
+   "title": "Targeting adverse drug reactions? Backing polypharmacy research",
+   "source": "GrantFinder",
+   "simulated": true,
+   "kind": "grant",
+   "grant_id": "EU-HORIZON-HLTH-2027-01-CARE-02",
+   "deadline": "2027-02-17"
+  },
+  {
+   "date": "2026-11-17",
+   "time": "2026-11-17T17:47:00+00:00",
+   "id": "af630a09",
+   "title": "Parametric vs nonparametric: The cost of power",
+   "source": "Parametric vs non parametric.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "Asymptotic Relative Efficiency",
+     "body": "Asymptotic Relative Efficiency defines how many more subjects are needed for a nonparametric test to have equivalent power as a parametric test for a fixed Type I error rate."
+    },
+    {
+     "heading": "The price of using nonparametric tests",
+     "body": "The ARE of the Wilcoxon Rank Sum Test versus the t-test when underlying assumptions are satisfied is zero point nine five five. There is minimal power loss when data are normal."
+    },
+    {
+     "heading": "Massive gains when normality fails",
+     "body": "Nonparametric alternatives outperform parametric ones when underlying distributions are heavy tailed or heavily skewed. In some cases ARE became infinite."
+    }
+   ],
+   "takeaway": "Using nonparametric tests when data are normal results in minimal power loss, but brings massive power gains when normality fails.",
+   "category": "Statistics"
+  },
+  {
+   "date": "2026-11-18",
+   "time": "2026-11-18T11:23:00+00:00",
+   "id": "reel-positions-2026-11-08",
+   "title": "5 open academic positions this week",
+   "kind": "reel",
+   "reel_of": "positions-2026-11-08",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-18",
+   "time": "2026-11-18T17:47:00+00:00",
+   "id": "7bc8e19b",
+   "title": "Why opaque reporting undermines research reliability",
+   "source": "Critical appraisal",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The danger of opaque reporting",
+     "body": "Opaque reporting is directly associated with biased conclusions and, less directly, with errors in biomedical publishing and inefficient use of resources."
+    },
+    {
+     "heading": "Judging reliability becomes impossible",
+     "body": "Without knowing study methods, readers cannot determine if results are trustworthy."
+    }
+   ],
+   "takeaway": "Without clear reporting of how a study was done, readers cannot judge whether findings are reliable.",
+   "category": "Reporting & publication"
+  },
+  {
+   "date": "2026-11-19",
+   "time": "2026-11-19T11:23:00+00:00",
+   "id": "grant-GG-PAR-25-136",
+   "title": "Optimizing digital mental health interventions? Grants for R01 trials",
+   "source": "GrantFinder",
+   "simulated": true,
+   "kind": "grant",
+   "grant_id": "GG-PAR-25-136",
+   "deadline": "2027-02-05"
+  },
+  {
+   "date": "2026-11-19",
+   "time": "2026-11-19T17:47:00+00:00",
+   "id": "checklist-prisma-search",
+   "title": "Could a colleague rerun your literature search?",
+   "source": "Rubrica Checklist",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "What the item asks",
+     "body": "Present the full search strategy for every database and register, including filters and limits, exactly as run."
+    },
+    {
+     "heading": "Why it matters",
+     "body": "The search defines the evidence base. If it cannot be repeated, the review cannot be checked or updated."
+    },
+    {
+     "heading": "How to comply",
+     "body": "Export each database's full query string into an appendix, with the date of the search and any language or date limits."
+    }
+   ],
+   "takeaway": "Report every search string, database, filter and date: reproducible or it is not systematic.",
+   "category": "Reporting & publication"
+  },
+  {
+   "date": "2026-11-20",
+   "time": "2026-11-20T11:23:00+00:00",
+   "id": "grant-EU-HORIZON-HLTH-2027-02-IND-02-two-stage",
+   "title": "Developing point-of-care diagnostics? Support for clinical validation",
+   "source": "GrantFinder",
+   "simulated": true,
+   "kind": "grant",
+   "grant_id": "EU-HORIZON-HLTH-2027-02-IND-02-two-stage",
+   "deadline": "2027-02-17"
+  },
+  {
+   "date": "2026-11-20",
+   "time": "2026-11-20T14:23:00+00:00",
+   "id": "reel-checklist-prisma-search",
+   "title": "Could a colleague rerun your literature search?",
+   "kind": "reel",
+   "reel_of": "checklist-prisma-search",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-21",
+   "time": "2026-11-21T15:47:00+00:00",
+   "id": "ef9f479f",
+   "title": "Why exoskeleton gains don't always mean faster walking or better daily function",
+   "source": "Wearable exoskeleton.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The functional performance gap",
+     "body": "Exoskeleton trials found gains in motor function and balance, but no significant gains in 10-Meter Walk Test (10MWT) speed or Timed Up and Go (TUG) mobility."
+    },
+    {
+     "heading": "Daily life remains unchanged",
+     "body": "Activities of daily living (ADL) measured by the Modified Barthel Index showed no significant between-group difference, though certainty was very low."
+    },
+    {
+     "heading": "High variability in results",
+     "body": "Most prediction intervals crossed the null, indicating that true effects may vary across clinical settings and patient populations."
+    },
+    {
+     "heading": "Complexity of functional transfer",
+     "body": "Speed and daily activities require complex integration of motor and environmental demands; improvements in structured training may not immediately translate."
+    }
+   ],
+   "takeaway": "Exoskeleton training improves walking independence but needs task-specific practice to improve speed and daily function.",
+   "category": "Clinical insight"
+  },
+  {
+   "date": "2026-11-22",
+   "time": "2026-11-22T16:47:00+00:00",
+   "id": "reel-grant-EU-HORIZON-HLTH-2027-02-IND-02-two-stage",
+   "title": "Developing point-of-care diagnostics? Support for clinical validation",
+   "kind": "reel",
+   "reel_of": "grant-EU-HORIZON-HLTH-2027-02-IND-02-two-stage",
+   "simulated": true
+  }
+ ],
+ "stories": [
+  {
+   "date": "2026-11-09",
+   "time": "2026-11-09T08:31:00+00:00",
+   "kind": "weekly",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-10",
+   "time": "2026-11-10T08:31:00+00:00",
+   "kind": "countdown",
+   "simulated": true,
+   "grant_id": "WEB-1d98be9146cf",
+   "family": "Colfuturo"
+  },
+  {
+   "date": "2026-11-11",
+   "time": "2026-11-11T08:31:00+00:00",
+   "kind": "countdown",
+   "simulated": true,
+   "grant_id": "GG-HHS-2027-ACL-NIDILRR-ARCP-0300",
+   "family": "Administration for Community Living"
+  },
+  {
+   "date": "2026-11-12",
+   "time": "2026-11-12T08:31:00+00:00",
+   "kind": "countdown",
+   "simulated": true,
+   "grant_id": "GG-RFA-OH-26-001",
+   "family": "Centers for Disease Control and Prevention - ERA"
+  },
+  {
+   "date": "2026-11-13",
+   "time": "2026-11-13T08:31:00+00:00",
+   "kind": "countdown",
+   "simulated": true,
+   "grant_id": "GG-HHS-2027-ACL-NIDILRR-AREM-0301",
+   "family": "Administration for Community Living"
+  },
+  {
+   "date": "2026-11-16",
+   "time": "2026-11-16T08:31:00+00:00",
+   "kind": "weekly",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-17",
+   "time": "2026-11-17T08:31:00+00:00",
+   "kind": "countdown",
+   "simulated": true,
+   "grant_id": "GG-HHS-2027-ACL-NIDILRR-ARHF-0302",
+   "family": "Administration for Community Living"
+  }
+ ],
+ "grants": {
+  "EU-HORIZON-HLTH-2027-01-CARE-02": {
+   "status": "ok",
+   "checked": "2026-11-08",
+   "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-CARE-02",
+   "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-CARE-02",
+   "is_open_call": "yes",
+   "title": "Personalised approaches to reduce risks from Adverse Drug Reactions due to administration of multiple medications",
+   "programme": "Horizon Europe – Cluster 1: Health",
+   "programme_family": "Horizon Europe",
+   "summary": "This call supports research to reduce the incidence of adverse drug reactions caused by multiple medications. Funded activities focus on leveraging pharmacogenomics, biomarkers, and digital technologies such as clinical decision support systems to implement personalized medicine approaches and optimize medication management. The call aims to generate evidence on clinical utility and cost-effectiveness. The participation of start-ups and SMEs is encouraged, and proposals are expected to include clinical studies.",
+   "coming_soon": false,
+   "eligible_countries": "EU Member States and associated countries",
+   "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "italy": "yes",
+   "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "version": 3,
+   "model": "gemini-3.8-flash",
+   "due_dates": [
+    "2027-02-17"
+   ],
+   "resubmission_dates": [],
+   "expires": "",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "EU Funding & Tenders Portal: single-stage, deadline 2027-02-17",
+   "deadline_type": "single",
+   "deadline_source": "eu_portal",
+   "lead": "",
+   "lead_evidence": "",
+   "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17.",
+   "confirmed": {
+    "model": "gemini-3.8-flash",
+    "date": "2026-11-08",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "EU-HORIZON-HLTH-2027-01-DISEASE-05": {
+   "status": "ok",
+   "checked": "2026-11-08",
+   "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-DISEASE-05",
+   "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-DISEASE-05",
+   "is_open_call": "yes",
+   "title": "Development of novel small molecule antiviral therapeutics for pathogens with epidemic potential",
+   "programme": "Horizon Europe – Cluster 1: Health",
+   "programme_family": "Horizon Europe",
+   "summary": "This call aims to advance the development of antiviral prophylactic and therapeutic candidates (excluding antibodies) targeting specific emerging or re-emerging viruses with epidemic or pandemic potential. Supported activities include candidate selection and optimization, in-vitro and in-vivo testing, GMP production, and first-in-human clinical safety trials. Applicants must target specified viral groups and are encouraged to involve SMEs, regulatory bodies, and third countries where targeted viruses are endemic.",
+   "coming_soon": false,
+   "eligible_countries": "EU Member States and associated countries",
+   "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "italy": "yes",
+   "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "version": 3,
+   "model": "gemini-3.6-flash",
+   "due_dates": [
+    "2027-02-17"
+   ],
+   "resubmission_dates": [],
+   "expires": "",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "EU Funding & Tenders Portal: single-stage, deadline 2027-02-17",
+   "deadline_type": "single",
+   "deadline_source": "eu_portal",
+   "lead": "",
+   "lead_evidence": "",
+   "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17.",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-08",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "EU-HORIZON-HLTH-2027-02-IND-02-two-stage": {
+   "status": "ok",
+   "checked": "2026-11-08",
+   "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-02-IND-02-two-stage",
+   "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-02-IND-02-two-stage",
+   "is_open_call": "yes",
+   "title": "Portable and versatile Point-of-care diagnostics",
+   "programme": "Horizon Europe – Cluster 1: Health",
+   "programme_family": "Horizon Europe",
+   "summary": "This call aims to develop and optimize Point-of-Care (PoC) diagnostic devices to accelerate therapeutic decisions and improve patient outcomes. Proposals should focus on making devices more sensitive, selective, and user-friendly, particularly for resource-limited settings. Required activities include device optimization, comparative performance studies against current standards, and clinical validation to ensure compliance with EU regulatory requirements (IVDR or MDR). It targets both infectious and non-communicable diseases, prioritizing life-saving applications in emergency cases.",
+   "coming_soon": false,
+   "eligible_countries": "EU Member States and associated countries",
+   "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "italy": "yes",
+   "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "version": 3,
+   "model": "gemini-3-flash-preview",
+   "due_dates": [
+    "2027-02-17"
+   ],
+   "resubmission_dates": [],
+   "expires": "",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "EU Funding & Tenders Portal: two-stage, deadline 2027-02-17, 2027-09-16",
+   "deadline_type": "two_stage",
+   "deadline_source": "eu_portal",
+   "lead": "",
+   "lead_evidence": "",
+   "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17, 2027-09-16.",
+   "confirmed": {
+    "model": "gemini-3-flash-preview",
+    "date": "2026-11-08",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "GG-PAR-25-145": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "official_source": "NIH Guide PAR-25-145",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-145.html",
+   "is_open_call": "yes",
+   "title": "Clinical Characterization of Cancer Therapy-induced Adverse Sequelae and Mechanism-based Interventional Strategies",
+   "programme": "National Cancer Institute (NCI)",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity supports basic, translational, and clinical research to address chronic or delayed adverse effects of cancer therapies. The goal is to identify biological mechanisms, characterize clinical phenotypes, and develop interventional strategies to prevent or minimize long-term sequelae. Projects may include mechanistic studies, longitudinal phenotyping, and validation of clinical endpoints like biomarkers or patient-reported outcomes. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and foreign entities.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3-flash-preview",
+   "due_dates": [
+    "2025-02-05",
+    "2025-06-05",
+    "2025-10-05",
+    "2026-02-05",
+    "2026-06-05",
+    "2026-10-05",
+    "2027-02-05",
+    "2027-06-05",
+    "2027-10-05"
+   ],
+   "resubmission_dates": [
+    "2025-03-05",
+    "2025-07-05",
+    "2025-11-05",
+    "2026-03-05",
+    "2026-07-05",
+    "2026-11-05",
+    "2027-03-05",
+    "2027-07-05",
+    "2027-11-05"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3-flash-preview",
+    "date": "2026-11-07",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "GG-PAR-25-136": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "official_source": "NIH Guide PAR-25-136",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-136.html",
+   "is_open_call": "yes",
+   "title": "Laboratories to Optimize Digital Health (R01 Clinical Trial Required)",
+   "programme": "R01 Research Project Grant",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity supports innovative research projects to test strategies that increase the reach, efficiency, effectiveness, and quality of digital mental health interventions. It funds clinical trials leveraging well-established digital health platforms to rapidly refine, optimize, and test interventions targeting mental health outcomes, including serious mental illness and suicide behaviors. Higher education institutions, non-profits, for-profit organizations, and non-domestic (foreign) entities worldwide are eligible to apply.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.8-flash",
+   "due_dates": [
+    "2025-02-05",
+    "2025-06-05",
+    "2025-10-05",
+    "2026-02-05",
+    "2026-06-05",
+    "2026-10-05",
+    "2027-02-05",
+    "2027-06-05",
+    "2027-10-05"
+   ],
+   "resubmission_dates": [
+    "2025-03-05",
+    "2025-07-05",
+    "2025-11-05",
+    "2026-03-05",
+    "2026-07-05",
+    "2026-11-05",
+    "2027-03-05",
+    "2027-07-05",
+    "2027-11-05"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director/Principal Investigator.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.8-flash",
+    "date": "2026-11-07",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "GG-PAR-25-207": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "official_source": "NIH Guide PAR-25-207",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-207.html",
+   "is_open_call": "yes",
+   "title": "Effectiveness Trials for Post-Acute Interventions and Services to Optimize Longer-term Outcomes (R01 Clinical Trial Required)",
+   "programme": "NIH National Institute of Mental Health",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This National Institute of Mental Health (NIMH) funding opportunity supports clinical trials evaluating the effectiveness of therapeutic and service delivery interventions for the post-acute management of mental health conditions across the lifespan. Projects must test hypotheses regarding mechanisms of action, mediators, and predictors of effectiveness to optimize long-term outcomes. Eligible applicants include higher education institutions, non-profits, for-profit businesses, government entities, and foreign (non-U.S.) organizations.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.6-flash",
+   "due_dates": [
+    "2025-02-05",
+    "2025-06-05",
+    "2025-10-05",
+    "2026-02-05",
+    "2026-06-05",
+    "2026-10-05",
+    "2027-02-05",
+    "2027-06-05",
+    "2027-10-05"
+   ],
+   "resubmission_dates": [
+    "2025-03-05",
+    "2025-07-05",
+    "2025-11-05",
+    "2026-03-05",
+    "2026-07-05",
+    "2026-11-05",
+    "2027-03-05",
+    "2027-07-05",
+    "2027-11-05"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the research is eligible to be a Program Director/Principal Investigator.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-07",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "GG-PA-25-172": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "official_source": "NIH Guide PA-25-172",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PA-25-172.html",
+   "is_open_call": "yes",
+   "title": "Modular R01s in Cancer Control and Population Sciences (R01 Clinical Trial Optional)",
+   "programme": "National Cancer Institute (NCI)",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity supports research in cancer control and population sciences, focusing on innovative ideas in statistical methods, epidemiology, survivorship, behavioral interventions, healthcare delivery, and implementation science. The goal is to advance cancer research through shorter-term projects with reduced budgets, particularly encouraging early-stage investigators. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and non-U.S. entities. Research may include optional clinical trials to improve cancer outcomes and quality of life for survivors.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3-flash-preview",
+   "due_dates": [
+    "2025-02-05",
+    "2025-06-05",
+    "2025-10-05",
+    "2026-02-05",
+    "2026-06-05",
+    "2026-10-05",
+    "2027-02-05",
+    "2027-06-05",
+    "2027-10-05"
+   ],
+   "resubmission_dates": [
+    "2025-03-05",
+    "2025-07-05",
+    "2025-11-05",
+    "2026-03-05",
+    "2026-07-05",
+    "2026-11-05",
+    "2027-03-05",
+    "2027-07-05",
+    "2027-11-05"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3-flash-preview",
+    "date": "2026-11-07",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "GG-PAR-25-206": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "official_source": "NIH Guide PAR-25-206",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-206.html",
+   "is_open_call": "yes",
+   "title": "Pilot Effectiveness Trials for Post-Acute Interventions and Services to Optimize Longer-term Outcomes",
+   "programme": "NIH R01 Research Project Grant",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity supports pilot effectiveness trials evaluating therapeutic and service delivery interventions for the post-acute management of mental health conditions. Projects should assess feasibility, tolerability, acceptability, safety, and target engagement to provide preliminary data required for larger-scale trials. Eligible applicants include higher education institutions, non-profits, for-profit organizations, government entities, and non-U.S. (foreign) organizations.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.6-flash",
+   "due_dates": [
+    "2025-02-05",
+    "2025-06-05",
+    "2025-10-05",
+    "2026-02-05",
+    "2026-06-05",
+    "2026-10-05",
+    "2027-02-05",
+    "2027-06-05",
+    "2027-10-05"
+   ],
+   "resubmission_dates": [
+    "2025-03-05",
+    "2025-07-05",
+    "2025-11-05",
+    "2026-03-05",
+    "2026-07-05",
+    "2026-11-05",
+    "2027-03-05",
+    "2027-07-05",
+    "2027-11-05"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research is invited to work with their organization.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-07",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "EU-HORIZON-MSCA-2027-COFUND-02-01": {
+   "status": "ok",
+   "checked": "2026-11-08",
+   "official_source": "EU Funding & Tenders Portal, topic HORIZON-MSCA-2027-COFUND-02-01",
+   "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-MSCA-2027-COFUND-02-01",
+   "is_open_call": "yes",
+   "title": "MSCA Choose Europe for Science 2027",
+   "programme": "Horizon Europe",
+   "programme_family": "Horizon Europe",
+   "summary": "This call supports talent recruitment programmes aimed at tackling brain drain and researcher career precarity in Europe. Applicants submit proposals for postdoctoral research programmes covering any discipline, structured in two phases: an EU-funded phase (24-36 months) covering direct and indirect project costs, followed by a beneficiary-funded phase (24 months) offering attractive salaries and long-term career prospects. Participating organisations from academic and non-academic sectors can apply.",
+   "coming_soon": false,
+   "eligible_countries": "EU Member States and associated countries",
+   "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "italy": "yes",
+   "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "version": 3,
+   "model": "gemini-3.6-flash",
+   "due_dates": [
+    "2027-04-06"
+   ],
+   "resubmission_dates": [],
+   "expires": "",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "EU Funding & Tenders Portal: single-stage, deadline 2027-04-06",
+   "deadline_type": "single",
+   "deadline_source": "eu_portal",
+   "lead": "Supported researchers must hold a doctoral degree.",
+   "lead_evidence": "Applicants submit proposals for talent recruitment programmes that will provide researchers holding a doctoral degree with excellent research and academic opportunities, potentially coupled with management activities, to lead them to concrete and attractive career prospects.",
+   "deadline_raw": "2027-04-06 | Deadline dates: 2027-04-06.",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-08",
+    "changed": [],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  },
+  "EU-HORIZON-MSCA-2027-SE-01-01": {
+   "status": "ok",
+   "checked": "2026-11-08",
+   "official_source": "EU Funding & Tenders Portal, topic HORIZON-MSCA-2027-SE-01-01",
+   "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-MSCA-2027-SE-01-01",
+   "is_open_call": "yes",
+   "title": "MSCA Staff Exchanges 2027",
+   "programme": "Horizon Europe",
+   "programme_family": "Horizon Europe",
+   "summary": "MSCA Staff Exchanges support international, inter-sectoral, and interdisciplinary mobility of research and innovation staff through physical secondments between independent legal entities. The scheme aims to foster knowledge transfer, boost R&I capacity, and enhance staff skills and employability. Collaborative projects must involve academic and non-academic organisations from across the globe, including universities, research organisations, and SMEs, contributing directly to a joint project through staff secondments.",
+   "coming_soon": false,
+   "eligible_countries": "EU Member States and associated countries",
+   "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "italy": "yes",
+   "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "version": 3,
+   "model": "gemini-3.8-flash",
+   "due_dates": [
+    "2027-04-13"
+   ],
+   "resubmission_dates": [],
+   "expires": "",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "EU Funding & Tenders Portal: single-stage, deadline 2027-04-13",
+   "deadline_type": "single",
+   "deadline_source": "eu_portal",
+   "lead": "",
+   "lead_evidence": "",
+   "deadline_raw": "2027-04-13 | Deadline dates: 2027-04-13.",
+   "confirmed": {
+    "model": "gemini-3.8-flash",
+    "date": "2026-11-08",
+    "changed": [
+     "due_dates"
+    ],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  },
+  "EU-HORIZON-MSCA-2027-PF-01-01": {
+   "status": "ok",
+   "checked": "2026-11-08",
+   "official_source": "EU Funding & Tenders Portal, topic HORIZON-MSCA-2027-PF-01-01",
+   "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-MSCA-2027-PF-01-01",
+   "is_open_call": "yes",
+   "title": "MSCA Postdoctoral Fellowships 2027",
+   "programme": "Horizon Europe – MSCA Postdoctoral Fellowships",
+   "programme_family": "Horizon Europe",
+   "summary": "MSCA Postdoctoral Fellowships support excellent researchers through international mobility to enhance their skills and career prospects. European Fellowships are open to researchers of any nationality moving within or to Europe for 12-24 months. Global Fellowships support European nationals or long-term residents for research outside Europe (12-24 months) with a mandatory 12-month return phase. Applications are submitted jointly by the researcher and a host organization from the academic or non-academic sector.",
+   "coming_soon": false,
+   "eligible_countries": "EU Member States and associated countries",
+   "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "italy": "yes",
+   "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+   "version": 3,
+   "model": "gemini-3-flash-preview",
+   "due_dates": [
+    "2027-09-08"
+   ],
+   "resubmission_dates": [],
+   "expires": "",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "EU Funding & Tenders Portal: single-stage, deadline 2027-09-08",
+   "deadline_type": "single",
+   "deadline_source": "eu_portal",
+   "lead": "Excellent researchers of any nationality (European) or European nationals/long-term residents (Global) applying jointly with a host beneficiary.",
+   "lead_evidence": "Applications will be made jointly by the researcher and a beneficiary in the academic or non-academic sector.",
+   "deadline_raw": "2027-09-08 | Deadline dates: 2027-09-08.",
+   "confirmed": {
+    "model": "gemini-3-flash-preview",
+    "date": "2026-11-08",
+    "changed": [],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  },
+  "GG-PAR-25-265": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "official_source": "NIH Guide PAR-25-265",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-265.html",
+   "is_open_call": "yes",
+   "title": "Innovative Screening Approaches and Therapies for Screenable Disorders in Newborns (R01 - Clinical Trial Optional)",
+   "programme": "Hunter Kelly Newborn Screening Research Program",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity supports research to develop novel screening approaches and therapeutic interventions for conditions currently in newborn screening panels or fatal/disabling genetic conditions that could benefit from early detection. Supported activities include assay development, preclinical testing, and clinical trials. Higher education institutions, non-profits, for-profit businesses, and non-domestic (foreign) organizations are eligible to apply as lead entities.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.8-flash",
+   "due_dates": [
+    "2025-02-05",
+    "2025-06-05",
+    "2025-10-05",
+    "2026-02-05",
+    "2026-06-05",
+    "2026-10-05",
+    "2027-02-05",
+    "2027-06-05",
+    "2027-10-05"
+   ],
+   "resubmission_dates": [
+    "2025-03-05",
+    "2025-07-05",
+    "2025-11-05",
+    "2026-03-05",
+    "2026-07-05",
+    "2026-11-05",
+    "2027-03-05",
+    "2027-07-05",
+    "2027-11-05"
+   ],
+   "expires": "2027-11-17",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as Program Director/Principal Investigator may apply.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.8-flash",
+    "date": "2026-11-07",
+    "changed": [],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  },
+  "GG-PAR-25-266": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "official_source": "NIH Guide PAR-25-266",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-266.html",
+   "is_open_call": "yes",
+   "title": "Innovative Screening Approaches and Therapies for Screenable Disorders in Newborns (R21 - Clinical Trial Optional)",
+   "programme": "Hunter Kelly Newborn Screening Research Program",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity supports exploratory and novel research projects (R21) aimed at developing innovative screening approaches and therapeutic interventions for disorders detectable through newborn screening or potentially fatal or disabling conditions that could benefit from early detection. Projects may include clinical trials, technology validation, and preclinical studies. Higher education institutions, nonprofits, for-profit entities, government agencies, and non-U.S. (foreign) organizations are eligible to apply.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.8-flash",
+   "due_dates": [
+    "2025-02-16",
+    "2025-06-16",
+    "2025-10-16",
+    "2026-02-16",
+    "2026-06-16",
+    "2026-10-16",
+    "2027-02-16",
+    "2027-06-16",
+    "2027-10-16"
+   ],
+   "resubmission_dates": [
+    "2025-03-16",
+    "2025-07-16",
+    "2025-11-16",
+    "2026-03-16",
+    "2026-07-16",
+    "2026-11-16",
+    "2027-03-16",
+    "2027-07-16",
+    "2027-11-16"
+   ],
+   "expires": "2027-11-17",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as PD/PI may apply through their organization.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.8-flash",
+    "date": "2026-11-07",
+    "changed": [],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  },
+  "GG-PAR-25-227": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "official_source": "NIH Guide PAR-25-227",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-227.html",
+   "is_open_call": "yes",
+   "title": "Natural History of Disorders Screenable in the Newborn Period (R01 Clinical Trial Optional)",
+   "programme": "NIH R01 Research Project Grant",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity encourages applications to expand knowledge of the natural history of disorders that currently are, or may become, part of newborn screening programs. Funded R01 research project grants (clinical trial optional) aim to improve diagnostic accuracy, characterize disease progression, and support targeted therapeutic interventions. Higher education institutions, non-profits, for-profit businesses, government entities, and foreign (non-U.S.) organizations are eligible to apply as lead applicants.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.6-flash",
+   "due_dates": [
+    "2025-02-05",
+    "2025-06-05",
+    "2025-10-05",
+    "2026-02-05",
+    "2026-06-05",
+    "2026-10-05",
+    "2027-02-05",
+    "2027-06-05",
+    "2027-10-05"
+   ],
+   "resubmission_dates": [
+    "2025-03-05",
+    "2025-07-05",
+    "2025-11-05",
+    "2026-03-05",
+    "2026-07-05",
+    "2026-11-05",
+    "2027-03-05",
+    "2027-07-05",
+    "2027-11-05"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research is invited to work with their organization.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-07",
+    "changed": [],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  },
+  "GG-PAR-25-287": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "official_source": "NIH Guide PAR-25-287",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-287.html",
+   "is_open_call": "yes",
+   "title": "Neuromodulation/Neurostimulation Device Development for Mental Health Applications (R01 Clinical Trial Not Allowed)",
+   "programme": "NIH Research Project Grant (R01)",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This NIH funding opportunity supports multidisciplinary teams to develop next-generation brain stimulation devices or significantly enhance existing FDA-approved or cleared devices for treating mental health disorders. Funding covers technology research focused on engineering development, software/hardware innovations, and initial proof-of-concept animal or non-clinical human testing. Higher education institutions, non-profit and for-profit organizations, and foreign entities worldwide are eligible to apply as lead institutions.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.6-flash",
+   "due_dates": [
+    "2025-02-05",
+    "2025-06-05",
+    "2025-10-05",
+    "2026-02-05",
+    "2026-06-05",
+    "2026-10-05",
+    "2027-02-05",
+    "2027-06-05",
+    "2027-10-05"
+   ],
+   "resubmission_dates": [
+    "2025-03-05",
+    "2025-07-05",
+    "2025-11-05",
+    "2026-03-05",
+    "2026-07-05",
+    "2026-11-05",
+    "2027-03-05",
+    "2027-07-05",
+    "2027-11-05"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the research as PD/PI may apply through their organization.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-07",
+    "changed": [],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  }
+ },
+ "positions": {
+  "POS-44c964850256": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "first_seen": "2026-10-21",
+   "url": "https://www.timeshighereducation.com/unijobs/listing/413749/assistant-professor-in-brain-machine-interface/?LinkSource=PremiumListing",
+   "source": "Times Higher Education – rehabilitation",
+   "is_open": "yes",
+   "type": "faculty",
+   "relevance": "medium",
+   "area": "engineering",
+   "title": "Assistant Professor in Brain Machine Interface",
+   "institution": "The Hong Kong Polytechnic University",
+   "country": "Hong Kong",
+   "city": "Hong Kong",
+   "deadline": "2026-12-24",
+   "deadline_evidence": "Closing date 24 Dec 2026",
+   "summary": "The Department of Biomedical Engineering at The Hong Kong Polytechnic University invites applications for an Assistant Professor in Brain Machine Interface. Responsibilities include teaching, initiating innovative research, supervising student projects, and handling administrative duties. Candidates must possess a PhD in a relevant field and a strong research publication record.",
+   "topic": "Brain Machine Interface",
+   "duration": "fixed-term gratuity-bearing contract",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-07",
+    "changed": [
+     "relevance"
+    ]
+   }
+  },
+  "POS-59c61a2cb18e": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "first_seen": "2026-10-24",
+   "url": "https://www.timeshighereducation.com/unijobs/listing/416759/clinical-practitioner-holding-the-title-of-clinical-lecturer-/?LinkSource=PremiumListing",
+   "source": "Times Higher Education – clinical research",
+   "is_open": "yes",
+   "type": "faculty",
+   "relevance": "medium",
+   "area": "clinical",
+   "title": "Clinical Practitioner (Holding the Title of Clinical Lecturer)",
+   "institution": "THE UNIVERSITY OF HONG KONG",
+   "country": "Hong Kong",
+   "city": "Pok Fu Lam",
+   "deadline": "2027-04-08",
+   "deadline_evidence": "Review of applications will start from December 9, 2026 and continue until April 8, 2027 , or until the posts are filled, whichever is earlier.",
+   "summary": "The University of Hong Kong invites applications for Clinical Practitioners (Clinical Lecturer) in Orthopaedics and Traumatology. Appointees will support expanding clinical and teaching activities, with optional research. Candidates must hold a medical qualification registrable with the Medical Council of Hong Kong and demonstrate a strong passion for teaching.",
+   "topic": "Orthopaedics and traumatology clinical teaching and practice",
+   "duration": "3 years",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-07",
+    "changed": [
+     "relevance"
+    ]
+   }
+  },
+  "POS-443c045973a7": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "first_seen": "2026-11-03",
+   "url": "https://www.timeshighereducation.com/unijobs/listing/417056/post-doctoral-associate-in-the-division-of-engineering-electrical-engineering/?LinkSource=PremiumListing",
+   "source": "Times Higher Education – rehabilitation",
+   "is_open": "yes",
+   "type": "postdoc",
+   "relevance": "medium",
+   "area": "engineering",
+   "title": "Post-Doctoral Associate in the Division of Engineering, Electrical Engineering",
+   "institution": "NEW YORK UNIVERSITY ABU DHABI",
+   "country": "United Arab Emirates",
+   "city": "Abu Dhabi",
+   "deadline": "2026-11-28",
+   "deadline_evidence": "Closing date 28 Nov 2026",
+   "summary": "This post-doctoral position at New York University Abu Dhabi focuses on designing, developing, and validating materials, control systems, and algorithms for next-generation soft haptic actuators. Key applications include soft robot-assisted simulations, brain-machine interaction, wearable haptics, and rehabilitation. Applicants must hold a PhD in engineering or related field or equivalent R&D experience.",
+   "topic": "Soft haptic actuators for wearable haptics and rehabilitation",
+   "duration": "Permanent",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-07",
+    "changed": [
+     "relevance"
+    ]
+   }
+  },
+  "POS-d1fe2994718e": {
+   "status": "ok",
+   "checked": "2026-11-07",
+   "first_seen": "2026-11-04",
+   "url": "https://www.timeshighereducation.com/unijobs/listing/417167/senior-lecturer-physiotherapy/",
+   "source": "Times Higher Education – physiotherapy",
+   "is_open": "yes",
+   "type": "faculty",
+   "relevance": "high",
+   "area": "rehabilitation",
+   "title": "Senior Lecturer, Physiotherapy",
+   "institution": "Swinburne University of Technology",
+   "country": "Australia",
+   "city": "Hawthorn",
+   "deadline": "2026-11-29",
+   "deadline_evidence": "Applications Close: Sunday, 29 November 2026 at 11:30pm.",
+   "summary": "The Senior Lecturer will lead the development and delivery of Master's courses in Sports and Exercise Physiotherapy. Responsibilities include curriculum design, clinical education leadership, and conducting high-impact research. Candidates must have a Doctorate or equivalent clinical experience, AHPRA registration, and expertise in sports and exercise physiotherapy.",
+   "topic": "Sports and exercise physiotherapy education and research",
+   "duration": "Permanent",
+   "confirmed": {
+    "model": "gemini-3-flash-preview",
+    "date": "2026-11-07",
+    "changed": []
+   }
+  }
+ },
+ "clinical_queue": [],
+ "clinical_sources": [
+  {
+   "drive_id": "1Wy_HvipL4LrgrnGGJ-YWG_iP3zIhl_YZ",
+   "name": "Low cost devices.pdf",
+   "posts": 0,
+   "clinical_skipped": "licenza: non dichiarata nel testo",
+   "date": "2026-11-07"
+  },
+  {
+   "drive_id": "1zzMyS-bki9KBiVbflJSoTbk8hDXdbmMK",
+   "name": "Motor recovery.pdf",
+   "posts": 3,
+   "clinical_used": true,
+   "date": "2026-11-07"
+  },
+  {
+   "drive_id": "1OFnoDNWnSe5aN-Bxfu4Lc1iP9uzo8Bny",
+   "name": "Smart exoskeleton.pdf",
+   "posts": 2,
+   "clinical_used": true,
+   "date": "2026-11-08"
+  },
+  {
+   "drive_id": "1SAGynyr02zt6oN7u3pgBHUYEJGgV-MT4",
+   "name": "Biointegrated system.pdf",
+   "posts": 0,
+   "clinical_skipped": "nessun messaggio clinico (none): The paper is a narrative mini-review focusing on engineering design trade-offs, actuation technologies, control strategies, and technological paradigm",
+   "date": "2026-11-08"
+  },
+  {
+   "drive_id": "1P3Ceqw2CoUMWTv961jkMCv6Is0tF46S8",
+   "name": "Wearable exoskeleton.pdf",
+   "posts": 2,
+   "clinical_used": true,
+   "date": "2026-11-08"
+  }
+ ]
+}

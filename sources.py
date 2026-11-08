@@ -9,7 +9,7 @@ import requests
 CROSSREF = "https://api.crossref.org/works/"
 UA = {"User-Agent": "ClinicalResearchChaosBot/1.0 (mailto:noreply@clinicalresearchchaos.com)"}
 RX_DOI = re.compile(r"\b(10\.\d{4,9}/[^\s\"<>]+)", re.I)
-META, THUMBS = {}, {}          # id del post → metadati / immagine della prima pagina (solo licenza CC)
+META, THUMBS, PDF = {}, {}, {}  # id del post → metadati / immagine della prima pagina (solo CC) / PDF (figure)
 
 
 def _pdf_bytes(drive, name):
@@ -89,6 +89,7 @@ def prepare(post, drive):
         data = _pdf_bytes(drive, post.get("source", ""))
         if not data:
             return None
+        PDF[post["id"]] = data                # per le figure dell'articolo (visuals.py)
         text, img = _first_page(data)
         m = RX_DOI.search(text)
         doi = m.group(1) if m else None
@@ -105,6 +106,11 @@ def prepare(post, drive):
         year = ((item.get("issued") or {}).get("date-parts") or [[None]])[0][0]
         meta = {"title": title, "authors": _authors(item), "journal": (item.get("container-title") or [""])[0],
                 "year": year, "doi": item.get("DOI", ""), "license": _cc_license(item)}
+        try:
+            import content
+            meta["apa"] = content._apa_from_crossref(item)   # prima reference del post (polish.lead_reference)
+        except Exception:
+            pass
         META[post["id"]] = meta
         if meta["license"]:
             THUMBS[post["id"]] = header_crop(img)

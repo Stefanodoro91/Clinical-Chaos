@@ -51,13 +51,24 @@ POST DESIGN:
   each different from the others. Fewer excellent posts are better than many thin ones.
 - Build each post as ONE argument: the slides follow a logical order (the problem or misconception → why it
   matters, with the mechanism, an example or a number from the material → how to do it right) and lead to the
-  takeaway. No slide may be a loose fact that the reader cannot connect to the title.
+  takeaway. No slide may be a loose fact that the reader cannot connect to the title. Plan the argument first, then
+  write the title LAST, as the claim the slides actually demonstrate: the title and the hook must never promise more
+  than the slides show, and no slide may contradict them.
+- Keep the scope of the material. A simplified rule stays with its conditions ("for a binary outcome…", "when the
+  sample is small…"); if the material names alternatives or exceptions (other models, other outcome types, other
+  designs), mention them rather than turning one option into the only one. Never overstate: no "destroys",
+  "always fails", "useless", "must" unless the material says so in those terms.
+- Examples: use the examples of the material, or a clearly framed generic example in the material's own field
+  ("imagine a trial of 120 patients with…"). Never import a study, trial, drug or clinical field that the material
+  does not discuss, and never use a named study to illustrate a point the material does not attach to it.
 - Every sentence must be true and complete ON ITS OWN: name the subject (never "this", "it", "these patients",
   "the study", "the authors" without saying which), keep the condition under which a claim holds (population,
   design, threshold), keep the qualifiers of the material ("may", "in RCTs", "at least", "only"), and give numbers
   with their unit and comparison. Use exact methodological language: risk vs odds, association vs causation,
   statistical vs clinical significance, efficacy vs effectiveness; never "proves".
-- title: a sharp hook, max 70 characters (e.g. a common misconception, a question, a crisp claim).
+- title: a sharp hook, max 70 characters (e.g. a common misconception, a question, a crisp claim), in sentence
+  case (only the first word and proper names capitalised, e.g. "Linear or logistic regression? Look at your outcome").
+  Slide headings are in sentence case too.
 - slides: 3 to 5 slides (the carousel adds cover and a final takeaway slide: 5–7 slides in total), each with heading (max 55 characters), body (max 140 characters: few words, large type,
   plain language for professionals, concrete, no fluff) and image_prompt.
 - image_prompt: in English, 15-35 words describing ONE simple illustration that a researcher would
@@ -74,21 +85,25 @@ POST DESIGN:
   only for slides whose idea a real scene can show; "" when the idea is too abstract for a photo.
 - Each slide carries ONE concept and must make sense on its own, even as a screenshot: never refer to the
   structure of the source ("step six", "section 3", "this guideline"); spell out every acronym the first time it
-  appears in the carousel (e.g. "patient-reported outcome measures (PROMs)").
+  appears in the carousel (e.g. "patient-reported outcome measures (PROMs)"). Write numbers as digits
+  (0.955, 12%, 95% CI), never spelled out in words.
 - highlight (per slide): the key idea of that slide, 2-6 words copied EXACTLY from its body (same
   words, same order); it is shown with a highlighter.
-- source (per slide): short citation "Surname, Year" or "Surname et al., Year" ONLY if the slide's
-  content comes from a study or paper cited in the material and listed in references; otherwise "".
+- source (per slide): short citation "Surname, Year" or "Surname et al., Year". When the material is itself a
+  published paper, its own citation is the default source of every slide; cite another work only when the material
+  explicitly attributes THAT specific statement to it, and that work must be in references. Otherwise "".
 - title_highlight: 1-4 words copied EXACTLY from the title, the most important part of the hook.
 - takeaway: the take-home message, max 130 characters: one specific, true statement that follows from the slides and
   that a researcher can act on (name the method, check, threshold or decision). Never "X is important", never a
   vague exhortation, never the title restated.
 - takeaway_highlight: 2-5 words copied EXACTLY from the takeaway.
-- references: the papers, guidelines or books CITED IN THE MATERIAL that support this post, in APA 7
-  style (Author, A. A., & Author, B. B. (Year). Title in sentence case. Journal Name, volume(issue),
-  pages. https://doi.org/...). Copy authors, year, title and journal from the material; if an element
-  is missing in the material, leave it out: NEVER invent authors, years, titles, journals or DOIs.
-  Empty list if the material cites nothing relevant.
+- references: in APA 7 style (Author, A. A., & Author, B. B. (Year). Title in sentence case. Journal Name,
+  volume(issue), pages. https://doi.org/...). FIRST the material itself when it is a published paper (as printed on
+  its first page). Then ONLY the works that the material cites for a statement used in this post's slides, so that
+  every slide source is in this list; never list a work just because it is in the material's bibliography, and
+  never a work whose role in the post the reader cannot see. Copy authors, year, title and journal from the
+  material; if an element is missing, leave it out: NEVER invent authors, years, titles, journals or DOIs.
+  Use plain characters ("&", not "&amp;"). Empty list if there is nothing to cite.
 - hook: the FIRST line of the caption, max 120 characters (Instagram shows only about 125 characters
   before "more"). It must make a researcher stop scrolling: name a common mistake, a counter-intuitive
   consequence, or ask a sharp question that the post answers. Use only the material: no invented numbers,
@@ -404,6 +419,7 @@ NO_FALLBACK_TASKS = {"nuovi post da Drive", "post bando", "scelta immagini"}
 THINKING = {}         # livello di ragionamento per attività (config «gemini_thinking»), es. {"verifica bandi": "low"}
 USAGE = {}            # consumo di Gemini in questo giro: {(attività, modello): contatori}
 _EXHAUSTED = set()    # modelli con la quota giornaliera finita: in questo giro non si riprovano
+_MISSING = set()      # modelli che rispondono 404 (assenti o ritirati per questa chiave): in questo giro non si riprovano
 
 
 def record_usage(task, model, data=None, status="ok"):
@@ -421,6 +437,7 @@ def record_usage(task, model, data=None, status="ok"):
 
 
 CHECK_CAP = 34       # richieste Gemini al giorno oltre le quali le verifiche si fermano (config «gemini_daily_cap_checks»)
+NOT_FREE_TASKS = {"ricerca per Paese"}   # usano una chiave a pagamento separata: non pesano sulla quota gratuita
 
 
 def quota_day():
@@ -430,35 +447,80 @@ def quota_day():
     return datetime.now(ZoneInfo("America/Los_Angeles")).date().isoformat()
 
 
-def gemini_used_today(folder=None):
-    """Richieste Gemini riuscite oggi (giorno della quota): file usage/ dei giri precedenti + questo giro."""
-    folder = Path(folder or Path(__file__).resolve().parent / "usage")
-    day, total = quota_day(), 0
-    for f in folder.glob("*.json"):
+_LEDGER = None        # {"day": giorno quota, "used": {modello: richieste riuscite}, "exhausted": set()} dei giri precedenti
+
+
+def _ledger(folder=None):
+    """Registro della quota di oggi letto UNA volta dai file usage/ di tutti i giri (post, bandi, posizioni, storie):
+    richieste riuscite per modello e modelli già trovati esauriti. Così un giro non riprova un modello che un altro
+    giro ha già finito, e non spende sulle verifiche la quota che serve ai post."""
+    global _LEDGER
+    day = quota_day()
+    if _LEDGER is not None and _LEDGER["day"] == day and folder is None:
+        return _LEDGER
+    used, exhausted = {}, set()
+    run = os.environ.get("GITHUB_RUN_ID") or "locale"
+    for f in Path(folder or Path(__file__).resolve().parent / "usage").glob("*.json"):
+        if f.stem.endswith(f"-{run}"):
+            continue                               # il file di questo giro: i suoi conteggi sono già in USAGE
         try:
             data = json.loads(f.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             continue
-        if data.get("quota_day") == day:
-            total += sum(c.get("richieste", 0) for k, c in data.get("consumo", {}).items() if "|gemini" in k)
-    return total + sum(c.get("richieste", 0) for k, c in USAGE.items() if "|gemini" in k)
+        if data.get("quota_day") != day:
+            continue
+        for k, c in data.get("consumo", {}).items():
+            task, _, model = k.partition("|")
+            if model.startswith(("gemini", "gemma")) and task.split(" [", 1)[0] not in NOT_FREE_TASKS:
+                used[model] = used.get(model, 0) + int(c.get("richieste", 0))
+        exhausted |= set(data.get("esauriti") or [])
+    led = {"day": day, "used": used, "exhausted": exhausted}
+    if folder is None:
+        _LEDGER = led
+    return led
+
+
+def model_used_today(model):
+    """Richieste riuscite oggi su `model`: giri precedenti + questo giro."""
+    here = sum(c.get("richieste", 0) for k, c in USAGE.items()
+               if k.endswith(f"|{model}") and k.split("|", 1)[0].split(" [", 1)[0] not in NOT_FREE_TASKS)
+    return _ledger()["used"].get(model, 0) + here
+
+
+def model_left(model):
+    """Richieste gratuite che restano oggi su `model` (stima: quota per modello meno le riuscite)."""
+    if model in _EXHAUSTED or model in _ledger()["exhausted"] or model in _MISSING:
+        return 0
+    default = MODEL_RPD["default"] if is_strong(model) else MODEL_RPD.get("lite", 500)
+    return max(0, MODEL_RPD.get(model, default) - model_used_today(model))
+
+
+def gemini_used_today(folder=None):
+    """Richieste Gemini riuscite oggi (giorno della quota): file usage/ dei giri precedenti + questo giro."""
+    led = _ledger(folder)
+    here = sum(c.get("richieste", 0) for k, c in USAGE.items()
+               if "|gemini" in k and k.split("|", 1)[0].split(" [", 1)[0] not in NOT_FREE_TASKS)
+    return sum(v for m, v in led["used"].items() if m.startswith("gemini")) + here
 
 
 def checks_allowed():
-    """Le verifiche di bandi e posizioni si fermano quando resta solo la riserva per i post del giorno."""
-    return gemini_used_today() < CHECK_CAP
+    """Le verifiche di bandi e posizioni girano sui modelli leggeri (quota propria): si fermano solo quando anche
+    quelli sono finiti o oltre il tetto di config, così i modelli forti restano ai post."""
+    lite_used = sum(model_used_today(m) for m in lite_models())
+    return lite_used < CHECK_CAP and any(model_left(m) > 0 for m in lite_models())
 
 
 def save_usage(folder):
     """Scrive il consumo del giro in usage/AAAA-MM-GG-<giro>.json (un file per giro: nessun conflitto tra giri)."""
-    if not USAGE:
+    if not USAGE and not _EXHAUSTED:
         return None
     from datetime import datetime, timezone
     folder = Path(folder)
     folder.mkdir(exist_ok=True)
     run = os.environ.get("GITHUB_RUN_ID") or "locale"
     out = folder / f"{datetime.now(timezone.utc):%Y-%m-%d}-{run}.json"
-    out.write_text(json.dumps({"workflow": os.environ.get("GITHUB_WORKFLOW", ""), "quota_day": quota_day(), "consumo": USAGE},
+    out.write_text(json.dumps({"workflow": os.environ.get("GITHUB_WORKFLOW", ""), "quota_day": quota_day(), "consumo": USAGE,
+                               "esauriti": sorted(_EXHAUSTED)},
                               indent=1, ensure_ascii=False), encoding="utf-8")
     return out
 
@@ -473,17 +535,17 @@ def retry_delay(r):
     return int(m.group(1)) if m else None
 
 
-def quota_exhausted(r):
+def quota_exhausted(r, model=""):
     """429 per quota GIORNALIERA finita. Un 429 per troppe richieste al minuto porta un retryDelay: si aspetta."""
     if r.status_code != 429:
         return False
     t = r.text
-    key = t[:80]
-    if key not in _LOGGED_429:                    # il primo rifiuto di ogni tipo finisce nel log, per capire quale limite
+    import re as _re
+    ids = _re.findall(r'"quotaId"\s*:\s*"([^"]+)"', t) + _re.findall(r'"quotaValue"\s*:\s*"([^"]+)"', t)
+    key = (model, tuple(ids) or t[:80])
+    if key not in _LOGGED_429:                    # nel log il primo rifiuto di ogni tipo PER MODELLO: si vede quale limite
         _LOGGED_429.add(key)
-        import re as _re
-        ids = _re.findall(r'"quotaId"\s*:\s*"([^"]+)"', t) + _re.findall(r'"quotaValue"\s*:\s*"([^"]+)"', t)
-        print(f"::warning title=Gemini 429::{', '.join(ids) or t[:300]}")
+        print(f"::warning title=Gemini 429 {model}::{', '.join(ids) or t[:300]}")
     if "PerDay" in t or "per day" in t.lower():
         return True
     return retry_delay(r) is None and "PerMinute" not in t
@@ -564,62 +626,169 @@ def _groq_call(key, model, system, prompt_text, temperature, task):
 
 
 # ---------------------------------------------------------------- instradamento dei modelli per attività
-# Ogni attività ha la sua catena di modelli «fornitore:modello», scelta per specializzazione:
-#   - Gemini legge PDF e immagini e ha il contesto più lungo, ma Flash risponde solo poche volte al giorno
-#     (quota gratuita): lo si tiene per scrivere i post e per l'arbitraggio sulla fonte;
-#   - un revisore di un'ALTRA famiglia (gpt-oss su Groq, Nemotron su OpenRouter) critica ogni post: un modello
-#     non si corregge da solo, due modelli diversi si controllano a vicenda;
-#   - le verifiche ad alto volume restano dove la quota regge.
-# «gemini:main» e «gemini:lite» seguono GEMINI_MODEL e GEMINI_FALLBACK (anche quando li cambia il confronto A/B).
-# La config «ai_routes» sovrascrive le catene: {"critica": ["groq:openai/gpt-oss-120b", ...]}.
+# Quota gratuita Gemini (piano gratuito, un solo progetto per tutti i workflow): ogni modello ha la SUA quota giornaliera
+# (GenerateRequestsPerDayPerProjectPerModel-FreeTier, 20 per i Flash) e un limite al minuto. Fino al 5/11 tutte le
+# verifiche (bandi 4 volte al giorno, posizioni alle 9:23, il confronto A/B scaduto alle 9:10) partivano dal Flash
+# principale: la quota dei modelli forti finiva prima dei post, e ogni «troppe richieste» costava fino a 3 minuti
+# di attese sullo stesso modello. Regole di adesso:
+#   - SCRITTURA (testo che finisce nei post: post da Drive, post bando, arbitro, verifica fatti, takeaway clinico,
+#     revisione slide): solo modelli forti, quello con più quota residua per primo; se sono tutti momentaneamente
+#     occupati si aspetta il primo che si libera (max ~70 s) invece di ripiegare su un modello debole;
+#   - VOLUME (verifiche di bandi e posizioni, arricchimento, anti-copia, copione reel, immagini, doppioni): modelli
+#     leggeri, che hanno una quota propria (A/B 27/10–4/11: Flash-Lite uguale a Flash nel 96% dei campi, nessuna
+#     differenza su scadenze e Italia); i forti solo se avanzano oltre la riserva per i post;
+#   - «troppe richieste al minuto»: il modello va in pausa per il tempo indicato da Google e si passa subito al
+#     successivo; quota del giorno finita: il modello è escluso per tutti i giri della giornata (file usage/);
+#   - un piccolo intervallo tra due richieste allo stesso modello evita di superare il limite al minuto.
+# «gemini:main» e «gemini:lite» seguono GEMINI_MODEL e GEMINI_FALLBACK. La config «ai_routes» sovrascrive le catene.
 OR_STRONG = os.environ.get("OPENROUTER_STRONG") or "nvidia/nemotron-3-ultra-550b-a55b:free"
 GEMMA = os.environ.get("GEMMA_MODEL") or "gemma-4-31b-it"
 GROQ_STRONG = "openai/gpt-oss-120b"
 
-# Sonda del 2/11/2026 con le chiavi del bot: ogni modello Gemini ha una quota gratuita giornaliera SUA. Ruotando tra
-# versioni dello stesso livello (3.8 → 3.6 → 3.5 Flash) la quota si moltiplica senza scendere di qualità; i Pro
-# (gemini-pro-latest, 3.1-pro-preview) rispondono con quota zero nel piano gratuito; 2.5 non è più disponibile;
-# per le verifiche Flash e 3.5 Flash hanno dato gli stessi dati del Flash di riferimento, Qwen/gpt-oss su Groq sbagliano
-# Italia e paesi ammessi su un bando su tre: Groq solo come ultima riserva.
-FLASH_ALT = ["gemini:gemini-3.6-flash", "gemini:gemini-3.5-flash"]
-LITE_ALT = ["gemini:gemini-3.1-flash-lite"]
-VERIFY_CHAIN = ["gemini:main"] + FLASH_ALT + ["gemini:lite"] + LITE_ALT + [f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}"]
+# Pool del 7/11/2026 (pagina «Rate limit» di AI Studio del progetto): ogni modello ha una quota PROPRIA, quindi più
+# modelli forti = più scrittura al giorno. Forti, 20 richieste al giorno ciascuno: 3.8 Flash, 3.6 Flash, 3 Flash,
+# 2.5 Flash (3.5 Flash in fondo: rispondeva il 6/11 ma non compare nella pagina delle quote). Leggeri, 500 al giorno
+# ciascuno: 3.5 Flash-Lite e 3.1 Flash-Lite. Gli alias «-latest» puntano a 3.8 Flash e 3.5 Flash-Lite: si usano i
+# nomi espliciti, così il registro delle quote non conta due volte lo stesso modello sotto due nomi.
+STRONG = ["main", "gemini-3.8-flash", "gemini-3.6-flash", "gemini-3-flash-preview",
+          "gemini-3.5-flash"]                # ordine di qualità a parità di quota
+# (7/11: 2.5 Flash compare nella pagina delle quote ma l'API risponde 404 «no longer available to new users»)
+LITE = ["lite", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]
+ALIASES = {"gemini-flash-latest": "gemini-3.8-flash", "gemini-flash-lite-latest": "gemini-3.5-flash-lite"}
+MODEL_RPD = {"default": 20, "lite": 500}   # richieste gratuite al giorno per modello (config «gemini_rpd»); i leggeri
+                                           # hanno una quota molto più ampia: per loro conta il 429 «per day»
+STRONG_RESERVE = 10                  # richieste per modello forte tenute per la scrittura (config «gemini_strong_reserve»)
+MIN_GAP = {"strong": 13.0, "lite": 4.5}   # secondi minimi tra due richieste allo stesso modello (≈5 e ≈13 al minuto)
+MAX_WAIT = 70                        # attesa massima di un modello forte in pausa per la scrittura
+
+WRITING = {"nuovi post da Drive", "post bando", "arbitro", "verifica fatti", "takeaway clinico", "revisione slide"}
+# modello forte preferito per alcune attività (se ha quota; altrimenti gli altri forti): 2.5 Flash ha una quota
+# separata dai 3.x, così bandi e controllo dei fatti non tolgono richieste ai post scientifici
+PREFERRED = {}       # es. {"post bando": ["gemini-3-flash-preview"]}: nessuna preferenza finché 2.5 Flash non è disponibile
+# screening (bandi, posizioni): SOLO modelli leggeri e gratuiti esterni, mai i forti. Il secondo parere dei forti
+# arriva con le attività «conferma …», solo per le voci ad alta priorità (quelle che possono finire in un post).
+SCREENING = {"verifica bandi", "verifica posizioni", "schemi slide"}   # + piano delle immagini (visuals.py)
+CONFIRM = {"conferma bandi", "conferma posizioni"}
+FLASH_ALT = [f"gemini:{m}" for m in STRONG[1:]]      # compatibilità con strumenti che li leggono
+LITE_ALT = [f"gemini:{m}" for m in LITE[1:]]
+VERIFY_CHAIN = ["gemini:lite"] + LITE_ALT + [f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}"]
 
 ROUTES = {
-    # scrittura dai file (PDF, slide): solo Gemini, che legge i documenti; più versioni Flash prima di arrendersi
-    "nuovi post da Drive": ["gemini:main"] + FLASH_ALT + ["gemini:gemini-3-flash-preview", "gemini:lite"],
-    # scrittura del post di un bando dal testo ufficiale: Flash e sue varianti, poi un modello grande con contesto lungo
-    "post bando": ["gemini:main"] + FLASH_ALT + [f"openrouter:{OR_STRONG}", "gemini:lite"],
     # revisore indipendente (famiglia diversa da chi scrive)
     # (confronto del 2/11: Nemotron Ultra il più rigoroso ma lento; Qwen su Groq veloce e valido; gpt-oss spesso senza JSON)
     "critica": [f"openrouter:{OR_STRONG}", "groq:qwen/qwen3.8-27b", f"groq:{GROQ_STRONG}", f"gemini:{GEMMA}"],
-    # arbitro: decide sulle correzioni del revisore rileggendo la fonte (Gemini, che ha scritto il post)
-    "arbitro": ["gemini:main"] + FLASH_ALT + ["gemini:lite", f"openrouter:{OR_STRONG}"],
     # copione dei reel: testo breve da un carosello già verificato
-    "copione reel": ["gemini:lite"] + LITE_ALT + [f"groq:{GROQ_STRONG}", "gemini:main"],
-    # giudizio sulle immagini (serve un modello che vede): mai sprecare Flash
+    "copione reel": ["gemini:lite"] + LITE_ALT + [f"groq:{GROQ_STRONG}"],
+    # giudizio sulle immagini (serve un modello che vede)
     "scelta immagini": ["gemini:lite"] + LITE_ALT + [f"gemini:{GEMMA}"],
     # doppioni: confronto logico tra titoli
     "controllo doppioni": [f"groq:{GROQ_STRONG}", "gemini:lite"] + LITE_ALT,
 }
-DEFAULT_ROUTE = VERIFY_CHAIN          # verifiche di bandi e posizioni, fatti, revisione slide, arricchimento, anti-copia
-# attività il cui testo finisce nei post: se l'ultimo modello disponibile è un ripiego debole, meglio fermarsi
-WRITING_TASKS = {"nuovi post da Drive", "post bando", "scelta immagini"}
+DEFAULT_ROUTE = VERIFY_CHAIN          # verifiche di bandi e posizioni, arricchimento, anti-copia
+WRITING_TASKS = WRITING
 
 
 class ModelUnavailable(Exception):
     """Modello senza quota, assente o non adatto alla richiesta: si passa al successivo della catena."""
 
 
+class ModelCooling(ModelUnavailable):
+    """Modello in pausa per il limite al minuto: si libera fra `until` secondi (epoch)."""
+
+    def __init__(self, msg, until):
+        super().__init__(msg)
+        self.until = until
+
+
+_COOL = {}            # modello → istante (epoch) in cui torna disponibile dopo un «troppe richieste»
+_LAST_CALL = {}       # modello → istante dell'ultima richiesta (intervallo minimo tra richieste)
+
+
+_AVAILABLE = None     # modelli che la chiave vede davvero (elenco di Google, gratuito): None = elenco non letto
+
+
+def available_models():
+    """Nomi dei modelli Gemini con generateContent visibili alla chiave (una sola lettura per giro, non consuma
+    quota). Se l'elenco non si legge, insieme vuoto: si provano tutti e un 404 esclude quello mancante."""
+    global _AVAILABLE
+    if _AVAILABLE is None:
+        _AVAILABLE = set()
+        key = os.environ.get("GEMINI_API_KEY")
+        if key:
+            try:
+                url = "https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000"
+                r = requests.get(url, headers={"x-goog-api-key": key}, timeout=30)
+                if r.ok:
+                    _AVAILABLE = {m["name"].split("/")[-1] for m in r.json().get("models", [])
+                                  if "generateContent" in m.get("supportedGenerationMethods", [])}
+            except requests.RequestException:
+                pass
+    return _AVAILABLE
+
+
+def _resolve(m):
+    m = {"main": GEMINI_MODEL, "lite": GEMINI_FALLBACK}.get(m, m)
+    return ALIASES.get(m, m)
+
+
+def _usable(models):
+    """Toglie i modelli che l'elenco di Google non ha (se l'elenco è stato letto) e i doppioni."""
+    avail = available_models()
+    models = list(dict.fromkeys(models))
+    if not avail:
+        return models
+    back = {v: k for k, v in ALIASES.items()}
+    out = []
+    for m in models:
+        if m in avail:
+            out.append(m)
+        elif back.get(m) in avail:                 # c'è solo l'alias «-latest»: si usa quello
+            out.append(back[m])
+    return list(dict.fromkeys(out))
+
+
+def strong_models():
+    return _usable(_resolve(m) for m in STRONG)
+
+
+def lite_models():
+    return [m for m in _usable(_resolve(m) for m in LITE) if m not in strong_models()]
+
+
+def is_strong(model):
+    return model in strong_models()
+
+
+def _strong_by_quota():
+    """Modelli forti con quota: chi ne ha di più per primo (a parità, l'ordine di qualità)."""
+    ms = strong_models()
+    return sorted([m for m in ms if model_left(m) > 0], key=lambda m: (-model_left(m), ms.index(m)))
+
+
+def _strong_for(base):
+    """Forti con quota per l'attività: prima i preferiti (PREFERRED), poi gli altri per quota residua."""
+    ms = _strong_by_quota()
+    first = [m for m in PREFERRED.get(base, []) if m in ms]
+    return first + [m for m in ms if m not in first]
+
+
 def route_for(task):
     base = task.split(" [", 1)[0]                  # «verifica bandi [A]» del confronto A/B → «verifica bandi»
-    chain = (ROUTE_OVERRIDES.get(base) or ROUTES.get(base) or DEFAULT_ROUTE)
+    chain = ROUTE_OVERRIDES.get(base)
+    if chain is None and base in WRITING:
+        chain = ([f"gemini:{m}" for m in _strong_for(base)]
+                 + ([f"openrouter:{OR_STRONG}"] if base != "nuovi post da Drive" else [])
+                 + [f"gemini:{m}" for m in lite_models()])
+    elif chain is None and base in CONFIRM:        # secondo parere: solo forti, mai un ripiego leggero
+        chain = [f"gemini:{m}" for m in _strong_for(base)]
+    elif chain is None and base in SCREENING:      # screening: solo leggeri e gratuiti esterni, mai i forti
+        chain = [f"gemini:{m}" for m in lite_models()] + [f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}"]
+    elif chain is None:
+        chain = (ROUTES.get(base) or DEFAULT_ROUTE) + [f"gemini:{m}" for m in _strong_by_quota()]
     out = []
     for spec in chain:
         provider, model = spec.split(":", 1)
-        if provider == "gemini":
-            model = {"main": GEMINI_MODEL, "lite": GEMINI_FALLBACK}.get(model, model)
-        out.append((provider, model))
+        out.append((provider, _resolve(model) if provider == "gemini" else model))
     return list(dict.fromkeys(out))
 
 
@@ -648,12 +817,25 @@ def _schema_instruction(schema):
             + "\nNo text before or after the JSON.")
 
 
+def _pace(model):
+    """Intervallo minimo tra due richieste allo stesso modello (limite al minuto del piano gratuito)."""
+    gap = MIN_GAP["strong"] if is_strong(model) else MIN_GAP["lite"]
+    wait = _LAST_CALL.get(model, 0) + gap - time.time()
+    if wait > 0:
+        time.sleep(wait)
+    _LAST_CALL[model] = time.time()
+
+
 def _gemini_one(model, parts, schema, temperature, task, thinking):
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         raise ModelUnavailable("GEMINI_API_KEY mancante")
-    if model in _EXHAUSTED:
+    if model in _EXHAUSTED or model in _ledger()["exhausted"]:
         raise ModelUnavailable(f"{model}: quota del giorno finita")
+    if model in _MISSING:
+        raise ModelUnavailable(f"{model}: non disponibile per questa chiave")
+    if _COOL.get(model, 0) > time.time():
+        raise ModelCooling(f"{model}: in pausa per il limite al minuto", _COOL[model])
     gemma = model.startswith("gemma")
     if gemma:                                      # Gemma: niente schema né modalità JSON, lo schema va nel testo
         config = {"temperature": temperature}
@@ -666,15 +848,28 @@ def _gemini_one(model, parts, schema, temperature, task, thinking):
     body = {"contents": [{"parts": parts}], "generationConfig": config}
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     for attempt in range(3):
-        r = requests.post(url, headers={"x-goog-api-key": key}, json=body, timeout=300)
-        if r.status_code == 429 or r.status_code >= 500:
-            record_usage(task, model, status="respinta")
-            if quota_exhausted(r):
-                _EXHAUSTED.add(model)              # quota giornaliera finita: inutile riprovare questo modello
-                raise ModelUnavailable(f"{model}: quota del giorno finita")
-            time.sleep(min(60, (retry_delay(r) or 20 * (attempt + 1)) + 2))
+        _pace(model)
+        try:
+            r = requests.post(url, headers={"x-goog-api-key": key}, json=body, timeout=300)
+        except requests.RequestException as e:
+            if attempt == 2:
+                raise ModelUnavailable(f"{model}: {str(e)[:120]}")
+            time.sleep(10)
             continue
-        if r.status_code in (400, 404) and ("not found" in r.text.lower() or "not supported" in r.text.lower()):
+        if r.status_code == 429:
+            record_usage(task, model, status="respinta")
+            if quota_exhausted(r, model):
+                _EXHAUSTED.add(model)              # quota giornaliera finita: esclusa anche per i giri dopo (usage/)
+                raise ModelUnavailable(f"{model}: quota del giorno finita")
+            until = time.time() + min(90, (retry_delay(r) or 30) + 2)
+            _COOL[model] = until                   # limite al minuto: pausa e si passa subito al modello successivo
+            raise ModelCooling(f"{model}: troppe richieste", until)
+        if r.status_code >= 500:
+            record_usage(task, model, status="respinta")
+            time.sleep(10 * (attempt + 1))
+            continue
+        if r.status_code == 404 or (r.status_code == 400 and ("not found" in r.text.lower() or "not supported" in r.text.lower())):
+            _MISSING.add(model)                    # modello assente o ritirato per questa chiave: escluso per tutto il giro
             raise ModelUnavailable(f"{model} {r.status_code}: {r.text[:200]}")
         if not r.ok:
             raise RuntimeError(f"Errore Gemini {r.status_code}: {r.text[:500]}")
@@ -683,7 +878,7 @@ def _gemini_one(model, parts, schema, temperature, task, thinking):
         globals()["LAST_MODEL"] = data.get("modelVersion") or model
         text = "".join(p.get("text", "") for p in data["candidates"][0]["content"]["parts"] if not p.get("thought"))
         return _extract_json(text) if gemma else json.loads(text)
-    raise ModelUnavailable(f"{model}: troppe richieste")
+    raise ModelUnavailable(f"{model}: server non disponibile")
 
 
 def _openai_compatible(url, key, model, label, prompt_text, schema, temperature, task, extra=None, headers=None):
@@ -692,6 +887,8 @@ def _openai_compatible(url, key, model, label, prompt_text, schema, temperature,
             "messages": [{"role": "system", "content": _schema_instruction(schema)},
                          {"role": "user", "content": prompt_text}],
             "response_format": {"type": "json_object"}, **(extra or {})}
+    if _COOL.get(f"{label}:{model}", 0) > time.time():
+        raise ModelCooling(f"{label} {model}: in pausa per il limite al minuto", _COOL[f"{label}:{model}"])
     for attempt in range(3):
         try:
             r = requests.post(url, headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json",
@@ -709,10 +906,12 @@ def _openai_compatible(url, key, model, label, prompt_text, schema, temperature,
             raise ModelUnavailable(f"{label} {model} {r.status_code}: {r.text[:160]}")
         if r.status_code == 429:
             record_usage(task, f"{label}-{model.split('/')[-1]}", status="respinta")
-            if "per day" in r.text.lower() or "free-models-per-day" in r.text or "tokens per day" in r.text.lower() or attempt == 2:
+            if "per day" in r.text.lower() or "free-models-per-day" in r.text or "tokens per day" in r.text.lower():
                 raise ModelUnavailable(f"{label} {model}: quota finita")
-            time.sleep(25 * (attempt + 1))
-            continue
+            ra = r.headers.get("retry-after") if hasattr(r, "headers") else None
+            until = time.time() + min(90, int(ra) if (ra or "").isdigit() else 30)
+            _COOL[f"{label}:{model}"] = until      # limite al minuto: pausa, si passa subito al modello successivo
+            raise ModelCooling(f"{label} {model}: troppe richieste", until)
         if r.status_code >= 500:
             time.sleep(15 * (attempt + 1))
             continue
@@ -760,23 +959,45 @@ GROQ_REASONING = {"critica": "high", "controllo doppioni": "low"}
 
 
 def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None, exclude_family=None):
-    """Risposta JSON conforme allo schema dal primo modello disponibile della catena dell'attività (ROUTES).
+    """Risposta JSON conforme allo schema dal primo modello disponibile della catena dell'attività (route_for).
     `exclude_family` («google», «openai», «nvidia»…) salta i modelli di quella famiglia: il revisore non deve
-    essere della stessa famiglia di chi ha scritto. Il nome resta per compatibilità con il resto del bot."""
+    essere della stessa famiglia di chi ha scritto. Le attività di scrittura aspettano un modello forte in pausa
+    (limite al minuto) prima di ripiegare su uno leggero; le attività di volume non toccano la riserva dei forti."""
+    base = task.split(" [", 1)[0]
+    writing = base in WRITING and base not in ROUTE_OVERRIDES
     errors = []
-    for provider, model in route_for(task):
-        if exclude_family and family(provider, model) == exclude_family:
-            continue
-        try:
-            out = call_model(provider, model, parts, schema, temperature, task, thinking)
-            if errors:
-                print(f"  «{task}»: risposto da {provider}:{model} (prima: {'; '.join(e[:70] for e in errors)})")
-            return out
-        except ModelUnavailable as e:
-            errors.append(str(e))
-        except ValueError as e:                    # JSON non valido: si prova il modello successivo
-            errors.append(f"{model}: JSON non valido ({str(e)[:60]})")
-    raise RuntimeError(f"Gemini non disponibile per «{task}»: {' | '.join(e[:150] for e in errors)}")
+    for round_ in range(3):
+        cooling = []
+        for provider, model in route_for(task):
+            if exclude_family and family(provider, model) == exclude_family:
+                continue
+            if provider == "gemini" and is_strong(model) and not writing and base not in ROUTE_OVERRIDES \
+                    and model_left(model) <= STRONG_RESERVE:
+                continue                           # verifica: la quota rimasta di questo Flash serve ai post
+            if writing and provider == "gemini" and not is_strong(model) and cooling and round_ < 2:
+                break                              # un forte si libera fra poco: meglio aspettarlo che ripiegare
+            try:
+                out = call_model(provider, model, parts, schema, temperature, task, thinking)
+                if errors:
+                    print(f"  «{task}»: risposto da {provider}:{model} (prima: {'; '.join(e[:70] for e in errors[-4:])})")
+                return out
+            except ModelCooling as e:
+                cooling.append(e.until)
+                errors.append(str(e))
+            except ModelUnavailable as e:
+                errors.append(str(e))
+            except ValueError as e:                # JSON non valido: si prova il modello successivo
+                errors.append(f"{model}: JSON non valido ({str(e)[:60]})")
+        if not cooling:
+            break
+        wait = min(cooling) - time.time()
+        if wait > MAX_WAIT:
+            if not writing:
+                break
+            wait = MAX_WAIT
+        print(f"  «{task}»: modelli in pausa per il limite al minuto, aspetto {max(0, int(wait))} s")
+        time.sleep(max(0, wait) + 1)
+    raise RuntimeError(f"Gemini non disponibile per «{task}»: {' | '.join(e[:150] for e in errors[-8:])}")
 
 
 def family(provider, model):
@@ -797,6 +1018,87 @@ def family(provider, model):
 def groq_json(prompt_text, schema, temperature=0.0, task="altro"):
     """Richiesta di solo testo per attività logiche veloci (es. controllo doppioni): segue la catena dell'attività."""
     return gemini_json([{"text": prompt_text}], schema, temperature, task)
+
+
+CLINICAL_POST_PROMPT = """You write the "Latest Science" carousel of "{brand}": ONE clinical lesson a week from ONE
+real paper, for clinicians and researchers who treat patients (rehabilitation, neurology, orthopaedics and related
+fields). The reader must learn something about PATIENTS: what a treatment or intervention does to them, or what
+their health status, recovery, prognosis or risks look like.
+
+FIRST decide the clinical focus of the paper (field clinical_focus):
+- "treatment": the paper reports what an intervention, therapy, device or rehabilitation programme does to patients
+  (effects, who benefits, how much, how fast, side effects, dose or timing);
+- "patient_health": the paper describes patients' health status, recovery course, prognosis, symptoms, function or
+  risk factors;
+- "none": the paper is mainly about methodology, measurement scales, questionnaires, psychometrics, statistics,
+  study design, reporting, engineering of a device without patient results, or anything without a patient-level
+  clinical message. In that case return an EMPTY posts list.
+
+THE POSTS (0 to {max_posts} posts, one per week):
+- Write 2 to {max_posts} posts when the paper supports them (only 1 if it truly has a single clinical message;
+  never pad with weak or repeated lessons): each post carries a DIFFERENT clinical
+  message of the paper (e.g. a different treatment, outcome, patient group, time course or risk), so that a reader
+  who sees all of them never reads the same lesson twice. Each post must stand on its own.
+- The whole carousel is about the clinical message: the patients, the treatment, the outcome that matters to the
+  patient. NEVER build slides on how a scale or questionnaire works, on study design, sample size, statistics,
+  bias or reporting. Name a scale only to say what improved in the patients (e.g. "walking speed improved by…").
+- Slides follow the clinical story: which patients and what problem → what was done (treatment) or observed →
+  what changed for the patients, with the numbers of the paper (effect, time, proportion) → what it means in the
+  clinic, with the limits the paper states.
+- Use ONLY facts in the paper; never invent numbers. Keep the paper's population and qualifiers ("in chronic
+  stroke", "after 8 weeks", "may"). Describe findings, do not give personal treatment advice.
+- ONE clinical message per post, and every slide serves it: plan the story first, then write the title LAST as the
+  finding the slides support. The title must not contradict any slide (e.g. "X fails without training" while a
+  slide reports a trial where X was given WITH training) and must not judge a treatment more harshly or more
+  favourably than the paper does ("fails", "works", "useless" only in the paper's own terms).
+- A trial or study named on a slide is reported as the paper reports it: what was compared, in whom, the result
+  with its comparison and unit, and the paper's own interpretation. Use it only for the point the paper makes with
+  it; never as an example of something the paper does not say about it.
+- Every number says what it counts ("47 of 117 sessions", not "only 47"), with its comparison or threshold.
+- takeaway: the clinical take-home message for a clinician (what to expect, offer, watch for or explain to the
+  patient), max 130 characters, supported by the slides; never a methodological lesson.
+- source (per slide): "Surname et al., Year" of THIS paper when the slide reports its findings.
+- references: THIS paper in APA 7 (authors, year, title, journal, DOI exactly as printed in the paper).
+- category: "{category}".
+
+{design}
+
+Already published posts (do not repeat these topics): {published}
+
+File name of the paper: {filename}"""
+
+CLINICAL_POST_SCHEMA = {"type": "OBJECT", "properties": {
+    "clinical_focus": {"type": "STRING", "enum": ["treatment", "patient_health", "none"]},
+    "focus_reason": {"type": "STRING"},
+    "posts": SCHEMA["properties"]["posts"]}, "required": ["clinical_focus", "focus_reason", "posts"]}
+
+
+def _design_rules():
+    """Regole di forma del prompt principale (slide, immagini, hook, didascalia), riusate per Latest Science."""
+    start = PROMPT.index("- title: a sharp hook")
+    end = PROMPT.index("- category: one of")
+    bullets = ("\n" + PROMPT[start:end]).split("\n- ")[1:]
+    skip = ("takeaway:", "references:", "source (per slide)")    # per Latest Science valgono le regole cliniche sopra
+    keep = [b for b in bullets if not b.startswith(skip)]
+    return "FORM RULES:\n- " + "\n- ".join(keep).replace("a researcher", "a clinician").rstrip()
+
+
+def clinical_posts(part, filename, brand, published=(), max_posts=3):
+    """Post «Latest Science» da un articolo clinico: 1-`max_posts` caroselli, ognuno con un messaggio clinico diverso
+    sul trattamento o sullo stato di salute dei pazienti. Restituisce (post, focus, motivo); lista vuota se
+    l'articolo non ha un messaggio clinico sui pazienti (scale, metodologia, ingegneria senza risultati)."""
+    prompt = CLINICAL_POST_PROMPT.format(brand=brand, category=CLINICAL_CATEGORY, design=_design_rules(),
+                                         max_posts=max_posts, filename=filename,
+                                         published="; ".join(published) if published else "none")
+    out = gemini_json([{"text": prompt}, part], CLINICAL_POST_SCHEMA, 0.4, task="nuovi post da Drive")
+    focus, why = out.get("clinical_focus", "none"), out.get("focus_reason", "")
+    if focus == "none":
+        return [], focus, why
+    posts = [c for c in (_clean_post(p, material_text(part)) for p in out.get("posts", [])) if c][:max_posts]
+    for post in posts:
+        post["category"] = CLINICAL_CATEGORY
+        post["clinical_focus"] = focus
+    return posts, focus, why
 
 
 def generate_posts(part, filename, brand, max_posts=12, published=()):
@@ -926,6 +1228,7 @@ def copied_from(text, source_low, n=7):
 REWRITE_PROMPT = """You rewrite parts of an Instagram carousel for clinical researchers because they copy the
 source material almost word for word. Rewrite each flagged text in your own words: same facts, same meaning,
 same length limit, plainer and more direct. NEVER add facts, numbers or claims. Keep any acronym expansions.
+Keep every number as digits exactly as in the original (0.955, 12%, 95% CI): never write numbers out in words.
 
 Carousel title: {title}
 Flagged texts (each copies the quoted passage from the source):
@@ -1205,13 +1508,20 @@ Flag a sentence when it is:
 - "unsupported": a factual claim that is neither in the SOURCE nor a standard textbook definition (invented numbers,
   studies, authors, rules, dates).
 - "empty": generic filler a researcher cannot use ("X is crucial", "plan carefully", "it matters").
+- "overclaim": the title, hook or takeaway promises more than the slides show, uses a verdict the SOURCE does not
+  use ("destroys", "fails", "useless", "must", "only"), turns one option into the only one when the SOURCE names
+  alternatives, or is contradicted by a slide. Classify it as "imprecise".
+- "misused example": a study, trial, number or example used for a point the SOURCE does not attach to it, an example
+  imported from outside the SOURCE, or a slide "Source" that is not the paper the statement comes from. Classify it
+  as "out_of_context".
 - direction and scale words ("higher", "lower", "better", "worse", "more", "less") when the SOURCE does not say whether
   they mean higher or lower function/risk/score: never choose a reading; keep the SOURCE's own wording, or flag the
   sentence as "imprecise" and propose a fix that avoids the ambiguous word.
 {extra_rules}
 Then judge the post as a whole:
 - thread: it must teach ONE idea, with slides in a logical order (e.g. problem → why it matters → how to do it right)
-  that leads to the takeaway. Flag a slide that is off the thread, repeats another, or contradicts another.
+  that leads to the takeaway. Flag a slide that is off the thread, repeats another, or contradicts another or the
+  title; flag a title that the slides do not demonstrate (fix the title, not the facts).
 - takeaway: it must be a real take-home message: true according to the SOURCE, following from the slides, specific
   (names the method, decision, threshold or check) and useful to a researcher tomorrow. "X is important", a vague
   exhortation or a restated title is NOT a take-home message.
@@ -1243,7 +1553,8 @@ CRITIC_SCHEMA = {"type": "OBJECT", "properties": {
     "verdict": {"type": "STRING", "enum": ["publish", "fix", "reject"]}},
     "required": ["scores", "issues", "verdict"]}
 
-GRANT_RULES = """- for a funding call, also "imprecise": eligibility, scope or requirements that lose a qualifier of the official
+GRANT_RULES = """- this funding-call carousel has NO takeaway on purpose: never flag or propose one, and give the takeaway score 5.
+- for a funding call, also "imprecise": eligibility, scope or requirements that lose a qualifier of the official
   text (who can apply, career-stage definitions, mandatory partners or countries, what is NOT funded), or a slide that
   lets someone believe they are eligible when the text restricts it. Deadlines, amounts and countries are NOT in the
   slides on purpose: do not ask for them.
@@ -1261,6 +1572,7 @@ heading ≤ 55, slide body ≤ 160, takeaway ≤ 130, hook ≤ 120, caption ≤ 
 screenshot, without referring to other slides or to the source; spell out acronyms the first time.
 Finally write the takeaway of the post as fixed: one sentence (≤ 130 characters), the real take-home message, specific,
 true according to the SOURCE, useful to a researcher; and takeaway_highlight: 2-5 words copied exactly from it.
+A funding-call carousel has no takeaway: for it, return takeaway and takeaway_highlight as empty strings.
 
 POST
 {post}
@@ -1287,7 +1599,8 @@ ARBITER_CHARS = 40000       # Gemini legge molto di più
 def _post_listing(post):
     lines = [f"Title: {post.get('title', '')}", "Slides:"]
     lines += [f"{i + 1}. {s.get('heading', '')} — {s.get('body', '')}" for i, s in enumerate(post.get("slides") or [])]
-    lines.append(f"Takeaway: {post.get('takeaway', '')}")
+    if post.get("takeaway"):                      # i bandi non hanno takeaway (5/11)
+        lines.append(f"Takeaway: {post['takeaway']}")
     if post.get("hook"):
         lines.append(f"Hook (first caption line): {post['hook']}")
     if post.get("caption"):
@@ -1308,12 +1621,16 @@ def _critique(post, source, kind, label, writer_family):
     prompt = CRITIC_PROMPT.format(kind=kind, extra_rules=GRANT_RULES if kind == "funding-call carousel" else "",
                                   post=_post_listing(post), source_label=label,
                                   source=relevant_excerpt(source, post, REVIEW_CHARS))
+    if kind == "funding-call carousel":           # le slide dei bandi sono più lunghe (fino a 220 caratteri)
+        prompt = prompt.replace("slide body ≤ 160", "slide body ≤ 220")
     out = gemini_json([{"text": prompt}], CRITIC_SCHEMA, 0.1, task="critica", exclude_family=writer_family)
     return out, LAST_MODEL, _family_of_last()
 
 
-def _passes(scores, verdict):
-    return verdict != "reject" and all(int((scores or {}).get(k) or 0) >= v for k, v in REVIEW_THRESHOLDS.items())
+def _passes(scores, verdict, kind="research"):
+    """Soglie della revisione; per i bandi il takeaway non conta (non esiste più, decisione del 5/11)."""
+    need = {k: v for k, v in REVIEW_THRESHOLDS.items() if not (kind == "grant" and k == "takeaway")}
+    return verdict != "reject" and all(int((scores or {}).get(k) or 0) >= v for k, v in need.items())
 
 
 def _where(where, post):
@@ -1325,17 +1642,19 @@ def _where(where, post):
         return ("slide", i) if 0 <= i < len(post.get("slides") or []) else None
     for f in ("title", "takeaway", "hook", "caption"):
         if w.startswith(f):
+            if f == "takeaway" and post.get("kind_review") == "grant":
+                return None                        # bando: nessun takeaway da correggere
             return (f, None) if f in post or f in ("title", "takeaway") else None
     return None
 
 
-def _apply(post, field, idx, heading, body, text, removals):
+def _apply(post, field, idx, heading, body, text, removals, body_limit=170):
     if field == "slide":
         if not (heading or body):
             removals.add(idx)
             return
         sl = post["slides"][idx]
-        body = _clip(body or sl.get("body", ""), 170)
+        body = _clip(body or sl.get("body", ""), body_limit)   # bandi: 240 (prima tagliava a 170 con «…» a metà frase)
         post["slides"][idx] = {**sl, "heading": _clip(heading or sl.get("heading", ""), 70), "body": body,
                                "highlight": exact_phrase(sl.get("highlight"), body)}
     elif text:
@@ -1354,6 +1673,8 @@ def cross_review(post, source, kind="research", writer_family="google"):
     label = "official text of the call" if kind == "grant" else "teaching material the post was built from"
     kname = "funding-call carousel" if kind == "grant" else "educational carousel"
     report = {"passed": None, "scores": {}, "critic": "", "arbiter": "", "fixed": 0, "removed": 0, "notes": []}
+    if kind == "grant":
+        post["kind_review"] = "grant"
     if not source or not post.get("slides"):
         return report
     try:
@@ -1367,7 +1688,7 @@ def cross_review(post, source, kind="research", writer_family="google"):
     for x in issues:
         print(f"    - {x.get('where')} [{x.get('kind')}]: {(x.get('why') or '')[:150]}")
         report["notes"].append(f"{x.get('where')} [{x.get('kind')}]: {(x.get('why') or '')[:200]}")
-    if crit.get("verdict") == "publish" and not issues and _passes(report["scores"], "publish"):
+    if crit.get("verdict") == "publish" and not issues and _passes(report["scores"], "publish", kind):
         report["passed"] = True
         return report
     if crit.get("verdict") == "reject":
@@ -1382,6 +1703,8 @@ def cross_review(post, source, kind="research", writer_family="google"):
             for n, x in enumerate(issues))
         prompt = ARBITER_PROMPT.format(kind=kname, post=_post_listing(post), issues=listing, source_label=label,
                                        source=relevant_excerpt(source, post, ARBITER_CHARS))
+        if kind == "grant":
+            prompt = prompt.replace("slide body ≤ 160", "slide body ≤ 220")
         try:
             arb = gemini_json([{"text": prompt}], ARBITER_SCHEMA, 0.2, task="arbitro", exclude_family=critic_family)
             report["arbiter"] = LAST_MODEL
@@ -1397,13 +1720,14 @@ def cross_review(post, source, kind="research", writer_family="google"):
                 continue
             field, idx = _where(issues[n]["where"], post)
             x = issues[n] if d["decision"] == "accept" else d
-            _apply(post, field, idx, x.get("heading"), x.get("body"), x.get("text") or x.get("body"), removals)
+            _apply(post, field, idx, x.get("heading"), x.get("body"), x.get("text") or x.get("body"), removals,
+                   240 if kind == "grant" else 170)
             report["fixed"] += 1
             print(f"    ✓ {issues[n]['where']}: {d['decision']}" + (f" ({d.get('reason', '')[:90]})" if d.get("reason") else ""))
         if removals and len(post["slides"]) - len(removals) >= (2 if kind == "grant" else 3):
             post["slides"] = [s for i, s in enumerate(post["slides"]) if i not in removals]
             report["removed"] = len(removals)
-        if arb.get("takeaway"):
+        if arb.get("takeaway") and kind != "grant":
             post["takeaway"] = _clip(arb["takeaway"], 160)
             post["takeaway_highlight"] = exact_phrase(arb.get("takeaway_highlight"), post["takeaway"], 5)
     # controllo finale del revisore sul post corretto
@@ -1411,10 +1735,10 @@ def cross_review(post, source, kind="research", writer_family="google"):
         final, _, _ = _critique(post, source, kname, label, writer_family)
     except Exception as e:
         print(f"  Controllo finale non disponibile ({str(e)[:120]}): vale il primo giudizio")
-        report["passed"] = _passes(report["scores"], crit.get("verdict")) and report["fixed"] > 0
+        report["passed"] = _passes(report["scores"], crit.get("verdict"), kind) and report["fixed"] > 0
         return report
     report["scores"] = final.get("scores") or {}
-    report["passed"] = _passes(report["scores"], final.get("verdict"))
+    report["passed"] = _passes(report["scores"], final.get("verdict"), kind)
     left = [x for x in final.get("issues") or [] if x.get("kind") in ("unsupported", "imprecise", "out_of_context")]
     print(f"  Controllo finale: {final.get('verdict')} {report['scores']}, {len(left)} problemi residui → "
           f"{'esce' if report['passed'] else 'NON esce'}")

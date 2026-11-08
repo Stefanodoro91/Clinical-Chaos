@@ -17,6 +17,25 @@ MONO, HL, SCIENCE = False, None, False   # bianco e nero (config «mono»): HL =
 EDITORIAL = False      # impostato da render_carousel (config «design_v3»): stile editoriale da rivista scientifica
 
 
+def _brand_v4_flag():
+    import json
+    import os
+    if os.environ.get("BRAND_V4") is not None:
+        return os.environ["BRAND_V4"] not in ("", "0", "false")
+    try:
+        return bool(json.loads((Path(__file__).resolve().parent / "config.json").read_text(encoding="utf-8")).get("brand_v4"))
+    except Exception:
+        return False
+
+
+BRAND_V4 = _brand_v4_flag()   # logo definitivo (indipendente dalla linea) ed etichette delle rubriche (config «brand_v4»)
+# colori delle linee nel brand v4 e nome della rubrica in copertina (quadrante del simbolo: 0 alto-sx, 1 alto-dx,
+# 2 basso-sx, 3 basso-dx)
+V4_ACCENT = {"methods": "#88B0F8", "science": "#FFFFFF", "grant": "#F8B048", "positions": "#8858F0"}   # colori del logo v3 per rubrica (Latest Science bianco)
+V4_RUBRIC = {"methods": ("DESIGN, REPORTING & APPRAISAL", 0), "science": ("LATEST SCIENCE", 3),
+             "grant": ("FUNDING CALLS", 1), "positions": ("ACADEMIC POSITIONS", 2)}
+
+
 AZURES = ["#6EC1FF", "#7AB8FF", "#5FD0F2", "#8AB4FF", "#66C7E8"]     # azzurrini: uno per post, stabile
 
 
@@ -75,6 +94,8 @@ def hlc(dark, fallback):
     import colorsys
     r, g, b = (int(HL.lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4))
     h, l, sat = colorsys.rgb_to_hls(r, g, b)         # stesso colore, più scuro e saturo: leggibile su fondo bianco
+    if sat < 0.15:                                   # bianco o grigio (Latest Science): su fondo chiaro diventa nero,
+        return "#0A0A0A"                             # non un rosso scuro inventato dalla tinta 0 del bianco
     return "#%02x%02x%02x" % tuple(int(v * 255) for v in colorsys.hls_to_rgb(h, 0.38, max(sat, 0.75)))
 
 
@@ -216,7 +237,10 @@ def logo_v3(name, height):
         import colorsys
         r, g, b = (int(acc.lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4))
         h, l, sat = colorsys.rgb_to_hls(r, g, b)
-        acc = "#%02x%02x%02x" % tuple(int(v * 255) for v in colorsys.hls_to_rgb(h, min(l, 0.42), max(sat, 0.6)))
+        if sat < 0.15:                     # bianco (Latest Science) su fondo chiaro: logo nero, non un rosso inventato
+            acc = "#1A1A1A"
+        else:
+            acc = "#%02x%02x%02x" % tuple(int(v * 255) for v in colorsys.hls_to_rgb(h, min(l, 0.42), max(sat, 0.6)))
     ink = logo.INK_LIGHT if light else logo.INK_DARK
     return (logo.symbol if "symbol" in name else logo.wordmark)(acc, ink, int(height))
 
@@ -290,7 +314,7 @@ def light_canvas(cfg, index, total):
     c = cfg["colors"]
     img = Image.new("RGB", (W, H), PAPER)
     d = ImageDraw.Draw(img)
-    d.rectangle((0, 0, W, 14), fill=c["accent"])
+    d.rectangle((0, 0, W, 14), fill=HL if (BRAND_V4 and HL) else c["accent"])   # v4: barra nel colore della rubrica
     if EDITORIAL and index > 1:
         editorial_chrome(d, cfg, False, c)
     foot = font("SemiBold", 30)
@@ -305,7 +329,7 @@ def canvas(cfg, index, total):
     c = cfg["colors"]
     img = Image.new("RGB", (W, H), "#FFFFFF" if SCIENCE else c["background"])
     d = ImageDraw.Draw(img)
-    d.rectangle((0, 0, W, 14), fill=c["accent"])
+    d.rectangle((0, 0, W, 14), fill=HL if (BRAND_V4 and HL) else c["accent"])   # v4: barra nel colore della rubrica
     if EDITORIAL and index > 1:
         editorial_chrome(d, cfg, not SCIENCE, c)
     # piè di pagina: handle a sinistra, numero slide a destra
@@ -721,12 +745,33 @@ def _small_lockup(img, d, cfg, y):
     return 120
 
 
-def poster_pill(d, label, x, y, fill, text):
+def poster_pill(d, label, x, y, fill, text, quadrant=None):
     pf = font("Bold", 30)
+    if quadrant is not None:               # brand v4: quadratino 2×2 con acceso il quadrante della rubrica
+        tw = d.textlength(label, font=pf)
+        pw = 22 + 30 + 14 + tw + 28
+        d.rounded_rectangle((x, y, x + pw, y + 60), radius=30, fill=fill)
+        rgb = lambda h: tuple(int(h.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+        tc, fc = rgb(text), rgb(fill)
+        dim = tuple(int(tc[i] * 0.32 + fc[i] * 0.68) for i in range(3))
+        for i, (ox, oy) in enumerate(((0, 0), (17, 0), (0, 17), (17, 17))):
+            d.rounded_rectangle((x + 22 + ox, y + 15 + oy, x + 22 + ox + 13, y + 15 + oy + 13), radius=2,
+                                fill=tc if i == quadrant else dim)
+        d.text((x + 22 + 30 + 14, y + 11), label, font=pf, fill=text)
+        return pw
     pw = d.textlength(label, font=pf) + 56
     d.rounded_rectangle((x, y, x + pw, y + 60), radius=30, fill=fill)
     d.text((x + 28, y + 11), label, font=pf, fill=text)
     return pw
+
+
+def main_pill(d, post, default, x, y, fill, text):
+    """Etichetta principale della copertina: nel brand v4 il nome della rubrica (linea del post), altrimenti `default`."""
+    if BRAND_V4:
+        line = post_line(post)
+        if line in V4_RUBRIC:
+            return poster_pill(d, V4_RUBRIC[line][0], x, y, fill, text)
+    return poster_pill(d, default, x, y, fill, text)
 
 
 RUBRIC_STYLE = {   # identità delle rubriche: motivo nella pill della copertina e motto nel piè di pagina
@@ -764,11 +809,17 @@ def extra_pills(d, post, x, y, bg, ink):
     """Pill aggiuntive dopo quella principale: rubrica (es. CHECKLIST) e avviso idoneità dei bandi
     (es. US-BASED TEAMS ONLY). Fondo del tema e testo in inchiostro, per distinguerle dalla principale."""
     labels = [l for l in (post.get("eligibility_flag"), post.get("rubric"), post.get("area_label")) if l]   # l'avviso ha la precedenza
+    if BRAND_V4:                                 # brand v4: una sola etichetta per post, nome e colore della rubrica
+        return x                                 # (decisione di Stefano, 5/11); l'avviso d'idoneità dei bandi va nel testo
     pf = font("Bold", 28)
+    global PILLS_BOTTOM
+    row_y = y
     for label in labels:
         style = RUBRIC_STYLE.get(label)
         text = label.upper() + (f" · Nº {post['rubric_no']}" if style and post.get("rubric_no") else "")
         pw = d.textlength(text, font=pf) + 52 + (44 if style else 0)
+        if x + pw > W - MARGIN and BRAND_V4 and y == row_y and MARGIN + pw <= W - MARGIN:
+            x, y = MARGIN, y + 76                # brand v4: l'etichetta principale è lunga, si va a capo una volta
         if x + pw > W - MARGIN:                  # niente pill tagliate: quelle che non entrano si saltano
             continue
         col = hlc(not SCIENCE, ink) if (MONO and HL) else ink
@@ -780,7 +831,16 @@ def extra_pills(d, post, x, y, bg, ink):
             d.rounded_rectangle((x, y + 2, x + pw, y + 58), radius=28, fill=bg, outline=col, width=3)
             d.text((x + 26, y + 13), text, font=pf, fill=col)
         x += pw + 16
+        PILLS_BOTTOM = y + 60
     return x
+
+
+PILLS_BOTTOM = 0         # fondo dell'ultima riga di etichette (brand v4: possono andare su due righe)
+
+
+def _below_pills(top, default_gap):
+    """Inizio del titolo sotto le etichette: come prima, o più in basso se sono andate a capo."""
+    return max(top + default_gap, PILLS_BOTTOM + 50) if BRAND_V4 else top + default_gap
 
 
 def photo_cover(post, cfg, total, pic, img, d, dark, ink, acc):
@@ -793,10 +853,13 @@ def photo_cover(post, cfg, total, pic, img, d, dark, ink, acc):
     paste_logo(img, "logo-symbol-light", MARGIN - 14, 60, height=120)
     paste_logo(img, "logo-wordmark-light", MARGIN + 118, 76, height=88)
     py = band - 28
-    pw = poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, py, *pill_colors(c, dark))
+    global PILLS_BOTTOM
+    PILLS_BOTTOM = 0
+    pw = main_pill(d, post, post.get("category", "Research methods").upper(), MARGIN, py, *pill_colors(c, dark))
     extra_pills(d, post, MARGIN + pw + 16, py, c["background"] if dark else "#FFFFFF", ink)
-    poster_title(d, post["title"], post.get("title_highlight"), MARGIN, py + 100, W - 2 * MARGIN,
-                 H - 300 - (py + 100), ink, hlc(dark, acc), start=96, minimum=52)
+    ty = _below_pills(py, 100)
+    poster_title(d, post["title"], post.get("title_highlight"), MARGIN, ty, W - 2 * MARGIN,
+                 H - 300 - ty, ink, hlc(dark, acc), start=96, minimum=52)
     if total:
         d.text((MARGIN, H - 240), "Swipe  →", font=font("ExtraBold", 46), fill=hlc(dark, acc))
     return img
@@ -811,9 +874,11 @@ def poster_cover(post, cfg, total):
         return photo_cover(post, cfg, total, pic, img, d, dark, ink, acc)
     lh = poster_logo(img, d, cfg, dark)
     top = 80 + lh + 50
-    pw = poster_pill(d, post.get("category", "Research methods").upper(), MARGIN, top, *pill_colors(c, dark))
+    global PILLS_BOTTOM
+    PILLS_BOTTOM = 0
+    pw = main_pill(d, post, post.get("category", "Research methods").upper(), MARGIN, top, *pill_colors(c, dark))
     extra_pills(d, post, MARGIN + pw + 16, top, c["background"] if dark else "#FFFFFF", ink)
-    title_top = top + 110
+    title_top = _below_pills(top, 110)
     end = poster_title(d, post["title"], post.get("title_highlight"), MARGIN, title_top, W - 2 * MARGIN,
                        H - 300 - title_top, ink, acc)
     cube_texture(img, post.get("id") or post["title"], c["accent"], dark,
@@ -831,14 +896,14 @@ def poster_grant_cover(post, cfg, total, picture=None):
     if picture is not None:
         band = 470
         img.paste(ImageOps.fit(picture.convert("RGB"), (W, band), Image.LANCZOS), (0, 14))
-        pw = poster_pill(d, "OPEN CALL", MARGIN, band - 30, *pill_colors(c, dark))
+        pw = main_pill(d, post, "OPEN CALL", MARGIN, band - 30, *pill_colors(c, dark))
         extra_pills(d, post, MARGIN + pw + 16, band - 30, c["background"] if dark else "#FFFFFF", ink)
         y = band + 60
         keep.append((0, 0, W, band + 40))
     else:
         lh = poster_logo(img, d, cfg, dark)
         y = 80 + lh + 50
-        pw = poster_pill(d, "OPEN CALL", MARGIN, y, *pill_colors(c, dark))
+        pw = main_pill(d, post, "OPEN CALL", MARGIN, y, *pill_colors(c, dark))
         extra_pills(d, post, MARGIN + pw + 16, y, c["background"] if dark else "#FFFFFF", ink)
         keep.append((MARGIN - 20, y - 10, W - MARGIN + 20, y + 70))
         y += 100
@@ -846,13 +911,18 @@ def poster_grant_cover(post, cfg, total, picture=None):
         ff, fl, fs = fit(d, post["funder"], "SemiBold", 34, 26, W - 2 * MARGIN, 84, 1.25)
         keep.append((MARGIN - 20, y - 10, W - MARGIN + 20, y + len(fl) * fs * 1.25 + 10))
         y = draw_lines(d, fl, ff, fs, MARGIN, y, c["muted_text"] if dark else INK_MUTED, 1.25) + 16
+    if BRAND_V4 and post.get("eligibility_flag"):   # avviso d'idoneità come riga di testo, non come seconda etichetta
+        ef = font("Bold", 30)
+        d.text((MARGIN, y), post["eligibility_flag"].upper(), font=ef, fill=hlc(dark, acc))
+        keep.append((MARGIN - 20, y - 10, W - MARGIN + 20, y + 44))
+        y += 56
     box_top, box_h = H - 420, 150
     end = poster_title(d, post["title"], post.get("title_highlight"), MARGIN, y, W - 2 * MARGIN, box_top - y - 30,
                        ink, acc, start=130 if picture is None else 104, minimum=56)
     keep.append((MARGIN - 20, y - 20, W - MARGIN + 20, end + 20))
     if post.get("deadline"):
         d.rounded_rectangle((MARGIN, box_top, W - MARGIN, box_top + box_h), radius=26,
-                            fill=c["accent"] if dark else c["background"])
+                            fill=(HL if (BRAND_V4 and HL) else c["accent"]) if dark else c["background"])
         lab = c["background"] if dark else c["accent"]
         d.text((MARGIN + 44, box_top + 22), "DEADLINE", font=font("Bold", 28), fill=lab)
         d.text((MARGIN + 44, box_top + 58), post["deadline"] if EDITORIAL else post["deadline"].upper(),
@@ -871,7 +941,7 @@ def poster_positions_cover(post, cfg, total):
     img, d, dark, ink, acc = poster_base(post, cfg, total)
     lh = poster_logo(img, d, cfg, dark)
     y = 80 + lh + 50
-    pw = poster_pill(d, "ACADEMIC POSITIONS", MARGIN, y, *pill_colors(c, dark))
+    pw = main_pill(d, post, "ACADEMIC POSITIONS", MARGIN, y, *pill_colors(c, dark))
     extra_pills(d, post, MARGIN + pw + 16, y, c["background"] if dark else "#FFFFFF", ink)
     d.text((MARGIN, y + 86), f"Week of {post.get('week', '')}", font=font("SemiBold", 36),
            fill=c["muted_text"] if dark else INK_MUTED)
@@ -1018,7 +1088,15 @@ def illustrated(slide, number, cfg, index, total, picture):
     body_h = len(bl) * bs * 1.4
     pic_h = int(max(340, min(520, bottom - y - 70 - body_h)))
 
-    pic, mask = _rounded(picture, text_w, pic_h, 28)
+    if callable(picture):                      # schema o figura disegnati alla misura esatta (visuals.py): mai tagliati
+        drawn = picture(text_w, pic_h)
+        if drawn is None:
+            return content(slide, number, cfg, index, total)
+        mask = Image.new("L", (text_w, pic_h), 0)
+        ImageDraw.Draw(mask).rounded_rectangle((0, 0, text_w - 1, pic_h - 1), radius=28, fill=255)
+        pic = drawn.resize((text_w, pic_h)) if drawn.size != (text_w, pic_h) else drawn
+    else:
+        pic, mask = _rounded(picture, text_w, pic_h, 28)
     img.paste(pic, (MARGIN, int(y)), mask)
     d.rounded_rectangle((MARGIN, int(y), W - MARGIN, int(y) + pic_h), radius=28, outline=c["accent"], width=3)
 
@@ -1133,11 +1211,14 @@ def closing(post, cfg, total):
     c = cfg["colors"]
     navy = c["background"]
     img, d = light_canvas(cfg, total, total)
-    d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 34), fill=hlc(False, DARK_ACCENT.get(c["accent"], navy)))
-    card_top = H - 660
-    fnt, lines, size = fit(d, post["takeaway"], H_("ExtraBold"), 72, 44, W - 2 * MARGIN, card_top - 240 - 50, 1.2)
-    draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 240, W - 2 * MARGIN,
-              navy, 1.2, HLC(c), half=True)
+    if post.get("takeaway") and post.get("kind") not in ("grant", "positions"):   # Funding calls (5/11) e Academic positions (8/11): niente key takeaway
+        d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 34), fill=hlc(False, DARK_ACCENT.get(c["accent"], navy)))
+        card_top = H - 660
+        fnt, lines, size = fit(d, post["takeaway"], H_("ExtraBold"), 72, 44, W - 2 * MARGIN, card_top - 240 - 50, 1.2)
+        draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 240, W - 2 * MARGIN,
+                  navy, 1.2, HLC(c), half=True)
+    else:                                         # solo la scheda profilo, centrata
+        card_top = (H - 500) // 2
     d.rounded_rectangle((MARGIN, card_top, W - MARGIN, card_top + 500), radius=32, fill=navy)
     sym = paste_logo(img, "logo-symbol-light", MARGIN + 30, card_top + 22, height=140)
     if sym:
@@ -1489,8 +1570,8 @@ def fill_meta(text, extra=""):
 def fill_gaps(pages, metas, post, cfg):
     """Riempie con un'immagine pertinente lo spazio vuoto delle schede (config «fill_gaps» con design_v3).
     metas[i] = slide-tipo della pagina i, oppure None (copertina, chiusura, pagine già illustrate)."""
-    if not (cfg.get("design_v3") and cfg.get("fill_gaps", True)):
-        return pages
+    if not (cfg.get("design_v3") and cfg.get("fill_gaps", True)) or post.get("no_images"):
+        return pages                          # annunci e post senza immagini: niente foto di riempimento
     limit, used = int(cfg.get("max_fill_images", 3)), 0
     for i, meta in enumerate(metas):
         if meta is None or used >= limit:
@@ -1539,11 +1620,14 @@ def style_cfg(post, cfg):
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": post["accent"]}}
     if post.get("kind") == "positions":
         cfg = {**cfg, "colors": {**cfg["colors"], "accent": cfg.get("positions_accent", "#A78BFA")}}
+    if BRAND_V4 and post_line(post) in V4_ACCENT:   # brand v4: un colore fisso per rubrica, come nel logo
+        cfg = {**cfg, "colors": {**cfg["colors"], "accent": V4_ACCENT[post_line(post)]}}
     if cfg.get("mono"):                   # una palette per linea: azzurrino (metodologia e scienza), giallo, violetto
         line = post_line(post)
         if line in ("methods", "science"):
-            cfg = {**cfg, "colors": {**cfg["colors"], "accent": azure_for(post)},
-                   "cover_theme": "light" if line == "science" else "dark", "_science": line == "science"}
+            cfg = {**cfg, "colors": {**cfg["colors"], "accent": V4_ACCENT[line] if BRAND_V4 else azure_for(post)},
+                   "cover_theme": "light" if (line == "science" and not BRAND_V4) else "dark",
+                   "_science": line == "science" and not BRAND_V4}   # v4: Latest Science su fondo scuro, accento bianco
         else:
             cfg = {**cfg, "cover_theme": "dark", "_science": False}
     set_mono(cfg)                         # da qui l'accento del tipo resta in HL (evidenziazioni, cubetti)
@@ -1602,9 +1686,25 @@ def render_carousel(post, cfg):
     if facts_first:
         pages.append(facts_slide(post, cfg, len(pages) + 1, total))
         metas.append(fill_meta(post.get("facts_label", "key facts"), post.get("title", "")))
+    planned = bool(post.get("visuals_planned"))      # visuals.plan: schema, figura, foto o niente, slide per slide
     for i, slide in enumerate(post["slides"], start=1):
         index = len(pages) + 1
         picture = None
+        if planned:
+            import visuals
+            v = (slide.get("visual") or {}).get("type")
+            if v in ("diagram", "figure"):
+                picture = visuals.picture_for(post, slide, {**cfg["colors"], "accent": HL or cfg["colors"]["accent"]})
+            elif v == "photo" and use_images and used < max_images:
+                print(f"Cerco la foto per la slide {index}: {slide.get('photo_query', '')}")
+                picture = images.generate(slide, cfg)
+                used += 1
+            if picture is not None:
+                pages.append(illustrated(slide, i, cfg, index, total, picture))
+            else:
+                pages.append(content(slide, i, cfg, index, total))
+            metas.append(None)                    # niente foto di riempimento: l'immagine c'è solo se serve
+            continue
         if use_images and index % 2 == 0 and used < max_images:
             print(f"Genero l'immagine per la slide {index}: {slide['heading']}")
             picture = images.generate(slide, cfg)

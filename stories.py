@@ -29,7 +29,10 @@ def _social_guard():
     """Sicura: con i social in pausa (config «social_paused») nessuna pubblicazione può partire, da nessun percorso."""
     import json as _json
     from pathlib import Path as _P
-    if _json.loads((_P(__file__).resolve().parent / "config.json").read_text(encoding="utf-8")).get("social_paused"):
+    import os as _os
+    cfg = _json.loads((_P(__file__).resolve().parent / "config.json").read_text(encoding="utf-8"))
+    kind = (_os.environ.get("POST_TYPE") or "").strip().lower()       # rubriche riattivate: config «social_live_kinds»
+    if cfg.get("social_paused") and kind not in (cfg.get("social_live_kinds") or []):
         raise RuntimeError("social in pausa (config social_paused): pubblicazione bloccata")
 
 def _hx(h):

@@ -1,87 +1,58 @@
 {
-  "id": "milestone-2026-10-25-numbers",
+  "id": "kickoff-academic-positions",
   "kind": "announcement",
   "no_images": true,
-  "accent": "#FF7A59",
-  "title": "New calls and positions: 99 open calls, 86 positions in 16 countries",
-  "title_highlight": "New calls and positions",
-  "category": "Milestone",
+  "accent": "#8B5CF6",
+  "title": "Academic positions, every Monday",
+  "title_highlight": "Academic positions",
+  "category": "New rubric",
   "slides": [
     {
-      "heading": "Asia: 31 open positions",
-      "body": "PhD, post-doc and faculty roles in Hong Kong, mainland China, the United Arab Emirates, Vietnam, Japan and Taiwan, plus new funders from India, Japan, Korea, China and Taiwan. Asia is now our second region for positions.",
-      "highlight": "our second region for positions",
+      "heading": "A weekly round-up",
+      "body": "Every Monday evening: new PhD, post-doc and faculty positions in clinical research, engineering and rehabilitation.",
+      "highlight": "every Monday evening",
       "source": ""
     },
     {
-      "heading": "Latin America: coming soon",
-      "body": "Calls and positions from Latin America are coming soon to our page.",
-      "highlight": "coming soon",
+      "heading": "What each listing shows",
+      "body": "The role, the institution, the country and the deadline, with the link to the full advertisement.",
+      "highlight": "the full advertisement",
       "source": ""
     },
     {
-      "heading": "New filters by medical area",
-      "body": "Neurology, physiatry and orthopaedics, ageing and geriatrics, oncology and haematology, clinical genetics and rare diseases: pick your field on the calls page.",
-      "highlight": "pick your field",
+      "heading": "Collected and checked",
+      "body": "Positions are collected automatically and checked against the advertisement. Always read the full text before applying.",
+      "highlight": "checked against the advertisement",
       "source": ""
     },
     {
-      "heading": "Our site, open to everyone",
-      "body": "Calls, positions and every methodology carousel in one place, no account needed. Add deadlines to your calendar, share any card, follow via RSS, or send us feedback and report an error in one click.",
-      "highlight": "no account needed",
+      "heading": "Career Path",
+      "body": "First Monday of the month: how to read an advertisement, and what each academic role actually means.",
+      "highlight": "how to read an advertisement",
       "source": ""
     },
     {
-      "heading": "Now on Bluesky and Threads",
-      "body": "You can now follow us on Instagram, Facebook, Threads and Bluesky. Pick the one where you already read research news.",
-      "highlight": "Threads and Bluesky",
+      "heading": "Every open position on one page",
+      "body": "Browse all open positions by role type and region on our site, no account needed.",
+      "highlight": "by role type and region",
       "source": ""
     }
   ],
-  "takeaway": "Open calls, positions and methodology in one link, checked on the official texts.",
-  "takeaway_highlight": "checked on the official texts",
+  "takeaway": "",
+  "takeaway_highlight": "",
   "closing_cta": [
-    "Share it with a colleague",
-    "Everything is in the link in bio"
+    "Share it with someone looking for their next role",
+    "All positions: link in bio"
   ],
-  "caption": "New calls and positions on clinicalresearchchaos.com: 99 open funding calls and 86 academic positions, every one checked on the official text before it goes online.\n\nBy the numbers:\n• 99 open calls in clinical research, rehabilitation and clinical engineering\n• 42 open internationally\n• 86 PhD, post-doc and faculty positions in 16 countries\n• 11 methodology carousels you can swipe on the site, no Instagram account needed\n\nAsia is growing fast: 31 open positions in Hong Kong, mainland China, the UAE, Vietnam, Japan and Taiwan, and new funders from India, Japan, Korea, China and Taiwan.\n\nLatin America: coming soon.\n\nNew on the site: filters by medical area (neurology, physiatry and orthopaedics, ageing, oncology and haematology, clinical genetics and rare diseases), calendar reminders, RSS feeds and a feedback page to suggest a call or report an error.\n\nAnd we are now on Threads and Bluesky too.\n\nWhich country or funder should we add next? Tell us in the comments.\n\nAll calls and positions: clinicalresearchchaos.com\nInstagram & Threads: @clinicalresearchchaos\nBluesky: @researchchaos.bsky.social\n\nAlways check eligibility and deadlines in the official call or advertisement.",
+  "caption": "New rubric: Academic positions.\n\nEvery Monday evening we post a round-up of new PhD, post-doc and faculty positions in clinical research, clinical and biomedical engineering and rehabilitation.\n\nEach listing gives you the role, the institution, the country, the deadline and the link to the full advertisement.\n\nFirst Monday of the month: Career Path, how to read an advertisement and what each academic role means.\n\nAll open positions, by role type and region: link in bio.\n\nPositions are collected and checked automatically: always read the full advertisement before applying.\n\nKnow someone looking for their next role? Share this post with them.",
   "hashtags": [
-    "#ResearchFunding",
-    "#ClinicalResearch",
     "#AcademicJobs",
-    "#Rehabilitation",
-    "#BiomedicalEngineering",
-    "#PhDPositions",
+    "#PhDPosition",
     "#Postdoc",
-    "#GlobalHealth",
-    "#ResearchInAsia",
-    "#LatinAmericaResearch"
+    "#FacultyJobs",
+    "#ClinicalResearch",
+    "#RehabilitationResearch"
   ],
   "references": [],
-  "source": "Announcement",
-  "numbers_label": "By the numbers",
-  "numbers": [
-    [
-      "99",
-      "open funding calls in clinical research, rehabilitation and clinical engineering"
-    ],
-    [
-      "42",
-      "calls open internationally"
-    ],
-    [
-      "86",
-      "PhD, post-doc and faculty positions in 16 countries"
-    ],
-    [
-      "11",
-      "methodology carousels to swipe on the site"
-    ]
-  ],
-  "networks": [
-    "instagram",
-    "facebook",
-    "threads",
-    "bluesky"
-  ]
+  "source": "Announcement"
 }

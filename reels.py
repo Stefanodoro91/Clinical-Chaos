@@ -259,7 +259,10 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
             if cards.EDITORIAL:                      # etichetta piena nel colore del tipo, come nei caroselli
                 a_rgb = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
                 a_ink = "#0A0A0A" if (0.299 * a_rgb[0] + 0.587 * a_rgb[1] + 0.114 * a_rgb[2]) / 255 > 0.55 else "#FFFFFF"
-                d.rounded_rectangle([M, y, M + tw + 48, y + 66], radius=33, fill=accent)
+                pill = accent
+                if light and max(a_rgb) - min(a_rgb) < 30 and min(a_rgb) > 200:   # bianco su fondo chiaro (Latest
+                    pill, a_ink = "#0A0A0A", "#FFFFFF"                            # Science): etichetta nera, testo bianco
+                d.rounded_rectangle([M, y, M + tw + 48, y + 66], radius=33, fill=pill)
                 d.text((M + 24, y + 13), kick, font=f, fill=a_ink)
             else:
                 d.rounded_rectangle([M, y, M + tw + 48, y + 66], radius=33, outline=inkc, width=3)
@@ -683,6 +686,21 @@ REEL_SCRIPT_SCHEMA = {"type": "OBJECT", "properties": {
     "required": ["hook", "beats", "takeaway"]}
 
 
+def rubric_tag(entry, cfg, default_label, default_accent):
+    """(etichetta, colore) della copertina del reel: nel brand v4 nome e colore della rubrica, una sola etichetta.
+    Un post di ricerca con categoria «Clinical insight» (sabato) è Latest Science, gli altri Design, Reporting & Appraisal."""
+    if not cards.BRAND_V4:
+        return default_label, default_accent
+    import content
+    kind = entry.get("kind")
+    if kind in ("grant", "positions"):
+        line = kind
+    else:
+        science = entry.get("category") == content.CLINICAL_CATEGORY or entry.get("rubric") == "Clinical Insights"
+        line = "science" if science else "methods"
+    return cards.V4_RUBRIC[line][0], cards.V4_ACCENT[line]
+
+
 def research_spec(entry, cfg):
     """Metodologia: gancio, 3 punti essenziali (riscritti brevi da Gemini, solo dal carosello), messaggio finale."""
     points = entry.get("points") or []
@@ -703,12 +721,13 @@ def research_spec(entry, cfg):
         hook = entry["title"]
         beats = [(p["heading"], _short_sentence(p["body"], 20)) for p in points[:3]]
         takeaway = _clip_words(entry.get("takeaway", ""), 16)
-    slides = [{"type": "cover", "kicker": (entry.get("category") or "Research methods").upper(), "title": hook}]
+    kicker, accent = rubric_tag(entry, cfg, (entry.get("category") or "Research methods").upper(), cfg["colors"]["accent"])
+    slides = [{"type": "cover", "kicker": kicker, "title": hook}]
     slides += [{"type": "point", "number": f"{i:02d}", "title": t, "body": b} for i, (t, b) in enumerate(beats, 1)]
     if takeaway:
         slides.append({"type": "point", "number": "→", "title": "Remember", "body": takeaway})
     slides.append({"type": "closing", "title": "Full carousel with references on our profile", "body": "Save it for later"})
-    return {"accent": cfg["colors"]["accent"], "mood": "Classica", "slides": slides}
+    return {"accent": accent, "mood": "Classica", "slides": slides}
 
 
 def grant_spec(p, v, cfg, today=None):
@@ -721,7 +740,8 @@ def grant_spec(p, v, cfg, today=None):
     if not deadline or (deadline - today).days < 7:
         return None
     days = (deadline - today).days
-    slides = [{"type": "cover", "kicker": "FUNDING CALL", "title": p["title"],
+    kicker, accent = rubric_tag({"kind": "grant"}, cfg, "FUNDING CALL", cfg.get("grant_accent", "#FFB547"))
+    slides = [{"type": "cover", "kicker": kicker, "title": p["title"],
                "body": _clip_words(v.get("programme") or p.get("funder", ""), 14)},
               {"type": "point", "number": "01", "title": "Deadline",
                "body": f"{grants._fmt_date(deadline)}: {days} days left to apply."}]
@@ -732,7 +752,7 @@ def grant_spec(p, v, cfg, today=None):
     if what:
         slides.append({"type": "point", "number": f"{len(slides):02d}", "title": "What it funds", "body": what})
     slides.append({"type": "closing", "title": "Official call and all open calls", "body": "Link in bio"})
-    return {"accent": cfg.get("grant_accent", "#FFB547"), "mood": "Rock", "slides": slides}
+    return {"accent": accent, "mood": "Rock", "slides": slides}
 
 
 def positions_spec(p, archive, cfg, today=None, max_jobs=4):
@@ -749,7 +769,8 @@ def positions_spec(p, archive, cfg, today=None, max_jobs=4):
             jobs.append((v, d))
     if len(jobs) < 2:
         return None
-    slides = [{"type": "cover", "kicker": "ACADEMIC POSITIONS", "title": f"{len(jobs)} open positions this week",
+    kicker, accent = rubric_tag({"kind": "positions"}, cfg, "ACADEMIC POSITIONS", cfg["colors"]["accent"])
+    slides = [{"type": "cover", "kicker": kicker, "title": f"{len(jobs)} open positions this week",
                "body": "Clinical research, biomedical engineering and rehabilitation."}]
     for i, (v, d) in enumerate(jobs[:max_jobs], 1):
         bits = [positions.TYPES.get(v.get("type"), ""), _clip_words(v.get("institution", ""), 6), v.get("country", ""),
@@ -759,7 +780,7 @@ def positions_spec(p, archive, cfg, today=None, max_jobs=4):
     more = len(jobs) - max_jobs
     slides.append({"type": "closing", "title": (f"+{more} more, " if more > 0 else "") + "all with deadlines and links",
                    "body": "Link in bio"})
-    return {"accent": cfg["colors"]["accent"], "mood": "Funky", "slides": slides}
+    return {"accent": accent, "mood": "Funky", "slides": slides}
 
 
 if __name__ == "__main__":     # prova locale: python reels.py <cartella slide> <file.mp4>
