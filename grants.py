@@ -1693,7 +1693,7 @@ HEADER_LOGO = """<{tag} class="crc-logo crc-o" {attrs}>
     var j = ((i * 2654435761) % 1000) / 1000;             /* un numero suo, stabile: niente moto all'unisono */
     return {{ g: g, p: p, x: +g.dataset.x, y: +g.dataset.y, row: row, i0: +g.dataset.i,
              bx: +g.dataset.cx, by: +g.dataset.cy, a: rgb(p.getAttribute("fill")), b: rgb(g.dataset.c1),
-             spd: 52 + 10 * row + 14 * j,                 /* ognuno la sua andatura: la corsa non è meccanica */
+             spd: 234 + 45 * row + 63 * j,                 /* ognuno la sua andatura: la corsa non è meccanica */
              w1: 0.9 + 2.6 * j, w2: 0.37 + 0.7 * j, w3: 1.7 + 3.1 * j,
              ph1: 6.3 * j, ph2: 4.1 * j + row, ph3: 2.2 * j + row,
              tail: 1 - 0.17 * row, rmax: Math.min(w, h) * 0.5, lag: 0.72 + 0.28 * j, shown: -1, dim: -1 }};
@@ -1815,7 +1815,8 @@ def _fragments():
 
 WORD_O = {"home": "wordmark-o-home.png", "grant": "wordmark-o-calls.png", "positions": "wordmark-o-positions.png",
           "methods": "wordmark-o-methods.png", "science": "wordmark-o-science.png"}
-O_CENTER = (736.5, 250.5)   # centro delle minuscole fra «a» e «s» nella scritta 1142×360 (logo.wordmark_blank_o)
+O_CENTER = (554.0, 250.5)   # centro delle minuscole fra «a» e «s» nella scritta 1142×360 (logo.wordmark_blank_o)
+O_CENTER_HOME = (736.5, 250.5)   # in home «Chaos» sta al centro sotto l'etichetta (wordmark_blank_o centred=True)
 O_SIDE = 157.0              # lato del simbolo: alto quanto le minuscole (più un filo), come una «o» vera
 
 
@@ -1873,7 +1874,7 @@ def header_logo(cfg, accent=None, ink="#FFFFFF", kind="home", href=None, height=
     glow = ('<use class="crc-glow" href="#crcFrags" filter="url(#crcGlowB)" opacity="0" style="display:none"/>'
             '<use class="crc-glow" href="#crcFrags" filter="url(#crcGlowA)" opacity="0" style="display:none"/>')
     ring_js = json.dumps([[[round(x, 1), round(y, 1)] for x, y in r] for r in ring], separators=(",", ":"))
-    (cx0, cy0), side = O_CENTER, O_SIDE
+    (cx0, cy0), side = (O_CENTER_HOME if kind == "home" else O_CENTER), O_SIDE
     attrs = (f'href="{href}" aria-label="{brand}, home"' if href else f'role="img" aria-label="{brand}"')
     return HEADER_LOGO.format(brand=brand, cubes=f'<g id="crcFrags">{"".join(cubes)}</g>',
                               defs=defs, glow=glow, ring=ring_js, word=WORD_O[kind], tag="a" if href else "div",

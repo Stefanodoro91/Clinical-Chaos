@@ -87,10 +87,10 @@ def wordmark(accent, ink=INK_LIGHT, height=160, label=None, o4_dark=None):
     return _wordmark(accent, ink, height, label, o4_dark, False)[0]
 
 
-def wordmark_blank_o(accent, ink=INK_LIGHT, height=160):
+def wordmark_blank_o(accent, ink=INK_LIGHT, height=160, centred=False):
     """Scritta senza la «o» (il sito ci mette il simbolo animato) e il riquadro della «o»: (immagine, (x, y, lato))
     in px dell'immagine."""
-    return _wordmark(accent, ink, height, None, None, True, centred=True)
+    return _wordmark(accent, ink, height, None, None, True, centred=centred)
 
 
 def _wordmark(accent, ink, height, label, o4_dark, blank, centred=False):
