@@ -660,5 +660,25 @@
     "facebook_id": "2662755960813337",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mzuik46h652s",
     "threads_id": "18110844038187855"
+  },
+  {
+    "date": "2026-11-09",
+    "time": "2026-11-09T12:02:33+00:00",
+    "id": "grant-GG-PAR-25-145",
+    "title": "Cancer Therapy Sequelae: Mechanistic & Clinical Research",
+    "source": "GrantFinder",
+    "media_id": "18108741689459034",
+    "facebook_id": "1277022912171972_122116787043432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mzuuwysdrs2u",
+    "threads_id": "18641033752059854",
+    "kind": "grant",
+    "grant_id": "GG-PAR-25-145",
+    "url": "https://www.grants.gov/search-results-detail/357015",
+    "deadline": "2027-02-05",
+    "funder": "National Cancer Institute (NCI)",
+    "summary": "This call supports basic, translational, and clinical research to address chronic or delayed adverse effects of cancer therapies. It aims to identify mechanisms, characterize clinical phenotypes, and develop interventional strategies to prevent or minimize long-term sequelae. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and foreign entities. Research should focus on persistent toxicities like neuropathy or cardiovascular issues, utilizing biomarkers, imaging, or patient-reported outcomes to validate clinical endpoints for future trials.",
+    "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+    "official_source": "NIH Guide PAR-25-145",
+    "grant_title": "Clinical Characterization of Cancer Therapy-induced Adverse Sequelae and Mechanism-based Interventional Strategies"
   }
 ]
