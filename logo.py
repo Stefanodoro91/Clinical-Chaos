@@ -90,10 +90,10 @@ def wordmark(accent, ink=INK_LIGHT, height=160, label=None, o4_dark=None):
 def wordmark_blank_o(accent, ink=INK_LIGHT, height=160):
     """Scritta senza la «o» (il sito ci mette il simbolo animato) e il riquadro della «o»: (immagine, (x, y, lato))
     in px dell'immagine."""
-    return _wordmark(accent, ink, height, None, None, True)
+    return _wordmark(accent, ink, height, None, None, True, centred=True)
 
 
-def _wordmark(accent, ink, height, label, o4_dark, blank):
+def _wordmark(accent, ink, height, label, o4_dark, blank, centred=False):
     k = 4
     unit = height * k / (19.2 + 6 + 48 * 0.9)          # px del canvas → px qui
     f_top = ImageFont.truetype(str(FONTS / "Inter-Bold.ttf"), round(19.2 * unit))
@@ -124,7 +124,8 @@ def _wordmark(accent, ink, height, label, o4_dark, blank):
     cap = f_main.getbbox("C")
     main_top = (19.2 + 6) * unit
     base_y = main_top - cap[1]
-    x = 0
+    x = max(0, (top_w + unit - main_w) / 2 - 0.0208 * height * k) if centred else 0   # sito: «Chaos» al centro
+                                                                    # sotto l'etichetta (correzione ottica misurata)
     for ch in "Cha":
         d.text((x, base_y), ch, font=f_main, fill=inkc)
         x += probe.textlength(ch, font=f_main) + main_track

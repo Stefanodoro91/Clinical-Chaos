@@ -1815,7 +1815,7 @@ def _fragments():
 
 WORD_O = {"home": "wordmark-o-home.png", "grant": "wordmark-o-calls.png", "positions": "wordmark-o-positions.png",
           "methods": "wordmark-o-methods.png", "science": "wordmark-o-science.png"}
-O_CENTER = (554.0, 250.5)   # centro delle minuscole fra «a» e «s» nella scritta 1142×360 (logo.wordmark_blank_o)
+O_CENTER = (736.5, 250.5)   # centro delle minuscole fra «a» e «s» nella scritta 1142×360 (logo.wordmark_blank_o)
 O_SIDE = 157.0              # lato del simbolo: alto quanto le minuscole (più un filo), come una «o» vera
 
 
