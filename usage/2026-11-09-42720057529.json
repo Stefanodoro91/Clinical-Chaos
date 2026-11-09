@@ -1,0 +1,45 @@
+{
+ "workflow": "Settimana di prova su Drive",
+ "quota_day": "2026-11-09",
+ "consumo": {
+  "controllo doppioni|groq-gpt-oss-120b": {
+   "richieste": 4,
+   "ingresso": 5787,
+   "uscita": 1679,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "riscrittura anti-copia|gemini-3.5-flash-lite": {
+   "richieste": 2,
+   "ingresso": 374,
+   "uscita": 95,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "critica|openrouter-nemotron-3-ultra-550b-a55b:free": {
+   "richieste": 3,
+   "ingresso": 14915,
+   "uscita": 13942,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "arbitro|gemini-3.5-flash-lite": {
+   "richieste": 1,
+   "ingresso": 9820,
+   "uscita": 340,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "schemi slide|gemini-3.5-flash-lite": {
+   "richieste": 3,
+   "ingresso": 2433,
+   "uscita": 484,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  }
+ },
+ "esauriti": []
+}
