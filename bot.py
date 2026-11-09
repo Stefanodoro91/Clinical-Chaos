@@ -730,6 +730,8 @@ def reel_run(posted):
     if source in ("announcement", "crosspost"):
         return reel_announcement_run(posted)
     force = {"special": "announcement"}.get(source, source) if source != "latest" else None
+    target = (os.environ.get("REEL_OF") or "").strip()           # reel di un post preciso (lancio manuale, validato)
+    live_reels = set(CONFIG.get("social_live_reels") or [])      # social in pausa: reel solo di queste rubriche
     done = {p.get("reel_of") for p in posted if p.get("kind") == "reel"}
     now = datetime.now(timezone.utc).timestamp()
     latest = {}                      # per ogni tipo, il carosello più recente non ancora trasformato in reel
@@ -737,6 +739,10 @@ def reel_run(posted):
         kind = p.get("kind") or "research"
         if kind not in REEL_KINDS or kind in latest or p.get("id") in done or not p.get("time") or force not in (None, kind):
             continue
+        if target and p.get("id") != target:
+            continue
+        if CONFIG.get("social_paused") and not DRY_RUN and not target and kind not in live_reels:
+            continue                 # reel di metodologia e altre linee scientifiche: restano in pausa
         if kind == "announcement" and force != "announcement":
             continue                 # gli annunci scritti a mano hanno numeri fissi (poi superati): reel solo su richiesta
         if datetime.fromisoformat(p["time"]).timestamp() < now - (21 if kind == "research" else 10) * 86400:
@@ -764,8 +770,14 @@ def reel_run(posted):
               "positions": CONFIG.get("positions_accent", "#8B5CF6")}.get(kind) \
         or (cards.azure_for(p) if CONFIG.get("mono") else CONFIG["colors"]["accent"])
     rcfg = {**CONFIG, "colors": {**CONFIG["colors"], "accent": accent}}       # colore del tipo anche nel reel
-    spec = reel_spec(kind, p, rcfg)
-    if spec:                         # reel nativo e breve, scritto per il tipo di post (20–30 secondi)
+    spec = None if target else reel_spec(kind, p, rcfg)
+    ready = ROOT / "kickoff_reels" / f"{p['id']}.mp4"
+    if target and ready.exists():    # video già approvato in anteprima: si pubblica così com'è
+        import shutil, subprocess
+        shutil.copy(ready, video)
+        seconds = round(float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                                                       "-of", "csv=p=0", str(video)]).decode().strip()))
+    elif spec:                       # reel nativo e breve, scritto per il tipo di post (20–30 secondi)
         seconds = reels.build_story_reel(spec, video, rcfg, mood=style["music"])
     else:                            # post speciali: le slide del carosello, il tempo di leggerle (max 40 s)
         lengths = reels.reading_lengths(len(slides), reel_words(kind, p, len(slides)), cap=40.0)

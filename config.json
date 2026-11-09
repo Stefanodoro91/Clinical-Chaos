@@ -59,7 +59,11 @@
   "brand_v4": true,
   "preview_file_id": "1JSrccM2tkwrNUUS6y4sCtFYtJXaiB3um",
   "social_paused": true,
-  "social_live_kinds": ["grant", "positions"],
+  "social_live_kinds": [
+    "grant",
+    "positions",
+    "reel"
+  ],
   "preview_files": {
     "research": "1VucwbxCWM6-Tr9fVbPKCHYWaN286MMGg",
     "grant": "1f9dXABTOlPbww6Kjw8FhTtUSXN554Prh",
@@ -73,5 +77,9 @@
   "google_indexing": false,
   "visual_plan": true,
   "evidence_pyramid": true,
-  "tools_table_v2": true
+  "tools_table_v2": true,
+  "social_live_reels": [
+    "grant",
+    "positions"
+  ]
 }
