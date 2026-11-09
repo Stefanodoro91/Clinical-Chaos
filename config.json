@@ -15,7 +15,7 @@
   "max_new_files_per_run": 1,
   "max_posts_per_file": 5,
   "gemini_daily_cap_checks": 300,
-  "linkedin_doc_id": "1O4zZ3iH5Kv44oyKU9obSaezp7pVPiOfNmhr0IJP5Vdc",
+  "linkedin_doc_id": "17fzw9yU3t4V8UnAuRbVcIkE0J8CEhFCCWywYxOtLD0M",
   "low_queue_warning": 5,
   "ai_images": true,
   "grant_cover_photo": true,
@@ -82,5 +82,14 @@
   "social_live_reels": [
     "grant",
     "positions"
-  ]
+  ],
+  "linkedin_kinds": [
+    "grant",
+    "positions"
+  ],
+  "linkedin_pdf_files": {
+    "grant": "1ZxvJ4mJE0lASy2B9sHko0g8wueX9PRBR",
+    "positions": "1eYj2vue_c4j2_E7ZMYzA2zWJ23n4fpW7"
+  },
+  "simulate_paused_kinds": false
 }

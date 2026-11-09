@@ -1039,6 +1039,10 @@ def schedule_delay_hours():
 def main():
     posted = load(POSTED_FILE, [])
     posted_real = posted
+    if SIMULATE and not CONFIG.get("simulate_paused_kinds", True):
+        print("::notice title=Rubrica chiusa::metodologia e Latest Science in pausa: niente post e niente anteprime "
+              "(le anteprime su Drive si chiedono a parte, con week-preview)")
+        return
     if SIMULATE:                       # social in pausa: i contenuti già simulati contano come usciti (niente doppioni)
         posted = posted + load(SIM_FILE, [])
         print("::notice title=Social in pausa::contenuti preparati e salvati su Drive (Anteprime), niente pubblicazione")
@@ -1239,7 +1243,8 @@ def main():
     li_path = LINKEDIN_DIR / linkedin.filename(post, kind, today)
     li_path.write_text(linkedin.draft(post, caption, kind, link), encoding="utf-8")
     import drive_preview
-    drive_preview.linkedin_doc(LINKEDIN_DIR, CONFIG)     # bozze LinkedIn anche su Drive (documento «Bozze LinkedIn»)
+    drive_preview.linkedin_doc(LINKEDIN_DIR, CONFIG)     # testi LinkedIn su Drive (cartella LinkedIn)
+    drive_preview.linkedin_pdf(kind, slides, CONFIG)     # e il carosello in PDF da allegare
     commit_and_push([li_path.relative_to(ROOT).as_posix()], "Draft LinkedIn")
     fb_id = None
     if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID"):
