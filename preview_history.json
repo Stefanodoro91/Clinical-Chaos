@@ -420,8 +420,28 @@
   {
    "date": "2026-11-17",
    "time": "2026-11-17T17:47:00+00:00",
+   "id": "7bc8e19b",
+   "title": "Why opaque reporting is linked to biased conclusions",
+   "source": "Critical appraisal",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The danger of opaque reporting",
+     "body": "Opaque reporting is directly associated with biased conclusions and, less directly, with errors in biomedical publishing."
+    },
+    {
+     "heading": "Judging reliability becomes impossible",
+     "body": "Without knowing study details, readers cannot determine if results are trustworthy."
+    }
+   ],
+   "takeaway": "Without a clear understanding of how a study was done, readers cannot judge whether the findings are reliable.",
+   "category": "Reporting & publication"
+  },
+  {
+   "date": "2026-11-18",
+   "time": "2026-11-18T17:47:00+00:00",
    "id": "844b30ba",
-   "title": "Why respondent type biases quality of life data",
+   "title": "Why proxy and provider ratings differ from patient self-report",
    "source": "Stroke Outcomes",
    "simulated": true,
    "points": [
@@ -430,40 +450,16 @@
      "body": "Assessments may be performed by rehabilitation providers, patients, or proxies, and their ratings can differ."
     },
     {
-     "heading": "Proxies rate disability higher than other measures",
+     "heading": "Proxies overestimate disability",
      "body": "Proxy assessors tend to rate patients as more disabled than other functional measures suggest, and the gap grows with more impaired patients."
     },
     {
      "heading": "The frame of reference trap",
-     "body": "Healthcare professionals tend to rate patients higher than patients rate themselves due to a difference in the frame of reference used."
+     "body": "Healthcare professionals may rate patients differently than patients rate themselves, possibly due to a different frame of reference (e.g., using a more disabled…"
     }
    ],
    "takeaway": "Proxy and provider ratings can differ from patients' own, so use the same respondent type at every follow-up.",
    "category": "Bias & confounding"
-  },
-  {
-   "date": "2026-11-18",
-   "time": "2026-11-18T17:47:00+00:00",
-   "id": "af630a09",
-   "title": "Parametric vs nonparametric: The cost of power",
-   "source": "Parametric vs non parametric.pdf",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "Asymptotic Relative Efficiency",
-     "body": "Asymptotic Relative Efficiency defines how many more subjects are needed for a nonparametric test to have equivalent power as a parametric test for a fixed Type I error rate."
-    },
-    {
-     "heading": "The price of using nonparametric tests",
-     "body": "The ARE of the Wilcoxon Rank Sum Test versus the t-test when underlying assumptions are satisfied is zero point nine five five. There is minimal power loss when data are normal."
-    },
-    {
-     "heading": "Massive gains when normality fails",
-     "body": "Nonparametric alternatives outperform parametric ones by a wide margin when underlying distributions show heavy tails or extreme skewness. In some cases ARE became infinite."
-    }
-   ],
-   "takeaway": "Using nonparametric tests when data are normal results in minimal power loss, but brings massive power gains when normality fails.",
-   "category": "Statistics"
   },
   {
    "date": "2026-11-19",
@@ -492,25 +488,25 @@
   {
    "date": "2026-11-21",
    "time": "2026-11-21T15:47:00+00:00",
-   "id": "937875ee",
-   "title": "Exoskeleton vs conventional gait training in subacute stroke",
+   "id": "82feffa6",
+   "title": "Torque-assisted exoskeleton boosts lower limb strength in subacute stroke",
    "source": "Gait recovery exosk.pdf",
    "simulated": true,
    "points": [
     {
-     "heading": "Comparing overground robotics and standard care",
-     "body": "151 patients with subacute stroke and severe gait impairment were randomized to robot-assisted gait training plus conventional therapy or conventional therapy alone."
+     "heading": "Secondary outcomes measured",
+     "body": "The trial measured secondary outcomes including lower limb strength, balance, mood, and quality of life."
     },
     {
-     "heading": "Ambulatory function recovery after 4 weeks",
-     "body": "Both groups showed significant improvement in Functional Ambulation Category scores, with no significant difference between groups."
+     "heading": "Motricity Index gains",
+     "body": "The RAGT group showed significantly greater lower limb strength gains (mean change 15.9 vs 11.1 on the Motricity Index, P=0.034)."
     },
     {
-     "heading": "Independence rates at 3-month follow-up",
-     "body": "Both groups performed similarly, with no significant difference in independent walking rates."
+     "heading": "Clinical interpretation",
+     "body": "The exoskeleton's resistance component suggests resistance training combined with functional exercise may enhance motor gains."
     }
    ],
-   "takeaway": "Exoskeleton training yields similar ambulatory recovery as conventional therapy in subacute stroke.",
+   "takeaway": "Overground exoskeleton gait training provides greater lower limb strength gains in subacute stroke.",
    "category": "Clinical insight"
   }
  ],
@@ -1875,53 +1871,7 @@
    }
   }
  },
- "clinical_queue": [
-  {
-   "title": "Greater lower limb strength gains with robot-assisted training",
-   "title_highlight": "Greater lower limb strength",
-   "category": "Clinical insight",
-   "slides": [
-    {
-     "heading": "Targeting lower extremity motor function",
-     "body": "Participants underwent 20 sessions over 4 weeks of either torque-assisted exoskeleton training or conventional overground walking.",
-     "image_prompt": "a simple figure wearing a robotic leg brace receiving targeted resistance assistance from gear mechanisms",
-     "photo_query": "robotic exoskeleton leg therapy",
-     "highlight": "torque-assisted exoskeleton training",
-     "source": ""
-    },
-    {
-     "heading": "Significant strength improvements measured",
-     "body": "The robot group demonstrated a significantly greater improvement in lower limb strength score of Motricity Index (15.9 vs 11.1, P=0.034).",
-     "image_prompt": "a scale showing one side outweighing the other with numerical weight lifting symbols and upward arrows",
-     "photo_query": "leg strength dynamometer testing",
-     "highlight": "",
-     "source": ""
-    },
-    {
-     "heading": "High attrition rates and safety profile",
-     "body": "Dropout rates tended to be higher in the robot group without statistical significance, driven largely by fatigue and desire to stop.",
-     "image_prompt": "a simple figure walking away from a calendar schedule representing participant dropout and fatigue",
-     "photo_query": "exhausted patient resting armchair clinical trial",
-     "highlight": "dropout rates tended to be higher",
-     "source": ""
-    }
-   ],
-   "takeaway": "Exoskeleton training provides greater lower limb strength gains but demands careful fatigue management.",
-   "takeaway_highlight": "greater lower limb strength gains",
-   "references": [],
-   "caption": "Can a robotic exoskeleton boost lower limb strength in stroke patients even if walking scores tie?\n\nWhile overall ambulatory category scores matched standard care, the torque-assisted exoskeleton group achieved significantly greater improvements in lower limb muscle strength as measured by the Motricity Index. However, higher attrition due to fatigue highlights the physical demands of robotic training programs. What strategies do you use to manage fatigue during intensive rehabilitation sessions?",
-   "hashtags": [
-    "#StrokeRecovery",
-    "#PhysicalTherapy",
-    "#Robotics"
-   ],
-   "source_hint": "",
-   "clinical_focus": "treatment",
-   "id": "47e0ddd1",
-   "source": "Gait recovery exosk.pdf",
-   "rubric": "Clinical Insights"
-  }
- ],
+ "clinical_queue": [],
  "clinical_sources": [
   {
    "drive_id": "1Wy_HvipL4LrgrnGGJ-YWG_iP3zIhl_YZ",
