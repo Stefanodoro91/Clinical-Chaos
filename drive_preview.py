@@ -49,16 +49,19 @@ def linkedin_doc(drafts_dir, cfg=None, keep=20):
     ultime `keep` bozze di linkedin_drafts/, dalla più recente: testo pronto da incollare, niente pubblicazione."""
     cfg = cfg or _cfg()
     doc = cfg.get("linkedin_doc_id")
-    files = sorted(Path(drafts_dir).glob("*.txt"), reverse=True)[:keep]
+    kinds = cfg.get("linkedin_kinds")               # solo le rubriche che escono davvero (es. bandi e posizioni)
+    files = sorted((f for f in Path(drafts_dir).glob("*.txt")
+                    if not kinds or f.stem[11:].split("-", 1)[0] in kinds), reverse=True)[:keep]
     if not doc or not files or not os.environ.get("GDRIVE_SERVICE_ACCOUNT_JSON"):
         return False
-    parts = ["Bozze LinkedIn di Clinical Research Chaos: le ultime uscite, dalla più recente. Copia, incolla, pubblica a mano.",
-             "Le uscite segnate (prova) vengono dai giorni con i social in pausa."]
+    parts = ["Testi LinkedIn di Clinical Research Chaos: le ultime uscite, dalla più recente. Copia, incolla, allega il PDF "
+             "del carosello che sta nella stessa cartella («Ultimo bando» o «Ultime posizioni») e pubblica a mano."]
     for f in files:
         date, rest = f.stem[:10], f.stem[11:]          # nome: AAAA-MM-GG-<tipo>-<id>.txt
         kind = rest.split("-", 1)[0]
         label = {"grant": "Funding calls", "positions": "Academic positions", "research": "Design, Reporting & Appraisal / Latest Science"}.get(kind, kind)
-        parts.append("\n" + "═" * 40 + f"\n{date} · {label}" + (" (prova)" if cfg.get("social_paused") else "") + "\n" + "═" * 40)
+        live = kind in (cfg.get("social_live_kinds") or []) or not cfg.get("social_paused")
+        parts.append("\n" + "═" * 40 + f"\n{date} · {label}" + ("" if live else " (prova)") + "\n" + "═" * 40)
         parts.append(f.read_text(encoding="utf-8").strip())
     text = "\n\n".join(parts)
     try:
@@ -108,3 +111,19 @@ def carousel_pdf(slides, caption, out_path, extra_text=""):
             y += 20
     pages[0].save(out_path, "PDF", save_all=True, append_images=pages[1:], resolution=150)
     return out_path
+
+
+def linkedin_pdf(kind, slides, cfg=None):
+    """PDF del carosello appena uscito (solo le slide) nel file Drive di config «linkedin_pdf_files»[kind], nella
+    cartella LinkedIn: si allega al post LinkedIn come documento."""
+    cfg = cfg or _cfg()
+    fid = (cfg.get("linkedin_pdf_files") or {}).get(kind)
+    if not fid or not slides:
+        return False
+    from PIL import Image
+    pages = [Image.open(io.BytesIO(b)).convert("RGB") if isinstance(b, (bytes, bytearray)) else Image.open(b).convert("RGB")
+             for b in slides]
+    out = ROOT / "preview" / f"linkedin-{kind}.pdf"
+    out.parent.mkdir(exist_ok=True)
+    pages[0].save(out, save_all=True, append_images=pages[1:], resolution=144)
+    return upload(out, None, "application/pdf", cfg, file_id=fid)
