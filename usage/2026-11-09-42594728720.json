@@ -1,0 +1,165 @@
+{
+ "workflow": "Settimana di prova su Drive",
+ "quota_day": "2026-11-09",
+ "consumo": {
+  "verifica bandi|gemini-3.5-flash-lite": {
+   "richieste": 13,
+   "ingresso": 21618,
+   "uscita": 4186,
+   "ragionamento": 0,
+   "respinte": 3,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "conferma bandi|gemini-3.8-flash": {
+   "richieste": 2,
+   "ingresso": 24136,
+   "uscita": 944,
+   "ragionamento": 3375,
+   "respinte": 4,
+   "versione": "gemini-3.8-flash"
+  },
+  "conferma bandi|gemini-3.6-flash": {
+   "richieste": 2,
+   "ingresso": 25152,
+   "uscita": 931,
+   "ragionamento": 4362,
+   "respinte": 3,
+   "versione": "gemini-3.6-flash"
+  },
+  "conferma bandi|gemini-3-flash-preview": {
+   "richieste": 1,
+   "ingresso": 11772,
+   "uscita": 411,
+   "ragionamento": 62914,
+   "respinte": 0,
+   "versione": "gemini-3-flash-preview"
+  },
+  "conferma bandi|gemini-3.5-flash": {
+   "richieste": 1,
+   "ingresso": 12794,
+   "uscita": 462,
+   "ragionamento": 1100,
+   "respinte": 0,
+   "versione": "gemini-3.6-flash"
+  },
+  "conferma posizioni|gemini-3-flash-preview": {
+   "richieste": 1,
+   "ingresso": 2830,
+   "uscita": 236,
+   "ragionamento": 62910,
+   "respinte": 0,
+   "versione": "gemini-3-flash-preview"
+  },
+  "post bando|gemini-3.5-flash": {
+   "richieste": 3,
+   "ingresso": 26573,
+   "uscita": 1267,
+   "ragionamento": 8937,
+   "respinte": 5,
+   "versione": "gemini-3.6-flash"
+  },
+  "critica|openrouter-nemotron-3-ultra-550b-a55b:free": {
+   "richieste": 16,
+   "ingresso": 64303,
+   "uscita": 91682,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "arbitro|gemini-3.8-flash": {
+   "richieste": 3,
+   "ingresso": 18901,
+   "uscita": 690,
+   "ragionamento": 21431,
+   "respinte": 2,
+   "versione": "gemini-3.8-flash"
+  },
+  "arbitro|gemini-3.6-flash": {
+   "richieste": 1,
+   "ingresso": 8266,
+   "uscita": 149,
+   "ragionamento": 3490,
+   "respinte": 0,
+   "versione": "gemini-3.6-flash"
+  },
+  "post bando|gemini-3.8-flash": {
+   "richieste": 1,
+   "ingresso": 12306,
+   "uscita": 402,
+   "ragionamento": 2752,
+   "respinte": 2,
+   "versione": "gemini-3.8-flash"
+  },
+  "arbitro|gemini-3-flash-preview": {
+   "richieste": 2,
+   "ingresso": 16471,
+   "uscita": 230,
+   "ragionamento": 125824,
+   "respinte": 3,
+   "versione": "gemini-3-flash-preview"
+  },
+  "scelta immagini|gemini-3.5-flash-lite": {
+   "richieste": 8,
+   "ingresso": 34342,
+   "uscita": 1518,
+   "ragionamento": 0,
+   "respinte": 1,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "controllo doppioni|groq-gpt-oss-120b": {
+   "richieste": 4,
+   "ingresso": 5771,
+   "uscita": 1877,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "riscrittura anti-copia|gemini-3.5-flash-lite": {
+   "richieste": 2,
+   "ingresso": 374,
+   "uscita": 57,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "schemi slide|gemini-3.5-flash-lite": {
+   "richieste": 3,
+   "ingresso": 2426,
+   "uscita": 576,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "post bando|gemini-3.6-flash": {
+   "richieste": 2,
+   "ingresso": 24644,
+   "uscita": 811,
+   "ragionamento": 4182,
+   "respinte": 0,
+   "versione": "gemini-3.6-flash"
+  },
+  "arbitro|gemini-3.5-flash": {
+   "richieste": 1,
+   "ingresso": 8247,
+   "uscita": 162,
+   "ragionamento": 3904,
+   "respinte": 1,
+   "versione": "gemini-3.6-flash"
+  },
+  "post bando|gemini-3-flash-preview": {
+   "richieste": 1,
+   "ingresso": 12021,
+   "uscita": 402,
+   "ragionamento": 62910,
+   "respinte": 0,
+   "versione": "gemini-3-flash-preview"
+  },
+  "copione reel|gemini-3.5-flash-lite": {
+   "richieste": 1,
+   "ingresso": 296,
+   "uscita": 162,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  }
+ },
+ "esauriti": []
+}

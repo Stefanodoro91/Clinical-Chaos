@@ -1,7 +1,8 @@
 {
  "weeks_done": [
   0,
-  1
+  1,
+  2
  ],
  "posted": [
   {
@@ -355,6 +356,162 @@
    "kind": "reel",
    "reel_of": "grant-EU-HORIZON-HLTH-2027-02-IND-02-two-stage",
    "simulated": true
+  },
+  {
+   "date": "2026-11-23",
+   "time": "2026-11-23T11:23:00+00:00",
+   "id": "grant-GG-PAR-25-207",
+   "title": "Post-acute mental health trials: grants for definitive R01 studies",
+   "source": "GrantFinder",
+   "simulated": true,
+   "kind": "grant",
+   "grant_id": "GG-PAR-25-207",
+   "deadline": "2027-02-05"
+  },
+  {
+   "date": "2026-11-23",
+   "time": "2026-11-23T17:23:00+00:00",
+   "id": "positions-2026-11-09",
+   "title": "5 open academic positions this week",
+   "source": "Academic positions",
+   "simulated": true,
+   "kind": "positions",
+   "position_ids": [
+    "POS-23fa7540a65d",
+    "POS-c9832a0fbd0f",
+    "POS-ccac76eb6b77",
+    "POS-2d8f6007db15",
+    "POS-5e706a9a64ae"
+   ]
+  },
+  {
+   "date": "2026-11-24",
+   "time": "2026-11-24T11:23:00+00:00",
+   "id": "grant-EU-HORIZON-HLTH-2027-01-DISEASE-05",
+   "title": "Emerging viruses: support for novel or existing antiviral candidates",
+   "source": "GrantFinder",
+   "simulated": true,
+   "kind": "grant",
+   "grant_id": "EU-HORIZON-HLTH-2027-01-DISEASE-05",
+   "deadline": "2027-02-17"
+  },
+  {
+   "date": "2026-11-24",
+   "time": "2026-11-24T17:47:00+00:00",
+   "id": "144c4de0",
+   "title": "Why P-values do not belong in Table 1",
+   "source": "P-value.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The real purpose of Table 1",
+     "body": "Table 1 exists to describe patients rather than show formal hypothesis testing."
+    },
+    {
+     "heading": "The Table 1 fallacy in randomized trials",
+     "body": "In randomized trials, a P-value tests whether treatment allocation occurred at random. Randomization guarantees this by definition, making significance testing of baseline balance completely illogical."
+    },
+    {
+     "heading": "Sample size distorts the results",
+     "body": "P-values are sensitive to sample size. In huge cohorts, trivial differences produce significant P-values, while in small samples, true clinically meaningful imbalances remain hidden behind high P-values."
+    },
+    {
+     "heading": "Guidelines explicitly oppose them",
+     "body": "Major guidelines like CONSORT for randomized trials and STROBE for observational studies advise against reporting P-values in baseline tables, urging researchers to avoid confusing description with inference."
+    }
+   ],
+   "takeaway": "Table 1 exists to describe patients, not test hypotheses; drop the P-values and evaluate clinical relevance.",
+   "category": "Reporting & publication"
+  },
+  {
+   "date": "2026-11-25",
+   "time": "2026-11-25T11:23:00+00:00",
+   "id": "reel-positions-2026-11-09",
+   "title": "5 open academic positions this week",
+   "kind": "reel",
+   "reel_of": "positions-2026-11-09",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-25",
+   "time": "2026-11-25T17:47:00+00:00",
+   "id": "3a6990f9",
+   "title": "When the doctor becomes an investigator",
+   "source": "Ethics.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "Dual roles in clinical research",
+     "body": "Balancing dual responsibilities can be difficult, and investigator enthusiasm sometimes risks ethical boundaries."
+    },
+    {
+     "heading": "Benefit and risk balance",
+     "body": "Benefit and risk are two faces of the same coin. The risk is assumed by participants while the benefit is reaped by a population."
+    },
+    {
+     "heading": "The Nuremberg Code (1947)",
+     "body": "Formulated after WWII trials, the Nuremberg Code highlighted the need for informed consent, qualified scientists, and risk justification."
+    },
+    {
+     "heading": "Declaration of Helsinki",
+     "body": "Developed by WMA in 1964, it binds the physician to ensure that the health of the patient will be the first consideration."
+    }
+   ],
+   "takeaway": "The doctor-researcher must balance scientific zeal with patient welfare and ethical guidelines.",
+   "category": "Research ethics"
+  },
+  {
+   "date": "2026-11-26",
+   "time": "2026-11-26T17:47:00+00:00",
+   "id": "checklist-strobe-bias",
+   "title": "Observational study? Name your biases in print",
+   "source": "Rubrica Checklist",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "What the item asks",
+     "body": "Describe any efforts to address potential sources of bias: selection, information and confounding."
+    },
+    {
+     "heading": "Why it matters",
+     "body": "Every observational design has bias. Readers judge your results by how openly you handled it, not by silence."
+    },
+    {
+     "heading": "How to comply",
+     "body": "List your 3 most likely biases, then state the design or analysis step taken for each: restriction, matching, adjustment, sensitivity analysis."
+    }
+   ],
+   "takeaway": "State each likely source of bias and what you did about it: silence reads as blindness.",
+   "category": "Bias & confounding"
+  },
+  {
+   "date": "2026-11-27",
+   "time": "2026-11-27T11:23:00+00:00",
+   "id": "grant-GG-PAR-25-287",
+   "title": "Mental health neuromodulation tech? Grants for engineering teams",
+   "source": "GrantFinder",
+   "simulated": true,
+   "kind": "grant",
+   "grant_id": "GG-PAR-25-287",
+   "deadline": "2027-02-05"
+  },
+  {
+   "date": "2026-11-27",
+   "time": "2026-11-27T14:23:00+00:00",
+   "id": "reel-checklist-strobe-bias",
+   "title": "Observational study? Name your biases in print",
+   "kind": "reel",
+   "reel_of": "checklist-strobe-bias",
+   "simulated": true
+  },
+  {
+   "date": "2026-11-29",
+   "time": "2026-11-29T16:47:00+00:00",
+   "id": "reel-grant-GG-PAR-25-287",
+   "title": "Mental health neuromodulation tech? Grants for engineering teams",
+   "kind": "reel",
+   "reel_of": "grant-GG-PAR-25-287",
+   "simulated": true
   }
  ],
  "stories": [
@@ -409,6 +566,12 @@
    "simulated": true,
    "grant_id": "GG-HHS-2027-ACL-NIDILRR-ARHF-0302",
    "family": "Administration for Community Living"
+  },
+  {
+   "date": "2026-11-23",
+   "time": "2026-11-23T08:31:00+00:00",
+   "kind": "weekly",
+   "simulated": true
   }
  ],
  "grants": {
@@ -525,14 +688,14 @@
   },
   "GG-PAR-25-145": {
    "status": "ok",
-   "checked": "2026-11-07",
+   "checked": "2026-11-08",
    "official_source": "NIH Guide PAR-25-145",
    "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-145.html",
    "is_open_call": "yes",
    "title": "Clinical Characterization of Cancer Therapy-induced Adverse Sequelae and Mechanism-based Interventional Strategies",
    "programme": "National Cancer Institute (NCI)",
    "programme_family": "NIH – US National Institutes of Health",
-   "summary": "This funding opportunity supports basic, translational, and clinical research to address chronic or delayed adverse effects of cancer therapies. The goal is to identify biological mechanisms, characterize clinical phenotypes, and develop interventional strategies to prevent or minimize long-term sequelae. Projects may include mechanistic studies, longitudinal phenotyping, and validation of clinical endpoints like biomarkers or patient-reported outcomes. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and foreign entities.",
+   "summary": "This call supports basic, translational, and clinical research to address chronic or delayed adverse effects of cancer therapies. It aims to identify mechanisms, characterize clinical phenotypes, and develop interventional strategies to prevent or minimize long-term sequelae. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and foreign entities. Research should focus on persistent toxicities like neuropathy or cardiovascular issues, utilizing biomarkers, imaging, or patient-reported outcomes to validate clinical endpoints for future trials.",
    "coming_soon": false,
    "eligible_countries": "Any country (non-US organisations eligible)",
    "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
@@ -568,12 +731,12 @@
    "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
    "deadline_type": "several",
    "deadline_source": "nih_key_dates",
-   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+   "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research.",
    "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
    "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
    "confirmed": {
     "model": "gemini-3-flash-preview",
-    "date": "2026-11-07",
+    "date": "2026-11-08",
     "changed": [],
     "screening_model": ""
    }
@@ -798,6 +961,226 @@
     "screening_model": ""
    }
   },
+  "GG-PAR-25-358": {
+   "status": "ok",
+   "checked": "2026-11-09",
+   "official_source": "NIH Guide PAR-25-358",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-358.html",
+   "is_open_call": "yes",
+   "title": "NEI Clinical Research Study Planning Grant Program (R34 Clinical Trial Not Allowed)",
+   "programme": "NEI Clinical Research Study Planning Grant Program",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "The NEI Clinical Research Study Planning Grant Program (R34) supports the planning of large-scale clinical vision research, such as randomized trials and epidemiologic studies. It funds the development of study protocols, Manuals of Procedures, and preliminary feasibility studies, but not the clinical trial itself or data generation on intervention effects. Eligible applicants include domestic and foreign higher education institutions, nonprofits, for-profit organizations, and government agencies. Applications must address leading causes of blindness and impaired vision.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3-flash-preview",
+   "due_dates": [
+    "2025-03-31",
+    "2025-06-16",
+    "2025-10-16",
+    "2026-02-16",
+    "2026-06-16",
+    "2026-10-16",
+    "2027-02-16",
+    "2027-06-16",
+    "2027-10-16"
+   ],
+   "resubmission_dates": [
+    "2025-03-31",
+    "2025-06-16",
+    "2025-10-16",
+    "2026-02-16",
+    "2026-06-16",
+    "2026-10-16",
+    "2027-02-16",
+    "2027-06-16",
+    "2027-10-16"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3-flash-preview",
+    "date": "2026-11-09",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "GG-PA-25-306": {
+   "status": "ok",
+   "checked": "2026-11-09",
+   "official_source": "NIH Guide PA-25-306",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PA-25-306.html",
+   "is_open_call": "yes",
+   "title": "NIH Exploratory/Developmental Research Project Grant (Parent R21 Clinical Trial Required)",
+   "programme": "NIH Exploratory/Developmental Research Grant Program",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity supports early and conceptual stages of exploratory and developmental biomedical, behavioral, or clinical research projects. Proposed projects must involve at least one clinical trial and align with participating NIH Institutes and Centers priorities. Eligible applicants include higher education institutions, non-profits, for-profit organizations, government entities, and foreign organizations. Total direct costs for the two-year project period cannot exceed $275,000.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.6-flash",
+   "due_dates": [
+    "2025-06-16",
+    "2025-09-04",
+    "2025-10-16",
+    "2026-02-16",
+    "2026-06-16",
+    "2026-10-16",
+    "2027-02-16",
+    "2027-06-16",
+    "2027-10-16"
+   ],
+   "resubmission_dates": [
+    "2025-06-16",
+    "2025-09-04",
+    "2025-10-16",
+    "2026-02-16",
+    "2026-06-16",
+    "2026-10-16",
+    "2027-02-16",
+    "2027-06-16",
+    "2027-10-16"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research is invited to apply with their organization.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-09",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "GG-PAR-25-346": {
+   "status": "ok",
+   "checked": "2026-11-09",
+   "official_source": "NIH Guide PAR-25-346",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-346.html",
+   "is_open_call": "yes",
+   "title": "Exploratory/Developmental Bioengineering Research Grants (EBRG) (R21 Clinical Trial Not Allowed)",
+   "programme": "Exploratory/Developmental Bioengineering Research Grants (EBRG)",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity supports exploratory and developmental bioengineering research projects demonstrating the feasibility and potential utility of new capabilities or improvements in biomedical, pre-clinical, or clinical research, and clinical care delivery. Clinical trials are not allowed. Projects may request up to $275,000 in direct costs over a maximum two-year period. Applications are open to domestic and non-domestic higher education institutions, nonprofits, for-profit businesses, and government entities.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.8-flash",
+   "due_dates": [
+    "2025-02-16",
+    "2025-06-16",
+    "2025-10-16",
+    "2026-02-16",
+    "2026-06-16",
+    "2026-10-16",
+    "2027-02-16",
+    "2027-06-16",
+    "2027-10-16"
+   ],
+   "resubmission_dates": [
+    "2025-03-16",
+    "2025-07-16",
+    "2025-11-16",
+    "2026-03-16",
+    "2026-07-16",
+    "2026-11-16",
+    "2027-03-16",
+    "2027-07-16",
+    "2027-11-16"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as Program Director/Principal Investigator.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.8-flash",
+    "date": "2026-11-09",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
+  "GG-PAR-25-233": {
+   "status": "ok",
+   "checked": "2026-11-09",
+   "official_source": "NIH Guide PAR-25-233",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-233.html",
+   "is_open_call": "yes",
+   "title": "Dissemination and Implementation Research in Health (R03 Clinical Trial Not Allowed)",
+   "programme": "NIH R03 Small Grant Program",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This NIH funding opportunity (R03) supports small-scale research projects to identify, develop, or test strategies that overcome barriers to adopting, integrating, scaling, and sustaining evidence-based health interventions, practices, programs, tools, and policies. It also supports de-implementation studies of ineffective or harmful practices and the development of D&I research methods. Clinical trials are not allowed. Higher education institutions, non-profits, for-profit entities, government agencies, and foreign organizations are eligible to apply.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.6-flash",
+   "due_dates": [
+    "2024-04-04",
+    "2025-06-16",
+    "2025-10-16",
+    "2026-02-16",
+    "2026-06-16",
+    "2026-10-16",
+    "2027-02-16",
+    "2027-06-16",
+    "2027-10-16"
+   ],
+   "resubmission_dates": [
+    "2024-04-04",
+    "2025-06-16",
+    "2025-10-16",
+    "2026-02-16",
+    "2026-06-16",
+    "2026-10-16",
+    "2027-02-16",
+    "2027-06-16",
+    "2027-10-16"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research may apply.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-09",
+    "changed": [],
+    "screening_model": ""
+   }
+  },
   "EU-HORIZON-MSCA-2027-COFUND-02-01": {
    "status": "ok",
    "checked": "2026-11-08",
@@ -913,14 +1296,14 @@
   },
   "GG-PAR-25-265": {
    "status": "ok",
-   "checked": "2026-11-07",
+   "checked": "2026-11-08",
    "official_source": "NIH Guide PAR-25-265",
    "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-265.html",
    "is_open_call": "yes",
    "title": "Innovative Screening Approaches and Therapies for Screenable Disorders in Newborns (R01 - Clinical Trial Optional)",
    "programme": "Hunter Kelly Newborn Screening Research Program",
    "programme_family": "NIH – US National Institutes of Health",
-   "summary": "This funding opportunity supports research to develop novel screening approaches and therapeutic interventions for conditions currently in newborn screening panels or fatal/disabling genetic conditions that could benefit from early detection. Supported activities include assay development, preclinical testing, and clinical trials. Higher education institutions, non-profits, for-profit businesses, and non-domestic (foreign) organizations are eligible to apply as lead entities.",
+   "summary": "This funding opportunity supports research on novel screening approaches and therapeutic interventions for conditions included in newborn screening panels, or potentially fatal or disabling conditions that could benefit from early detection. It funds R01 research project grants, with optional clinical trials, for up to five years. Higher education institutions, non-profits, for-profit entities, and foreign organizations are eligible to apply as lead applicants.",
    "coming_soon": false,
    "eligible_countries": "Any country (non-US organisations eligible)",
    "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
@@ -956,12 +1339,12 @@
    "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
    "deadline_type": "several",
    "deadline_source": "nih_key_dates",
-   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as Program Director/Principal Investigator may apply.",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research may be the PD/PI.",
    "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
    "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
    "confirmed": {
     "model": "gemini-3.8-flash",
-    "date": "2026-11-07",
+    "date": "2026-11-08",
     "changed": [],
     "screening_model": "gemini-3.5-flash-lite"
    }
@@ -1072,6 +1455,116 @@
    "confirmed": {
     "model": "gemini-3.6-flash",
     "date": "2026-11-07",
+    "changed": [],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  },
+  "GG-PAR-25-291": {
+   "status": "ok",
+   "checked": "2026-11-09",
+   "official_source": "NIH Guide PAR-25-291",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-291.html",
+   "is_open_call": "yes",
+   "title": "Utilizing Invasive Recording and Stimulating Opportunities in Humans to Advance Neural Circuitry Understanding",
+   "programme": "NIH – National Institute of Mental Health (NIMH)",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This funding opportunity from the National Institutes of Health encourages applications to pursue invasive neural recording and stimulating studies in humans to advance the understanding of neural circuitry underlying mental health disorders. The call uses the R21 exploratory/developmental research grant mechanism. Eligible applicants include higher education institutions, non-profits, for-profit organizations, government entities, and foreign (non-U.S.) organizations.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.6-flash",
+   "due_dates": [
+    "2025-02-16",
+    "2025-06-16",
+    "2025-10-16",
+    "2026-02-16",
+    "2026-06-16",
+    "2026-10-16",
+    "2027-02-16",
+    "2027-06-16",
+    "2027-10-16"
+   ],
+   "resubmission_dates": [
+    "2025-03-16",
+    "2025-07-16",
+    "2025-11-16",
+    "2026-03-16",
+    "2026-07-16",
+    "2026-11-16",
+    "2027-03-16",
+    "2027-07-16",
+    "2027-11-16"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research may be a Program Director/Principal Investigator.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.6-flash",
+    "date": "2026-11-09",
+    "changed": [],
+    "screening_model": "gemini-3.5-flash-lite"
+   }
+  },
+  "GG-PAR-25-286": {
+   "status": "ok",
+   "checked": "2026-11-09",
+   "official_source": "NIH Guide PAR-25-286",
+   "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-286.html",
+   "is_open_call": "yes",
+   "title": "Neuromodulation/Neurostimulation Device Development for Mental Health Applications (R21 Clinical Trial Not Allowed)",
+   "programme": "NIH – US National Institutes of Health",
+   "programme_family": "NIH – US National Institutes of Health",
+   "summary": "This notice of funding opportunity supports the development of novel brain stimulation devices or significant hardware/software enhancements of existing FDA-approved/cleared devices for treating mental health disorders. Grants fund design-directed, exploratory technology research (R21) emphasizing engineering development and benchtop testing, including limited animal or non-clinical human testing. Multidisciplinary teams from domestic or foreign higher education institutions, nonprofits, and for-profit entities are eligible to apply.",
+   "coming_soon": false,
+   "eligible_countries": "Any country (non-US organisations eligible)",
+   "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "italy": "yes",
+   "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+   "version": 3,
+   "model": "gemini-3.8-flash",
+   "due_dates": [
+    "2025-02-16",
+    "2025-06-16",
+    "2025-10-16",
+    "2026-02-16",
+    "2026-06-16",
+    "2026-10-16",
+    "2027-02-16",
+    "2027-06-16",
+    "2027-10-16"
+   ],
+   "resubmission_dates": [
+    "2025-03-16",
+    "2025-07-16",
+    "2025-11-16",
+    "2026-03-16",
+    "2026-07-16",
+    "2026-11-16",
+    "2027-03-16",
+    "2027-07-16",
+    "2027-11-16"
+   ],
+   "expires": "2028-01-08",
+   "loi_deadline": "",
+   "loi_required": "no",
+   "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
+   "deadline_type": "several",
+   "deadline_source": "nih_key_dates",
+   "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director/Principal Investigator may apply.",
+   "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+   "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+   "confirmed": {
+    "model": "gemini-3.8-flash",
+    "date": "2026-11-09",
     "changed": [],
     "screening_model": "gemini-3.5-flash-lite"
    }
@@ -1238,6 +1731,37 @@
     "date": "2026-11-07",
     "changed": []
    }
+  },
+  "POS-23fa7540a65d": {
+   "status": "ok",
+   "checked": "2026-11-09",
+   "first_seen": "2026-11-08",
+   "url": "https://www.jobs.ac.uk/job/DTN912/postdoctoral-research-fellow-technology-enabled-rehabilitation",
+   "source": "jobs.ac.uk – rehabilitation",
+   "is_open": "yes",
+   "type": "postdoc",
+   "relevance": "high",
+   "area": "rehabilitation",
+   "title": "Postdoctoral Research Fellow (Technology Enabled Rehabilitation)",
+   "institution": "University of Exeter",
+   "country": "United Kingdom",
+   "city": "Exeter",
+   "deadline": "2026-11-19",
+   "deadline_evidence": "Closes: 19th November 2026",
+   "summary": "The fellow will develop home-based rehabilitation for stroke and neurological disorders using motion capture, VR, and clinical assessments. Tasks include data collection, movement analysis, and supervising students. Requirements include a PhD in a related field, state registration as a Health Professional, and expertise in clinical research methodologies within technology-enabled rehabilitation.",
+   "topic": "Technology-enabled home-based rehabilitation for neurological disorders",
+   "duration": "3 years",
+   "salary": {
+    "min": 44352,
+    "max": 46970,
+    "currency": "GBP",
+    "unit": "YEAR"
+   },
+   "confirmed": {
+    "model": "gemini-3-flash-preview",
+    "date": "2026-11-09",
+    "changed": []
+   }
   }
  },
  "clinical_queue": [],
@@ -1276,6 +1800,27 @@
    "posts": 2,
    "clinical_used": true,
    "date": "2026-11-08"
+  },
+  {
+   "drive_id": "1kFKyn29MJAzKimk3IuC5oZqf5LsgUSa1",
+   "name": "Neuroplasticity.pdf",
+   "posts": 0,
+   "clinical_skipped": "licenza: CC con vincolo NC/ND",
+   "date": "2026-11-09"
+  },
+  {
+   "drive_id": "1pCCkOqiNNDf6nqqPjbM9MpqCiM4JUcoB",
+   "name": "AHA2026.pdf",
+   "posts": 0,
+   "clinical_skipped": "licenza: non dichiarata nel testo",
+   "date": "2026-11-09"
+  },
+  {
+   "drive_id": "1cC7DowgKsGckHK1ixPtb93VCNcrec0Hi",
+   "name": "Telemedicine.pdf",
+   "posts": 0,
+   "clinical_skipped": "licenza: non dichiarata nel testo",
+   "date": "2026-11-09"
   }
  ]
 }
