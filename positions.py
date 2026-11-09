@@ -1127,9 +1127,8 @@ def weekly_post(archive, posted, cfg, today=None):
     return {
         "id": f"positions-{today.isoformat()}", "kind": "positions",
         "position_ids": [k for k, v, d in picked],
-        "title": (f"{len(jobs)} open academic positions this week" if len(jobs) > 1
-                  else "Open academic position this week"),
-        "title_highlight": "academic positions" if len(jobs) > 1 else "academic position",
+        "title": "Academic positions for clinical researchers",       # copertina: chiaro a chi è rivolto (9/11)
+        "title_highlight": "clinical researchers",
         "category": "Academic positions", "week": week, "jobs": jobs, "slides": [],
         "closing_cta": ("Read the full advertisement before applying", "All positions: link in bio"),
         "caption": caption, "hashtags": ["#AcademicJobs", "#PhDPosition", "#Postdoc", "#FacultyJobs",

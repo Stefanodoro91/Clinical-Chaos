@@ -32,6 +32,7 @@ BRAND_V4 = _brand_v4_flag()   # logo definitivo (indipendente dalla linea) ed et
 # colori delle linee nel brand v4 e nome della rubrica in copertina (quadrante del simbolo: 0 alto-sx, 1 alto-dx,
 # 2 basso-sx, 3 basso-dx)
 V4_ACCENT = {"methods": "#88B0F8", "science": "#FFFFFF", "grant": "#F8B048", "positions": "#8858F0"}   # colori del logo v3 per rubrica (Latest Science bianco)
+GRANT_KICKER = "FUNDING FOR CLINICAL RESEARCH"     # etichetta della copertina dei bandi (9/11)
 V4_RUBRIC = {"methods": ("DESIGN, REPORTING & APPRAISAL", 0), "science": ("LATEST SCIENCE", 3),
              "grant": ("FUNDING CALLS", 1), "positions": ("ACADEMIC POSITIONS", 2)}
 
@@ -769,6 +770,8 @@ def main_pill(d, post, default, x, y, fill, text):
     """Etichetta principale della copertina: nel brand v4 il nome della rubrica (linea del post), altrimenti `default`."""
     if BRAND_V4:
         line = post_line(post)
+        if line == "grant":                       # bandi: dire subito che sono finanziamenti per la ricerca clinica
+            return poster_pill(d, GRANT_KICKER, x, y, fill, text)
         if line in V4_RUBRIC:
             return poster_pill(d, V4_RUBRIC[line][0], x, y, fill, text)
     return poster_pill(d, default, x, y, fill, text)
@@ -896,14 +899,14 @@ def poster_grant_cover(post, cfg, total, picture=None):
     if picture is not None:
         band = 470
         img.paste(ImageOps.fit(picture.convert("RGB"), (W, band), Image.LANCZOS), (0, 14))
-        pw = main_pill(d, post, "OPEN CALL", MARGIN, band - 30, *pill_colors(c, dark))
+        pw = main_pill(d, post, GRANT_KICKER, MARGIN, band - 30, *pill_colors(c, dark))
         extra_pills(d, post, MARGIN + pw + 16, band - 30, c["background"] if dark else "#FFFFFF", ink)
         y = band + 60
         keep.append((0, 0, W, band + 40))
     else:
         lh = poster_logo(img, d, cfg, dark)
         y = 80 + lh + 50
-        pw = main_pill(d, post, "OPEN CALL", MARGIN, y, *pill_colors(c, dark))
+        pw = main_pill(d, post, GRANT_KICKER, MARGIN, y, *pill_colors(c, dark))
         extra_pills(d, post, MARGIN + pw + 16, y, c["background"] if dark else "#FFFFFF", ink)
         keep.append((MARGIN - 20, y - 10, W - MARGIN + 20, y + 70))
         y += 100
@@ -941,9 +944,10 @@ def poster_positions_cover(post, cfg, total):
     img, d, dark, ink, acc = poster_base(post, cfg, total)
     lh = poster_logo(img, d, cfg, dark)
     y = 80 + lh + 50
-    pw = main_pill(d, post, "ACADEMIC POSITIONS", MARGIN, y, *pill_colors(c, dark))
+    pw = poster_pill(d, f"WEEK OF {post.get('week', '')}".upper(), MARGIN, y, *pill_colors(c, dark))
     extra_pills(d, post, MARGIN + pw + 16, y, c["background"] if dark else "#FFFFFF", ink)
-    d.text((MARGIN, y + 86), f"Week of {post.get('week', '')}", font=font("SemiBold", 36),
+    n = len(post.get("jobs", []))
+    d.text((MARGIN, y + 86), f"{n} open position{'s' if n != 1 else ''} this week", font=font("SemiBold", 36),
            fill=c["muted_text"] if dark else INK_MUTED)
     t_top = y + 160
     end = poster_title(d, post["title"], post.get("title_highlight"), MARGIN, t_top, W - 2 * MARGIN, 470, ink, acc)
@@ -1250,6 +1254,13 @@ def closing(post, cfg, total):
             (_instagram_glyph(d, x, sy, "#FFFFFF") if n == "instagram" else _facebook_glyph(d, x, sy, "#FFFFFF", navy))
         x += 66
     d.text((x + 6, sy + 4), cfg["handle"], font=font("SemiBold", 32), fill="#FFFFFF")
+    if post.get("kind") in ("grant", "positions"):      # bandi e posizioni: il sito con tutte le schede (9/11)
+        site = (cfg.get("links_page_url") or "https://clinicalresearchchaos.com").split("://")[-1].strip("/")
+        what = "ALL OPEN CALLS" if post["kind"] == "grant" else "ALL OPEN POSITIONS"
+        y0 = card_top + 500 + 56
+        d.text((MARGIN, y0), what, font=font("Bold", 30), fill=hlc(False, DARK_ACCENT.get(c["accent"], navy)))
+        sf, sl, ss = fit(d, site, H_("ExtraBold"), 64, 40, W - 2 * MARGIN, 90, 1.1)
+        draw_lines(d, sl, sf, ss, MARGIN, y0 + 48, navy, 1.1)
     return img
 
 
