@@ -1020,10 +1020,8 @@ def groq_json(prompt_text, schema, temperature=0.0, task="altro"):
     return gemini_json([{"text": prompt_text}], schema, temperature, task)
 
 
-CLINICAL_POST_PROMPT = """You write the "Latest Science" carousel of "{brand}": ONE clinical lesson a week from ONE
-real paper, for clinicians and researchers who treat patients (rehabilitation, neurology, orthopaedics and related
-fields). The reader must learn something about PATIENTS: what a treatment or intervention does to them, or what
-their health status, recovery, prognosis or risks look like.
+CLINICAL_POST_PROMPT = """Sei un ricercatore clinico senior. Scrivi un post in 4 pagine per ricercatori clinici
+su questo paper. Il tono è quello di un collega esperto che segnala e divulga una lettura interessante in lay abstract mode.
 
 FIRST decide the clinical focus of the paper (field clinical_focus):
 - "treatment": the paper reports what an intervention, therapy, device or rehabilitation programme does to patients
@@ -1034,36 +1032,62 @@ FIRST decide the clinical focus of the paper (field clinical_focus):
   study design, reporting, engineering of a device without patient results, or anything without a patient-level
   clinical message. In that case return an EMPTY posts list.
 
-THE POSTS (0 to {max_posts} posts, one per week):
-- Write 2 to {max_posts} posts when the paper supports them (only 1 if it truly has a single clinical message;
-  never pad with weak or repeated lessons): each post carries a DIFFERENT clinical
-  message of the paper (e.g. a different treatment, outcome, patient group, time course or risk), so that a reader
-  who sees all of them never reads the same lesson twice. Each post must stand on its own.
-- The whole carousel is about the clinical message: the patients, the treatment, the outcome that matters to the
-  patient. NEVER build slides on how a scale or questionnaire works, on study design, sample size, statistics,
-  bias or reporting. Name a scale only to say what improved in the patients (e.g. "walking speed improved by…").
-- Slides follow the clinical story: which patients and what problem → what was done (treatment) or observed →
-  what changed for the patients, with the numbers of the paper (effect, time, proportion) → what it means in the
-  clinic, with the limits the paper states.
-- Use ONLY facts in the paper; never invent numbers. Keep the paper's population and qualifiers ("in chronic
-  stroke", "after 8 weeks", "may"). Describe findings, do not give personal treatment advice.
-- ONE clinical message per post, and every slide serves it: plan the story first, then write the title LAST as the
-  finding the slides support. The title must not contradict any slide (e.g. "X fails without training" while a
-  slide reports a trial where X was given WITH training) and must not judge a treatment more harshly or more
-  favourably than the paper does ("fails", "works", "useless" only in the paper's own terms).
-- A trial or study named on a slide is reported as the paper reports it: what was compared, in whom, the result
-  with its comparison and unit, and the paper's own interpretation. Use it only for the point the paper makes with
-  it; never as an example of something the paper does not say about it.
-- Every number says what it counts ("47 of 117 sessions", not "only 47"), with its comparison or threshold.
-- takeaway: the clinical take-home message for a clinician (what to expect, offer, watch for or explain to the
-  patient), max 130 characters, supported by the slides; never a methodological lesson.
-- source (per slide): "Surname et al., Year" of THIS paper when the slide reports its findings.
-- references: THIS paper in APA 7 (authors, year, title, journal, DOI exactly as printed in the paper).
-- category: "{category}".
+REGOLE GENERALI
+- Nessun dato numerico specifico (percentuali, p-value, HR, NNT)
+- Nessun riferimento a gruppi, bracci, centri o nomi propri dal paper
+- Non rivelare i risultati: il post deve spingere a leggere il paper, non sostituirlo
+- Frasi brevi, linguaggio preciso, nessuna formula divulgativa ("i ricercatori hanno
+  scoperto che...", "uno studio rivoluzionario...")
+- Non abusare di termini tecnici: usali solo dove necessari, senza accumularli
+
+THE POSTS (1 to {max_posts} posts):
+- Write 1 post per distinct clinical message the paper genuinely supports; never pad.
+- Each post must stand on its own and never repeat a topic in: {published}
+
+STRUTTURA DEL POST — 4 SLIDE:
+
+SLIDE 1 — HOOK (campo: slides[0])
+Una frase o due che agganciano sul tema centrale del paper. Può usare un elemento
+concreto del paper per creare tensione o curiosità. Non svela l'esito.
+heading: max 55 caratteri, il tema centrale
+body: max 140 caratteri, l'hook
+
+SLIDE 2 — GAP (campo: slides[1])
+1-2 frasi brevi che contestualizzano perché questo paper esiste: qual è la domanda
+aperta nella letteratura che ha motivato lo studio. Non descrivere il disegno,
+non anticipare i risultati.
+heading: max 55 caratteri
+body: max 140 caratteri
+
+SLIDE 3 — TAKE HOME MESSAGE (campo: slides[2])
+Una sola frase, tratta dalle conclusioni del paper (non dai risultati),
+che rappresenta ciò che si impara leggendolo. Deve essere utile per chi
+lavora in clinica o in ricerca clinica.
+heading: max 55 caratteri
+body: max 140 caratteri
+
+SLIDE 4 — FONTE (campo: slides[3])
+Titolo completo del paper e riferimento bibliografico in stile Harvard
+(solo il paper sorgente, nient'altro).
+heading: "Source"
+body: Harvard reference of this paper (Author(s), Year. Title. Journal, volume(issue), pages.)
+
+OTHER FIELDS (required by the schema):
+- title: a sharp hook, max 70 characters, sentence case
+- title_highlight: 1-4 words copied EXACTLY from the title
+- takeaway: same content as slide 3 body, max 130 characters
+- takeaway_highlight: 2-5 words copied EXACTLY from the takeaway
+- highlight (per slide): 2-6 words copied EXACTLY from that slide's body
+- image_prompt (per slide): 15-35 words, one simple illustration a researcher connects to the slide idea
+- photo_query (per slide): 2-4 English keywords for a stock photo; "" if too abstract
+- source (per slide): "Surname et al., Year" for slides 1-3; "" for slide 4
+- references: THIS paper in APA 7 (authors, year, title, journal, DOI as printed in the paper)
+- category: "{category}"
+- hook: first line of the caption, max 120 characters, same as slide 1 body
+- caption: 3-4 short lines after the hook; end with a question for professionals; max 900 characters; no hashtags
+- hashtags: 3 specific hashtags for the topic
 
 {design}
-
-Already published posts (do not repeat these topics): {published}
 
 File name of the paper: {filename}"""
 
