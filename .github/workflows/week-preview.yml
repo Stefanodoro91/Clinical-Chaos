@@ -11,6 +11,9 @@ on:
       only:
         description: "Solo alcune uscite (numeri separati da virgola, vuoto = tutte)"
         default: ""
+      screening:
+        description: "Screening dei bandi prima delle anteprime (0 = salta, per risparmiare la quota di Gemini)"
+        default: "1"
 
 permissions:
   contents: write
@@ -52,6 +55,7 @@ jobs:
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ONLY: ${{ inputs.only }}
+          SCREENING: ${{ inputs.screening || '1' }}
         run: python tools/week_preview.py
       - name: Riepilogo
         if: always()
