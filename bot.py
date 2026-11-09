@@ -727,6 +727,19 @@ def reel_run(posted):
     research, grant, positions, special (carosello speciale) oppure announcement (reel di reel_announcement.json)."""
     import reels
     source = (os.environ.get("REEL_SOURCE") or "latest").strip().lower()
+    target_id = (os.environ.get("REEL_OF") or "").strip()
+    if source == "crosspost" and target_id:      # reel già uscito su Instagram: solo le piattaforme che mancano
+        rid = f"reel-{target_id}"[:60]
+        entry = next((p for p in posted if p.get("id") == rid and p.get("kind") == "reel"), None)
+        video = ROOT / "kickoff_reels" / f"{target_id}.mp4"
+        if not entry or not video.exists():
+            print("::notice title=Reel::reel non ancora uscito o video mancante: niente da ripubblicare")
+            return
+        link = CONFIG.get("links_page_url") or grants.site_url(CONFIG, "")
+        crosspost_reel(video, f"{entry['title']}\n\nMore on our profile and at the link in bio.", entry["title"], link, entry, rid)
+        save(POSTED_FILE, posted)
+        commit_and_push([POSTED_FILE.name], "Reel anche sulle piattaforme mancanti")
+        return
     if source in ("announcement", "crosspost"):
         return reel_announcement_run(posted)
     force = {"special": "announcement"}.get(source, source) if source != "latest" else None
