@@ -1259,14 +1259,103 @@ def when_html(v, d, today):
     """Riga della scadenza di un bando (scheda e pagina propria)."""
     from html import escape
     if d:
-        soon = '<span class="soon">CLOSING SOON</span>' if (d - today).days <= 21 else ""
-        label, note = deadline_text(v, d) if checked(v) else ("Deadline", "")
-        return f"{label} <b>{_fmt_date(d)}</b>{soon}" + (f'<span class="dlnote">{escape(note)}</span>' if note else "")
+        label = deadline_text(v, d)[0] if checked(v) else "Deadline"
+        return f"{label} <b>{_fmt_date(d)}</b>"
     if v.get("deadline_type") == "rolling":
         return "Deadline <b>rolling, no fixed date</b>"
     if v.get("forecast") and _date(v.get("est_deadline")):
         return f"Expected deadline <b>~{_fmt_date(_date(v['est_deadline']))}</b><span class=\"dlnote\">estimate, call not yet published</span>"
     return "Deadline <b>see official call</b>"
+
+
+KF_CSS = """
+  /* schede a «key facts» (bandi e posizioni): come la slide dei post, etichetta a colore e valore bianco */
+  .kf h4 { font-size: 18px; margin: 0 0 8px; line-height: 1.3; }
+  .kf .aim { color: var(--soft); font-size: 15px; line-height: 1.5; margin: 0 0 14px; }
+  .kf .funder, .kf .inst { color: var(--soft); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .facts { display: grid; grid-template-columns: 158px 1fr; margin: 0 0 16px; font-size: 14.5px; line-height: 1.45; }
+  .facts dt, .facts dd { margin: 0; padding: 9px 0; border-top: 1px solid #2A2A2A; }
+  .facts dt { color: var(--accent); font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+              padding-top: 11px; padding-right: 12px; }
+  .facts dd { color: var(--text); overflow-wrap: anywhere; }
+  .facts dd b { font-size: 16px; font-weight: 800; }
+  .kf .btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
+  .kf a.btn, .call.other a.btn { background: var(--accent); color: #0A0A0A; }
+  .kf a.btn.ghost, .call.other a.btn.ghost { background: transparent; color: var(--text); border: 2px solid var(--accent); }
+  .kf .partners { margin-top: -4px; }
+  .kf .report { display: block; width: max-content; margin-top: 12px; }
+  @media (max-width: 520px) {
+    .facts { grid-template-columns: 1fr; }
+    .facts dd { border-top: 0; padding-top: 0; }
+  }
+"""
+
+
+BAD_SUMMARY = re.compile(r"official text|cannot be (?:verified|confirmed)|binary|unparsed|not (?:provided|available) in the",
+                         re.I)
+
+
+def brief(text, limit=200):
+    """Una frase sola (la prima), al massimo `limit` caratteri tagliati a parola intera: le schede del sito
+    mostrano informazioni chiave, non paragrafi."""
+    text = re.sub(r"\s+", " ", (text or "")).strip()
+    if not text:
+        return ""
+    m = re.match(r"(.+?[.!?])(?:\s+[A-Z(]|$)", text)
+    first = m.group(1) if m else text
+    if len(first) > limit:
+        first = first[:limit].rsplit(" ", 1)[0].rstrip(",;:–-") + "…"
+    return first
+
+
+def call_facts(g, v, d, today):
+    """Dati chiave di un bando per la scheda del sito, come la slide «Key facts» dei post: (etichetta, valore html)."""
+    from html import escape
+    facts = []
+    if d:
+        label = deadline_text(v, d)[0] if checked(v) else "Deadline"
+        facts.append((label, f"<b>{_fmt_date(d)}</b>"))
+    elif v.get("deadline_type") == "rolling":
+        facts.append(("Deadline", "<b>Rolling, no fixed date</b>"))
+    elif v.get("forecast") and _date(v.get("est_deadline")) and _date(v.get("est_deadline")) >= today:
+        facts.append(("Expected deadline", f"<b>~{_fmt_date(_date(v['est_deadline']))}</b> (estimate)"))
+    elif v.get("forecast"):
+        facts.append(("Deadline", "<b>To be announced</b>"))           # stima superata, call non ancora uscita
+    else:
+        facts.append(("Deadline", "<b>See the official call</b>"))
+    later = later_dues(v, d) if (d and checked(v)) else []
+    if later:
+        facts.append(("Later deadlines", " · ".join(_fmt_date(x) for x in later[:3])))
+    resub = [x for x in (_date(y) for y in v.get("resubmission_dates") or []) if x and x >= today]
+    if resub:
+        facts.append(("Resubmissions", f"next {_fmt_date(resub[0])}"))
+    loi = _date(v.get("loi_deadline"))
+    if loi and loi >= today:
+        facts.append(("Letter of intent", _fmt_date(loi) + (" (required)" if v.get("loi_required") == "yes" else "")))
+    money = _money(g.get("budget_progetto"), g.get("valuta"))
+    if money:
+        facts.append(("Budget per project", escape(money)))
+    elif _money(g.get("budget_totale"), g.get("valuta")):
+        facts.append(("Total budget", escape(_money(g.get("budget_totale"), g.get("valuta")))))
+    if v:
+        facts.append(("Eligible countries", escape(brief(v.get("eligible_countries") or "Check the official call", 160))))
+    if v.get("lead"):
+        facts.append(("Who can lead", escape(brief(v["lead"], 170))))
+    status = ("Being checked against the official call" if not v else
+              "Forecast: the call is not published yet" if v.get("forecast") else
+              "Opening soon" if v.get("coming_soon") else
+              "Dates being checked" if not checked(v) else "")
+    if status:
+        facts.append(("Status", escape(status)))
+    return facts
+
+
+def facts_html(facts):
+    return ('<dl class="facts">' + "".join(f"<dt>{k}</dt><dd>{val}</dd>" for k, val in facts) + "</dl>")
+
+
+OFFICIAL_BTN = ('<a class="btn" href="{url}" target="_blank" rel="noopener" '
+                'title="Opens the funder\'s official call page in a new tab">Read the official call &#8599;</a>')
 
 
 def more_dates(v, d, today):
@@ -1372,7 +1461,7 @@ CALL_PAGE = """<!doctype html>
     {dates}
     {summary}
     {proof}
-    <div class="btns">{share}{cal}{find}<a class="btn" href="{url}" target="_blank" rel="noopener">Official call &rarr;</a></div>
+    <div class="btns">{share}{cal}{find}<a class="btn" href="{url}" target="_blank" rel="noopener" title="Opens the funder's official call page in a new tab">Read the official call &#8599;</a></div>
   </article>
   <footer>
     Checked automatically against the official call text on {checked}: always read the full call before applying;
@@ -1442,33 +1531,13 @@ def build_page(grants_list, verified, posted, cfg, today=None):
             by_region[region(e[0], e[1], cfg)].append(e)
 
     def card(g, v, d, css):
-        when = when_html(v, d, today)
-        more = more_dates(v, d, today)
-        dates_html = f'<p class="dates">{escape(" · ".join(more))}</p>' if more else ""
-        lead_html = (f'      <p class="countries"><b>Who can lead:</b> {escape(v["lead"])}</p>\n' if v.get("lead") else "")
-        tag = '<span class="tag">ON INSTAGRAM</span>' if g["id"] in featured else ""
         ps = partner_search(g)
         partners = (f'<p class="partners">Looking for consortium partners? Search topic <code>{escape(ps[1])}</code> in the '
                     f'EU partner search, or see &ldquo;Partner search announcements&rdquo; on the call page.</p>') if ps else ""
         find = (f'<a class="btn ghost" href="{escape(ps[0], quote=True)}" target="_blank" rel="noopener">Find partners</a>'
                 if ps else "")
-        if v.get("coming_soon"):
-            tag += '<span class="tag soon-tag">COMING SOON</span>'
-        if v.get("forecast"):
-            tag += '<span class="tag soon-tag">FORECAST</span>'
-        if v and not checked(v):
-            tag += '<span class="tag check-tag">DATES BEING CHECKED</span>'
-        if not v:
-            tag += '<span class="tag check-tag">BEING CHECKED</span>'
-            body = '<p class="pending">Details are being checked against the official call.</p>'
-        else:
-            ev = v.get("countries_evidence") or v.get("italy_evidence")
-            proof = (f'<details><summary>From the official call</summary><p>&ldquo;{escape(ev)}&rdquo;</p></details>'
-                     if ev else "")
-            body = (f'{f"<p class=\"summary\">{escape(v["summary"])}</p>" if v.get("summary") else ""}\n'
-                    f'      <p class="countries"><b>Eligible countries:</b> {escape(v.get("eligible_countries") or "check the call")}</p>\n'
-                    f'{lead_html}'
-                    f'      {proof}')
+        summary = v.get("summary") or ""
+        aim = "" if (not summary or BAD_SUMMARY.search(summary)) else brief(summary, 220)
         title = v.get("title") or g.get("titolo") or ""
         own = call_path(g, v) if v else ""       # pagina propria (solo bandi verificati)
         share = share_button(site_url(cfg, own or "calls#" + card_anchor(g["id"])),
@@ -1479,16 +1548,13 @@ def build_page(grants_list, verified, posted, cfg, today=None):
         attrs = (f'data-region="{escape(region(g, v, cfg), quote=True)}" data-italy="{"yes" if v.get("italy") == "yes" else "no"}" '
                  f'data-deadline="{d.isoformat() if d else ""}" data-area="{" ".join(areas(g))}" '
                  f'data-text="{escape(words, quote=True)}"')
-        return f"""    <article class="call {css}" id="{card_anchor(g["id"])}" {attrs}>
-      <div class="funder">{escape(v.get("programme") or programme_detail(g))}{tag}</div>
+        return f"""    <article class="call kf" id="{card_anchor(g["id"])}" {attrs}>
+      <div class="funder">{escape(v.get("programme") or programme_detail(g))}</div>
       <h4>{h4}</h4>
-      {body}
+      {f'<p class="aim">{escape(aim)}</p>' if aim else ""}
+      {facts_html(call_facts(g, v, d, today))}
       {partners}
-      <div class="row">
-        <div class="deadline">{when}</div>
-        <div class="btns">{share}{calendar_button(d, title, g["url"], v.get("programme") or "")}{find}<a class="btn" href="{escape(g["url"], quote=True)}" target="_blank" rel="noopener">Official call &rarr;</a></div>
-      </div>
-      {dates_html}
+      <div class="btns">{share}{calendar_button(d, title, g["url"], v.get("programme") or "")}{find}{OFFICIAL_BTN.format(url=escape(g["url"], quote=True))}</div>
       <a class="report" href="feedback.html?topic=Report%20an%20error&amp;ref={card_anchor(g["id"])}">Report an error</a>
     </article>"""
 
@@ -1521,7 +1587,8 @@ def build_page(grants_list, verified, posted, cfg, today=None):
                        accent=site_accent(cfg, "grant"), nav="".join(nav), description=escape(desc, quote=True),
                        lockup=page_lockup(cfg, "grant"),
                        italy=italy_html, other=other_html, updated=_fmt_date(today), filters=filters_form(entries),
-                       og=og_tags(cfg, f"Open research funding calls · {cfg['brand_name']}", desc, "calls"))
+                       og=og_tags(cfg, f"Open research funding calls · {cfg['brand_name']}", desc, "calls")
+                       ).replace("</style>", KF_CSS + "</style>", 1)
 
 
 # ---------------------------------------------------------------- pagina iniziale (link in bio)
@@ -1586,15 +1653,17 @@ HOME = """<!doctype html>
 
 # simbolo definitivo per l'intestazione della home (fondo chiaro): (colore, vertici) nel viewBox 26 26 148 148
 
-HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
-<svg class="crc-sym" viewBox="26 26 148 148" aria-hidden="true"><defs>{defs}</defs>{glow}{cubes}</svg>
+HEADER_LOGO = """<{tag} class="crc-logo crc-o" {attrs}>
 <img class="crc-word" src="{word}" alt="" width="1142" height="360">
-</div>
+<svg class="crc-sym" viewBox="26 26 148 148" aria-hidden="true"><defs>{defs}</defs>{glow}{cubes}</svg>
+</{tag}>
 <style>
-  .top .crc-logo {{ --s: clamp(54px, calc((100vw - 64px) / 4.6), 92px); display: flex; align-items: center; justify-content: center;
-                   gap: calc(var(--s) * .186); margin: 6px auto 36px; }}
-  .top .crc-sym {{ width: var(--s); height: var(--s); flex: none; overflow: visible; }}
-  .top .crc-word {{ height: calc(var(--s) * .977); width: auto; max-width: none; margin: 0; display: block; }}
+  /* il simbolo è la «o» di «Chaos»: stesso centro e stessa misura della «o» disegnata */
+  .crc-o {{ position: relative; display: block; width: max-content; max-width: 100%; text-decoration: none; }}
+  .crc-o .crc-word {{ height: {height}; width: auto; max-width: 100%; display: block; margin: 0; }}
+  .crc-o .crc-sym {{ position: absolute; overflow: visible; left: {left:.3f}%; top: {top:.3f}%; width: {size:.3f}%;
+                    aspect-ratio: 1; height: auto; }}
+  .top .crc-o {{ margin: 6px auto 36px; }}
 </style>
 <script>
 /* col puntatore sul logo (solo lì) il simbolo si scompone in frammenti che seguono linee di campo, si
@@ -1624,7 +1693,7 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
     var j = ((i * 2654435761) % 1000) / 1000;             /* un numero suo, stabile: niente moto all'unisono */
     return {{ g: g, p: p, x: +g.dataset.x, y: +g.dataset.y, row: row, i0: +g.dataset.i,
              bx: +g.dataset.cx, by: +g.dataset.cy, a: rgb(p.getAttribute("fill")), b: rgb(g.dataset.c1),
-             spd: 125 + 42 * row + 45 * j,                 /* ognuno la sua andatura: la corsa non è meccanica */
+             spd: 52 + 10 * row + 14 * j,                 /* ognuno la sua andatura: la corsa non è meccanica */
              w1: 0.9 + 2.6 * j, w2: 0.37 + 0.7 * j, w3: 1.7 + 3.1 * j,
              ph1: 6.3 * j, ph2: 4.1 * j + row, ph3: 2.2 * j + row,
              tail: 1 - 0.17 * row, rmax: Math.min(w, h) * 0.5, lag: 0.72 + 0.28 * j, shown: -1, dim: -1 }};
@@ -1644,18 +1713,18 @@ HEADER_LOGO = """<div class="crc-logo" role="img" aria-label="{brand}">
     for (var i = 0; i < frags.length; i++) {{
       var f = frags[i], e = Math.max(0, Math.min(1, (near - (1 - f.lag) * 0.45) / f.lag));
       e = e * e * (3 - 2 * e);                              /* partenza e arrivo morbidi */
-      var idx = f.i0 + phase * f.spd + 6 * Math.sin(phase * f.w1 * 0.5 + f.ph1)  /* avanza a ondate larghe, non a passo fisso */
-                + 2.4 * Math.sin(phase * f.w3 * 0.3 + f.ph3);                      /* due onde lente e sfasate: traiettoria mai uguale */
-      var rowF = f.row + 1.1 * Math.sin(phase * f.w2 * 0.55 + f.ph2)               /* e intanto va e viene fra i giri */
-                 + 0.35 * Math.sin(phase * f.w3 * 0.22 + f.ph1);
+      var idx = f.i0 + phase * f.spd + 1.6 * Math.sin(phase * f.w1 * 0.5 + f.ph1)  /* avanza a ondate larghe, non a passo fisso */
+                + 0.6 * Math.sin(phase * f.w3 * 0.3 + f.ph3);                      /* due onde lente e sfasate: traiettoria mai uguale */
+      var rowF = f.row + 0.35 * Math.sin(phase * f.w2 * 0.55 + f.ph2)               /* e intanto va e viene fra i giri */
+                 + 0.1 * Math.sin(phase * f.w3 * 0.22 + f.ph1);
       var pos = at(rowF, idx), u = 1 - e;
       var px = u * u * f.x + 2 * u * e * f.bx + e * e * pos[0];    /* curva quadratica: la linea di campo */
       var py = u * u * f.y + 2 * u * e * f.by + e * e * pos[1];
       var nx = at(rowF, idx + 0.5);                                /* tangente: il frammento si stira nel verso del moto */
       var ang = Math.atan2(nx[1] - pos[1], nx[0] - pos[0]) * 180 / Math.PI;
-      var dep = Math.max(-1, Math.min(1, (pos[1] - 100) / 52));    /* 3D: sotto è il davanti, sopra il dietro */
+      var dep = Math.max(-1, Math.min(1, (pos[1] - 100) / 70));    /* 3D: sotto è il davanti, sopra il dietro */
       var s = (1 - 0.34 * e) * (1 + 0.3 * dep * e);
-      var sx = s * (1 + 3.6 * f.tail * e), sy = s * (1 - 0.36 * e);   /* scie lunghe fuori, corte dentro: una scia
+      var sx = s * (1 + 1.5 * f.tail * e), sy = s * (1 - 0.25 * e);   /* scie lunghe fuori, corte dentro: una scia
                                                                          tangente al giro interno lo squadrerebbe */
       f.g.setAttribute("transform", "translate(" + (px - f.x).toFixed(2) + " " + (py - f.y).toFixed(2) + ") " +
                        "translate(" + f.x + " " + f.y + ") rotate(" + ang.toFixed(1) + ") scale(" + sx.toFixed(3) + " " +
@@ -1744,7 +1813,13 @@ def _fragments():
     return out
 
 
-def header_logo(cfg, accent=None, ink="#FFFFFF"):
+WORD_O = {"home": "wordmark-o-home.png", "grant": "wordmark-o-calls.png", "positions": "wordmark-o-positions.png",
+          "methods": "wordmark-o-methods.png", "science": "wordmark-o-science.png"}
+O_CENTER = (554.0, 250.5)   # centro delle minuscole fra «a» e «s» nella scritta 1142×360 (logo.wordmark_blank_o)
+O_SIDE = 157.0              # lato del simbolo: alto quanto le minuscole (più un filo), come una «o» vera
+
+
+def header_logo(cfg, accent=None, ink="#FFFFFF", kind="home", href=None, height="clamp(56px, 24vw, 104px)"):
     """Logo dell'intestazione della home: con «site_v4» il simbolo definitivo in SVG (cubetti animati) e la scritta;
     altrimenti l'immagine di prima. Su fondo scuro i cubetti principali sono bianchi e quelli d'accento nel colore
     indicato (verde del sito per la home, colore della rubrica per le pagine di sezione)."""
@@ -1767,7 +1842,10 @@ def header_logo(cfg, accent=None, ink="#FFFFFF"):
     frags = _fragments()
     centres = [(x + w / 2, y + h / 2) for _, x, y, w, h, _r in frags]
     per, rows = 96, 4                                   # l'orbita: 4 giri concentrici da 96 posizioni
-    ring = logo_v3.ring_rows(per, rows, roundness=1, oval=0.42)   # cerchio pieno poi stirato: ovale senza un angolo
+    ring = logo_v3.ring_rows(per, rows, scale=1.32, roundness=1, oval=0.14)
+    mx = sum(p[0] for r in ring for p in r) / (per * rows)       # anello centrato sul simbolo: la «o» gira al
+    my = sum(p[1] for r in ring for p in r) / (per * rows)       # centro delle minuscole, non di sbieco
+    ring = [[(x - mx + 100, y - my + 100) for x, y in r] for r in ring]   # cerchio pieno poi stirato: ovale senza un angolo
     ang = lambda p: math.atan2(p[1] - 100, p[0] - 100)
     order = sorted(range(len(frags)), key=lambda i: ang(centres[i]))      # per angolo: i frammenti non si incrociano
     step = per / max(1, -(-len(frags) // rows))
@@ -1795,8 +1873,12 @@ def header_logo(cfg, accent=None, ink="#FFFFFF"):
     glow = ('<use class="crc-glow" href="#crcFrags" filter="url(#crcGlowB)" opacity="0" style="display:none"/>'
             '<use class="crc-glow" href="#crcFrags" filter="url(#crcGlowA)" opacity="0" style="display:none"/>')
     ring_js = json.dumps([[[round(x, 1), round(y, 1)] for x, y in r] for r in ring], separators=(",", ":"))
+    (cx0, cy0), side = O_CENTER, O_SIDE
+    attrs = (f'href="{href}" aria-label="{brand}, home"' if href else f'role="img" aria-label="{brand}"')
     return HEADER_LOGO.format(brand=brand, cubes=f'<g id="crcFrags">{"".join(cubes)}</g>',
-                              defs=defs, glow=glow, ring=ring_js, word="logo-wordmark-dark.png")
+                              defs=defs, glow=glow, ring=ring_js, word=WORD_O[kind], tag="a" if href else "div",
+                              attrs=attrs, height=height, left=(cx0 - side / 2) / 1142 * 100,
+                              top=(cy0 - side / 2) / 360 * 100, size=side / 1142 * 100)
 
 
 ICONS_DIR = __import__("pathlib").Path(__file__).resolve().parent / "icons"
@@ -2364,15 +2446,13 @@ LOCKUP_SRC = {"methods": "lockup-methods.png", "science": "lockup-science.png",
 
 def page_lockup(cfg, kind):
     """Logo in cima a una pagina di sezione, nel colore della rubrica (bandi giallo, posizioni violetto,
-    metodologia azzurro, Latest Science bianco), collegato alla home."""
-    from html import escape as esc
+    metodologia azzurro, Latest Science bianco), collegato alla home: la «o» di «Chaos» è il simbolo a cubetti,
+    che col puntatore sopra si scompone e gira lungo l'anello della «o», come in home."""
     if not cfg.get("site_v4"):
         return ""
-    brand = esc(cfg["brand_name"], quote=True)
-    return (f'<a class="crc-top" href="index.html" aria-label="{brand}, home">'
-            f'<img src="{LOCKUP_SRC[kind]}" alt="{brand}" width="857" height="200"></a>'
-            '<style>.crc-top { display: block; width: max-content; max-width: 100%; margin: 0 0 18px; }'
-            ' .crc-top img { height: 44px; width: auto; max-width: 100%; display: block; }</style>')
+    return ('<div class="crc-top">' + header_logo(cfg, accent=site_accent(cfg, kind), kind=kind, href="index.html",
+                                                  height="52px") +
+            '</div><style>.crc-top { margin: 0 0 18px; }</style>')
 
 
 def site_colors(cfg):

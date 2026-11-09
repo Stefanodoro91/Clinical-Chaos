@@ -84,6 +84,16 @@ def pebble(color, size, angle=-20):
 def wordmark(accent, ink=INK_LIGHT, height=160, label=None, o4_dark=None):
     """Scritta RGBA alta `height` px (come nel canvas: etichetta 19,2 px, «Chaos» 48 px, spazio 6 px).
     `o4_dark` (True/False) = «o» definitiva a quattro spicchi del logo v4, su fondo scuro o chiaro."""
+    return _wordmark(accent, ink, height, label, o4_dark, False)[0]
+
+
+def wordmark_blank_o(accent, ink=INK_LIGHT, height=160):
+    """Scritta senza la «o» (il sito ci mette il simbolo animato) e il riquadro della «o»: (immagine, (x, y, lato))
+    in px dell'immagine."""
+    return _wordmark(accent, ink, height, None, None, True)
+
+
+def _wordmark(accent, ink, height, label, o4_dark, blank):
     k = 4
     unit = height * k / (19.2 + 6 + 48 * 0.9)          # px del canvas → px qui
     f_top = ImageFont.truetype(str(FONTS / "Inter-Bold.ttf"), round(19.2 * unit))
@@ -122,13 +132,16 @@ def wordmark(accent, ink=INK_LIGHT, height=160, label=None, o4_dark=None):
     asc, desc = f_main.getmetrics()
     baseline = base_y + asc
     o_top = baseline - o_size + 0.109 * em - 0.02 * em
-    o_img = pebble(accent, int(o_size)) if o4_dark is None else o4(o4_dark, int(o_size))
-    img.alpha_composite(o_img, (int(x), int(o_top)))
+    box = (x, o_top, o_size)
+    if not blank:
+        o_img = pebble(accent, int(o_size)) if o4_dark is None else o4(o4_dark, int(o_size))
+        img.alpha_composite(o_img, (int(x), int(o_top)))
     x += o_size - 0.0517 * em
     d.text((x, base_y), "s", font=f_main, fill=inkc)
     bbox = img.getbbox()
     img = img.crop((0, 0, min(Wd, bbox[2] + 2 * k), Hd))
-    return img.resize((round(img.width / k), height), Image.LANCZOS)
+    out = img.resize((round(img.width / k), height), Image.LANCZOS)
+    return out, tuple(round(v / k, 2) for v in box)
 
 
 def ring_rows(per=60, rows=3, center=(100.0, 100.0), scale=0.95, roundness=0.55, oval=0.36):
