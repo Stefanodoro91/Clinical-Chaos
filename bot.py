@@ -1507,9 +1507,9 @@ def write_home():
     import re as _re
     calls = PAGE_FILE.read_text(encoding="utf-8") if PAGE_FILE.exists() else ""
     jobs = POSITIONS_PAGE.read_text(encoding="utf-8") if POSITIONS_PAGE.exists() else ""
-    n_calls = calls.count("Official call &rarr;")
+    n_calls = calls.count('class="call kf"') or calls.count("Official call &rarr;")
     m = _re.search(r'Open to Italy <b>(\d+)</b>', calls)
-    n_positions = jobs.count("Advertisement &rarr;")
+    n_positions = jobs.count('class="job kf"') or jobs.count("Advertisement &rarr;")
     import methodology
     methods = methodology.load()
     (ROOT / "docs" / "methodology.html").write_text(grants.add_decor(methodology.build_page(methods, CONFIG)), encoding="utf-8")
