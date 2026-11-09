@@ -420,46 +420,50 @@
   {
    "date": "2026-11-17",
    "time": "2026-11-17T17:47:00+00:00",
-   "id": "7bc8e19b",
-   "title": "Why opaque reporting is linked to biased conclusions",
-   "source": "Critical appraisal",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "The danger of opaque reporting",
-     "body": "Opaque reporting is directly associated with biased conclusions and, less directly, with errors in biomedical publishing."
-    },
-    {
-     "heading": "Judging reliability becomes impossible",
-     "body": "Without knowing study details, readers cannot determine if results are trustworthy."
-    }
-   ],
-   "takeaway": "Without a clear understanding of how a study was done, readers cannot judge whether the findings are reliable.",
-   "category": "Reporting & publication"
-  },
-  {
-   "date": "2026-11-18",
-   "time": "2026-11-18T17:47:00+00:00",
    "id": "844b30ba",
-   "title": "Why proxy and provider ratings differ from patient self-report",
+   "title": "Why proxy assessors bias disability ratings",
    "source": "Stroke Outcomes",
    "simulated": true,
    "points": [
     {
      "heading": "Who answers the questionnaire?",
-     "body": "Assessments may be performed by rehabilitation providers, patients, or proxies, and their ratings can differ."
+     "body": "In neurological rehabilitation, assessments may be performed by providers, patients, or proxies, and their ratings can differ."
     },
     {
      "heading": "Proxies overestimate disability",
-     "body": "Proxy assessors tend to rate patients as more disabled than other functional measures suggest, and the gap grows with more impaired patients."
+     "body": "In stroke rehabilitation, proxy assessors tend to rate patients as more disabled than other functional measures suggest, and the gap grows with more impaired patients."
     },
     {
      "heading": "The frame of reference trap",
-     "body": "Healthcare professionals may rate patients differently than patients rate themselves, possibly due to a different frame of reference (e.g., using a more disabled…"
+     "body": "In neurological rehabilitation, healthcare professionals may rate patients higher than patients rate themselves, possibly due to a different frame of reference."
     }
    ],
    "takeaway": "Proxy and provider ratings can differ from patients' own, so use the same respondent type at every follow-up.",
    "category": "Bias & confounding"
+  },
+  {
+   "date": "2026-11-18",
+   "time": "2026-11-18T17:47:00+00:00",
+   "id": "af630a09",
+   "title": "Parametric vs nonparametric: The cost of power",
+   "source": "Parametric vs non parametric.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "Asymptotic Relative Efficiency",
+     "body": "Asymptotic Relative Efficiency defines how many more subjects are needed for a nonparametric test to have equivalent power as a parametric test for a fixed Type I error rate."
+    },
+    {
+     "heading": "The price of using nonparametric tests",
+     "body": "The ARE of the Wilcoxon Rank Sum Test versus the t-test when the t-test assumptions are satisfied is 0.955. There is minimal power loss even when data are normally…"
+    },
+    {
+     "heading": "Massive gains when normality fails",
+     "body": "The Wilcoxon Rank Sum and Kruskal-Wallis tests are much more powerful than their parametric counterparts when underlying distributions are heavy tailed or have extreme…"
+    }
+   ],
+   "takeaway": "Using nonparametric tests results in minimal power loss under normality and massive power gains when normality fails.",
+   "category": "Statistics"
   },
   {
    "date": "2026-11-19",
@@ -484,30 +488,6 @@
    ],
    "takeaway": "Report every search string, database, filter and date: reproducible or it is not systematic.",
    "category": "Reporting & publication"
-  },
-  {
-   "date": "2026-11-21",
-   "time": "2026-11-21T15:47:00+00:00",
-   "id": "82feffa6",
-   "title": "Torque-assisted exoskeleton boosts lower limb strength in subacute stroke",
-   "source": "Gait recovery exosk.pdf",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "Secondary outcomes measured",
-     "body": "The trial measured secondary outcomes including lower limb strength, balance, mood, and quality of life."
-    },
-    {
-     "heading": "Motricity Index gains",
-     "body": "The RAGT group showed significantly greater lower limb strength gains (mean change 15.9 vs 11.1 on the Motricity Index, P=0.034)."
-    },
-    {
-     "heading": "Clinical interpretation",
-     "body": "The exoskeleton's resistance component suggests resistance training combined with functional exercise may enhance motor gains."
-    }
-   ],
-   "takeaway": "Overground exoskeleton gait training provides greater lower limb strength gains in subacute stroke.",
-   "category": "Clinical insight"
   }
  ],
  "stories": [
@@ -1934,6 +1914,13 @@
    "name": "Gait recovery exosk.pdf",
    "posts": 2,
    "clinical_used": true,
+   "date": "2026-11-09"
+  },
+  {
+   "drive_id": "1RHVBFxOyuqWoa3M2NzbOAviwFB127JYI",
+   "name": "UL exoskeleton.pdf",
+   "posts": 0,
+   "clinical_skipped": "licenza: CC con vincolo NC/ND",
    "date": "2026-11-09"
   }
  ]
