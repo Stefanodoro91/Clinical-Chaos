@@ -646,5 +646,18 @@
     "facebook_id": "1665985751671004",
     "threads_id": "18125931001926382",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mzug2vhnau2y"
+  },
+  {
+    "date": "2026-11-09",
+    "time": "2026-11-09T08:18:54+00:00",
+    "id": "reel-kickoff-academic-positions",
+    "title": "Academic positions, every Monday",
+    "source": "Announcement",
+    "kind": "reel",
+    "reel_of": "kickoff-academic-positions",
+    "media_id": "18118374704048755",
+    "seconds": 37,
+    "facebook_id": "2662755960813337",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mzuik46h652s"
   }
 ]
