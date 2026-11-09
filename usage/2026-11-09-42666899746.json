@@ -9,7 +9,16 @@
    "ragionamento": 0,
    "respinte": 0,
    "versione": "gemini-3.5-flash-lite"
+  },
+  "conferma posizioni|gemini-3-flash-preview": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 1
   }
  },
- "esauriti": []
+ "esauriti": [
+  "gemini-3-flash-preview"
+ ]
 }
