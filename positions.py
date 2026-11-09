@@ -850,34 +850,6 @@ def filters_form(n):
   </form>"""
 
 
-PROFILE_RE = re.compile(r"^(?:key\s+)?(?:requirements?|candidates?|applicants?|the (?:ideal|successful) candidate|"
-                        r"essential|you (?:will|should|must) (?:have|hold)|eligib|qualifications?|a (?:phd|doctorate))\b", re.I)
-
-
-def role_profile(summary):
-    """Dalla sintesi dell'annuncio (senza AI): una frase sul ruolo e una sul profilo cercato."""
-    parts = [p.strip() for p in re.split(r"(?<=[.!?])\s+(?=[A-Z])", re.sub(r"\s+", " ", summary or "").strip()) if p.strip()]
-    prof = [p for p in parts if PROFILE_RE.search(p)]
-    role = [p for p in parts if p not in prof]
-    return (grants.brief(role[0], 220) if role else "", grants.brief(prof[0], 200) if prof else "")
-
-
-def job_facts(v, d):
-    """Dati chiave di una posizione, come la scheda del post: università, posizione, tema, durata, sede, scadenza."""
-    topic = v.get("topic") or ""
-    if "…" in topic or len(topic) > 90:
-        topic = ""                                   # tema troncato o rovinato: meglio niente
-    loc = ", ".join(x for x in (v.get("city"), v.get("country")) if x)
-    rows = [("University", v.get("institution")), ("Position", TYPES.get(v.get("type"), "")), ("Topic", topic),
-            ("Duration", v.get("duration")), ("Location", loc),
-            ("Deadline", f"<b>{_fmt(d)}</b>" if d else "<b>See the advertisement</b>")]
-    return [(k, val if k == "Deadline" else escape(val)) for k, val in rows if val]
-
-
-AD_BTN = ('<a class="btn" href="{url}" target="_blank" rel="noopener" '
-          'title="Opens the original job advertisement in a new tab">Read the full advertisement &#8599;</a>')
-
-
 def build_page(archive, posted, cfg, today=None):
     today = today or date.today()
     featured = {pid for p in posted if p.get("kind") == "positions" for pid in p.get("position_ids", [])}
@@ -897,7 +869,13 @@ def build_page(archive, posted, cfg, today=None):
         for r in sorted(regions, key=lambda r: order.index(r) if r in order else 99):
             parts.append(f'    <div class="grp">\n    <h3 class="region">{escape(r)} <span>{len(regions[r])}</span></h3>')
             for k, v, d in regions[r]:
+                if d:
+                    soon = '<span class="soon">CLOSING SOON</span>' if (d - today).days <= 14 else ""
+                    when = f"Deadline <b>{_fmt(d)}</b>{soon}"
+                else:
+                    when = "Deadline <b>see advertisement</b>"
                 place = ", ".join(x for x in (v.get("institution"), v.get("city"), v.get("country")) if x)
+                tag = '<span class="tag">ON INSTAGRAM</span>' if k in featured else ""
                 page = job_slug(k, v)
                 share = grants.share_button(grants.site_url(cfg, "jobs/" + page),
                                             f"{v['title']} – {v.get('institution') or 'academic position'}"
@@ -906,15 +884,14 @@ def build_page(archive, posted, cfg, today=None):
                 attrs = (f'data-region="{escape(r, quote=True)}" data-italy="{"yes" if (v.get("country") or "").lower() == "italy" else "no"}" '
                          f'data-area="{escape(v.get("area") or "rehabilitation", quote=True)}" data-deadline="{d.isoformat() if d else ""}" '
                          f'data-text="{escape(words, quote=True)}"')
-                role, profile = role_profile(v.get("summary"))
-                facts = job_facts(v, d) + ([("Profile sought", escape(profile))] if profile else [])
-                area = AREA_LABEL.get(v.get("area"), "")
-                parts.append(f"""    <article class="job kf" id="{k}" {attrs}>
-      {f'<div class="inst">{escape(area)}</div>' if area else ""}
+                parts.append(f"""    <article class="job" id="{k}" {attrs}>
+      <div class="inst">{escape(place)}{tag}</div>
       <h4><a href="jobs/{page}.html">{escape(v["title"])}</a></h4>
-      {f'<p class="aim">{escape(role)}</p>' if role else ""}
-      {grants.facts_html(facts)}
-      <div class="btns">{share}{grants.calendar_button(d, v["title"], v["url"], v.get("institution") or "")}{AD_BTN.format(url=escape(v["url"], quote=True))}</div>
+      {f'<p class="summary">{escape(v["summary"])}</p>' if v.get("summary") else ""}
+      <div class="row">
+        <div class="deadline">{when}</div>
+        <div class="btns">{share}{grants.calendar_button(d, v["title"], v["url"], v.get("institution") or "")}<a class="btn" href="{escape(v["url"], quote=True)}" target="_blank" rel="noopener">Advertisement &rarr;</a></div>
+      </div>
     </article>""")
             parts.append("    </div>")
         parts.append("  </section>")
@@ -927,7 +904,7 @@ def build_page(archive, posted, cfg, today=None):
                        accent=grants.site_accent(cfg, "positions"), nav="".join(nav), lockup=grants.page_lockup(cfg, "positions"),
                        sections="\n".join(sections), updated=_fmt(today), filters=filters_form(len(entries)), description=escape(desc, quote=True),
                        og=grants.og_tags(cfg, f"Academic positions in clinical research, engineering and rehabilitation · {cfg['brand_name']}",
-                                         desc, "positions")).replace("</style>", grants.KF_CSS + "</style>", 1)
+                                         desc, "positions"))
 
 
 # ---------------------------------------------------------------- una pagina per posizione (Google Jobs)
@@ -983,7 +960,7 @@ JOB_PAGE = """<!doctype html>
       <dt>Deadline</dt><dd>{deadline}</dd>
     </dl>
     {summary}
-    <div class="btns">{share}{cal}<a class="btn" href="{url}" target="_blank" rel="noopener" title="Opens the original job advertisement in a new tab">Read the full advertisement &#8599;</a></div>
+    <div class="btns">{share}{cal}<a class="btn" href="{url}" target="_blank" rel="noopener">Read the advertisement and apply &rarr;</a></div>
   </article>
   <footer>
     Found on {source} and checked automatically against the original advertisement on {checked}: always read the full
@@ -1051,7 +1028,8 @@ def job_pages(archive, cfg, today=None):
         loc = ", ".join(x for x in (v.get("city"), v.get("country")) if x) or "see advertisement"
         place = ", ".join(x for x in (v.get("institution"), loc if loc != "see advertisement" else "") if x)
         if d:
-            deadline = _fmt(d)
+            soon = '<span class="soon">CLOSING SOON</span>' if (d - today).days <= 14 else ""
+            deadline = f"{_fmt(d)}{soon}"
         else:
             deadline = "see advertisement"
         summary = v.get("summary") or ""
