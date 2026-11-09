@@ -394,7 +394,9 @@ def main():
     dry = os.environ.get("DRY_RUN", "true").lower() != "false"
     kind = os.environ.get("STORY_KIND") or "auto"
     cfg = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
-    simulate = bool(cfg.get("social_paused")) and not dry      # social in pausa: la storia va solo su Drive
+    # social in pausa, tranne le rubriche riattivate in config «social_live_kinds» (qui: "stories")
+    live = "stories" in (cfg.get("social_live_kinds") or [])
+    simulate = bool(cfg.get("social_paused")) and not live and not dry
     if simulate:
         dry = True
     today = date.fromisoformat(os.environ["PREVIEW_DATE"]) if os.environ.get("PREVIEW_DATE") else date.today()

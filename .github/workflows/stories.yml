@@ -57,6 +57,7 @@ jobs:
           FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
           STORY_KIND: ${{ inputs.kind || 'auto' }}
+          POST_TYPE: stories
         run: python stories.py
 
       - name: Salva il registro delle storie
