@@ -341,9 +341,17 @@ def numbers_ok(spec, text):
 
 # ---------------------------------------------------------------- piano delle immagini (un modello leggero)
 PLAN_PROMPT = """You choose the visual for each slide of an Instagram carousel for clinical researchers. A visual must
-make the slide's own idea clearer at a glance. Aim for 1 to {max_visuals} visuals in the carousel: almost every
-methodology carousel has at least one slide whose idea is a comparison (wrong vs right, A vs B), a sequence of steps,
-a decision, a few numbers or a distribution, and that slide should get a diagram. Use "none" for the other slides.
+make the slide's own idea clearer at a glance. Use at most {max_visuals} visuals in the carousel, and only where the
+slide's idea really IS a comparison (wrong vs right, A vs B), a sequence of steps, a decision, a few numbers or a
+distribution. "none" is always better than a forced or confusing diagram.
+
+Rules for compare and versus (two columns):
+- the two column titles are the two things the slide itself compares (two groups, two tests, two raters, wrong vs
+  right), never a topic or a setting ("Stroke rehabilitation" is not a side);
+- the columns are parallel: item 1 on the left and item 1 on the right describe the SAME attribute, item 2 the next
+  attribute, and so on, with the same number of items;
+- never the same item on both sides: if both columns would say the same thing, do not draw the diagram;
+- direction words say of what ("Rate QoL higher", not "Rate patients higher").
 
 For each slide choose a type:
 - "diagram": a simple schematic drawn by our software. Give its kind and write it in "spec" with this exact syntax:
@@ -447,6 +455,13 @@ def _valid_diagram(spec):
     return bool(need[k](spec))
 
 
+def _columns_ok(v):
+    """Due colonne confrontabili: stesso numero di voci e nessuna voce identica da entrambe le parti."""
+    left = [" ".join(str(x).lower().split()) for x in v.get("left_items") or []]
+    right = [" ".join(str(x).lower().split()) for x in v.get("right_items") or []]
+    return bool(left and right) and len(left) == len(right) and not (set(left) & set(right))
+
+
 def plan(post, figures=None, credit=""):
     """Sceglie l'immagine di ogni slide e la scrive in slide["visual"]. Senza modello disponibile: tutte «none»
     (la slide resta di solo testo, come oggi quando un'immagine non è adatta)."""
@@ -471,6 +486,9 @@ def plan(post, figures=None, credit=""):
     for v in out.get("slides") or []:
         if v.get("type") == "diagram":
             v = {**v, **parse_spec(v.get("kind"), v.get("spec"))}
+            if v.get("kind") in ("compare", "versus") and not _columns_ok(v):
+                print(f"  Slide {v.get('slide')}: schema a due colonne scartato (colonne uguali o non parallele)")
+                continue
         i = (v.get("slide") or 0) - 1
         if not (0 <= i < len(slides)) or used >= MAX_VISUALS:
             continue

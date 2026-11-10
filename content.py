@@ -61,15 +61,26 @@ POST DESIGN:
 - Examples: use the examples of the material, or a clearly framed generic example in the material's own field
   ("imagine a trial of 120 patients with…"). Never import a study, trial, drug or clinical field that the material
   does not discuss, and never use a named study to illustrate a point the material does not attach to it.
+- Every slide must teach something. Never a slide that only announces its topic or asks a question without the
+  answer ("Who answers the questionnaire?", "Secondary outcomes measured", "Dual roles can be difficult"): the
+  heading may ask, the body must give the content.
+- A statement keeps the setting of the source that makes it: a finding on chronic disease in general is never
+  presented as a finding "in neurological rehabilitation"; a rule for RCTs is never extended to observational
+  studies unless the material does so.
+- Direction words always say of what: "rate quality of life higher", "rate disability as more severe", never
+  "rate patients higher". Two slides must never seem to point in opposite directions on the same comparison.
+- No hype or absolute verdicts the material does not use: "massive", "huge", "dramatically", "completely",
+  "illogical", "boosts", "destroys", "always", "never", "proves".
 - Every sentence must be true and complete ON ITS OWN: name the subject (never "this", "it", "these patients",
   "the study", "the authors" without saying which), keep the condition under which a claim holds (population,
   design, threshold), keep the qualifiers of the material ("may", "in RCTs", "at least", "only"), and give numbers
   with their unit and comparison. Use exact methodological language: risk vs odds, association vs causation,
   statistical vs clinical significance, efficacy vs effectiveness; never "proves".
 - title: a sharp hook, max 70 characters (e.g. a common misconception, a question, a crisp claim), in sentence
-  case (only the first word and proper names capitalised, e.g. "Linear or logistic regression? Look at your outcome").
+  case (only the first word and proper names capitalised, e.g. "Linear or logistic regression? Look at your outcome";
+  also after a colon: "Parametric vs nonparametric: the cost of power").
   Slide headings are in sentence case too.
-- slides: 3 to 5 slides (the carousel adds cover and a final takeaway slide: 5–7 slides in total), each with heading (max 55 characters), body (max 140 characters: few words, large type,
+- slides: 3 to 5 slides (the carousel adds cover and a final takeaway slide: 5–7 slides in total), each with heading (max 55 characters), body (max 140 characters including spaces, COUNT THEM: a longer body is cut at the last full sentence; few words, large type,
   plain language for professionals, concrete, no fluff) and image_prompt.
 - image_prompt: in English, 15-35 words describing ONE simple illustration that a researcher would
   connect to the slide's idea at a glance. Describe a concrete scene with 2-4 recognizable elements
@@ -239,6 +250,18 @@ def material_part(drive, f):
 
 
 # ---------------------------------------------------------------- Gemini
+def _fit(text, n):
+    """Testo di slide entro `n` caratteri senza frasi mozze: si ferma all'ultima frase intera che ci sta (se ne
+    resta almeno metà); solo se non c'è un punto utile taglia alla parola con «…»."""
+    text = " ".join((text or "").split())
+    if len(text) <= n:
+        return text
+    cut = max(text.rfind(". ", 0, n), text.rfind("? ", 0, n), text.rfind("! ", 0, n), text.rfind("; ", 0, n))
+    if cut >= n // 2:
+        return text[:cut + 1].rstrip(";") + ("." if text[cut] == ";" else "")
+    return _clip(text, n)
+
+
 def _clip(text, n):
     text = " ".join(str(text).split())
     return text if len(text) <= n else text[: n - 1].rsplit(" ", 1)[0] + "…"
@@ -339,6 +362,51 @@ def crossref_reference(ref):
     return None
 
 
+def _harvard_from_crossref(item):
+    """Reference in stile Harvard (Cite Them Right) dai metadati di Crossref: fino a 3 autori, poi «et al.»."""
+    names = []
+    for a in (item.get("author") or []):
+        fam = a.get("family") or a.get("name") or ""
+        initials = "".join(f"{p[0]}." for p in re.split(r"[\s-]+", a.get("given") or "") if p)
+        names.append(f"{fam}, {initials}".strip(", "))
+    if len(names) > 3:
+        auth = f"{names[0]} et al."
+    elif len(names) > 1:
+        auth = ", ".join(names[:-1]) + " and " + names[-1]
+    else:
+        auth = names[0] if names else ""
+    year = ((item.get("issued") or {}).get("date-parts") or [[None]])[0][0]
+    title = " ".join((item.get("title") or [""])[0].split()).rstrip(".")
+    journal = (item.get("container-title") or [""])[0]
+    vol, issue, pages = item.get("volume"), item.get("issue"), item.get("page")
+    ref = f"{auth} ({year}) \u2018{title}\u2019, {journal}"
+    if vol:
+        ref += f", {vol}" + (f"({issue})" if issue else "")
+    if pages:
+        ref += f", pp. {pages.replace('-', '–')}"
+    ref += "."
+    if item.get("DOI"):
+        ref += f" Available at: https://doi.org/{item['DOI']}"
+    return ref
+
+
+RX_APA = re.compile(r"^(?P<auth>.+?)\s*\((?P<year>\d{4}[a-z]?)\)\.\s*(?P<title>.+?[.?!])\s+(?P<tail>.+?)(?:\s+(?P<doi>https?://\S+))?\s*$")
+
+
+def harvard_from_apa(ref):
+    """Conversione di ripiego APA → Harvard quando Crossref non risponde: (titolo, reference) o ("", testo APA)."""
+    m = RX_APA.match(" ".join((ref or "").split()))
+    if not m:
+        return "", ref or ""
+    auth = m.group("auth").replace(", &", " and").replace(" & ", " and ")
+    title = m.group("title").rstrip(".")
+    tail = re.sub(r",\s*(\d+[–-]\d+)\.?$", r", pp. \1", m.group("tail").rstrip(". "))
+    out = f"{auth} ({m.group('year')}) \u2018{title}\u2019, {tail}."
+    if m.group("doi"):
+        out += f" Available at: {m.group('doi')}"
+    return title, out
+
+
 def verified_references(refs, material):
     """Reference controllate in tre passi:
     1) primo autore e anno devono comparire nel materiale (niente reference inventate);
@@ -382,20 +450,23 @@ def _source_ok(source, refs):
     return source.strip() if any(_ref_key(r) == (m.group(1).lower(), y.group(0)) for r in refs) else ""
 
 
-def _clean_post(p, material=""):
-    refs = verified_references(p.get("references"), material)
+RX_TEX = re.compile(r"\$\\?([A-Za-z]{1,12})\$")
+
+
+def _clean_post(p, material="", min_slides=2):
+    refs = [RX_TEX.sub(r"\1", r) for r in verified_references(p.get("references"), material)]   # «$t$-Test» → «t-Test»
     slides = []
     for s in p.get("slides", []):
         if not (s.get("heading") and s.get("body")):
             continue
-        body = _clip(s.get("body", ""), 320)
+        body = _fit(s.get("body", ""), 320)
         slides.append({"heading": _clip(s.get("heading", ""), 70), "body": body,
                        "image_prompt": _clip(s.get("image_prompt", ""), 300),
                        "photo_query": _clip(s.get("photo_query", ""), 60),
                        "highlight": exact_phrase(s.get("highlight"), body),
                        "source": _source_ok(s.get("source"), refs)})
     slides = slides[:7]
-    if len(slides) < 2 or not p.get("title") or not p.get("takeaway"):
+    if len(slides) < min_slides or not p.get("title") or not p.get("takeaway"):
         return None
     tags = ["#" + t.lstrip("#").replace(" ", "") for t in p.get("hashtags", []) if t.strip("# ")]
     category = p.get("category") if p.get("category") in CATEGORIES else "Research methods"
@@ -1020,74 +1091,68 @@ def groq_json(prompt_text, schema, temperature=0.0, task="altro"):
     return gemini_json([{"text": prompt_text}], schema, temperature, task)
 
 
-CLINICAL_POST_PROMPT = """Sei un ricercatore clinico senior. Scrivi un post in 4 pagine per ricercatori clinici
-su questo paper. Il tono è quello di un collega esperto che segnala e divulga una lettura interessante in lay abstract mode.
+CLINICAL_POST_PROMPT = """You are a senior clinical researcher. You write the weekly "Latest Science" post of "{brand}" about ONE
+real paper, for clinical researchers and clinicians. The tone is that of an expert colleague who points out and
+explains an interesting paper in lay-abstract mode: clear, plain and precise, never promotional, never academic.
+The goal is to make the reader want to READ THE PAPER, not to replace it. Write everything IN ENGLISH, even if
+these instructions or the paper use another language.
 
 FIRST decide the clinical focus of the paper (field clinical_focus):
-- "treatment": the paper reports what an intervention, therapy, device or rehabilitation programme does to patients
-  (effects, who benefits, how much, how fast, side effects, dose or timing);
+- "treatment": the paper reports what an intervention, therapy, device or rehabilitation programme does to patients;
 - "patient_health": the paper describes patients' health status, recovery course, prognosis, symptoms, function or
   risk factors;
-- "none": the paper is mainly about methodology, measurement scales, questionnaires, psychometrics, statistics,
-  study design, reporting, engineering of a device without patient results, or anything without a patient-level
-  clinical message. In that case return an EMPTY posts list.
+- "none": the paper is mainly about methodology, measurement scales, psychometrics, statistics, study design,
+  reporting, or engineering without patient results. In that case return an EMPTY posts list.
 
-REGOLE GENERALI
-- Nessun dato numerico specifico (percentuali, p-value, HR, NNT)
-- Nessun riferimento a gruppi, bracci, centri o nomi propri dal paper
-- Non rivelare i risultati: il post deve spingere a leggere il paper, non sostituirlo
-- Frasi brevi, linguaggio preciso, nessuna formula divulgativa ("i ricercatori hanno
-  scoperto che...", "uno studio rivoluzionario...")
-- Non abusare di termini tecnici: usali solo dove necessari, senza accumularli
+Then write exactly ONE post (posts list with one item). The post has 4 pages, filled by these fields:
 
-THE POSTS (1 to {max_posts} posts):
-- Write 1 post per distinct clinical message the paper genuinely supports; never pad.
-- Each post must stand on its own and never repeat a topic in: {published}
+PAGE 1 — HOOK  →  field "title" (shown alone on the cover), max 90 characters, sentence case.
+  One or two short sentences (or a sharp question) on the central topic of the paper. It may use one concrete
+  element of the paper (the patients, the clinical problem, the intervention) to create curiosity or tension.
+  It must NOT reveal the outcome or suggest that something works or does not work.
+PAGE 2 — GAP  →  "slides": exactly ONE slide. heading max 55 characters (the open question, e.g. "What we still
+  do not know"); body max 160 characters, 1-2 short sentences: the open question in the literature that
+  motivated the paper. Do not describe the design, do not anticipate the results.
+PAGE 3 — TAKE-HOME MESSAGE  →  field "takeaway", max 150 characters, ONE sentence.
+  Take it from the CONCLUSIONS of the paper (the authors' own conclusion section or last abstract sentence), not
+  from the results section. Stay close to the authors' wording and keep every qualifier they use ("may", "in
+  patients with...", "further trials are needed" when that is their point). It must say what a reader learns by
+  reading this paper, useful to someone working in the clinic or in clinical research.
+PAGE 4 — SOURCE  →  built automatically from the paper's metadata (title and Harvard reference). Put THIS paper,
+  and only this paper, in "references" (APA 7, authors, year, title, journal, DOI exactly as printed).
 
-STRUTTURA DEL POST — 4 SLIDE:
+GENERAL RULES (they apply to every field: title, slide, takeaway, hook, caption):
+- No specific numerical data: no percentages, p-values, hazard/odds ratios, confidence intervals, NNT, effect
+  sizes, sample sizes or scores.
+- No names of groups or arms, centres, trial acronyms, devices' brand names or people from the paper.
+- Do not reveal the results. If the primary outcome showed no difference, never build the post on a secondary
+  outcome that did; never present a secondary or exploratory finding as the message of the paper.
+- No causal claims or mechanisms the authors do not state as conclusions ("is attributed to", "because of the
+  resistance component"): speculation from the discussion is not a conclusion.
+- Short sentences, precise language. No promotional formulas: "researchers discovered", "groundbreaking",
+  "revolutionary", "game-changer", "boosts", "massive", "proves", "breakthrough".
+- Do not overuse technical terms: use one only where it is needed, never stack them; spell out an acronym the
+  first time (or avoid it).
+- The four pages read as ONE thread: hook (the topic) → gap (why the question is open) → take-home (what the paper
+  concludes) → source. Each page must make sense on its own, even as a screenshot.
 
-SLIDE 1 — HOOK (campo: slides[0])
-Una frase o due che agganciano sul tema centrale del paper. Può usare un elemento
-concreto del paper per creare tensione o curiosità. Non svela l'esito.
-heading: max 55 caratteri, il tema centrale
-body: max 140 caratteri, l'hook
+OTHER FIELDS:
+- title_highlight: 1-4 words copied EXACTLY from the title.
+- takeaway_highlight: 2-5 words copied EXACTLY from the takeaway.
+- highlight (the slide): 2-6 words copied EXACTLY from the slide body.
+- image_prompt (the slide): 15-35 words, one simple illustration of the open question, no text, no numbers, no
+  real people. photo_query (the slide): 2-4 English keywords for a real stock photo of the clinical setting of the
+  paper (patients, therapy, clinicians), or "".
+- source (the slide): "".
+- hook: the first line of the caption, max 120 characters, different from the title, with the main searchable term
+  of the topic; no results, no numbers.
+- caption: 3-5 short lines after the hook, in the same lay-abstract tone: what the paper is about and why it is
+  worth reading, never its results; end with a question that invites clinicians and researchers to share their
+  experience. Max 700 characters, no hashtags, no numbers.
+- hashtags: 3 specific hashtags for the clinical topic.
+- category: "{category}".
 
-SLIDE 2 — GAP (campo: slides[1])
-1-2 frasi brevi che contestualizzano perché questo paper esiste: qual è la domanda
-aperta nella letteratura che ha motivato lo studio. Non descrivere il disegno,
-non anticipare i risultati.
-heading: max 55 caratteri
-body: max 140 caratteri
-
-SLIDE 3 — TAKE HOME MESSAGE (campo: slides[2])
-Una sola frase, tratta dalle conclusioni del paper (non dai risultati),
-che rappresenta ciò che si impara leggendolo. Deve essere utile per chi
-lavora in clinica o in ricerca clinica.
-heading: max 55 caratteri
-body: max 140 caratteri
-
-SLIDE 4 — FONTE (campo: slides[3])
-Titolo completo del paper e riferimento bibliografico in stile Harvard
-(solo il paper sorgente, nient'altro).
-heading: "Source"
-body: Harvard reference of this paper (Author(s), Year. Title. Journal, volume(issue), pages.)
-
-OTHER FIELDS (required by the schema):
-- title: a sharp hook, max 70 characters, sentence case
-- title_highlight: 1-4 words copied EXACTLY from the title
-- takeaway: same content as slide 3 body, max 130 characters
-- takeaway_highlight: 2-5 words copied EXACTLY from the takeaway
-- highlight (per slide): 2-6 words copied EXACTLY from that slide's body
-- image_prompt (per slide): 15-35 words, one simple illustration a researcher connects to the slide idea
-- photo_query (per slide): 2-4 English keywords for a stock photo; "" if too abstract
-- source (per slide): "Surname et al., Year" for slides 1-3; "" for slide 4
-- references: THIS paper in APA 7 (authors, year, title, journal, DOI as printed in the paper)
-- category: "{category}"
-- hook: first line of the caption, max 120 characters, same as slide 1 body
-- caption: 3-4 short lines after the hook; end with a question for professionals; max 900 characters; no hashtags
-- hashtags: 3 specific hashtags for the topic
-
-{design}
+Already published posts (do not repeat these topics): {published}
 
 File name of the paper: {filename}"""
 
@@ -1095,6 +1160,23 @@ CLINICAL_POST_SCHEMA = {"type": "OBJECT", "properties": {
     "clinical_focus": {"type": "STRING", "enum": ["treatment", "patient_health", "none"]},
     "focus_reason": {"type": "STRING"},
     "posts": SCHEMA["properties"]["posts"]}, "required": ["clinical_focus", "focus_reason", "posts"]}
+
+
+RX_LAY_NUMBERS = re.compile(r"\d+(?:[.,]\d+)?\s*%|\b[pP]\s*[<=>≤]\s*0?[.,]\d|\b(?:HR|OR|RR|NNT|CI)\b\s*[=:]?\s*\d|"
+                            r"\b\d+(?:[.,]\d+)?\s*(?:vs\.?|versus)\s*\d")
+
+
+def lay_abstract_problems(post):
+    """Controllo senza AI del formato lay abstract di Latest Science: numeri dei risultati nelle parti visibili."""
+    probs = []
+    parts = [("titolo", post.get("title", "")), ("takeaway", post.get("takeaway", ""))]
+    parts += [(f"slide {i + 1}", f"{s.get('heading', '')} {s.get('body', '')}") for i, s in enumerate(post.get("slides") or [])]
+    parts.append(("didascalia", post.get("caption", "")))
+    for label, text in parts:
+        m = RX_LAY_NUMBERS.search(text or "")
+        if m:
+            probs.append(f"numeri dei risultati in {label} («{m.group(0)}»)")
+    return probs
 
 
 def _design_rules():
@@ -1107,7 +1189,7 @@ def _design_rules():
     return "FORM RULES:\n- " + "\n- ".join(keep).replace("a researcher", "a clinician").rstrip()
 
 
-def clinical_posts(part, filename, brand, published=(), max_posts=3):
+def clinical_posts(part, filename, brand, published=(), max_posts=1):
     """Post «Latest Science» da un articolo clinico: 1-`max_posts` caroselli, ognuno con un messaggio clinico diverso
     sul trattamento o sullo stato di salute dei pazienti. Restituisce (post, focus, motivo); lista vuota se
     l'articolo non ha un messaggio clinico sui pazienti (scale, metodologia, ingegneria senza risultati)."""
@@ -1118,8 +1200,13 @@ def clinical_posts(part, filename, brand, published=(), max_posts=3):
     focus, why = out.get("clinical_focus", "none"), out.get("focus_reason", "")
     if focus == "none":
         return [], focus, why
-    posts = [c for c in (_clean_post(p, material_text(part)) for p in out.get("posts", [])) if c][:max_posts]
+    posts = [c for c in (_clean_post(p, material_text(part), min_slides=1) for p in out.get("posts", [])) if c][:max_posts]
     for post in posts:
+        post["slides"] = post["slides"][:1]                # formato lay abstract: una sola slide (il gap)
+        post["lay_abstract"] = True
+        problems = lay_abstract_problems(post)
+        if problems:
+            print(f"  ::warning title=Latest Science da controllare::«{post['title']}»: {'; '.join(problems)}")
         post["category"] = CLINICAL_CATEGORY
         post["clinical_focus"] = focus
     return posts, focus, why
@@ -1177,7 +1264,7 @@ def review_slides(post):
             i = f.get("index")
             if not isinstance(i, int) or not (0 <= i < len(slides)) or not f.get("heading") or not f.get("body"):
                 continue
-            body = _clip(f["body"], 170)
+            body = _fit(f["body"], 170)
             print(f"  Slide {i + 1} riscritta ({f.get('problem', '')[:80]}): {slides[i]['heading']} → {f['heading']}")
             slides[i] = {**slides[i], "heading": _clip(f["heading"], 70), "body": body,
                          "highlight": exact_phrase(slides[i].get("highlight"), body)}
@@ -1270,7 +1357,8 @@ def rewrite_copied(post, material):
         return 0
     low = " ".join(_simple(material).split())
     flagged = [(label, text, hit) for label, text in _texts_of(post)
-               if text and (hit := copied_from(text, low))]
+               if text and not (label == "takeaway" and post.get("lay_abstract"))   # Latest Science: il take home
+               and (hit := copied_from(text, low))]                               # riprende le conclusioni (CC)
     if not flagged:
         return 0
     for label, _, hit in flagged:
@@ -1346,7 +1434,7 @@ def enrich(post, material):
     for f in out.get("fixes", []):
         i = f.get("index")
         if isinstance(i, int) and 0 <= i < len(post["slides"]) and f.get("heading") and f.get("body"):
-            body = _clip(f["body"], 170)
+            body = _fit(f["body"], 170)
             print(f"  Slide {i + 1} resa concreta: {f['body'][:90]}")
             post["slides"][i] = {**post["slides"][i], "heading": _clip(f["heading"], 70), "body": body,
                                  "highlight": exact_phrase(post["slides"][i].get("highlight"), body)}
@@ -1465,7 +1553,7 @@ def verify_against_source(post, material):
         if not (0 <= i < len(slides)):
             continue
         if x.get("heading") and x.get("body") and x["kind"] != "unsupported":
-            body = _clip(x["body"], 170)
+            body = _fit(x["body"], 170)
             slides[i] = {**slides[i], "heading": _clip(x["heading"], 70), "body": body,
                          "highlight": exact_phrase(slides[i].get("highlight"), body)}
         else:
@@ -1641,8 +1729,25 @@ def _family_of_last():
     return family("gemini", m)
 
 
+LAY_RULES = """This post is a "Latest Science" LAY ABSTRACT with a fixed 4-page format, and these rules replace the
+thread and takeaway rules below:
+- page 1 is the title (the hook on the topic), page 2 is ONE slide with the open question in the literature (the
+  gap), page 3 is the takeaway, page 4 is the reference. Do not ask for more slides, and do not flag the post as
+  vague or generic because it gives no numbers, results or details: that is intended, the post must make the
+  reader want to read the paper.
+- flag as "imprecise" any specific number (percentages, p-values, ratios, intervals, sample sizes, scores), any
+  name of arms, groups, centres or trial acronyms, and any sentence that reveals or anticipates the results.
+- flag as "imprecise" a post built on a secondary or exploratory outcome, a causal claim or mechanism that the
+  SOURCE's conclusions do not state, and promotional words ("boosts", "breakthrough", "massive").
+- the takeaway must be ONE sentence faithful to the CONCLUSIONS of the SOURCE (not to its results), with the
+  authors' qualifiers; staying close to the authors' wording is correct, do not flag it. Your fixes must respect
+  these rules too: never add a number or a result.
+"""
+
+
 def _critique(post, source, kind, label, writer_family):
-    prompt = CRITIC_PROMPT.format(kind=kind, extra_rules=GRANT_RULES if kind == "funding-call carousel" else "",
+    extra = GRANT_RULES if kind == "funding-call carousel" else (LAY_RULES if post.get("lay_abstract") else "")
+    prompt = CRITIC_PROMPT.format(kind=kind, extra_rules=extra,
                                   post=_post_listing(post), source_label=label,
                                   source=relevant_excerpt(source, post, REVIEW_CHARS))
     if kind == "funding-call carousel":           # le slide dei bandi sono più lunghe (fino a 220 caratteri)
@@ -1678,7 +1783,7 @@ def _apply(post, field, idx, heading, body, text, removals, body_limit=170):
             removals.add(idx)
             return
         sl = post["slides"][idx]
-        body = _clip(body or sl.get("body", ""), body_limit)   # bandi: 240 (prima tagliava a 170 con «…» a metà frase)
+        body = _fit(body or sl.get("body", ""), body_limit)   # bandi: 240 (prima tagliava a 170 con «…» a metà frase)
         post["slides"][idx] = {**sl, "heading": _clip(heading or sl.get("heading", ""), 70), "body": body,
                                "highlight": exact_phrase(sl.get("highlight"), body)}
     elif text:

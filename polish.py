@@ -156,13 +156,22 @@ def page_anchor(post):
     return f"science#s-{pid}" if is_clinical(post) else f"methodology#m-{pid}"
 
 
+RX_COLON_CAP = re.compile(r"(: )(The|A|An|How|Why|What|When|Where|Which|Who|Is|Are|Do|Does|Can|Should|Your|Its|This|One)\b")
+
+
+def after_colon(text):
+    """Sentence case anche dopo i due punti: «Parametric vs nonparametric: The cost» → «…: the cost» (solo parole
+    comuni, mai nomi propri o acronimi)."""
+    return RX_COLON_CAP.sub(lambda m: m.group(1) + m.group(2).lower(), text or "")
+
+
 def polish_post(post, apa=""):
     """Rifinitura completa di un post di metodologia o Latest Science (sul posto). `apa`: reference APA dell'articolo
     della slide «Based on», se c'è."""
     slides = post.get("slides") or []
     context = " ".join([post.get("caption") or "", post.get("takeaway") or ""] +
                        [s.get("body") or "" for s in slides])
-    post["title"] = sentence_case(post.get("title", ""), context)
+    post["title"] = after_colon(sentence_case(post.get("title", ""), context))
     th = post.get("title_highlight") or ""
     i = post["title"].lower().find(th.lower()) if th else -1
     if i >= 0:                                    # l'evidenziato deve restare identico al titolo, maiuscole comprese
