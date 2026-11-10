@@ -314,22 +314,6 @@
    "category": "Bias & confounding"
   },
   {
-   "date": "2026-11-21",
-   "time": "2026-11-21T15:47:00+00:00",
-   "id": "71581f8a",
-   "title": "Can smart exoskeletons safely guide weight-bearing after fracture surgery?",
-   "source": "Smart exoskeleton.pdf",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "Integrating robotic support with biological healing",
-     "body": "Post-operative recovery requires tailored mechanical strain, yet traditional rehabilitation often falls short of meeting personalized recovery needs."
-    }
-   ],
-   "takeaway": "Smart exoskeletons are generally safe, but evidence is heterogeneous and benefits for complex fractures are unestablished.",
-   "category": "Clinical insight"
-  },
-  {
    "date": "2026-11-28",
    "time": "2026-11-28T15:47:00+00:00",
    "id": "e4aaa03e",
@@ -425,7 +409,7 @@
    "date": "2026-11-17",
    "time": "2026-11-17T17:47:00+00:00",
    "id": "844b30ba",
-   "title": "Why proxy assessors bias functional disability ratings",
+   "title": "Proxy and provider ratings differ from patient self-reports",
    "source": "Stroke Outcomes",
    "simulated": true,
    "points": [
@@ -439,11 +423,31 @@
     },
     {
      "heading": "The frame of reference trap",
-     "body": "Healthcare professionals may tend to rate patients higher than patients rate themselves, and this discrepancy may be due to a difference in frame of reference."
+     "body": "Healthcare professionals may tend to rate patients higher than patients rate themselves, possibly due to a difference in frame of reference."
     }
    ],
    "takeaway": "Proxy and provider ratings can differ from patients' own, so use the same respondent type at every follow-up.",
    "category": "Bias & confounding"
+  },
+  {
+   "date": "2026-11-18",
+   "time": "2026-11-18T17:47:00+00:00",
+   "id": "7bc8e19b",
+   "title": "How opaque reporting biases conclusions and prevents reliability judgment",
+   "source": "Critical appraisal",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The danger of opaque reporting",
+     "body": "Opaque reporting is directly associated with biased conclusions and, less directly, with errors in biomedical publishing and inefficient resource use."
+    },
+    {
+     "heading": "Readers cannot judge study reliability",
+     "body": "Without knowing study details, readers cannot determine if results are trustworthy."
+    }
+   ],
+   "takeaway": "Without clear methodological details, readers cannot judge if study findings are reliable.",
+   "category": "Reporting & publication"
   },
   {
    "date": "2026-11-19",
@@ -467,26 +471,6 @@
     }
    ],
    "takeaway": "Report every search string, database, filter and date: reproducible or it is not systematic.",
-   "category": "Reporting & publication"
-  },
-  {
-   "date": "2026-11-18",
-   "time": "2026-11-18T17:47:00+00:00",
-   "id": "7bc8e19b",
-   "title": "Why opaque reporting undermines research",
-   "source": "Critical appraisal",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "The danger of opaque reporting",
-     "body": "Unclear methods are directly associated with biased conclusions and, less directly, with errors in biomedical publishing."
-    },
-    {
-     "heading": "Readers cannot judge study reliability",
-     "body": "Without knowing study details, readers cannot determine if results are trustworthy."
-    }
-   ],
-   "takeaway": "Without a clear understanding of how a study was done, readers cannot judge whether the findings are reliable.",
    "category": "Reporting & publication"
   }
  ],
