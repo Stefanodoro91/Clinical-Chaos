@@ -58,9 +58,13 @@ POST DESIGN:
   sample is small…"); if the material names alternatives or exceptions (other models, other outcome types, other
   designs), mention them rather than turning one option into the only one. Never overstate: no "destroys",
   "always fails", "useless", "must" unless the material says so in those terms.
-- Examples: use the examples of the material, or a clearly framed generic example in the material's own field
-  ("imagine a trial of 120 patients with…"). Never import a study, trial, drug or clinical field that the material
-  does not discuss, and never use a named study to illustrate a point the material does not attach to it.
+- SOURCE FIDELITY: every slide must derive directly from a specific point in the material. Never add an
+  example, comparison, case or reference that is not explicitly present in the source document, even if it is
+  accurate and contextually plausible. If the material gives no example, write no example. If the material cites
+  no study for a statement, name no study. A generic example is allowed only when the material itself uses one,
+  and only in the same field and framing the material uses ("imagine a trial of 120 patients with…"). Never
+  import a study, trial, drug or clinical field that the material does not discuss, and never use a named study
+  to illustrate a point the material does not attach to it.
 - Every slide must teach something. Never a slide that only announces its topic or asks a question without the
   answer ("Who answers the questionnaire?", "Secondary outcomes measured", "Dual roles can be difficult"): the
   heading may ask, the body must give the content.
@@ -1110,9 +1114,11 @@ PAGE 1 — HOOK  →  field "title" (shown alone on the cover), max 90 character
   One or two short sentences (or a sharp question) on the central topic of the paper. It may use one concrete
   element of the paper (the patients, the clinical problem, the intervention) to create curiosity or tension.
   It must NOT reveal the outcome or suggest that something works or does not work.
-PAGE 2 — GAP  →  "slides": exactly ONE slide. heading max 55 characters (the open question, e.g. "What we still
-  do not know"); body max 160 characters, 1-2 short sentences: the open question in the literature that
-  motivated the paper. Do not describe the design, do not anticipate the results.
+PAGE 2 — ABSTRACT POINTS  →  "slides": exactly ONE slide. heading max 55 characters (a short phrase that
+  anchors the slide to the hook's question, e.g. "What the paper set out to answer", "The clinical question
+  behind it"); body max 160 characters, 2-3 short sentences: the key points from the abstract — population,
+  intervention or exposure, and primary aim — that directly address the hook's question. Stay strictly inside
+  the abstract. No results, no design labels (e.g. "RCT", "cohort") unless the hook already named them.
 PAGE 3 — TAKE-HOME MESSAGE  →  field "takeaway", max 150 characters, ONE sentence.
   Take it from the CONCLUSIONS of the paper (the authors' own conclusion section or last abstract sentence), not
   from the results section. Stay close to the authors' wording and keep every qualifier they use ("may", "in
