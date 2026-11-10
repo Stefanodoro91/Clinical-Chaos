@@ -1,0 +1,14 @@
+{
+ "workflow": "Settimana di prova su Drive",
+ "quota_day": "2026-11-10",
+ "consumo": {
+  "controllo doppioni|groq-gpt-oss-120b": {
+   "richieste": 1,
+   "ingresso": 1445,
+   "uscita": 223,
+   "ragionamento": 0,
+   "respinte": 0
+  }
+ },
+ "esauriti": []
+}
