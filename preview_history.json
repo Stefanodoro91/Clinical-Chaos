@@ -33,30 +33,6 @@
    ]
   },
   {
-   "date": "2026-11-10",
-   "time": "2026-11-10T17:47:00+00:00",
-   "id": "40cb2ae7",
-   "title": "Why Even One Outlier Destroys the Mean",
-   "source": "Parametric vs non parametric.pdf",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "The Mean Has Zero Breakdown",
-     "body": "The sample mean is defined as the sum of observations divided by n. If any single observation gets arbitrarily large, the mean becomes arbitrarily large. Thus the breakdown point for the mean is 0."
-    },
-    {
-     "heading": "The Median Survives Extremes",
-     "body": "The median is the central value in a distribution where equal numbers of values lie above and below. If a minority of observations go to infinity, the median will not be arbitrarily bad. Its breakdown point is one half."
-    },
-    {
-     "heading": "When Is the Mean Actually Good?",
-     "body": "Considering stability and breakdown limits, the mean only works well when datasets lack outliers, skewness, and multiple modes. The median is far less affected by these departures from normality."
-    }
-   ],
-   "takeaway": "Even a single outlier makes the sample mean completely arbitrary, giving it a breakdown point of zero.",
-   "category": "Statistics"
-  },
-  {
    "date": "2026-11-11",
    "time": "2026-11-11T11:23:00+00:00",
    "id": "reel-positions-2026-11-07",
@@ -64,34 +40,6 @@
    "kind": "reel",
    "reel_of": "positions-2026-11-07",
    "simulated": true
-  },
-  {
-   "date": "2026-11-11",
-   "time": "2026-11-11T17:47:00+00:00",
-   "id": "035742c6",
-   "title": "Linear or Logistic Regression? Look at Your Outcome",
-   "source": "Regression.pdf",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "The outcome dictates the model",
-     "body": "Regression helps identify how multiple factors connect to disease outcomes. Choosing between linear and logistic models depends directly on how you measure your dependent variable."
-    },
-    {
-     "heading": "Linear models require continuous data",
-     "body": "In linear regression, the dependent variable must be continuous, such as intraocular pressure or visual acuity. Independent variables may be continuous, binary, or categorical."
-    },
-    {
-     "heading": "Logistic models need binary outcomes",
-     "body": "Logistic regression specifically requires a binary dependent variable, meaning the outcome only has two possible values, such as yes or no."
-    },
-    {
-     "heading": "Comparing the effect metrics",
-     "body": "Linear regression reports coefficients showing unit changes in the outcome. Logistic regression expresses predictor effects using an odds ratio to compare relative odds of the event."
-    }
-   ],
-   "takeaway": "Linear regression requires a continuous outcome, whereas logistic regression demands a binary dependent variable.",
-   "category": "Statistics"
   },
   {
    "date": "2026-11-12",
@@ -103,30 +51,6 @@
    "kind": "grant",
    "grant_id": "EU-HORIZON-BRIDGING-2027-06-02",
    "deadline": "2027-02-16"
-  },
-  {
-   "date": "2026-11-12",
-   "time": "2026-11-12T17:47:00+00:00",
-   "id": "checklist-consort-outcomes",
-   "title": "Primary outcome: defined before, not after",
-   "source": "Rubrica Checklist",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "What the item asks",
-     "body": "Define every pre-specified primary and secondary outcome: the measure, how it was assessed, and exactly when."
-    },
-    {
-     "heading": "Why it matters",
-     "body": "Vague outcomes invite switching after the data are in, one of the best-documented sources of reporting bias."
-    },
-    {
-     "heading": "How to comply",
-     "body": "Write each outcome as: instrument + metric + aggregation + time point. Example: pain on a 0–10 scale, mean change at 12 weeks."
-    }
-   ],
-   "takeaway": "An outcome is pre-specified only if measure, metric and time point are written down first.",
-   "category": "Endpoints & outcomes"
   },
   {
    "date": "2026-11-13",
@@ -488,6 +412,82 @@
    ],
    "takeaway": "Overground exoskeleton training was not superior to conventional therapy for ambulatory function, but could provide lower extremity motor gains.",
    "category": "Clinical insight"
+  },
+  {
+   "date": "2026-11-10",
+   "time": "2026-11-10T17:47:00+00:00",
+   "id": "40cb2ae7",
+   "title": "Why a single outlier makes the sample mean arbitrary",
+   "source": "Parametric vs non parametric.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The mean has zero breakdown",
+     "body": "The sample mean is defined as the sum of observations divided by n. If any single observation gets arbitrarily large, the mean becomes arbitrarily large. Thus the breakdown point for the mean is 0."
+    },
+    {
+     "heading": "The median survives extremes",
+     "body": "The median is the central value in a distribution where equal numbers of values lie above and below. If a minority of observations go to infinity, the median will not be arbitrarily bad. Its breakdown point is one half."
+    },
+    {
+     "heading": "When is the mean actually good?",
+     "body": "Considering robustness and breakdown point, the mean works well only when the data contain zero outliers, no skewness, and unimodality. The median handles these deviations from normality much better."
+    }
+   ],
+   "takeaway": "Because a single outlier makes the sample mean arbitrary, consider nonparametric location tests for primary analysis.",
+   "category": "Statistics"
+  },
+  {
+   "date": "2026-11-11",
+   "time": "2026-11-11T17:47:00+00:00",
+   "id": "035742c6",
+   "title": "Linear or logistic regression? Look at your outcome",
+   "source": "Regression.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The outcome dictates the model",
+     "body": "Regression helps show how different factors connect to disease outcomes. The choice between linear and logistic regression hinges directly on how your dependent variable is measured."
+    },
+    {
+     "heading": "Linear models require continuous data",
+     "body": "In linear regression, the dependent variable must be continuous, such as intraocular pressure or visual acuity. Independent variables may be continuous, binary, or categorical."
+    },
+    {
+     "heading": "Logistic models need binary outcomes",
+     "body": "The distinguishing feature in logistic regression is that the dependent variable must be binary, meaning that the variable can only take two values, such as yes versus no."
+    },
+    {
+     "heading": "Comparing the effect metrics",
+     "body": "Linear regression reports coefficients showing unit changes in the outcome. Logistic regression expresses predictor effects using an odds ratio to compare relative odds of the event."
+    }
+   ],
+   "takeaway": "Linear regression requires a continuous outcome, whereas logistic regression demands a binary dependent variable.",
+   "category": "Statistics"
+  },
+  {
+   "date": "2026-11-12",
+   "time": "2026-11-12T17:47:00+00:00",
+   "id": "checklist-consort-outcomes",
+   "title": "Primary outcome: defined before, not after",
+   "source": "Rubrica Checklist",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "What the item asks",
+     "body": "Report every prespecified primary and secondary outcome: measurement variable, analysis metric, method of aggregation and time point."
+    },
+    {
+     "heading": "Why it matters",
+     "body": "Vague outcomes invite switching after the data are in, one of the best-documented sources of reporting bias."
+    },
+    {
+     "heading": "How to comply",
+     "body": "Example: pain on a 0–10 numeric scale (variable), change from baseline (metric), mean (aggregation), at 12 weeks (time point)."
+    }
+   ],
+   "takeaway": "An outcome is prespecified only if variable, metric, aggregation and time point are written first.",
+   "category": "Endpoints & outcomes"
   }
  ],
  "stories": [
