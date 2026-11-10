@@ -158,34 +158,6 @@
    "simulated": true
   },
   {
-   "date": "2026-11-14",
-   "time": "2026-11-14T15:47:00+00:00",
-   "id": "45306609",
-   "title": "Why adjuvants fail without training",
-   "source": "Motor recovery.pdf",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "What are adjuvants?",
-     "body": "Adjuvants (e.g., drugs, non-invasive brain stimulation) aim to modify the effect of a primary behavioural intervention."
-    },
-    {
-     "heading": "The foundation must be there",
-     "body": "Adjuvants must be paired with evidence-informed motor training; without it, the adjuvant has no foundation to enhance."
-    },
-    {
-     "heading": "Lessons from recent trials",
-     "body": "The ESTREL trial of levodopa reported neutral results. Participants received fewer than 80 of 117 intended sessions, with only 47 including motor learning."
-    },
-    {
-     "heading": "Vagus Nerve Stimulation",
-     "body": "The VNS-REHAB trial paired Vagus Nerve Stimulation with training. It showed a 2.6-point Fugl-Meyer Assessment improvement, below the 5.2-point threshold."
-    }
-   ],
-   "takeaway": "Always pair adjuvants with evidence-informed motor training; adjuvants alone lack a foundation for enhancing motor recovery.",
-   "category": "Clinical insight"
-  },
-  {
    "date": "2026-11-16",
    "time": "2026-11-16T17:23:00+00:00",
    "id": "positions-2026-11-08",
@@ -508,6 +480,22 @@
    ],
    "takeaway": "State each likely source of bias and what you did about it: silence reads as blindness.",
    "category": "Bias & confounding"
+  },
+  {
+   "date": "2026-11-14",
+   "time": "2026-11-14T15:47:00+00:00",
+   "id": "991ed317",
+   "title": "What defines the next stage of motor recovery after a stroke?",
+   "source": "Motor recovery.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The challenge of optimizing motor training",
+     "body": "While motor training is the cornerstone of rehabilitation, we still lack clarity on how to optimize its parameters and integrate new technologies."
+    }
+   ],
+   "takeaway": "Adhering to evidence-informed motor training positions the field to generate evidence for treatments that go beyond current recovery expectations.",
+   "category": "Clinical insight"
   }
  ],
  "stories": [
@@ -1942,6 +1930,13 @@
    "posts": 0,
    "clinical_skipped": "licenza: CC con vincolo NC/ND",
    "date": "2026-11-09"
+  },
+  {
+   "drive_id": "1zzMyS-bki9KBiVbflJSoTbk8hDXdbmMK",
+   "name": "Motor recovery.pdf",
+   "posts": 1,
+   "clinical_used": true,
+   "date": "2026-11-10"
   }
  ]
 }
