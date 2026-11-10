@@ -378,30 +378,6 @@
    "category": "Reporting & publication"
   },
   {
-   "date": "2026-11-21",
-   "time": "2026-11-21T15:47:00+00:00",
-   "id": "82feffa6",
-   "title": "Torque-assisted exoskeleton boosts lower limb strength in subacute stroke",
-   "source": "Gait recovery exosk.pdf",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "Secondary outcomes measured",
-     "body": "The trial measured secondary outcomes including lower limb strength, balance, mood, and quality of life."
-    },
-    {
-     "heading": "Motricity Index gains",
-     "body": "The RAGT group showed significantly greater lower limb strength gains (mean change 15.9 vs 11.1 on the Motricity Index, P=0.034)."
-    },
-    {
-     "heading": "Clinical interpretation",
-     "body": "The exoskeleton's resistance component suggests resistance training combined with functional exercise may enhance motor gains."
-    }
-   ],
-   "takeaway": "Overground exoskeleton gait training provides greater lower limb strength gains in subacute stroke.",
-   "category": "Clinical insight"
-  },
-  {
    "date": "2026-11-24",
    "time": "2026-11-24T17:47:00+00:00",
    "id": "144c4de0",
@@ -495,6 +471,22 @@
     }
    ],
    "takeaway": "Adhering to evidence-informed motor training positions the field to generate evidence for treatments that go beyond current recovery expectations.",
+   "category": "Clinical insight"
+  },
+  {
+   "date": "2026-11-21",
+   "time": "2026-11-21T15:47:00+00:00",
+   "id": "71581f8a",
+   "title": "Can smart exoskeletons safely guide weight-bearing after fracture surgery?",
+   "source": "Smart exoskeleton.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "Integrating robotic support with biological healing",
+     "body": "Post-operative recovery requires tailored mechanical strain, yet traditional rehabilitation often falls short of meeting personalized recovery needs."
+    }
+   ],
+   "takeaway": "Smart exoskeletons are generally safe, but evidence is heterogeneous and benefits for complex fractures are unestablished.",
    "category": "Clinical insight"
   }
  ],
@@ -1934,6 +1926,13 @@
   {
    "drive_id": "1zzMyS-bki9KBiVbflJSoTbk8hDXdbmMK",
    "name": "Motor recovery.pdf",
+   "posts": 1,
+   "clinical_used": true,
+   "date": "2026-11-10"
+  },
+  {
+   "drive_id": "1OFnoDNWnSe5aN-Bxfu4Lc1iP9uzo8Bny",
+   "name": "Smart exoskeleton.pdf",
    "posts": 1,
    "clinical_used": true,
    "date": "2026-11-10"

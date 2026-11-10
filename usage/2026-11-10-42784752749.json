@@ -1,0 +1,67 @@
+{
+ "workflow": "Settimana di prova su Drive",
+ "quota_day": "2026-11-10",
+ "consumo": {
+  "controllo doppioni|groq-gpt-oss-120b": {
+   "richieste": 1,
+   "ingresso": 1428,
+   "uscita": 386,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "nuovi post da Drive|gemini-3.8-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 2
+  },
+  "nuovi post da Drive|gemini-3.6-flash": {
+   "richieste": 1,
+   "ingresso": 10997,
+   "uscita": 542,
+   "ragionamento": 2573,
+   "respinte": 0,
+   "versione": "gemini-3.6-flash"
+  },
+  "critica|openrouter-nemotron-3-ultra-550b-a55b:free": {
+   "richieste": 2,
+   "ingresso": 10230,
+   "uscita": 10946,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "arbitro|gemini-3.8-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 3
+  },
+  "arbitro|gemini-3.5-flash": {
+   "richieste": 1,
+   "ingresso": 10463,
+   "uscita": 305,
+   "ragionamento": 2306,
+   "respinte": 0,
+   "versione": "gemini-3.6-flash"
+  },
+  "schemi slide|gemini-3.5-flash-lite": {
+   "richieste": 1,
+   "ingresso": 855,
+   "uscita": 50,
+   "ragionamento": 0,
+   "respinte": 1,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "scelta immagini|gemini-3.5-flash-lite": {
+   "richieste": 1,
+   "ingresso": 3585,
+   "uscita": 177,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  }
+ },
+ "esauriti": []
+}
