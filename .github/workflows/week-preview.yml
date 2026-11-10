@@ -14,6 +14,9 @@ on:
       screening:
         description: "Screening dei bandi prima delle anteprime (0 = salta, per risparmiare la quota di Gemini)"
         default: "1"
+      reuse_clinical:
+        description: "Latest Science: riusa gli articoli già usati (data AAAA-MM-GG da cui contare i riusi; vuoto = no)"
+        default: ""
 
 permissions:
   contents: write
@@ -56,6 +59,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ONLY: ${{ inputs.only }}
           SCREENING: ${{ inputs.screening || '1' }}
+          REUSE_CLINICAL_SINCE: ${{ inputs.reuse_clinical }}
         run: python tools/week_preview.py
       - name: Riepilogo
         if: always()
