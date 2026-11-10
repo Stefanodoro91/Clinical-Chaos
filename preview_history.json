@@ -234,74 +234,6 @@
    "simulated": true
   },
   {
-   "date": "2026-11-17",
-   "time": "2026-11-17T17:47:00+00:00",
-   "id": "7bc8e19b",
-   "title": "Why opaque reporting is linked to biased conclusions",
-   "source": "Critical appraisal",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "The danger of opaque reporting",
-     "body": "Opaque reporting is directly associated with biased conclusions and, less directly, with errors in biomedical publishing."
-    },
-    {
-     "heading": "Judging reliability becomes impossible",
-     "body": "Without knowing study details, readers cannot determine if results are trustworthy."
-    }
-   ],
-   "takeaway": "Without a clear understanding of how a study was done, readers cannot judge whether the findings are reliable.",
-   "category": "Reporting & publication"
-  },
-  {
-   "date": "2026-11-18",
-   "time": "2026-11-18T17:47:00+00:00",
-   "id": "844b30ba",
-   "title": "Why proxy and provider ratings differ from patient self-report",
-   "source": "Stroke Outcomes",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "Who answers the questionnaire?",
-     "body": "Assessments may be performed by rehabilitation providers, patients, or proxies, and their ratings can differ."
-    },
-    {
-     "heading": "Proxies overestimate disability",
-     "body": "Proxy assessors tend to rate patients as more disabled than other functional measures suggest, and the gap grows with more impaired patients."
-    },
-    {
-     "heading": "The frame of reference trap",
-     "body": "Healthcare professionals may rate patients differently than patients rate themselves, possibly due to a different frame of reference (e.g., using a more disabled…"
-    }
-   ],
-   "takeaway": "Proxy and provider ratings can differ from patients' own, so use the same respondent type at every follow-up.",
-   "category": "Bias & confounding"
-  },
-  {
-   "date": "2026-11-19",
-   "time": "2026-11-19T17:47:00+00:00",
-   "id": "checklist-prisma-search",
-   "title": "Could a colleague rerun your literature search?",
-   "source": "Rubrica Checklist",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "What the item asks",
-     "body": "Present the full search strategy for every database and register, including filters and limits, exactly as run."
-    },
-    {
-     "heading": "Why it matters",
-     "body": "The search defines the evidence base. If it cannot be repeated, the review cannot be checked or updated."
-    },
-    {
-     "heading": "How to comply",
-     "body": "Export each database's full query string into an appendix, with the date of the search and any language or date limits."
-    }
-   ],
-   "takeaway": "Report every search string, database, filter and date: reproducible or it is not systematic.",
-   "category": "Reporting & publication"
-  },
-  {
    "date": "2026-11-24",
    "time": "2026-11-24T17:47:00+00:00",
    "id": "144c4de0",
@@ -488,6 +420,78 @@
    ],
    "takeaway": "An outcome is prespecified only if variable, metric, aggregation and time point are written first.",
    "category": "Endpoints & outcomes"
+  },
+  {
+   "date": "2026-11-17",
+   "time": "2026-11-17T17:47:00+00:00",
+   "id": "844b30ba",
+   "title": "Why proxy assessors bias functional disability ratings",
+   "source": "Stroke Outcomes",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "Who answers the questionnaire?",
+     "body": "Assessments may be performed by rehabilitation providers, patients, or proxies, and their ratings can differ."
+    },
+    {
+     "heading": "Proxies overestimate disability",
+     "body": "Proxy assessors tend to rate patients as more disabled than other functional measures suggest, and the gap grows with more impaired patients."
+    },
+    {
+     "heading": "The frame of reference trap",
+     "body": "Healthcare professionals may tend to rate patients higher than patients rate themselves, and this discrepancy may be due to a difference in frame of reference."
+    }
+   ],
+   "takeaway": "Proxy and provider ratings can differ from patients' own, so use the same respondent type at every follow-up.",
+   "category": "Bias & confounding"
+  },
+  {
+   "date": "2026-11-18",
+   "time": "2026-11-18T17:47:00+00:00",
+   "id": "af630a09",
+   "title": "Parametric vs nonparametric: the cost of power",
+   "source": "Parametric vs non parametric.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "Asymptotic Relative Efficiency",
+     "body": "Asymptotic Relative Efficiency defines how many more subjects are needed for a nonparametric test to have equivalent power as a parametric test for a fixed Type I error rate."
+    },
+    {
+     "heading": "The price of using nonparametric tests",
+     "body": "The ARE of the Wilcoxon Rank Sum Test versus the t-test when underlying assumptions are satisfied is zero point nine five five. There is minimal power loss when data are normal."
+    },
+    {
+     "heading": "Massive gains when normality fails",
+     "body": "Nonparametric tests are much more powerful than their parametric counterparts when underlying distributions are heavy tailed or have extreme skewness. In some cases ARE became infinite."
+    }
+   ],
+   "takeaway": "Nonparametric tests have minimal power loss when data are normal, but almost infinite power gains when normality fails.",
+   "category": "Statistics"
+  },
+  {
+   "date": "2026-11-19",
+   "time": "2026-11-19T17:47:00+00:00",
+   "id": "checklist-prisma-search",
+   "title": "Could a colleague rerun your literature search?",
+   "source": "Rubrica Checklist",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "What the item asks",
+     "body": "Present the full search strategy for every database and register, including filters and limits, exactly as run."
+    },
+    {
+     "heading": "Why it matters",
+     "body": "The search defines the evidence base. If it cannot be repeated, the review cannot be checked or updated."
+    },
+    {
+     "heading": "How to comply",
+     "body": "Export each database's full query string into an appendix, with the date of the search and any language or date limits."
+    }
+   ],
+   "takeaway": "Report every search string, database, filter and date: reproducible or it is not systematic.",
+   "category": "Reporting & publication"
   }
  ],
  "stories": [
