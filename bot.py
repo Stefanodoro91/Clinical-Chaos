@@ -291,11 +291,18 @@ def _new_clinical_posts(drive, posted, sources, cq):
     """Legge il prossimo articolo non ancora usato delle sottocartelle «Clinica…» e ne ricava 2-3 post clinici
     (messaggi diversi), che vanno nella coda clinica. Restituisce quanti post ha aggiunto."""
     inbox = os.environ["GDRIVE_FOLDER_ID"]
-    read = {x.get("name") for x in sources if x.get("clinical_used") or x.get("clinical_skipped")}
-    read |= {q.get("source") for q in cq} | {p.get("source") for p in posted if p.get("category") == content.CLINICAL_CATEGORY}
+    reuse = os.environ.get("REUSE_CLINICAL_SINCE", "").strip()   # anteprime: articoli già usati di nuovo leggibili
+    if reuse:                                                     # (tranne quelli riusati da questa data in poi)
+        read = {x.get("name") for x in sources if x.get("clinical_skipped")
+                or (x.get("clinical_used") and (x.get("date") or "") >= reuse)}
+        read |= {q.get("source") for q in cq}
+    else:
+        read = {x.get("name") for x in sources if x.get("clinical_used") or x.get("clinical_skipped")}
+        read |= {q.get("source") for q in cq} | {p.get("source") for p in posted if p.get("category") == content.CLINICAL_CATEGORY}
     files = [f for f in list_inbox(drive, inbox) if f.get("parent") != inbox and f["name"] not in read and content.is_supported(f)]
     print(f"Latest Science: {len(files)} articoli clinici non ancora letti nelle cartelle «Clinica…»")
-    published = [x["title"] for x in posted if x.get("title")] + [q["title"] for q in cq]
+    published = [x["title"] for x in posted if x.get("title")
+                 and not (reuse and x.get("category") == content.CLINICAL_CATEGORY)] + [q["title"] for q in cq]
     for f in files[:int(CONFIG.get("latest_science_tries", 3))]:
         note = None
         try:

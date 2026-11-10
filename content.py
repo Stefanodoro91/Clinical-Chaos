@@ -1200,7 +1200,7 @@ def clinical_posts(part, filename, brand, published=(), max_posts=1):
     focus, why = out.get("clinical_focus", "none"), out.get("focus_reason", "")
     if focus == "none":
         return [], focus, why
-    posts = [c for c in (_clean_post(p, material_text(part), min_slides=1) for p in out.get("posts", [])) if c][:max_posts]
+    posts = [c for c in (_clean_post(p, material_text(part), min_slides=1) for p in out.get("posts", [])) if c][:1]
     for post in posts:
         post["slides"] = post["slides"][:1]                # formato lay abstract: una sola slide (il gap)
         post["lay_abstract"] = True
