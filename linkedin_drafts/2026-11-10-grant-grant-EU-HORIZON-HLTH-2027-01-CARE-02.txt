@@ -1,0 +1,20 @@
+Managing multiple medications? Support for ADR reduction studies
+
+This call funds research to reduce adverse drug reactions from three or more concomitant medications.
+
+Evidence is needed to prevent prescription cascades and optimise medication use via biomarkers and AI. The focus is on patients taking three or more medications concomitantly. Projects must generate evidence on clinical utility and cost-effectiveness of biomarker-guided treatment, address ethical and regulatory challenges, and develop integration strategies. Are you planning a clinical study on medication safety or pharmacogenomics?
+
+Programme: Horizon Europe – Cluster 1: Health
+Eligible countries: EU Member States and associated countries (official call: “EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.”)
+Deadline: 17 Feb 2027
+Official call: https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-CARE-02
+Looking for consortium partners? EU partner search: https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/partner-search (topic ID: HORIZON-HLTH-2027-01-CARE-02)
+All open calls, grouped by programme: https://clinicalresearchchaos.com/calls#c-EU-HORIZON-HLTH-2027-01-CARE-02.
+
+Details are compiled automatically from the official call: always check eligibility, amounts and dates before applying.
+
+Key points:
+1. What it funds — Research to cut ADRs from ≥3 medications: Grants support researchers reducing adverse drug reactions from three or more medications. Funding covers biomarker validation and AI-driven tools to help clinicians prevent prescription cascades and improve safety.
+2. Who it is for — Researchers, healthcare teams, and SMEs: Clinical researchers and healthcare teams conducting studies on polypharmacy are the primary targets. Participation from start-ups and SMEs is encouraged to develop personalized medicine and clinical guidelines.
+
+#ResearchFunding #ClinicalResearch #Polypharmacy #Pharmacogenomics #DrugSafety
