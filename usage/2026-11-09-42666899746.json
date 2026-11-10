@@ -1,0 +1,24 @@
+{
+ "workflow": "Post giornaliero ricerca clinica",
+ "quota_day": "2026-11-09",
+ "consumo": {
+  "scelta immagini|gemini-3.5-flash-lite": {
+   "richieste": 2,
+   "ingresso": 9338,
+   "uscita": 393,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "conferma posizioni|gemini-3-flash-preview": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 1
+  }
+ },
+ "esauriti": [
+  "gemini-3-flash-preview"
+ ]
+}

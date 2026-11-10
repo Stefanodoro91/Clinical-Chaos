@@ -83,6 +83,19 @@ def _cc_label(url):
     return f"CC {m.group(1).upper()} {m.group(2)}" if m else "Creative Commons"
 
 
+def lay_reference(post, meta=None):
+    """Pagina 4 di Latest Science: titolo dell'articolo e reference Harvard. Dai metadati Crossref se ci sono,
+    altrimenti dalla prima reference del post; None se non c'è nessuna reference."""
+    import content
+    if meta and meta.get("harvard"):
+        return {"title": meta.get("title", ""), "harvard": meta["harvard"]}
+    refs = post.get("references") or []
+    if not refs:
+        return None
+    title, ref = content.harvard_from_apa(refs[0])
+    return {"title": title, "harvard": ref}
+
+
 def prepare(post, drive):
     """Prepara i dati della slide fonte (META[post id]) e, se la licenza lo permette, l'immagine (THUMBS)."""
     try:
@@ -109,6 +122,7 @@ def prepare(post, drive):
         try:
             import content
             meta["apa"] = content._apa_from_crossref(item)   # prima reference del post (polish.lead_reference)
+            meta["harvard"] = content._harvard_from_crossref(item)   # pagina 4 di Latest Science (lay abstract)
         except Exception:
             pass
         META[post["id"]] = meta

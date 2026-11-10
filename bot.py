@@ -336,7 +336,8 @@ def latest_science_post(drive, posted):
     sources = load(SOURCES_FILE, [])
     cq = load(CLINICAL_QUEUE_FILE, [])
     done = {p.get("id") for p in posted}
-    cq = [q for q in cq if q.get("id") not in done]
+    cq = [q for q in cq if q.get("id") not in done
+          and (q.get("lay_abstract") or not CONFIG.get("science_lay_abstract", True))]   # niente post del formato vecchio
     try:
         for _ in range(2):
             if not cq and not _new_clinical_posts(drive, posted, sources, cq):
@@ -425,7 +426,7 @@ def quality_gate(post, drive, queue):
             rejected = rev.get("passed") is False
         if not rejected:
             content.fix_references(post)
-            missing = content.concreteness(post)
+            missing = [] if post.get("lay_abstract") else content.concreteness(post)   # Latest Science: niente numeri per scelta
             if missing and material:
                 print(f"  Post generico (manca: {', '.join(missing)}): provo ad arricchirlo dal materiale")
                 if content.enrich(post, material):
@@ -460,7 +461,8 @@ def plan_visuals(post):
     figures, credit = [], ""
     meta = sources.META.get(post.get("id"))
     data = sources.PDF.get(post.get("id"))
-    if meta and data and visuals.figure_license_ok(meta):
+    if meta and data and visuals.figure_license_ok(meta) and not post.get("lay_abstract"):   # lay abstract: le figure
+                                                                                                # svelerebbero i risultati
         try:
             figures = visuals.paper_figures(data)
             credit = f"{polish._cite_of(meta.get('apa', ''))} · {meta.get('license_label', 'CC')}".strip(" ·")
@@ -1144,7 +1146,8 @@ def main():
                 return
             if post.get("rubric") == "Clinical Insights":
                 post["category"] = content.CLINICAL_CATEGORY   # «Latest Science»: mai design/reporting/appraisal
-                content.clinical_takeaway(post)        # takeaway in chiave clinica/paziente, non di metodo
+                if not post.get("lay_abstract"):         # formato lay abstract: il take home viene dalle conclusioni
+                    content.clinical_takeaway(post)        # takeaway in chiave clinica/paziente, non di metodo
     if kind == "research" and CONFIG.get("areas_posting") and not post.get("area"):
         area = rubrics.area_of(post)
         if area:

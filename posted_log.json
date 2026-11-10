@@ -680,5 +680,24 @@
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "official_source": "NIH Guide PAR-25-145",
     "grant_title": "Clinical Characterization of Cancer Therapy-induced Adverse Sequelae and Mechanism-based Interventional Strategies"
+  },
+  {
+    "date": "2026-11-09",
+    "time": "2026-11-09T17:46:03+00:00",
+    "id": "positions-2026-11-09",
+    "title": "Academic positions for clinical researchers",
+    "source": "Academic positions",
+    "media_id": "18123422209940590",
+    "facebook_id": "1277022912171972_122116879443432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mzvi4ndrla2v",
+    "threads_id": "17930072244428488",
+    "kind": "positions",
+    "position_ids": [
+      "POS-23fa7540a65d",
+      "POS-443c045973a7",
+      "POS-d1fe2994718e",
+      "POS-44c964850256",
+      "POS-c37ffac4e3fb"
+    ]
   }
 ]

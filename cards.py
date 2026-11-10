@@ -1373,6 +1373,12 @@ def source_slide(post, cfg, index, total, meta, thumb=None):
         rows = [(" · ".join(str(x) for x in (meta.get("journal"), meta.get("year")) if x), "SemiBold", 36, c["accent"]),
                 (f"doi.org/{meta['doi']}" if meta.get("doi") else "", "Regular", 30, c["muted_text"]),
                 (f"Open access · {meta['license_label']}" if meta.get("license_label") else "", "Regular", 28, c["muted_text"])]
+    elif meta.get("harvard"):                 # Latest Science: titolo dell'articolo e reference in stile Harvard
+        y = 330
+        if meta.get("title"):
+            tf, tl, ts = fit(d, meta["title"], H_("Bold"), 56, 32, W - 2 * MARGIN, 440, 1.2)
+            y = draw_lines(d, tl, tf, ts, MARGIN, y, c["text"], 1.2) + 40
+        rows = [(meta["harvard"], "Regular", 32, c["muted_text"])]
     else:
         y = 400                                   # solo citazione: blocco centrato in verticale
         tf, tl, ts = fit(d, meta["title"], H_("Bold"), 52, 30, W - 2 * MARGIN, 420, 1.2)
@@ -1382,7 +1388,7 @@ def source_slide(post, cfg, index, total, meta, thumb=None):
                 (f"doi.org/{meta['doi']}" if meta.get("doi") else "", "Regular", 30, c["muted_text"])]
     for txt, weight, size, col in rows:
         if txt:
-            lf, ll, ls = fit(d, txt, weight, size, 22, W - 2 * MARGIN, 90, 1.25)
+            lf, ll, ls = fit(d, txt, weight, size, 22, W - 2 * MARGIN, 330 if txt == meta.get("harvard") else 90, 1.25)
             y = draw_lines(d, ll, lf, ls, MARGIN, y, col, 1.25) + 12
     return img
 
@@ -1679,7 +1685,10 @@ def render_carousel(post, cfg):
     merge = v2 and cfg.get("merge_takeaway_cta", True)          # regola e invito all'azione nella stessa slide
     import sources
     src = sources.META.get(post.get("id")) if (v2 and cfg.get("source_slide")) else None
-    total = len(post["slides"]) + 2 + has_facts + has_numbers + bool(extra) + bool(v2 and not merge) + bool(src)
+    lay = bool(post.get("lay_abstract")) and v2      # Latest Science lay abstract: hook, gap, take home, fonte (Harvard)
+    if lay:
+        src = sources.lay_reference(post, src)       # pagina 4 sempre presente: titolo + reference Harvard
+    total = (len(post["slides"]) + 2 + bool(src)) if lay else len(post["slides"]) + 2 + has_facts + has_numbers + bool(extra) + bool(v2 and not merge) + bool(src)
     use_images = cfg.get("ai_images", True) and not post.get("no_images")
     max_images = int(cfg.get("max_images_v3", 3)) if cfg.get("design_v3") else int(cfg.get("max_images_per_post", 2))
     used = 0
@@ -1733,9 +1742,15 @@ def render_carousel(post, cfg):
         pages.append(facts_slide({**post, "facts": extra["rows"], "facts_label": extra["label"]},
                                  cfg, len(pages) + 1, total))
         metas.append(fill_meta(extra.get("label", "grant tips"), "grant proposal budget funding"))
-    if src:                                   # l'articolo di origine, prima del messaggio finale
+    if lay:                                   # pagina 3: take home (con salva/commenta/condividi), pagina 4: fonte
+        pages.append(rule_slide(post, cfg, len(pages) + 1, total, with_cta=True))
+        if src:
+            pages.append(source_slide(post, cfg, len(pages) + 1, total, src, None))
+    elif src:                                 # l'articolo di origine, prima del messaggio finale
         pages.append(source_slide(post, cfg, len(pages) + 1, total, src, sources.THUMBS.get(post.get("id"))))
-    if v2 and merge:
+    if lay:
+        pass
+    elif v2 and merge:
         pages.append(rule_slide(post, cfg, len(pages) + 1, total, with_cta=True))
     elif v2:
         pages.append(rule_slide(post, cfg, len(pages) + 1, total))
