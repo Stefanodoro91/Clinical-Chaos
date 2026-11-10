@@ -488,6 +488,22 @@
    ],
    "takeaway": "Smart exoskeletons are generally safe, but evidence is heterogeneous and benefits for complex fractures are unestablished.",
    "category": "Clinical insight"
+  },
+  {
+   "date": "2026-11-28",
+   "time": "2026-11-28T15:47:00+00:00",
+   "id": "e4aaa03e",
+   "title": "Does wearable exoskeleton gait training improve walking after subacute stroke?",
+   "source": "Gait recovery exosk.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "Wearable exoskeletons for overground stroke gait",
+     "body": "While treadmill-based robots are common, whether overground exoskeleton training restores functional walking after subacute stroke remains unclear."
+    }
+   ],
+   "takeaway": "Overground exoskeleton training was not superior to conventional therapy for ambulatory function, but could provide lower extremity motor gains.",
+   "category": "Clinical insight"
   }
  ],
  "stories": [
@@ -1933,6 +1949,20 @@
   {
    "drive_id": "1OFnoDNWnSe5aN-Bxfu4Lc1iP9uzo8Bny",
    "name": "Smart exoskeleton.pdf",
+   "posts": 1,
+   "clinical_used": true,
+   "date": "2026-11-10"
+  },
+  {
+   "drive_id": "1P3Ceqw2CoUMWTv961jkMCv6Is0tF46S8",
+   "name": "Wearable exoskeleton.pdf",
+   "posts": 1,
+   "clinical_used": true,
+   "date": "2026-11-10"
+  },
+  {
+   "drive_id": "1opcvxH3uiFoIL97dpo-mp6D5Ryr3SUQm",
+   "name": "Gait recovery exosk.pdf",
    "posts": 1,
    "clinical_used": true,
    "date": "2026-11-10"
