@@ -446,30 +446,6 @@
    "category": "Bias & confounding"
   },
   {
-   "date": "2026-11-18",
-   "time": "2026-11-18T17:47:00+00:00",
-   "id": "af630a09",
-   "title": "Parametric vs nonparametric: the cost of power",
-   "source": "Parametric vs non parametric.pdf",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "Asymptotic Relative Efficiency",
-     "body": "Asymptotic Relative Efficiency defines how many more subjects are needed for a nonparametric test to have equivalent power as a parametric test for a fixed Type I error rate."
-    },
-    {
-     "heading": "The price of using nonparametric tests",
-     "body": "The ARE of the Wilcoxon Rank Sum Test versus the t-test when underlying assumptions are satisfied is zero point nine five five. There is minimal power loss when data are normal."
-    },
-    {
-     "heading": "Massive gains when normality fails",
-     "body": "Nonparametric tests are much more powerful than their parametric counterparts when underlying distributions are heavy tailed or have extreme skewness. In some cases ARE became infinite."
-    }
-   ],
-   "takeaway": "Nonparametric tests have minimal power loss when data are normal, but almost infinite power gains when normality fails.",
-   "category": "Statistics"
-  },
-  {
    "date": "2026-11-19",
    "time": "2026-11-19T17:47:00+00:00",
    "id": "checklist-prisma-search",
@@ -491,6 +467,26 @@
     }
    ],
    "takeaway": "Report every search string, database, filter and date: reproducible or it is not systematic.",
+   "category": "Reporting & publication"
+  },
+  {
+   "date": "2026-11-18",
+   "time": "2026-11-18T17:47:00+00:00",
+   "id": "7bc8e19b",
+   "title": "Why opaque reporting undermines research",
+   "source": "Critical appraisal",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The danger of opaque reporting",
+     "body": "Unclear methods are directly associated with biased conclusions and, less directly, with errors in biomedical publishing."
+    },
+    {
+     "heading": "Readers cannot judge study reliability",
+     "body": "Without knowing study details, readers cannot determine if results are trustworthy."
+    }
+   ],
+   "takeaway": "Without a clear understanding of how a study was done, readers cannot judge whether the findings are reliable.",
    "category": "Reporting & publication"
   }
  ],
