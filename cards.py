@@ -1247,7 +1247,7 @@ def closing(post, cfg, total):
     sy = card_top + 425
     x = MARGIN + 50
     # icone ufficiali (Simple Icons, CC0) dei profili attivi: Bluesky e Threads solo se configurati
-    nets = post.get("networks") or (["instagram", "facebook"] + [n for n in ("bluesky", "threads") if cfg.get(f"{n}_handle")])
+    nets = post.get("networks") or (["instagram", "facebook"] + [n for n in ("bluesky", "threads") if cfg.get(f"{n}_handle")] + ["linkedin"])
     for n in nets:
         size = paste_logo(img, f"icon-{n}", x, sy, height=44)
         if size is None:                       # icone mancanti: disegno semplificato di riserva
@@ -1438,7 +1438,7 @@ def cta_slide(post, cfg, index, total):
         y += 250
     d.text((MARGIN, y + 10), "More: link in bio", font=font("Bold", 46), fill=HLT(True, c["accent"]))
     x, yy = MARGIN, y + 100
-    nets = post.get("networks") or (["instagram", "facebook"] + [n for n in ("threads", "bluesky") if cfg.get(f"{n}_handle")])
+    nets = post.get("networks") or (["instagram", "facebook"] + [n for n in ("threads", "bluesky") if cfg.get(f"{n}_handle")] + ["linkedin"])
     for n in nets:
         if paste_logo(img, f"icon-{n}", x, yy, height=48):
             x += 70
