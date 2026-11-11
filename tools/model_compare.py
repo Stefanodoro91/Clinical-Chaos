@@ -73,6 +73,15 @@ def call(provider, model, parts, schema, temperature=0.3, task="altro", thinking
         # OpenRouter riceve solo testo: il PDF dell'articolo si passa come testo estratto (stesso contenuto)
         parts = [{"text": content.material_text(p) if "text" not in p else p["text"]} for p in parts]
         parts = [{"text": "\n\n".join(p["text"] for p in parts)}]
+    if provider == "openrouter":       # tetto ai token in uscita: senza, OpenRouter riserva il massimo del modello e chiede credito in più
+        key = os.environ.get("OPENROUTER_API_KEY")
+        if not key:
+            raise content.ModelUnavailable("OPENROUTER_API_KEY mancante")
+        return content._openai_compatible("https://openrouter.ai/api/v1/chat/completions", key, model, "openrouter",
+                                          content._parts_to_text(parts), schema, temperature, task,
+                                          extra={"max_tokens": 16000},
+                                          headers={"HTTP-Referer": "https://clinicalresearchchaos.com",
+                                                   "X-Title": "Clinical Research Chaos"})
     return _orig_call(provider, model, parts, schema, temperature, task, thinking)
 
 
