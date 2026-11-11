@@ -1840,6 +1840,7 @@ def header_logo(cfg, accent=None, ink="#FFFFFF", kind="home", href=None, height=
         return "#%02x%02x%02x" % tuple(round(v + (255 - v) * k) for v in (r, g, b))
 
     core, core_in = lighten(acc, 0.68), lighten(acc, 0.42)
+    four = bool(cfg.get("site_logo_4c")) and kind == "home"      # simbolo a 4 colori (solo header della home)
     frags = _fragments()
     centres = [(x + w / 2, y + h / 2) for _, x, y, w, h, _r in frags]
     per, rows = 96, 4                                   # l'orbita: 4 giri concentrici da 96 posizioni
@@ -1853,6 +1854,11 @@ def header_logo(cfg, accent=None, ink="#FFFFFF", kind="home", href=None, height=
     cubes = [""] * len(frags)
     for slot, i in enumerate(order):
         (role, x, y, w, h, rot), (cx, cy) = frags[i], centres[i]
+        fill, c1 = cols[role], (core_in if rows - 2 <= slot % rows else core)
+        if four and role in ("teal", "deep"):               # simbolo a 4 colori: il colore dipende dal quadrante
+            base = _quad4(cx, cy)
+            fill = base if role == "teal" else "#%02x%02x%02x" % tuple(round(int(base.lstrip("#")[k:k + 2], 16) * 0.84) for k in (0, 2, 4))
+            c1 = lighten(base, 0.42 if slot % rows >= rows - 2 else 0.68)
         row, idx = slot % rows, (slot // rows) * step
         tx, ty = ring[row][int(idx) % per]
         bend = 0.55 * math.hypot(tx - cx, ty - cy) * math.cos(ang((tx, ty)))   # linea di campo: piega al contrario sui due lati
@@ -1861,8 +1867,8 @@ def header_logo(cfg, accent=None, ink="#FFFFFF", kind="home", href=None, height=
         nrm = math.hypot(nx, ny) or 1
         cubes[i] = (f'<g data-x="{cx:.1f}" data-y="{cy:.1f}" data-row="{row}" data-i="{idx:.2f}" '
                     f'data-cx="{mx + nx / nrm * bend:.1f}" data-cy="{my + ny / nrm * bend:.1f}" '
-                    f'data-c1="{core_in if row >= rows - 2 else core}">'  # nucleo acceso, quasi bianco; il verde sta nell'alone
-                    f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" rx="0" fill="{cols[role]}"'
+                    f'data-c1="{c1}">'  # nucleo acceso, quasi bianco; il colore sta nell'alone
+                    f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" rx="0" fill="{fill}"'
                     + (f' transform="rotate({rot:.1f} {cx:.2f} {cy:.2f})"' if rot else "") + "/></g>")
     # luminescenza: due aloni verdi sfocati dietro i frammenti (una copia sola, non il doppio dei nodi)
     defs = (f'<filter id="crcGlowA" x="-45%" y="-45%" width="190%" height="190%">'
@@ -2163,7 +2169,18 @@ def og_tags(cfg, title, description, path):
             f'<meta property="og:description" content="{escape(description, quote=True)}">\n'
             f'<meta property="og:url" content="{escape(site_url(cfg, path), quote=True)}">\n'
             f'<meta property="og:image" content="{escape(site_url(cfg, "og.png"), quote=True)}">\n'
-            f'<meta name="twitter:card" content="summary_large_image">')
+            f'<meta name="twitter:card" content="summary_large_image">' + favicon_tags(cfg))
+
+
+def favicon_tags(cfg):
+    """Icona del sito per le ricerche Google e le schede del browser: solo con config «site_favicon».
+    Google chiede un quadrato multiplo di 48 px, raggiungibile e stabile."""
+    if not cfg.get("site_favicon"):
+        return ""
+    return ('\n<link rel="icon" href="/favicon.ico" sizes="48x48">'
+            '\n<link rel="icon" type="image/png" href="/favicon-96.png" sizes="96x96">'
+            '\n<link rel="icon" type="image/png" href="/favicon-192.png" sizes="192x192">'
+            '\n<link rel="apple-touch-icon" href="/apple-touch-icon.png">')
 
 
 AREA_LABELS = {"rehab": "Rehabilitation", "engineering": "Clinical & biomedical engineering",
@@ -2412,6 +2429,19 @@ def site_accent(cfg, kind):
         return SITE_V4[kind]
     return {"grant": cfg.get("grant_accent", "#FFB547"), "positions": cfg.get("positions_accent", "#A78BFA"),
             "methods": "#6EC1FF", "science": "#6EC1FF"}[kind]
+
+
+LOGO_4C = {"ul": SITE_V4["methods"], "ur": SITE_V4["grant"], "lr": SITE_GREEN, "ll": SITE_V4["positions"]}   # simbolo a 4 colori: i colori attuali del sito
+
+
+def _quad4(cx, cy):
+    """Colore di un cubetto d'accento nel simbolo a 4 colori: blu in alto a sinistra, arancio in alto a destra,
+    verde acqua in basso a destra, viola in basso a sinistra (centro del simbolo = 100,100 nel suo riquadro)."""
+    dx, dy = cx - 100, cy - 100
+    if dx < 0:
+        return LOGO_4C["ul"] if dy < 11.5 else LOGO_4C["ll"]      # a sinistra il confine blu/viola scende un po'
+    return LOGO_4C["ur"] if dy < 0 else LOGO_4C["lr"]
+
 
 
 SECTIONS = [("methods", "methodology.html", "Design, Reporting &amp; Appraisal"),
