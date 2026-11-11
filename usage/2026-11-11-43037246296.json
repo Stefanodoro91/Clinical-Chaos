@@ -1,0 +1,33 @@
+{
+ "workflow": "Aggiorna bandi e pagina link in bio",
+ "quota_day": "2026-11-11",
+ "consumo": {
+  "conferma bandi|gemini-3.6-flash": {
+   "richieste": 1,
+   "ingresso": 12765,
+   "uscita": 460,
+   "ragionamento": 1322,
+   "respinte": 3,
+   "versione": "gemini-3.6-flash"
+  },
+  "conferma bandi|gemini-3-flash-preview": {
+   "richieste": 3,
+   "ingresso": 36797,
+   "uscita": 1469,
+   "ragionamento": 188736,
+   "respinte": 0,
+   "versione": "gemini-3-flash-preview"
+  },
+  "conferma bandi|gemini-3.5-flash": {
+   "richieste": 2,
+   "ingresso": 24566,
+   "uscita": 984,
+   "ragionamento": 3818,
+   "respinte": 4,
+   "versione": "gemini-3.6-flash"
+  }
+ },
+ "esauriti": [
+  "gemini-3.6-flash"
+ ]
+}

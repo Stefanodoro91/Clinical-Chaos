@@ -4237,20 +4237,21 @@
   },
   "GG-PAR-25-358": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-11",
     "official_source": "NIH Guide PAR-25-358",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-358.html",
     "is_open_call": "yes",
     "title": "NEI Clinical Research Study Planning Grant Program (R34 Clinical Trial Not Allowed)",
-    "programme": "NIH – US National Institutes of Health",
+    "programme": "National Institutes of Health - National Eye Institute",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity supports researchers in planning large-scale clinical vision research projects, including randomized clinical trials and epidemiological studies. It funds the development of study protocols, manuals of procedures, and preliminary studies to assess recruitment potential. Funds cannot be used to test therapeutic interventions. Eligible applicants include higher education institutions, non-profits, for-profit organizations, governments, and foreign organizations. The goal is to ensure rigorous preparation for future clinical studies.",
+    "summary": "This funding opportunity supports planning efforts for collaborative, large-scale clinical vision research projects and epidemiologic studies addressing eye and vision conditions. Grants fund activities such as developing a Manual of Procedures, finalizing study protocols, establishing collaborative arrangements, and conducting preliminary feasibility studies (up to $150,000 per year in direct costs for up to two years). Higher education institutions, non-profits, for-profit entities, government agencies, and foreign organizations are eligible to apply.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
+    "model": "gemini-3.6-flash",
     "due_dates": [
       "2025-03-31",
       "2025-06-16",
@@ -4279,26 +4280,33 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as the PD/PI is invited to work with their organization.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2025-02-16 | February 16, 2025 * March 16, 2025 * May 07, 2025 *"
+    "deadline_raw": "2026-11-16 | October 16, 2026 * November 16, 2026 * Not Applicable March 2027 May 2027 July 2027 .",
+    "confirmed": {
+      "model": "gemini-3.6-flash",
+      "date": "2026-11-11",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-PA-25-306": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-11",
     "official_source": "NIH Guide PA-25-306",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PA-25-306.html",
     "is_open_call": "yes",
     "title": "NIH Exploratory/Developmental Research Project Grant (Parent R21 Clinical Trial Required)",
-    "programme": "NIH – US National Institutes of Health",
+    "programme": "R21 Exploratory/Developmental Research Grant",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "The National Institutes of Health funding opportunity supports exploratory and developmental research projects during their early and conceptual stages to drive biomedical, behavioral, or clinical breakthroughs. Funded activities include high-risk, innovative studies, novel techniques, and methodologies, and applicants are strictly required to propose at least one clinical trial. Eligible applicant organizations include higher education institutions, non-profits, for-profit organizations, governments, and non-domestic foreign entities.",
+    "summary": "The NIH Exploratory/Developmental Research Grant (R21) supports exploratory and developmental research projects in their early and conceptual stages. Projects should propose novel, high-risk scientific ideas, model systems, or methodologies with potential to advance biomedical, behavioral, or clinical research. Proposed projects must require at least one clinical trial and align with the scientific mission of a participating NIH Institute or Center. Eligible applicants include higher education institutions, non-profits, for-profit entities, and foreign organizations.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
+    "model": "gemini-3.6-flash",
     "due_dates": [
       "2025-06-16",
       "2025-09-04",
@@ -4327,9 +4335,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research is invited to work with their organization to apply.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2025-02-16 | February 16, 2025 * March 16, 2025 * May 07, 2025 * July 2025 October 2025 December 2025"
+    "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3.6-flash",
+      "date": "2026-11-11",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-PAR-25-321": {
     "status": "ok",
@@ -4381,20 +4395,21 @@
   },
   "GG-PAR-25-346": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-11",
     "official_source": "NIH Guide PAR-25-346",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-346.html",
     "is_open_call": "yes",
-    "title": "Exploratory/Developmental Bioengineering Research Grants (EBRG)",
-    "programme": "National Institutes of Health (NIH)",
+    "title": "Exploratory/Developmental Bioengineering Research Grants (EBRG) (R21 Clinical Trial Not Allowed)",
+    "programme": "Exploratory/Developmental Bioengineering Research Grants (EBRG) (R21)",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This National Institutes of Health funding opportunity encourages exploratory and developmental bioengineering research grant applications to demonstrate the feasibility and potential utility of new capabilities or improvements in biomedical, pre-clinical, or clinical research and care delivery. Funded activities include developing novel tools, technologies, or methods without clinical trials. Eligible applicants include higher education institutions, non-profits, for-profit organizations, governments, and foreign organizations.",
+    "summary": "This NIH Exploratory/Developmental Bioengineering Research Grant (EBRG) supports early-stage research to demonstrate the feasibility of new bioengineering capabilities or improvements in biomedical, pre-clinical, or clinical research. It funds projects that apply engineering principles to solve problems in medical care and cancer research. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and foreign entities. Clinical trials are not allowed. The budget is limited to $275,000 over two years.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2025-02-16",
       "2025-06-16",
@@ -4423,9 +4438,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2025-02-16 | February 16, 2025 *"
+    "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-11",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-PAR-25-144": {
     "status": "ok",
@@ -8028,21 +8049,21 @@
   },
   "GG-PAR-25-266": {
     "status": "ok",
-    "checked": "2026-10-26",
+    "checked": "2026-11-11",
     "official_source": "NIH Guide PAR-25-266",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-266.html",
     "is_open_call": "yes",
-    "title": "Innovative Screening Approaches and Therapies for Screenable Disorders in Newborns (R21)",
-    "programme": "NIH – US National Institutes of Health",
+    "title": "Innovative Screening Approaches and Therapies for Screenable Disorders in Newborns (R21 - Clinical Trial Optional)",
+    "programme": "NIH R21 Exploratory/Developmental Research Grant",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity encourages exploratory research focused on developing novel screening approaches and therapeutic interventions for conditions for which newborn screening has been implemented or for genetic conditions that could benefit from early detection. Supported by the NICHD, the R21 mechanism funds exploratory, novel studies or pilot data generation. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, governments, and international organizations.",
+    "summary": "This funding opportunity supports exploratory and developmental research relevant to novel screening approaches and therapeutic interventions for screenable conditions in newborns, as well as genetic disorders that could benefit from early detection. Applicants can propose basic, translational, or clinical research, including optional clinical trials. Eligible applicants include higher education institutions, non-profits, for-profit organizations, government entities, and foreign organizations.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
-    "model": "gemini-3.5-flash-lite",
+    "model": "gemini-3.6-flash",
     "due_dates": [
       "2025-02-16",
       "2025-06-16",
@@ -8071,9 +8092,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the research as Program Director/Principal Investigator is invited to apply.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027"
+    "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3.6-flash",
+      "date": "2026-11-11",
+      "changed": [],
+      "screening_model": "gemini-3.5-flash-lite"
+    }
   },
   "GG-PAR-25-244": {
     "status": "ok",
@@ -8434,21 +8461,21 @@
   },
   "GG-PAR-25-291": {
     "status": "ok",
-    "checked": "2026-10-27",
+    "checked": "2026-11-11",
     "official_source": "NIH Guide PAR-25-291",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-291.html",
     "is_open_call": "yes",
-    "title": "Utilizing Invasive Recording and Stimulating Opportunities in Humans to Advance Neural Circuitry Understanding of Mental Health",
-    "programme": "NIH – US National Institutes of Health",
+    "title": "Utilizing Invasive Recording and Stimulating Opportunities in Humans to Advance Neural Circuitry Understanding of Mental Health Disorders…",
+    "programme": "National Institute of Mental Health (NIMH)",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity encourages exploratory and developmental research using invasive neural recording and stimulation in humans to understand the neural circuitry underlying mental health disorders. The aim is to fund short, higher-risk projects addressing translational mental health questions with high spatial and temporal resolution. Eligible applicants include higher education institutions, non-profits, for-profit organizations, governments, and foreign entities.",
+    "summary": "This call supports research using invasive neural recording and stimulation in humans to understand the neural circuitry of mental health disorders. It focuses on high-resolution exploration of moods, emotions, and behaviors to inform future brain stimulation therapies. Multidisciplinary teams from academic, nonprofit, or for-profit organizations worldwide can apply. The R21 mechanism funds exploratory, high-risk projects for up to two years, emphasizing conceptual innovation and translational potential over preliminary data.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
-    "model": "gemini-3.5-flash-lite",
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2025-02-16",
       "2025-06-16",
@@ -8479,7 +8506,13 @@
     "deadline_source": "nih_key_dates",
     "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2027-02-16 | February 16, 2027 *"
+    "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-11",
+      "changed": [],
+      "screening_model": "gemini-3.5-flash-lite"
+    }
   },
   "WEB-3b7ad7a1b37b": {
     "status": "ok",
@@ -8514,21 +8547,21 @@
   },
   "GG-PAR-25-286": {
     "status": "ok",
-    "checked": "2026-10-27",
+    "checked": "2026-11-11",
     "official_source": "NIH Guide PAR-25-286",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-286.html",
     "is_open_call": "yes",
-    "title": "Neuromodulation/Neurostimulation Device Development for Mental Health Applications",
-    "programme": "NIH – US National Institutes of Health",
+    "title": "Neuromodulation/Neurostimulation Device Development for Mental Health Applications (R21 Clinical Trial Not Allowed)",
+    "programme": "National Institute of Mental Health (NIMH) R21 Exploratory/Developmental Research Grant",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity encourages the development of next-generation brain stimulation devices and hardware or software enhancements for treating mental health disorders. Supported projects focus on engineering development and benchtop testing, aiming to improve spatiotemporal precision, depth, and multi-focal or closed-loop capabilities. Higher education institutions, non-profits, for-profit organizations, and foreign entities can apply, utilizing multidisciplinary teams.",
+    "summary": "This funding opportunity supports the development of next-generation brain stimulation devices for mental health disorders. It encourages the creation of novel devices or significant hardware/software enhancements to existing FDA-approved technologies to improve precision and effectiveness. Projects should focus on engineering development and validation, though limited animal or non-clinical human testing is permitted. Multidisciplinary teams with expertise in engineering, neuroscience, and clinical science are required. This R21 mechanism supports high-risk, exploratory research without requiring preliminary data.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
-    "model": "gemini-3.5-flash-lite",
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2025-02-16",
       "2025-06-16",
@@ -8557,9 +8590,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual with the skills and resources; must be part of a multi-disciplinary team with expertise in engineering, neuroscience, and clinical science.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027 ."
+    "deadline_raw": "2027-02-16 | February 16, 2027 * March 16, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-11",
+      "changed": [],
+      "screening_model": "gemini-3.5-flash-lite"
+    }
   },
   "GG-RFA-DK-27-116": {
     "status": "ok",
