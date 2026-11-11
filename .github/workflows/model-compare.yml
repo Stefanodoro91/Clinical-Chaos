@@ -1,0 +1,50 @@
+name: Confronto modelli di scrittura (Latest Science e Methodology)
+
+# Stesse fonti per tutti i modelli OpenRouter; solo chi scrive cambia. Non pubblica niente: i PDF vanno su Drive
+# nei file segnaposto di compare_files.json. mode=list stampa i modelli disponibili con i prezzi.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "list = elenco modelli e prezzi; run = genera i post"
+        default: "list"
+      models:
+        description: "slug OpenRouter separati da virgola (solo per run)"
+        default: ""
+      n:
+        description: "post per rubrica"
+        default: "3"
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Confronto
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GDRIVE_DONE_FOLDER_ID: ${{ secrets.GDRIVE_DONE_FOLDER_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          COMPARE_MODE: ${{ inputs.mode }}
+          MODELS: ${{ inputs.models }}
+          N: ${{ inputs.n }}
+          PYTHONUNBUFFERED: "1"
+        run: python tools/model_compare.py
+      - name: Riepilogo
+        if: always()
+        run: cat compare_report.txt || true
