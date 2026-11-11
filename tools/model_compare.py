@@ -75,7 +75,7 @@ def route(task):
 
 
 def call(provider, model, parts, schema, temperature=0.3, task="altro", thinking=None):
-    if provider == "openrouter" and not all("text" in p for p in parts):
+    if provider != "gemini" and not all("text" in p for p in parts):
         # OpenRouter riceve solo testo: il PDF dell'articolo si passa come testo estratto (stesso contenuto)
         parts = [{"text": content.material_text(p) if "text" not in p else p["text"]} for p in parts]
         parts = [{"text": "\n\n".join(p["text"] for p in parts)}]
