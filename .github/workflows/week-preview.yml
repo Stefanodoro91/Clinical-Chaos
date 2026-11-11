@@ -24,14 +24,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 240
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - name: Dati e quote di oggi da main
         # quote condivise con i giri di main; bandi, posizioni, coda e pubblicazioni simulate più recenti sono su main
         run: |
           git fetch --depth=1 origin main
           git checkout origin/main -- usage grants_verified.json positions.json posted_log.json queue.json stories_log.json || true
           git reset -q
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@v4
         with:
           python-version: "3.12"
           cache: pip
@@ -72,7 +72,7 @@ jobs:
           git diff --cached --quiet || (git commit -q -m "Anteprime: avanzamento del piano e consumo modelli" && git push -q origin "HEAD:$GITHUB_REF_NAME")
       - name: Copia delle uscite e consumo modelli
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: settimana-di-prova
           path: |

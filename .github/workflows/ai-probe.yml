@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: "3.12"
           cache: pip
@@ -41,7 +41,7 @@ jobs:
           mkdir -p /tmp/pf && cp -r probe_fig probe.md /tmp/pf/ 2>/dev/null || true
           git checkout -q --orphan probe-figures && git rm -rq --cached . && git clean -fdq -e probe_fig -e probe.md
           cp -r /tmp/pf/* . && git add probe_fig probe.md && git commit -qm "Prova figure" && git push -qf origin probe-figures
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: probe
