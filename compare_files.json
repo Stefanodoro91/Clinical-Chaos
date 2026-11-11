@@ -1,1 +1,26 @@
-{}
+{
+ "deepseek/deepseek-v4-pro-0813|LS|1": "1AnCrJUfRaZLyHFDkjQoC6KtR3LHOzAfD",
+ "deepseek/deepseek-v4-pro-0813|LS|2": "1H5hnKgr_ZSru9sz-XpKBTgm1Y9tRlH1Y",
+ "deepseek/deepseek-v4-pro-0813|LS|3": "1RvNL1p1GxZndj_KRd3kOprV2_Vuz6sDC",
+ "deepseek/deepseek-v4-pro-0813|ME|1": "1TaTCmTDTKPRU0a42fay8HNmT4QvFZN1j",
+ "deepseek/deepseek-v4-pro-0813|ME|2": "1H9R5glI3hSwJiB82IhRr32oRM7gCp6Az",
+ "deepseek/deepseek-v4-pro-0813|ME|3": "1CgNsn72jgdDgKJvdwIBTWxhuLFrKzgvE",
+ "openai/gpt-6.1-terra|LS|1": "1BvJNj1tgvTjnPHIHJlGWgi0jLSYeHWH0",
+ "openai/gpt-6.1-terra|LS|2": "11Awwz5n40E2p3HhZ8NNLw58575P4vtxc",
+ "openai/gpt-6.1-terra|LS|3": "1Cs8YCFIa4vWVdK79a1PeEspY7IpvBjJx",
+ "openai/gpt-6.1-terra|ME|1": "1oHbrUZ_h3J5MUDznXdhjDWptpDBDeD2Y",
+ "openai/gpt-6.1-terra|ME|2": "18wtuSP6E74qaGzqX0WatioZP56uvp-le",
+ "openai/gpt-6.1-terra|ME|3": "1m7X12yhLYwlRbnothveMX70aUdpIQv_V",
+ "anthropic/claude-sonnet-5.5|LS|1": "1NQik3Wt4lBEeDah5CQsDDopnIRhDz2OF",
+ "anthropic/claude-sonnet-5.5|LS|2": "1osMd980NkHIlTisnCC2J9L5hZttU4E81",
+ "anthropic/claude-sonnet-5.5|LS|3": "1TmvdJun3h0aMxf67K_1TgiJa6jGklHhC",
+ "anthropic/claude-sonnet-5.5|ME|1": "1v_aw8BNg8FO3tByXUDWUaxVrrEmq1MOW",
+ "anthropic/claude-sonnet-5.5|ME|2": "12HADvV5b_DmtVPLwyoV2riSgeiI4VnOr",
+ "anthropic/claude-sonnet-5.5|ME|3": "1kDeUcyjHCr6LqMHaYiountryI_pLXaoJ",
+ "moonshotai/kimi-k3.1-pro|LS|1": "1oKhtjNCGqWlibUvOe-02tZOazeh5kL2I",
+ "moonshotai/kimi-k3.1-pro|LS|2": "1Yf-mT7eDY63lT5-J-PHUi8eWR-7RnfCw",
+ "moonshotai/kimi-k3.1-pro|LS|3": "1Nd1myCYD4stB3fopSWvTh9W8f0DzlDff",
+ "moonshotai/kimi-k3.1-pro|ME|1": "1pNuARAM6tHvCXNfxrZSFpF4GGnp5Vx_Y",
+ "moonshotai/kimi-k3.1-pro|ME|2": "1j-m77r6Q1tA0yidGDvVknmc0gLvTch5c",
+ "moonshotai/kimi-k3.1-pro|ME|3": "1CnoH8nWc0l-PfBeFBD8oXdmubKJevtm1"
+}
