@@ -1,0 +1,51 @@
+{
+ "workflow": "Settimana di prova su Drive",
+ "quota_day": "2026-11-11",
+ "consumo": {
+  "controllo doppioni|groq-gpt-oss-120b": {
+   "richieste": 1,
+   "ingresso": 1431,
+   "uscita": 443,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "nuovi post da Drive|gemini-3.8-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 1
+  },
+  "nuovi post da Drive|gemini-3.6-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 3
+  },
+  "nuovi post da Drive|gemini-3-flash-preview": {
+   "richieste": 1,
+   "ingresso": 9059,
+   "uscita": 606,
+   "ragionamento": 1556,
+   "respinte": 0,
+   "versione": "gemini-3-flash-preview"
+  },
+  "critica|groq-qwen3.8-27b": {
+   "richieste": 1,
+   "ingresso": 5166,
+   "uscita": 61,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "schemi slide|gemini-3.5-flash-lite": {
+   "richieste": 1,
+   "ingresso": 865,
+   "uscita": 48,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  }
+ },
+ "esauriti": []
+}

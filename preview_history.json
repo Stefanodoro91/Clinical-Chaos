@@ -472,6 +472,22 @@
    ],
    "takeaway": "Report every search string, database, filter and date: reproducible or it is not systematic.",
    "category": "Reporting & publication"
+  },
+  {
+   "date": "2026-11-21",
+   "time": "2026-11-21T15:47:00+00:00",
+   "id": "5548b74b",
+   "title": "Does watching a task before trying it in a virtual environment help restore hand function?",
+   "source": "str-57-1136.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The clinical question behind it",
+     "body": "Researchers studied adults with hemiplegia to see if observing goal-directed daily actions before practicing them in virtual reality improves paretic hand dexterity."
+    }
+   ],
+   "takeaway": "Action observation combined with virtual reality appears to be more effective than virtual reality alone for promoting upper limb motor recovery.",
+   "category": "Clinical insight"
   }
  ],
  "stories": [
@@ -1934,6 +1950,13 @@
    "posts": 1,
    "clinical_used": true,
    "date": "2026-11-10"
+  },
+  {
+   "drive_id": "1lAgduty8AVqmpfhkGp-6zjoQ0jomQZho",
+   "name": "str-57-1136.pdf",
+   "posts": 1,
+   "clinical_used": true,
+   "date": "2026-11-11"
   }
  ]
 }
