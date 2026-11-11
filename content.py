@@ -196,6 +196,37 @@ def _pdf_part(data):
     return {"text": text[:MAX_TEXT_CHARS]}
 
 
+def pdf_abstract_text(data, max_chars=6000):
+    """Estrae titolo, abstract e dati bibliografici da un PDF.
+
+    Per i provider non-Gemini (Groq, OpenRouter) il testo completo è troppo
+    lungo e causa 413. Passare solo la sezione rilevante (~2-4 k char) è
+    sufficiente per il prompt del nuovo formato (titolo, concetto, quesito,
+    reference Harvard).
+
+    Strategia:
+    1. Legge le prime 3 pagine (di solito bastano per titolo + abstract).
+    2. Cerca la sezione "Abstract" / "Introduction" e ritaglia intorno.
+    3. Se non la trova, restituisce l'inizio del testo troncato a max_chars.
+    """
+    import re as _re2
+    from pypdf import PdfReader
+    pages = PdfReader(io.BytesIO(data)).pages
+    # Prime 3 pagine: contengono quasi sempre titolo + abstract
+    text = "\n".join((p.extract_text() or "") for p in pages[:3])
+    # Cerca inizio abstract
+    m = _re2.search(r'\b(Abstract|ABSTRACT|Summary|SUMMARY)\b', text)
+    if m:
+        snippet = text[max(0, m.start() - 300):m.start() + max_chars]
+    else:
+        snippet = text[:max_chars]
+    # Cerca fine abstract (intro o keywords): taglia lì
+    end = _re2.search(r'\b(Introduction|INTRODUCTION|Background|Keywords|KEYWORDS)\b', snippet[400:])
+    if end:
+        snippet = snippet[:400 + end.start() + 200]   # lascia un po' di contesto oltre il titolo della sezione
+    return snippet.strip()
+
+
 def _pptx_text(data):
     from pptx import Presentation
     out = []

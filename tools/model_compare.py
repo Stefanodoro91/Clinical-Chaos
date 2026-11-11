@@ -76,8 +76,20 @@ def route(task):
 
 def call(provider, model, parts, schema, temperature=0.3, task="altro", thinking=None):
     if provider != "gemini" and not all("text" in p for p in parts):
-        # OpenRouter riceve solo testo: il PDF dell'articolo si passa come testo estratto (stesso contenuto)
-        parts = [{"text": content.material_text(p) if "text" not in p else p["text"]} for p in parts]
+        # Non-Gemini: sostituisce i PDF con titolo+abstract+reference (max 6 k char).
+        # Passare il testo completo causa 413 su Groq (contesto troppo corto).
+        new_parts = []
+        for p in parts:
+            if "text" in p:
+                new_parts.append(p)
+            else:
+                try:
+                    import base64 as _b64
+                    raw = _b64.b64decode(p["inline_data"]["data"])
+                    new_parts.append({"text": content.pdf_abstract_text(raw)})
+                except Exception:
+                    new_parts.append({"text": content.material_text(p)})
+        parts = [{"text": "\n\n".join(p["text"] for p in new_parts)}]
         parts = [{"text": "\n\n".join(p["text"] for p in parts)}]
     if provider == "openrouter":       # tetto ai token in uscita: senza, OpenRouter riserva il massimo del modello e chiede credito in più
         key = os.environ.get("OPENROUTER_API_KEY")
@@ -85,7 +97,8 @@ def call(provider, model, parts, schema, temperature=0.3, task="altro", thinking
             raise content.ModelUnavailable("OPENROUTER_API_KEY mancante")
         return content._openai_compatible("https://openrouter.ai/api/v1/chat/completions", key, model, "openrouter",
                                           content._parts_to_text(parts), schema, temperature, task,
-                                          extra={"max_tokens": 16000},
+                                          extra={"max_tokens": 4000,
+                                                 "response_format": {"type": "json_object"}},
                                           headers={"HTTP-Referer": "https://clinicalresearchchaos.com",
                                                    "X-Title": "Clinical Research Chaos"})
     return _orig_call(provider, model, parts, schema, temperature, task, thinking)
