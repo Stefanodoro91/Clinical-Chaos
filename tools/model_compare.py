@@ -60,6 +60,7 @@ FILES = json.loads((ROOT / "compare_files.json").read_text(encoding="utf-8"))
 MODELS = [m.strip() for m in (os.environ.get("MODELS") or "").split(",") if m.strip()]
 FORCED = {"nuovi post da Drive", "takeaway clinico", "revisione slide", "verifica fatti"}
 CURRENT = {"model": None}
+WRITER = {}
 
 _orig_route = content.route_for
 _orig_call = content.call_model
@@ -106,9 +107,9 @@ def sources():
         part = content.material_part(drive, f)
         if part and content.license_status(content.material_text(part))[0] == "ok":
             ok.append(f)
-        if len(ok) >= N:
+        if len(ok) >= N + 3:
             break
-    return drive, ok, method[:N]
+    return drive, ok, method[:N + 3]
 
 
 def pdf_of(name):
@@ -135,6 +136,7 @@ def one(model, kind, idx, f, drive):
     brand = bot.CONFIG["brand_name"]
     if kind == "LS":
         posts, focus, why = content.clinical_posts(part, f["name"], brand, [], 1)
+        WRITER[key] = content.LAST_MODEL
         if not posts:
             return f"{key}: nessun messaggio clinico ({focus}) — {why[:120]}"
         for p in posts:
@@ -143,6 +145,7 @@ def one(model, kind, idx, f, drive):
         os.environ["PREVIEW_DATE"] = "2026-11-14"       # sabato: Latest Science
     else:
         posts = content.generate_posts(part, f["name"], brand, 1, [])
+        WRITER[key] = content.LAST_MODEL
         if not posts:
             return f"{key}: nessun post dalla fonte"
         for p in posts:
@@ -161,7 +164,7 @@ def one(model, kind, idx, f, drive):
     title = json.loads(pj.read_text(encoding="utf-8")).get("title", "")
     pdf = pdf_of(f"{kind}{idx}-{model.replace('/', '_')}.pdf")
     saved = bool(fid and pdf and drive_preview.upload(pdf, None, "application/pdf", bot.CONFIG, file_id=fid))
-    return f"{key}: ok in {int(time.time() - t0)} s «{title[:80]}»" + ("" if saved else " — NON salvato su Drive")
+    return f"{key}: ok in {int(time.time() - t0)} s, scritto da {WRITER.get(key)} «{title[:80]}»" + ("" if saved else " — NON salvato su Drive")
 
 
 def main():
@@ -173,15 +176,20 @@ def main():
     for model in MODELS:
         print(f"\n######## {model} ########", flush=True)
         for kind, files in (("LS", clin), ("ME", meth)):
-            for i, f in enumerate(files, 1):
+            done = 0
+            for f in files:                      # fonti di riserva: si va avanti finché ci sono N post riusciti
+                if done >= N:
+                    break
                 try:
-                    line = one(model, kind, i, f, drive)
+                    line = one(model, kind, done + 1, f, drive)
                 except Exception as e:
                     traceback.print_exc()
-                    line = f"{model}|{kind}|{i}: errore {str(e)[:200]}"
+                    line = f"{model}|{kind}|{done + 1}: errore {str(e)[:200]}"
+                done += ": ok in" in line
+                line += f"  [fonte: {f['name']}]"
                 print(line, flush=True)
                 report.append(line)
-        u = {k: v for k, v in content.USAGE.items() if f"openrouter-{model.split('/')[-1]}" in k}
+        u = {k: v.get("richieste") for k, v in content.USAGE.items() if k.split("|")[0] in FORCED}
         report.append(f"  consumo {model}: {json.dumps(u, ensure_ascii=False)}")
     print("\n===== RIEPILOGO =====\n" + "\n".join(report))
     (ROOT / "compare_report.txt").write_text("\n".join(report), encoding="utf-8")
