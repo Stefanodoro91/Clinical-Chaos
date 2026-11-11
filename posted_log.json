@@ -699,5 +699,25 @@
       "POS-44c964850256",
       "POS-c37ffac4e3fb"
     ]
+  },
+  {
+    "date": "2026-11-10",
+    "time": "2026-11-10T14:20:13+00:00",
+    "id": "grant-EU-HORIZON-HLTH-2027-01-CARE-02",
+    "title": "Managing multiple medications? Support for ADR reduction studies",
+    "source": "GrantFinder",
+    "media_id": "17944759602367099",
+    "facebook_id": "1277022912171972_122117192913432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3mzxn3twui324",
+    "threads_id": "18107791387995573",
+    "kind": "grant",
+    "grant_id": "EU-HORIZON-HLTH-2027-01-CARE-02",
+    "url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-CARE-02",
+    "deadline": "2027-02-17",
+    "funder": "Horizon Europe – Cluster 1: Health",
+    "summary": "This call aims to reduce Adverse Drug Reactions (ADRs) resulting from polypharmacy (the use of three or more medications). Proposals should leverage pharmacogenomics, biomarkers, and digital technologies like AI and electronic health records to create personalized medicine strategies. The initiative seeks to improve patient safety, assist healthcare providers in clinical decision-making, and lower healthcare costs. Research should include clinical studies and address ethical, regulatory, and implementation challenges in healthcare systems.",
+    "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+    "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-CARE-02",
+    "grant_title": "Personalised approaches to reduce risks from Adverse Drug Reactions due to administration of multiple medications"
   }
 ]
