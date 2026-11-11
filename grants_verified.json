@@ -10046,14 +10046,14 @@
   },
   "GG-PAR-28-022": {
     "status": "ok",
-    "checked": "2026-11-04",
+    "checked": "2026-11-11",
     "official_source": "Grants.gov opportunity 360541",
     "official_url": "https://www.grants.gov/search-results-detail/360541",
     "is_open_call": "yes",
     "title": "Specialized Programs of Research Excellence (SPOREs) in Human Cancers",
     "programme": "NIH – US National Institutes of Health",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "The National Cancer Institute invites applications for P50 Research Center Grants to support state-of-the-art investigator-initiated translational research. The program aims to improve prevention, early detection, diagnosis, and treatment of organ-specific cancers. Projects must be based on human biology and reach a translational human endpoint during the grant period. Eligible applicants include domestic U.S. entities such as higher education institutions, nonprofits, and government organizations.",
+    "summary": "The National Cancer Institute invites applications for P50 Research Center Grants for Specialized Programs of Research Excellence to support state-of-the-art translational research contributing to improved prevention, early detection, diagnosis, and treatment of human cancers. The program funds investigator-initiated projects based on human biology that reach a translational human endpoint within the project grant period. Eligible applicants include US-based educational institutions, nonprofits, governmental entities, and businesses.",
     "coming_soon": true,
     "eligible_countries": "Coming soon: published with the full call",
     "countries_evidence": "",
@@ -10072,7 +10072,7 @@
     "lead": "",
     "lead_evidence": "",
     "deadline_raw": "2029-09-25 | Grants.gov closing date for applications: Sep 25, 2029 12:00:00 AM EDT.",
-    "dl_tries": 2
+    "dl_tries": 3
   },
   "GG-PAR-28-014": {
     "status": "ok",
