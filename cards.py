@@ -1361,7 +1361,8 @@ def source_slide(post, cfg, index, total, meta, thumb=None):
     altrimenti solo la citazione (titolo, autori, rivista, anno, DOI)."""
     c = cfg["colors"]
     img, d = canvas(cfg, index, total)
-    d.text((MARGIN, 150), "BASED ON", font=font("Bold", 34), fill=HLT(not SCIENCE, c["accent"]))
+    d.text((MARGIN, 150), "RECOMMENDED READING" if post.get("reading_card") else "BASED ON", font=font("Bold", 34),
+           fill=HLT(not SCIENCE, c["accent"]))
     if thumb is not None:
         box_w, box_h = W - 2 * MARGIN, 760
         page = ImageOps.contain(thumb.convert("RGB"), (box_w - 40, box_h - 40), Image.LANCZOS)
@@ -1399,7 +1400,8 @@ def rule_slide(post, cfg, index, total, with_cta=False):
     c = cfg["colors"]
     navy = c["background"]
     img, d = light_canvas(cfg, index, total)
-    d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 36), fill=hlc(False, DARK_ACCENT.get(c["accent"], navy)))
+    d.text((MARGIN, 170), "ASK YOURSELF" if post.get("reading_card") else "KEY TAKEAWAY", font=font("Bold", 36),
+           fill=hlc(False, DARK_ACCENT.get(c["accent"], navy)))
     room = H - 300 - (250 if not with_cta else 560)
     fnt, lines, size = fit(d, post["takeaway"], H_("ExtraBold"), 100 if not with_cta else 88, 52, W - 2 * MARGIN, room, 1.12)
     draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 260, W - 2 * MARGIN,
@@ -1695,7 +1697,7 @@ def render_carousel(post, cfg):
     if post.get("kind") == "grant" and cfg.get("grant_cover_photo") and post.get("id") not in images.COVER_CACHE:
         images.cover_photo(post, cfg)          # foto vera per la copertina del bando (se Pixabay ne ha una adatta)
     if (EDITORIAL and not post.get("kind") and cfg.get("cover_photo_methods", True) and post.get("id") not in images.COVER_CACHE
-            and (post.get("area") or post.get("rubric") == "Clinical Insights")):
+            and (post.get("area") or post.get("rubric") == "Clinical Insights") and not post.get("no_images")):
         images.cover_photo(post, cfg)          # regola: foto in copertina solo per post di un'area clinica o Clinical Insights
     pages = [grant_cover(post, cfg, total) if post.get("kind") == "grant" else cover(post, cfg, total)]
     metas = [None]

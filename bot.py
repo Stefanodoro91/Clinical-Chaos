@@ -77,6 +77,7 @@ def git(*args):
 
 content.THINKING = dict(CONFIG.get("gemini_thinking") or {})
 content.ROUTE_OVERRIDES = dict(CONFIG.get("ai_routes") or {})
+content.READING_CARDS = bool(CONFIG.get("reading_cards"))
 content.CHECK_CAP = int(CONFIG.get("gemini_daily_cap_checks", 60))   # richieste dei modelli leggeri oltre le quali le verifiche si fermano
 content.MODEL_RPD.update(CONFIG.get("gemini_rpd") or {})
 content.STRONG_RESERVE = int(CONFIG.get("gemini_strong_reserve", content.STRONG_RESERVE))
@@ -1171,7 +1172,7 @@ def main():
         apa = (meta or {}).get("apa", "")
     if kind == "research":
         polish.polish_post(post, apa)            # sentence case, reference coerenti con la slide «Based on», fonti
-    if kind == "research" and CONFIG.get("visual_plan"):
+    if kind == "research" and CONFIG.get("visual_plan") and not post.get("no_images"):
         plan_visuals(post)                       # schema, figura dell'articolo, foto o niente: slide per slide
     slides = cards.render_carousel(post, CONFIG)
     caption = build_caption(post)

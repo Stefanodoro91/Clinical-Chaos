@@ -1108,24 +1108,25 @@ FIRST decide the clinical focus of the paper (field clinical_focus):
 - "none": the paper is mainly about methodology, measurement scales, psychometrics, statistics, study design,
   reporting, or engineering without patient results. In that case return an EMPTY posts list.
 
-Then write exactly ONE post (posts list with one item). The post has 4 pages, filled by these fields:
+Then write exactly ONE post (posts list with one item). Before writing, extract the MAIN CONCEPT of the paper:
+the one idea about the treatment (or the patients' health course) that a clinician should remember. The whole post
+is built on that concept and is a complete, self-contained story: a reader who has never seen another post of this
+page, or the paper, must understand every page. The post has 4 pages, filled by these fields:
 
-PAGE 1 — HOOK  →  field "title" (shown alone on the cover), max 90 characters, sentence case.
-  One or two short sentences (or a sharp question) on the central topic of the paper. It may use one concrete
-  element of the paper (the patients, the clinical problem, the intervention) to create curiosity or tension.
-  It must NOT reveal the outcome or suggest that something works or does not work.
-PAGE 2 — ABSTRACT POINTS  →  "slides": exactly ONE slide. heading max 55 characters (a short phrase that
-  anchors the slide to the hook's question, e.g. "What the paper set out to answer", "The clinical question
-  behind it"); body max 160 characters, 2-3 short sentences: the key points from the abstract — population,
-  intervention or exposure, and primary aim — that directly address the hook's question. Stay strictly inside
-  the abstract. No results, no design labels (e.g. "RCT", "cohort") unless the hook already named them.
-PAGE 3 — TAKE-HOME MESSAGE  →  field "takeaway", max 150 characters, ONE sentence.
-  Take it from the CONCLUSIONS of the paper (the authors' own conclusion section or last abstract sentence), not
-  from the results section. Stay close to the authors' wording and keep every qualifier they use ("may", "in
-  patients with...", "further trials are needed" when that is their point). It must say what a reader learns by
-  reading this paper, useful to someone working in the clinic or in clinical research.
-PAGE 4 — SOURCE  →  built automatically from the paper's metadata (title and Harvard reference). Put THIS paper,
-  and only this paper, in "references" (APA 7, authors, year, title, journal, DOI exactly as printed).
+PAGE 1 — COVER  →  field "title" (shown alone on the cover), max 80 characters, sentence case.
+  A statement (not a question) that names the treatment, intervention or clinical condition the paper is about and
+  the main concept, in plain words. It must not reveal the outcome or suggest that something works or does not work.
+PAGE 2 — THE CONCEPT  →  "slides": exactly ONE slide. heading max 55 characters (a short phrase that names the
+  concept); body max 200 characters, 2 complete sentences that explain the main concept as the paper presents it:
+  who the patients are, what the treatment or exposure is, and what the paper set out to clarify. Stay strictly
+  inside the abstract and the conclusions.
+PAGE 3 — THE QUESTION  →  field "takeaway", max 150 characters, ONE direct question to the reader, ending with "?".
+  It makes a clinician or a clinical researcher think the next time they treat a patient like those of the paper,
+  or design a study on this topic (e.g. "The next time you prescribe ..., how will you decide ...?"). The question
+  must come from the concept of pages 1-2 and must be answerable by reading the paper; it must not contain or
+  presuppose a result the paper does not state.
+PAGE 4 — RECOMMENDED READING  →  built automatically from the paper's metadata (title and Harvard reference). Put
+  THIS paper, and only this paper, in "references" (authors, year, title, journal, DOI exactly as printed).
 
 GENERAL RULES (they apply to every field: title, slide, takeaway, hook, caption):
 - No specific numerical data: no percentages, p-values, hazard/odds ratios, confidence intervals, NNT, effect
@@ -1139,28 +1140,131 @@ GENERAL RULES (they apply to every field: title, slide, takeaway, hook, caption)
   "revolutionary", "game-changer", "boosts", "massive", "proves", "breakthrough".
 - Do not overuse technical terms: use one only where it is needed, never stack them; spell out an acronym the
   first time (or avoid it).
-- The four pages read as ONE thread: hook (the topic) → gap (why the question is open) → take-home (what the paper
-  concludes) → source. Each page must make sense on its own, even as a screenshot.
+- The four pages read as ONE thread: cover (the treatment and the concept) → the concept explained → the question
+  for the reader → the paper to read. Each page must make sense on its own, even as a screenshot.
+- Every statement must be supported by the paper (evidence based): nothing from general knowledge, no example,
+  comparison or reference that the paper does not contain.
+- Every sentence is complete and ends with a full stop or a question mark. Never end a sentence, a heading or the
+  title with "..." or "…", never leave a sentence unfinished to create suspense. Respect the character limits by
+  writing shorter, not by cutting.
+- No diagrams, schemes or images: the post is text only.
 
 OTHER FIELDS:
 - title_highlight: 1-4 words copied EXACTLY from the title.
 - takeaway_highlight: 2-5 words copied EXACTLY from the takeaway.
 - highlight (the slide): 2-6 words copied EXACTLY from the slide body.
-- image_prompt (the slide): 15-35 words, one simple illustration of the open question, no text, no numbers, no
-  real people. photo_query (the slide): 2-4 English keywords for a real stock photo of the clinical setting of the
-  paper (patients, therapy, clinicians), or "".
+- image_prompt (the slide): "". photo_query (the slide): "".
 - source (the slide): "".
 - hook: the first line of the caption, max 120 characters, different from the title, with the main searchable term
   of the topic; no results, no numbers.
 - caption: 3-5 short lines after the hook, in the same lay-abstract tone: what the paper is about and why it is
-  worth reading, never its results; end with a question that invites clinicians and researchers to share their
-  experience. Max 700 characters, no hashtags, no numbers.
+  worth reading, never its results; recommend reading the paper; end with a question that invites clinicians and
+  researchers to share their experience. Max 700 characters, no hashtags, no numbers.
 - hashtags: 3 specific hashtags for the clinical topic.
 - category: "{category}".
 
 Already published posts (do not repeat these topics): {published}
 
 File name of the paper: {filename}"""
+
+
+METHOD_CARD_PROMPT = """You are a senior clinical research methodologist. You write the "Design, Reporting & Appraisal"
+posts of "{brand}", a page for clinical researchers and health professionals. You are given ONE source document (a
+published paper or teaching material; it may be in Italian or another language). Write IN ENGLISH.
+
+Each post is a short, reliable, evidence-based learning experience built on ONE main concept of the source: a method,
+a design choice, a reporting rule or an appraisal criterion. Produce as many posts as the source genuinely supports
+(0-{max_posts}), each on a DIFFERENT concept. Every post is a complete, self-contained story: a reader who has never
+seen another post of this page, or the source, must understand every page. If the source has nothing about research
+methodology, return an empty list.
+
+Each post has 4 pages, filled by these fields:
+
+PAGE 1 — COVER  →  field "title" (shown alone on the cover), max 80 characters, sentence case.
+  A statement (not a question) that names the method and the main concept in plain words
+  (e.g. "Allocation concealment protects randomisation before it happens").
+PAGE 2 — THE CONCEPT  →  "slides": exactly ONE slide. heading max 55 characters (a short phrase that names the
+  concept); body max 200 characters, 2 complete sentences that explain the concept exactly as the source does: what
+  the method is and why it matters for the validity of a study, with the conditions the source gives.
+PAGE 3 — THE QUESTION  →  field "takeaway", max 150 characters, ONE direct question to the reader, ending with "?".
+  It makes a researcher think the next time they design, report or appraise a trial (e.g. "In your next protocol,
+  who will know the allocation sequence before a patient is enrolled?"). The question must come from the concept of
+  pages 1-2 and must be answerable from the source.
+PAGE 4 — RECOMMENDED READING  →  built automatically (title and Harvard reference) from the FIRST item of
+  "references": put there the source itself when it is a published paper (authors, year, title, journal, DOI
+  exactly as printed on its first page); otherwise the ONE work that the source cites for this concept. Copy every
+  element from the source; if one is missing leave it out. NEVER invent authors, years, titles, journals or DOIs.
+  If the source gives no citable work for the concept, do not write that post.
+
+RULES (they apply to every field):
+- SOURCE FIDELITY: every statement derives directly from a specific point of the source. Nothing from general
+  knowledge; no example, comparison, case, study, drug or clinical field that the source does not contain. Keep the
+  scope and the qualifiers of the source ("may", "in RCTs", "for a binary outcome"); never overstate ("always",
+  "never", "proves", "destroys", "useless").
+- Exact methodological language: risk vs odds, association vs causation, statistical vs clinical significance,
+  efficacy vs effectiveness. Spell out every acronym the first time. Numbers only if the source gives them, as digits.
+- Every sentence is true and complete on its own, names its subject, and ends with a full stop or a question mark.
+  Never end a sentence, a heading or the title with "..." or "…", never leave a sentence unfinished to create
+  suspense. Respect the character limits by writing shorter, not by cutting.
+- Never refer to the structure of the source ("step six", "section 3", "this guideline", "the authors").
+- No diagrams, schemes or images: the post is text only. No hype, no promotional formulas.
+- No medical or clinical treatment advice.
+
+OTHER FIELDS:
+- title_highlight: 1-4 words copied EXACTLY from the title.
+- takeaway_highlight: 2-5 words copied EXACTLY from the takeaway.
+- highlight (the slide): 2-6 words copied EXACTLY from the slide body.
+- image_prompt (the slide): "". photo_query (the slide): "". source (the slide): "".
+- hook: the first line of the caption, max 120 characters, different from the title, with the main searchable term
+  of the topic (e.g. "blinding", "sample size", "PICO"); no clickbait, no hashtags.
+- caption: 3-5 short lines after the hook that add context from the source and recommend reading it; end with a
+  question that invites professionals to share their experience. Max 700 characters, no hashtags.
+- hashtags: 3 specific hashtags for the topic.
+- category: one of {categories}.
+- source_hint: where in the source this comes from (e.g. "pages 2-3"), for the owner's review.
+
+Already published posts (do not repeat these topics): {published}
+
+File name of the source: {filename}"""
+
+READING_CARDS = False      # config «reading_cards» (bot.py): anche la metodologia nel formato a 4 pagine
+
+
+def _trim(text, n):
+    """Testo entro `n` caratteri senza puntini: ultima frase intera, o ultima virgola/due punti, mai «…»."""
+    text = re.sub(r"\s*(…|\.{3,})", ".", " ".join(str(text or "").split()))
+    text = re.sub(r"([?!.])\.+", r"\1", text)
+    if len(text) <= n:
+        return text
+    cut = max(text.rfind(". ", 0, n), text.rfind("? ", 0, n), text.rfind("! ", 0, n))
+    if cut >= n // 3:
+        return text[:cut + 1]
+    cut = max(text.rfind(", ", 0, n), text.rfind(": ", 0, n), text.rfind("; ", 0, n))
+    if cut >= n // 2:
+        return text[:cut] + "."
+    return text[: n - 1].rsplit(" ", 1)[0].rstrip(",;:") + "."
+
+
+def _card_raw(p):
+    """Limiti del formato a 4 pagine applicati PRIMA della pulizia, così nessun testo finisce con i puntini."""
+    p["title"] = _trim(p.get("title", ""), 90).rstrip(".")
+    p["takeaway"] = _trim(p.get("takeaway", ""), 160)
+    for s_ in p.get("slides") or []:
+        s_["heading"] = _trim(s_.get("heading", ""), 70).rstrip(".")
+        s_["body"] = _trim(s_.get("body", ""), 300)
+        s_["image_prompt"] = s_["photo_query"] = ""
+    p["caption"] = re.sub(r"\s*(…|\.{3,})", ".", p.get("caption", "") or "")
+    p["hook"] = _trim(p.get("hook", ""), 125)
+    return p
+
+
+def _card(post):
+    """Segna un post nel formato a 4 pagine (copertina, concetto, domanda, lettura consigliata): solo testo."""
+    post["slides"] = post["slides"][:1]
+    post["lay_abstract"] = True
+    post["reading_card"] = True
+    post["no_images"] = True
+    return post
 
 CLINICAL_POST_SCHEMA = {"type": "OBJECT", "properties": {
     "clinical_focus": {"type": "STRING", "enum": ["treatment", "patient_health", "none"]},
@@ -1206,10 +1310,9 @@ def clinical_posts(part, filename, brand, published=(), max_posts=1):
     focus, why = out.get("clinical_focus", "none"), out.get("focus_reason", "")
     if focus == "none":
         return [], focus, why
-    posts = [c for c in (_clean_post(p, material_text(part), min_slides=1) for p in out.get("posts", [])) if c][:1]
+    posts = [c for c in (_clean_post(_card_raw(p), material_text(part), min_slides=1) for p in out.get("posts", [])) if c][:1]
     for post in posts:
-        post["slides"] = post["slides"][:1]                # formato lay abstract: una sola slide (il gap)
-        post["lay_abstract"] = True
+        _card(post)                                        # 4 pagine: copertina, concetto, domanda, lettura consigliata
         problems = lay_abstract_problems(post)
         if problems:
             print(f"  ::warning title=Latest Science da controllare::«{post['title']}»: {'; '.join(problems)}")
@@ -1219,11 +1322,14 @@ def clinical_posts(part, filename, brand, published=(), max_posts=1):
 
 
 def generate_posts(part, filename, brand, max_posts=12, published=()):
-    prompt = PROMPT.format(brand=brand, max_posts=max_posts, filename=filename,
-                           categories=", ".join(CATEGORIES),
-                           published="; ".join(published) if published else "none")
+    prompt = (METHOD_CARD_PROMPT if READING_CARDS else PROMPT).format(
+        brand=brand, max_posts=max_posts, filename=filename, categories=", ".join(CATEGORIES),
+        published="; ".join(published) if published else "none")
     posts = gemini_json([{"text": prompt}, part], SCHEMA, task="nuovi post da Drive").get("posts", [])
     material = material_text(part)
+    if READING_CARDS:          # formato a 4 pagine: serve la reference per la pagina «lettura consigliata»
+        cards_ = [c for c in (_clean_post(_card_raw(p), material, min_slides=1) for p in posts) if c and c.get("references")]
+        return [_card(c) for c in cards_][:max_posts]
     return [c for c in (_clean_post(p, material) for p in posts) if c][:max_posts]
 
 
@@ -1735,19 +1841,21 @@ def _family_of_last():
     return family("gemini", m)
 
 
-LAY_RULES = """This post is a "Latest Science" LAY ABSTRACT with a fixed 4-page format, and these rules replace the
-thread and takeaway rules below:
-- page 1 is the title (the hook on the topic), page 2 is ONE slide with the open question in the literature (the
-  gap), page 3 is the takeaway, page 4 is the reference. Do not ask for more slides, and do not flag the post as
-  vague or generic because it gives no numbers, results or details: that is intended, the post must make the
-  reader want to read the paper.
-- flag as "imprecise" any specific number (percentages, p-values, ratios, intervals, sample sizes, scores), any
-  name of arms, groups, centres or trial acronyms, and any sentence that reveals or anticipates the results.
-- flag as "imprecise" a post built on a secondary or exploratory outcome, a causal claim or mechanism that the
-  SOURCE's conclusions do not state, and promotional words ("boosts", "breakthrough", "massive").
-- the takeaway must be ONE sentence faithful to the CONCLUSIONS of the SOURCE (not to its results), with the
-  authors' qualifiers; staying close to the authors' wording is correct, do not flag it. Your fixes must respect
-  these rules too: never add a number or a result.
+LAY_RULES = """This post has a fixed 4-page format, and these rules replace the thread and takeaway rules below:
+- page 1 is the title (a statement naming the treatment or method and the main concept), page 2 is ONE slide that
+  explains the concept, page 3 (the "takeaway" field) is ONE QUESTION to the reader, page 4 is the recommended
+  reading (the reference). Do not ask for more slides. The takeaway being a question is intended: never flag it as
+  "not a statement", vague or unsupported, and never rewrite it as a statement. Flag it only if it presupposes a
+  fact or result that the SOURCE does not state, or if it is not about the concept of pages 1-2.
+- flag as "imprecise" any statement that the SOURCE does not support, any example, study or reference that is not
+  in the SOURCE, causal claims or mechanisms the SOURCE does not state, and promotional words ("boosts",
+  "breakthrough", "massive").
+- for a "Latest Science" post also flag any specific number of the results (percentages, p-values, ratios,
+  intervals, sample sizes, scores), names of arms, groups, centres or trial acronyms, and any sentence that reveals
+  or anticipates the results.
+- flag any sentence, heading or title that ends with "..." or "…" or is left unfinished.
+- Your fixes must respect these rules too: complete sentences, no added facts, numbers or results, and the
+  takeaway stays a question.
 """
 
 

@@ -32,6 +32,9 @@ FAMILIES = ["deepseek/", "openai/gpt", "anthropic/claude", "qwen/", "moonshotai/
 
 def list_models():
     data = requests.get("https://openrouter.ai/api/v1/models", timeout=60).json()["data"]
+    print("== GRATUITI ==")
+    for m in sorted((m for m in data if m["id"].endswith(":free")), key=lambda m: -(m.get("created") or 0)):
+        print(f"FREE {m['id']:62s} ctx {m.get('context_length')}  creato {time.strftime('%Y-%m-%d', time.gmtime(m.get('created') or 0))}")
     for fam in FAMILIES:
         rows = sorted((m for m in data if m["id"].startswith(fam)), key=lambda m: -(m.get("created") or 0))[:8]
         for m in rows:
@@ -64,7 +67,9 @@ _orig_call = content.call_model
 
 def route(task):
     if task.split(" [", 1)[0] in FORCED and CURRENT["model"]:
-        return [("openrouter", CURRENT["model"])]
+        # «a>b»: catena di ripiego; «groq:modello» o «gemini:modello» per un altro fornitore (default openrouter)
+        return [tuple(x.split(":", 1)) if x.split(":", 1)[0] in ("groq", "gemini", "openrouter") else ("openrouter", x)
+                for x in CURRENT["model"].split(">")]
     return _orig_route(task)
 
 
