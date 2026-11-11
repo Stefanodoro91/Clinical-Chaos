@@ -234,102 +234,6 @@
    "simulated": true
   },
   {
-   "date": "2026-11-24",
-   "time": "2026-11-24T17:47:00+00:00",
-   "id": "144c4de0",
-   "title": "Why P-values do not belong in Table 1",
-   "source": "P-value.pdf",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "The real purpose of Table 1",
-     "body": "Table 1 exists to outline patient traits, not to display formal hypothesis tests. Its true purpose is to show baseline details so readers can easily check clinical…"
-    },
-    {
-     "heading": "The Table 1 fallacy in randomized trials",
-     "body": "In randomized trials, a P-value tests whether treatment allocation occurred at random. Randomization guarantees this by definition, making significance testing of baseline balance completely illogical."
-    },
-    {
-     "heading": "Sample size distorts the results",
-     "body": "P-values are sensitive to sample size. In huge cohorts, trivial differences produce significant P-values, while in small samples, true clinically meaningful imbalances remain hidden behind high P-values."
-    },
-    {
-     "heading": "Guidelines explicitly oppose them",
-     "body": "Major guidelines like CONSORT for randomized trials and STROBE for observational studies advise against reporting P-values in baseline tables."
-    }
-   ],
-   "takeaway": "Table 1 exists to describe patients, not test hypotheses; drop the P-values and evaluate clinical relevance.",
-   "category": "Reporting & publication"
-  },
-  {
-   "date": "2026-11-25",
-   "time": "2026-11-25T17:47:00+00:00",
-   "id": "3a6990f9",
-   "title": "When the doctor becomes an investigator",
-   "source": "Ethics.pdf",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "Dual roles in clinical research",
-     "body": "Balancing dual roles can be difficult, and investigator enthusiasm occasionally risks compromising ethics."
-    },
-    {
-     "heading": "Benefit and risk balance",
-     "body": "Benefit and risk are two faces of the same coin. The risk is assumed by participants while the benefit is reaped by a population."
-    },
-    {
-     "heading": "The Nuremberg Code (1947)",
-     "body": "Formulated after WWII trials, the Nuremberg Code highlighted the need for informed consent, qualified scientists, and risk justification."
-    },
-    {
-     "heading": "Declaration of Helsinki",
-     "body": "Developed by WMA in 1964, it binds the physician to ensure that the health of the patient will be the first consideration."
-    }
-   ],
-   "takeaway": "The doctor-researcher must balance scientific zeal with patient welfare and ethical guidelines.",
-   "category": "Research ethics"
-  },
-  {
-   "date": "2026-11-26",
-   "time": "2026-11-26T17:47:00+00:00",
-   "id": "checklist-strobe-bias",
-   "title": "Observational study? Name your biases in print",
-   "source": "Rubrica Checklist",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "What the item asks",
-     "body": "Describe any efforts to address potential sources of bias: selection, information and confounding."
-    },
-    {
-     "heading": "Why it matters",
-     "body": "Every observational design has bias. Readers judge your results by how openly you handled it, not by silence."
-    },
-    {
-     "heading": "How to comply",
-     "body": "List your 3 most likely biases, then state the design or analysis step taken for each: restriction, matching, adjustment, sensitivity analysis."
-    }
-   ],
-   "takeaway": "State each likely source of bias and what you did about it: silence reads as blindness.",
-   "category": "Bias & confounding"
-  },
-  {
-   "date": "2026-11-28",
-   "time": "2026-11-28T15:47:00+00:00",
-   "id": "e4aaa03e",
-   "title": "Does wearable exoskeleton gait training improve walking after subacute stroke?",
-   "source": "Gait recovery exosk.pdf",
-   "simulated": true,
-   "points": [
-    {
-     "heading": "Wearable exoskeletons for overground stroke gait",
-     "body": "While treadmill-based robots are common, whether overground exoskeleton training restores functional walking after subacute stroke remains unclear."
-    }
-   ],
-   "takeaway": "Overground exoskeleton training was not superior to conventional therapy for ambulatory function, but could provide lower extremity motor gains.",
-   "category": "Clinical insight"
-  },
-  {
    "date": "2026-11-10",
    "time": "2026-11-10T17:47:00+00:00",
    "id": "40cb2ae7",
@@ -487,6 +391,102 @@
     }
    ],
    "takeaway": "Action observation combined with virtual reality appears to be more effective than virtual reality alone for promoting upper limb motor recovery.",
+   "category": "Clinical insight"
+  },
+  {
+   "date": "2026-11-24",
+   "time": "2026-11-24T17:47:00+00:00",
+   "id": "144c4de0",
+   "title": "Why P-values do not belong in Table 1",
+   "source": "P-value.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The real purpose of Table 1",
+     "body": "Table 1 should simply describe patients instead of showing formal hypothesis tests. Its true purpose is summarizing baseline traits to help readers judge clinical comparability."
+    },
+    {
+     "heading": "The Table 1 fallacy in randomized trials",
+     "body": "In randomized trials, a P-value tests whether treatment allocation occurred at random. Randomization guarantees this by definition, making significance testing of baseline balance completely illogical."
+    },
+    {
+     "heading": "Sample size distorts the results",
+     "body": "P-values are sensitive to sample size. In huge cohorts, trivial differences produce significant P-values, while in small samples, true clinically meaningful imbalances…"
+    },
+    {
+     "heading": "Guidelines explicitly oppose them",
+     "body": "Major guidelines like CONSORT for randomized trials and STROBE for observational studies advise against reporting P-values in baseline tables, urging researchers to avoid confusing description with inference."
+    }
+   ],
+   "takeaway": "Table 1 exists to describe patients, not test hypotheses; drop the P-values and evaluate clinical relevance.",
+   "category": "Reporting & publication"
+  },
+  {
+   "date": "2026-11-25",
+   "time": "2026-11-25T17:47:00+00:00",
+   "id": "3a6990f9",
+   "title": "When the doctor becomes an investigator",
+   "source": "Ethics.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "Dual roles in clinical research",
+     "body": "Balancing dual duties is tough, and investigator passion can sometimes impair clinical ethics."
+    },
+    {
+     "heading": "Benefit and risk balance",
+     "body": "Benefit and risk are two faces of the same coin. The risk is assumed by participants while the benefit is reaped by a population."
+    },
+    {
+     "heading": "The Nuremberg Code (1947)",
+     "body": "Formulated after WWII trials, the Nuremberg Code highlighted the need for informed consent, prior animal work, qualified scientists, and risk justification."
+    },
+    {
+     "heading": "Declaration of Helsinki",
+     "body": "Developed by WMA in 1964, it binds the physician to ensure that the health of the patient will be the first consideration."
+    }
+   ],
+   "takeaway": "Follow GCP and Helsinki guidelines to ensure the individual patient's health and welfare remain the primary consideration.",
+   "category": "Research ethics"
+  },
+  {
+   "date": "2026-11-26",
+   "time": "2026-11-26T17:47:00+00:00",
+   "id": "checklist-strobe-bias",
+   "title": "Observational study? Name your biases in print",
+   "source": "Rubrica Checklist",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "What the item asks",
+     "body": "Describe any efforts to address potential sources of bias: selection, information and confounding."
+    },
+    {
+     "heading": "Why it matters",
+     "body": "Every observational design has bias. Readers judge your results by how openly you handled it, not by silence."
+    },
+    {
+     "heading": "How to comply",
+     "body": "List your 3 most likely biases, then state the design or analysis step taken for each: restriction, matching, adjustment, sensitivity analysis."
+    }
+   ],
+   "takeaway": "State each likely source of bias and what you did about it: silence reads as blindness.",
+   "category": "Bias & confounding"
+  },
+  {
+   "date": "2026-11-28",
+   "time": "2026-11-28T15:47:00+00:00",
+   "id": "f23b6932",
+   "title": "Can stroke survivors train cognition at home just as well as face to face?",
+   "source": "PIIS1052305726001011.pdf",
+   "simulated": true,
+   "points": [
+    {
+     "heading": "The clinical question behind it",
+     "body": "Subacute stroke survivors with cognitive deficits underwent computerized cognitive training delivered either remotely or face-to-face to compare cognitive gains."
+    }
+   ],
+   "takeaway": "Telerehabilitation may yield cognitive improvements similar to those of face-to-face treatment and appears feasible for post-stroke patients.",
    "category": "Clinical insight"
   }
  ],
@@ -1954,6 +1954,13 @@
   {
    "drive_id": "1lAgduty8AVqmpfhkGp-6zjoQ0jomQZho",
    "name": "str-57-1136.pdf",
+   "posts": 1,
+   "clinical_used": true,
+   "date": "2026-11-11"
+  },
+  {
+   "drive_id": "1gk-4MBXG6h1rQwQTCdYT8CF89wmiFBKt",
+   "name": "PIIS1052305726001011.pdf",
    "posts": 1,
    "clinical_used": true,
    "date": "2026-11-11"
