@@ -1,0 +1,70 @@
+{
+ "workflow": "Post giornaliero ricerca clinica",
+ "quota_day": "2026-11-12",
+ "consumo": {
+  "post bando|gemini-3.8-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 2
+  },
+  "post bando|gemini-3.5-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 5
+  },
+  "post bando|gemini-3.6-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 3
+  },
+  "post bando|gemini-3-flash-preview": {
+   "richieste": 2,
+   "ingresso": 24819,
+   "uscita": 724,
+   "ragionamento": 125825,
+   "respinte": 0,
+   "versione": "gemini-3-flash-preview"
+  },
+  "critica|openrouter-nemotron-3-ultra-550b-a55b:free": {
+   "richieste": 4,
+   "ingresso": 16502,
+   "uscita": 22152,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "arbitro|gemini-3.5-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 3
+  },
+  "arbitro|gemini-3-flash-preview": {
+   "richieste": 2,
+   "ingresso": 16881,
+   "uscita": 471,
+   "ragionamento": 125824,
+   "respinte": 1,
+   "versione": "gemini-3-flash-preview"
+  },
+  "scelta immagini|gemini-3.5-flash-lite": {
+   "richieste": 2,
+   "ingresso": 8333,
+   "uscita": 348,
+   "ragionamento": 0,
+   "respinte": 1,
+   "versione": "gemini-3.5-flash-lite"
+  }
+ },
+ "esauriti": [
+  "gemini-3.5-flash",
+  "gemini-3.6-flash",
+  "gemini-3.8-flash"
+ ]
+}
