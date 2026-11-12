@@ -83,10 +83,20 @@ def route(task):
 
 
 def call(provider, model, parts, schema, temperature=0.3, task="altro", thinking=None):
-    if provider == "openrouter" and not all("text" in p for p in parts):
-        # OpenRouter riceve solo testo: il PDF dell'articolo si passa come testo estratto (stesso contenuto)
-        parts = [{"text": content.material_text(p) if "text" not in p else p["text"]} for p in parts]
-        parts = [{"text": "\n\n".join(p["text"] for p in parts)}]
+    if provider != "gemini" and not all("text" in p for p in parts):
+        # Groq e OpenRouter non leggono PDF/immagini: converti tutto in testo estratto
+        new_parts = []
+        for p in parts:
+            if "text" in p:
+                new_parts.append(p)
+            else:
+                try:
+                    import base64 as _b64
+                    raw = _b64.b64decode(p["inline_data"]["data"])
+                    new_parts.append({"text": content.pdf_abstract_text(raw)})
+                except Exception:
+                    new_parts.append({"text": content.material_text(p)})
+        parts = [{"text": "\n\n".join(p["text"] for p in new_parts)}]
     return _orig_call(provider, model, parts, schema, temperature, task, thinking)
 
 
