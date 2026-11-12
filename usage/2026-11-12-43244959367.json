@@ -1,0 +1,15 @@
+{
+ "workflow": "Aggiorna bandi e pagina link in bio",
+ "quota_day": "2026-11-12",
+ "consumo": {
+  "conferma bandi|gemini-3-flash-preview": {
+   "richieste": 3,
+   "ingresso": 37261,
+   "uscita": 1358,
+   "ragionamento": 188731,
+   "respinte": 4,
+   "versione": "gemini-3-flash-preview"
+  }
+ },
+ "esauriti": []
+}

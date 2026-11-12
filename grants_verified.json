@@ -3353,20 +3353,21 @@
   },
   "GG-PAR-25-285": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-12",
     "official_source": "NIH Guide PAR-25-285",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-285.html",
     "is_open_call": "yes",
     "title": "Effectiveness Trials to Test Mental Health System Interventions (R61/R33 Clinical Trial Required)",
-    "programme": "NIH – US National Institutes of Health",
+    "programme": "National Institute of Mental Health (NIMH)",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity supports milestone-driven feasibility and infrastructure development research followed by a well-powered clinical trial to test the effectiveness of system interventions or strategies. The aim is to improve the organization, delivery, coordination, and outcomes of mental health care. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, local and state governments, tribal governments, and non-domestic foreign organizations.",
+    "summary": "This funding opportunity supports phased research to test the effectiveness of mental health system interventions. The R61 phase focuses on feasibility and infrastructure development, while the R33 phase involves a well-powered clinical trial. Projects should target organizational, policy, or structural factors to improve mental health care delivery, coordination, and outcomes. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and foreign entities. The goal is to enhance care access and quality for priority populations.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2025-02-14",
       "2025-06-17",
@@ -3395,9 +3396,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director/Principal Investigator.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2025-02-14 | February 14, 2025 February 14, 2025 Not Applicable July 2025 October 2025 December 2025 ."
+    "deadline_raw": "2027-02-17 | February 17, 2027",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-12",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-RFA-DC-28-007": {
     "status": "ok",
@@ -4813,20 +4820,21 @@
   },
   "GG-PAR-25-446": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-12",
     "official_source": "NIH Guide PAR-25-446",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-446.html",
     "is_open_call": "yes",
-    "title": "Development of Interventions to Prevent and Treat Substance Use Disorders and Overdose",
-    "programme": "NIH – US National Institutes of Health",
+    "title": "Development of Interventions to Prevent and Treat Substance Use Disorders and Overdose (UG3/UH3 - Clinical Trial Optional)",
+    "programme": "National Institute on Drug Abuse (NIDA)",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity supports preclinical and clinical research to discover and develop interventions preventing and treating substance use disorders and overdose. Funded activities include pharmacotherapies, device-based treatments, digital therapeutics, and behavioral interventions aimed at advancing candidates toward regulatory approval or clinical adoption. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, governments, and non-domestic foreign entities.",
+    "summary": "This funding opportunity supports research on the discovery and development of interventions to prevent and treat substance use disorders (SUDs) and overdose. It funds preclinical and clinical studies, including pharmacotherapies, device-based treatments, digital therapeutics, and behavioral interventions. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and foreign entities. The goal is to advance candidate interventions toward regulatory approval or clinical adoption using a phased UG3/UH3 cooperative agreement mechanism.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2025-11-24",
       "2026-02-20",
@@ -4855,9 +4863,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2026-10-20 | October 20, 2026 November 20, 2026 Not Applicable March 2027 May 2027 July 2027 ."
+    "deadline_raw": "2027-02-22 | February 22, 2027",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-12",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-RFA-DC-27-003": {
     "status": "ok",
@@ -9698,21 +9712,21 @@
   },
   "GG-PAR-27-053": {
     "status": "ok",
-    "checked": "2026-10-27",
+    "checked": "2026-11-12",
     "official_source": "NIH Guide PAR-27-053",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-27-053.html",
     "is_open_call": "yes",
-    "title": "Exploratory Clinical Neuroscience Research on Substance Use Disorders",
-    "programme": "NIH – US National Institutes of Health",
+    "title": "Exploratory Clinical Neuroscience Research on Substance Use Disorders (R61/R33 Clinical Trial Optional)",
+    "programme": "National Institute on Drug Abuse (NIDA)",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity supports exploratory and developmental clinical research projects focusing on the neurobiological mechanisms underlying substance use disorders, including fundamental circuitry and behavior. It aims to develop new knowledge and approaches for the prevention, diagnosis, and treatment of drug addiction. Eligible applicants include domestic and foreign higher education institutions, non-profits, for-profit organizations, and governments.",
+    "summary": "This Phased Innovation Award (R61/R33) supports exploratory clinical research into the neurobiological mechanisms of substance use disorders (SUD). It aims to fund projects investigating neural circuitry, behavioral processes, and computational models related to addiction, excluding alcohol-only studies. Eligible applicants include higher education institutions, nonprofits, and for-profit organizations worldwide. The award consists of a two-year planning phase (R61) followed by a three-year implementation phase (R33), contingent on meeting specific milestones.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
-    "model": "gemini-3.5-flash-lite",
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2026-11-02",
       "2027-02-19",
@@ -9737,7 +9751,13 @@
     "deadline_source": "nih_key_dates",
     "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2027-02-19 | February 19, 2027"
+    "deadline_raw": "2027-02-19 | February 19, 2027",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-12",
+      "changed": [],
+      "screening_model": "gemini-3.5-flash-lite"
+    }
   },
   "EU-HORIZON-MSCA-2026-DN-01-01": {
     "status": "ok",
