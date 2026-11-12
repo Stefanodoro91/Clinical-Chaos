@@ -62,9 +62,23 @@ _orig_route = content.route_for
 _orig_call = content.call_model
 
 
+def _expand_model_chain(model_str):
+    """Espande 'provider:model>provider2:model2' in lista di (provider, model).
+    Se non c'è prefisso provider si assume 'openrouter'."""
+    chain = []
+    for segment in model_str.split(">"):
+        segment = segment.strip()
+        if ":" in segment:
+            prov, mod = segment.split(":", 1)
+        else:
+            prov, mod = "openrouter", segment
+        chain.append((prov, mod))
+    return chain or [("openrouter", model_str)]
+
+
 def route(task):
     if task.split(" [", 1)[0] in FORCED and CURRENT["model"]:
-        return [("openrouter", CURRENT["model"])]
+        return _expand_model_chain(CURRENT["model"])
     return _orig_route(task)
 
 
