@@ -62,14 +62,19 @@ _orig_route = content.route_for
 _orig_call = content.call_model
 
 
+_KNOWN_PROVIDERS = {"gemini", "groq", "openrouter"}
+
+
 def _expand_model_chain(model_str):
     """Espande 'provider:model>provider2:model2' in lista di (provider, model).
-    Se non c'è prefisso provider si assume 'openrouter'."""
+    Se il prefisso non è un provider noto (es. 'nvidia/...', 'openai/...') si usa 'openrouter'."""
     chain = []
     for segment in model_str.split(">"):
         segment = segment.strip()
         if ":" in segment:
             prov, mod = segment.split(":", 1)
+            if prov not in _KNOWN_PROVIDERS:
+                prov, mod = "openrouter", segment   # es. 'nvidia:...' → openrouter
         else:
             prov, mod = "openrouter", segment
         chain.append((prov, mod))

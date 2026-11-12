@@ -196,6 +196,25 @@ def _pdf_part(data):
     return {"text": text[:MAX_TEXT_CHARS]}
 
 
+def pdf_abstract_text(data, max_chars=3000):
+    """Estrae titolo, abstract e dati bibliografici da un PDF (prime 3 pagine).
+    Per Groq/OpenRouter che non accettano PDF e hanno context window limitata.
+    max_chars ridotto a 3000 per stare nei limiti di Groq GPT-OSS."""
+    import re as _re2
+    from pypdf import PdfReader
+    pages = PdfReader(io.BytesIO(data)).pages
+    text = "\n".join((p.extract_text() or "") for p in pages[:3])
+    m = _re2.search(r'\b(Abstract|ABSTRACT|Summary|SUMMARY)\b', text)
+    if m:
+        snippet = text[max(0, m.start() - 300):m.start() + max_chars]
+    else:
+        snippet = text[:max_chars]
+    end = _re2.search(r'\b(Introduction|INTRODUCTION|Background|Keywords|KEYWORDS)\b', snippet[400:])
+    if end:
+        snippet = snippet[:400 + end.start() + 200]
+    return snippet.strip()
+
+
 def _pptx_text(data):
     from pptx import Presentation
     out = []
