@@ -1,1 +1,8 @@
-{}
+{
+  "nvidia/nemotron-3-ultra-550b-a55b:free>groq:openai/gpt-oss-120b>groq:qwen/qwen3.8-27b|LS|1": "1cMvBgE3N0-dYivKrYmlwAmWcPpm70fqK",
+  "nvidia/nemotron-3-ultra-550b-a55b:free>groq:openai/gpt-oss-120b>groq:qwen/qwen3.8-27b|LS|2": "1VWmYskkwJU9MMiGnnmqgG-evzdNFkGQe",
+  "nvidia/nemotron-3-ultra-550b-a55b:free>groq:openai/gpt-oss-120b>groq:qwen/qwen3.8-27b|LS|3": "1CoKgBJ6Ta3E0VWco0emTFEB78LrXAPax",
+  "nvidia/nemotron-3-ultra-550b-a55b:free>groq:openai/gpt-oss-120b>groq:qwen/qwen3.8-27b|ME|1": "1jNoH11D5BkAzUfiTVBqzao0Gg57lmRcS",
+  "nvidia/nemotron-3-ultra-550b-a55b:free>groq:openai/gpt-oss-120b>groq:qwen/qwen3.8-27b|ME|2": "1rn30mDcATH9z7CDXMYEML-YIZ-iWK61y",
+  "nvidia/nemotron-3-ultra-550b-a55b:free>groq:openai/gpt-oss-120b>groq:qwen/qwen3.8-27b|ME|3": "14rtdje6fZ7wKx3kkXgPI2urlq8ZC7BmJ"
+}
