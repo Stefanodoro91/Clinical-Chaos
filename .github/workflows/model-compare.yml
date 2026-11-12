@@ -48,3 +48,11 @@ jobs:
       - name: Riepilogo
         if: always()
         run: cat compare_report.txt || true
+      - name: Carica PDF confronto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compare-pdf-${{ github.run_id }}
+          path: compare_out/*.pdf
+          if-no-files-found: warn
+          retention-days: 14

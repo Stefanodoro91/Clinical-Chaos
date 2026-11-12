@@ -175,7 +175,29 @@ def one(model, kind, idx, f, drive):
         return f"{key}: post respinto dai controlli di qualità (vedi log)"
     title = json.loads(pj.read_text(encoding="utf-8")).get("title", "")
     pdf = pdf_of(f"{kind}{idx}-{model.replace('/', '_')}.pdf")
-    saved = bool(fid and pdf and drive_preview.upload(pdf, None, "application/pdf", bot.CONFIG, file_id=fid))
+    saved = False
+    if pdf:
+        if fid:
+            saved = drive_preview.upload(pdf, None, "application/pdf", bot.CONFIG, file_id=fid)
+        else:
+            # Nessun segnaposto: crea il file su Drive al volo nella cartella anteprime
+            try:
+                from googleapiclient.http import MediaFileUpload
+                import music
+                folder = bot.CONFIG.get("preview_folder_id") or os.environ.get("GDRIVE_FOLDER_ID")
+                label = f"[COMPARE] {kind}{idx} {model.split('/')[-1][:30]} - {title[:40]}.pdf"
+                meta = {"name": label, "mimeType": "application/pdf", "parents": [folder]}
+                new_fid = music._drive().files().create(
+                    body=meta,
+                    media_body=MediaFileUpload(str(pdf), mimetype="application/pdf", resumable=True),
+                    supportsAllDrives=True, fields="id"
+                ).execute()["id"]
+                FILES[key] = new_fid
+                (ROOT / "compare_files.json").write_text(json.dumps(FILES, indent=2, ensure_ascii=False), encoding="utf-8")
+                print(f"::notice title=Creato su Drive::{key} → {new_fid}")
+                saved = True
+            except Exception as e:
+                print(f"::warning title=Drive non raggiunto::{key}: {str(e)[:200]}")
     return f"{key}: ok in {int(time.time() - t0)} s «{title[:80]}»" + ("" if saved else " — NON salvato su Drive")
 
 
