@@ -1124,6 +1124,11 @@ PAGE 3 — TAKE-HOME MESSAGE  →  field "takeaway", max 150 characters, ONE sen
   from the results section. Stay close to the authors' wording and keep every qualifier they use ("may", "in
   patients with...", "further trials are needed" when that is their point). It must say what a reader learns by
   reading this paper, useful to someone working in the clinic or in clinical research.
+  CRITICAL — no repetition and no new concepts: the takeaway must NOT restate or paraphrase the slide body
+  (page 2) with different words. It advances the thread: where the slide states the QUESTION or GAP, the
+  takeaway states what the paper CONCLUDES. It must also introduce NO concept, finding or detail that was
+  not already present in the title (page 1) or the slide (page 2); if a secondary outcome or mechanism
+  appears only in the conclusions, omit it from the takeaway.
 PAGE 4 — SOURCE  →  built automatically from the paper's metadata (title and Harvard reference). Put THIS paper,
   and only this paper, in "references" (APA 7, authors, year, title, journal, DOI exactly as printed).
 
@@ -1141,6 +1146,8 @@ GENERAL RULES (they apply to every field: title, slide, takeaway, hook, caption)
   first time (or avoid it).
 - The four pages read as ONE thread: hook (the topic) → gap (why the question is open) → take-home (what the paper
   concludes) → source. Each page must make sense on its own, even as a screenshot.
+- NO repetition between consecutive pages: the takeaway must not repeat the slide body; each page adds
+  something new to the thread. Read the four pages in order and check that no sentence appears twice.
 
 OTHER FIELDS:
 - title_highlight: 1-4 words copied EXACTLY from the title.
