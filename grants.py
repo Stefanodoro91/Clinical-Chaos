@@ -1620,6 +1620,34 @@ HOME = """<!doctype html>
   .pills .met {{ color: var(--soft); font-size: 14px; line-height: 1.35; }}
   .pills a:hover .tag, .pills a:focus-visible .tag {{ filter: brightness(1.08); }}
   .pills a:hover .met {{ color: var(--text); }}
+  .pills .sec {{ display: flex; flex-direction: column; align-items: center; gap: 7px; }}
+  .pills .row {{ display: flex; align-items: center; justify-content: center; gap: 8px; }}
+  @media (max-width: 520px) {{ .pills .row {{ flex-direction: column; gap: 7px; }} }}
+  .pills .soon {{ color: var(--soft); border: 1px dashed var(--muted); border-radius: 999px; padding: 6px 10px;
+                 font: 700 10.5px/1 Inter, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }}
+  .pills .cocreate {{ margin-top: 3px; background: transparent; color: var(--c); border: 1.5px solid var(--c); border-radius: 999px;
+                     padding: 7px 15px; font: 600 13px/1 Inter, system-ui, sans-serif; cursor: pointer; }}
+  .pills .cocreate:hover, .pills .cocreate:focus-visible {{ background: var(--c); color: var(--on); }}
+  dialog.cc {{ background: #10181F; color: var(--text); border: 1px solid var(--muted); border-radius: 16px;
+              width: min(460px, calc(100vw - 32px)); padding: 22px 20px 18px; }}
+  dialog.cc::backdrop {{ background: rgba(0, 0, 0, .65); }}
+  dialog.cc h2 {{ margin: 0 32px 6px 0; font: 800 20px/1.25 Inter, system-ui, sans-serif; }}
+  dialog.cc .lead {{ color: var(--soft); font-size: 14px; margin: 0 0 14px; }}
+  dialog.cc label {{ display: block; font-size: 13px; font-weight: 600; color: var(--soft); margin-bottom: 12px; }}
+  dialog.cc label small {{ font-weight: 400; }}
+  dialog.cc input, dialog.cc textarea {{ width: 100%; background: #0B1116; color: var(--text); border: 1px solid var(--muted);
+              border-radius: 10px; padding: 10px 12px; font: 400 15px/1.4 Inter, system-ui, sans-serif; display: block; margin-top: 6px; }}
+  dialog.cc textarea {{ min-height: 130px; resize: vertical; }}
+  dialog.cc input:focus, dialog.cc textarea:focus {{ outline: 2px solid var(--teal); outline-offset: 1px; border-color: transparent; }}
+  dialog.cc .hp {{ position: absolute; left: -9999px; }}
+  dialog.cc .send {{ background: var(--teal); color: #0A0A0A; border: 0; border-radius: 999px; padding: 11px 22px;
+              font: 800 14px/1 Inter, system-ui, sans-serif; cursor: pointer; }}
+  dialog.cc .send:disabled {{ opacity: .6; cursor: default; }}
+  dialog.cc .x {{ position: absolute; top: 12px; right: 12px; background: none; border: 0; color: var(--soft);
+              font-size: 24px; line-height: 1; cursor: pointer; padding: 4px 8px; }}
+  dialog.cc .note {{ color: var(--muted); font-size: 12px; margin: 4px 0 14px; }}
+  dialog.cc .status {{ font-size: 14px; margin: 10px 0 0; min-height: 1.2em; }}
+  dialog.cc .status.ok {{ color: var(--teal); }} dialog.cc .status.err {{ color: #FF8A80; }}
   main {{ max-width: 520px; margin: 0 auto; padding: 0 16px 40px; display: grid; gap: 16px; }}
   .social {{ display: flex; justify-content: center; gap: 10px; margin-top: 0; flex-wrap: wrap; }}
   .noig a {{ color: var(--teal); font-weight: 600; }}
@@ -1646,6 +1674,7 @@ HOME = """<!doctype html>
   <p class="noig"><a href="feedback.html">Feedback, a call to suggest or an error to report? Write to us</a></p>
 </main>
 <footer>Educational content for researchers and health professionals; not medical advice. Always check eligibility and deadlines in the official call or advertisement. Updated {updated}.</footer>
+{cocreate}
 </body>
 </html>
 """
@@ -1930,9 +1959,77 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0, n_sc
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
                        amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"), sci=site_accent(cfg, "science"), meth=site_accent(cfg, "methods"),
                        updated=_fmt_date(today),
-                       logo_block=header_logo(cfg), pills=section_pills(cfg, metrics),
+                       logo_block=header_logo(cfg), pills=section_pills(cfg, metrics, home=True),
+                       cocreate=cocreate_dialog(cfg),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
                                   "engineering and rehabilitation, checked on the official texts.", "") + org_jsonld(cfg))
+
+
+COCREATE = """<dialog class="cc" id="cc" aria-labelledby="cc-title">
+  <form method="dialog"><button class="x" aria-label="Close">&times;</button></form>
+  <h2 id="cc-title">Co-create the service</h2>
+  <p class="lead">This section is still being built. Tell us what you would need from it, or how you would like to take part.</p>
+  <form id="cc-form" action="https://api.web3forms.com/submit" method="POST">
+    <input type="hidden" name="access_key" value="{key}">
+    <input type="hidden" name="subject" value="Co-create: Clinical Research Chaos">
+    <input type="hidden" name="from_name" value="Clinical Research Chaos website">
+    <input type="hidden" name="topic" value="">
+    <label>Your message
+      <textarea name="message" required maxlength="3000" placeholder="Ideas, needs, a proposal to work together"></textarea>
+    </label>
+    <label>Name <small>(optional)</small>
+      <input type="text" name="name" autocomplete="name" maxlength="200">
+    </label>
+    <label>Email <small>(so we can reply)</small>
+      <input type="email" name="email" autocomplete="email" maxlength="200" required>
+    </label>
+    <div class="hp" aria-hidden="true"><label>Leave this empty<input type="checkbox" name="botcheck" tabindex="-1"></label></div>
+    <p class="note">Your message reaches us by email through Web3Forms. We never publish it and never share your email.</p>
+    <button type="submit" class="send">Send</button>
+    <p class="status" role="status" aria-live="polite"></p>
+  </form>
+</dialog>
+<script>
+(function () {{
+  var d = document.getElementById("cc"), f = document.getElementById("cc-form");
+  if (!d || !f) return;
+  var st = f.querySelector(".status"), btn = f.querySelector(".send"), title = document.getElementById("cc-title");
+  Array.prototype.forEach.call(document.querySelectorAll(".cocreate"), function (b) {{
+    b.addEventListener("click", function () {{
+      var t = b.dataset.topic || "";
+      f.topic.value = t;
+      f.subject.value = (t === "Partnership" ? "Partnership" : "Co-create: " + t) + " (Clinical Research Chaos)";
+      title.textContent = t === "Partnership" ? "Get in touch about partnerships" : "Co-create " + t;
+      st.className = "status"; st.textContent = "";
+      if (d.showModal) d.showModal(); else location.href = "feedback.html";
+    }});
+  }});
+  d.addEventListener("click", function (e) {{ if (e.target === d) d.close(); }});
+  if (!window.fetch || !window.FormData) return;
+  f.addEventListener("submit", function (ev) {{
+    ev.preventDefault();
+    if (btn.disabled) return;
+    btn.disabled = true; st.className = "status"; st.textContent = "Sending\u2026";
+    fetch(f.action, {{ method: "POST", body: new FormData(f), headers: {{ "Accept": "application/json" }} }})
+      .then(function (r) {{ return r.json().catch(function () {{ return {{}}; }}).then(function (j) {{ return r.ok && j.success !== false; }}); }})
+      .then(function (ok) {{
+        if (ok) {{ var t = f.topic.value; f.reset(); f.topic.value = t; st.className = "status ok"; st.textContent = "Thank you! Your message has been sent."; }}
+        else {{ st.className = "status err"; st.textContent = "Sorry, it did not work. Please try again in a few minutes."; }}
+        btn.disabled = false;
+      }})
+      .catch(function () {{ st.className = "status err"; st.textContent = "No connection. Please try again."; btn.disabled = false; }});
+  }});
+}})();
+</script>"""
+
+
+def cocreate_dialog(cfg):
+    """Modulo «Co-create the service / Get in touch» della home: stesso canale del feedback (Web3Forms)."""
+    from html import escape
+    key = (cfg.get("feedback_key") or "").strip()
+    if not key or not cfg.get("site_coming_soon"):
+        return ""
+    return COCREATE.format(key=escape(key, quote=True))
 
 
 def org_jsonld(cfg):
@@ -2457,17 +2554,39 @@ def on_color(hexa):
     return "#0A0A0A" if lum > 0.55 else "#FFFFFF"
 
 
-def section_pills(cfg, metrics=None, current=None):
-    """Le quattro rubriche in colonna: pillola nel colore della rubrica e, sotto, la sua metrica."""
+PARTNERSHIP = ("Partnership", "Research groups, societies and institutions: build it with us")
+
+
+def section_pills(cfg, metrics=None, current=None, home=False):
+    """Le quattro rubriche in colonna: pillola nel colore della rubrica e, sotto, la sua metrica.
+    In home (config «site_coming_soon»): le rubriche ancora in costruzione hanno a sinistra «Coming soon» e sotto
+    un pulsante che apre il modulo per scriverci; in fondo la pillola Partnership, anche lei in arrivo."""
     from html import escape as esc
+    soon = set(cfg.get("site_coming_soon") or []) if home else set()
     out = []
     for kind, href, label in SECTIONS:
         col = site_accent(cfg, kind)
         here = ' aria-current="page"' if kind == current else ""
         met = (metrics or {}).get(kind, "")
+        if kind in soon:
+            plain = label.replace("&amp;", "&")
+            out.append(f'<div class="sec" style="--c:{col};--on:{on_color(col)}">'
+                       f'<div class="row"><span class="soon">Coming soon</span>'
+                       f'<a href="{href}"{here}><span class="tag">{label.upper()}</span></a></div>'
+                       + (f'<span class="met">{esc(met)}</span>' if met else "")
+                       + f'<button type="button" class="cocreate" data-topic="{esc(plain, quote=True)}">'
+                         f'Co-create the service</button></div>')
+            continue
         out.append(f'<a href="{href}" style="--c:{col};--on:{on_color(col)}"{here}>'
                    f'<span class="tag">{label.upper()}</span>'
                    + (f'<span class="met">{esc(met)}</span>' if met else "") + "</a>")
+    if "partnership" in soon:
+        col = SITE_GREEN
+        out.append(f'<div class="sec" style="--c:{col};--on:{on_color(col)}">'
+                   f'<div class="row"><span class="soon">Coming soon</span>'
+                   f'<span class="tag">{PARTNERSHIP[0].upper()}</span></div>'
+                   f'<span class="met">{esc(PARTNERSHIP[1])}</span>'
+                   f'<button type="button" class="cocreate" data-topic="Partnership">Get in touch</button></div>')
     return "\n".join(out)
 
 
