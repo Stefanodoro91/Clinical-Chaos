@@ -198,7 +198,7 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
     kind = slide.get("type", "point")
     accent = slide.get("accent") or accent
     cards.LOGO_ACCENT = accent
-    bg = slide.get("bg") or (("#F2F2F2" if mono else LIGHT_BG) if kind == "cover" else c["background"])
+    bg = slide.get("bg") or ("#0A0A0A" if mono else (LIGHT_BG if kind == "cover" else c["background"]))
     rgb = tuple(int(bg.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
     light = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 > 0.55       # fondo chiaro: testo scuro
     fg = ("#0A0A0A" if mono else DARK_TEXT) if light else "#FFFFFF"
@@ -241,7 +241,7 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
                 if cards.EDITORIAL:
                     d.rounded_rectangle((M, y, W - M, y + ph), radius=32, outline=accent, width=4)
     elif kind == "cover":
-        inkc = "#0A0A0A" if mono else DARK_TEXT
+        inkc = ("#FFFFFF" if not light else "#0A0A0A") if mono else DARK_TEXT
         if cards.EDITORIAL:                          # logo v3 nel colore del tipo
             sz = cards.paste_logo(img, "logo-symbol" if light else "logo-symbol-light", M - 10, 260, height=170)
             cards.paste_logo(img, "logo-wordmark" if light else "logo-wordmark-light", M - 10 + sz[0] + 28, 278, height=126)
@@ -275,7 +275,7 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
             fb = cards.font("Regular", 44)
             y += 50
             for line in _wrap(d, slide["body"], fb, W - 2 * M):
-                d.text((M, y), line, font=fb, fill=("#3A3A3A" if mono else "#3D5266") if not slide.get("bg") else inkc)
+                d.text((M, y), line, font=fb, fill=(("#BDBDBD" if not light else "#3A3A3A") if mono else "#3D5266") if not slide.get("bg") else inkc)
                 y += 62
     elif kind == "image":
         # schermata con immagini (schermate del sito in un telefono, oppure copertine affiancate)
@@ -770,8 +770,8 @@ def positions_spec(p, archive, cfg, today=None, max_jobs=4):
     if len(jobs) < 2:
         return None
     kicker, accent = rubric_tag({"kind": "positions"}, cfg, "ACADEMIC POSITIONS", cfg["colors"]["accent"])
-    slides = [{"type": "cover", "kicker": kicker, "title": f"{len(jobs)} open positions this week",
-               "body": "Clinical research, biomedical engineering and rehabilitation."}]
+    slides = [{"type": "cover", "kicker": kicker, "title": "Academic positions for clinical researchers",
+               "body": f"{len(jobs)} open positions this week"}]
     for i, (v, d) in enumerate(jobs[:max_jobs], 1):
         bits = [positions.TYPES.get(v.get("type"), ""), _clip_words(v.get("institution", ""), 6), v.get("country", ""),
                 f"deadline {grants._fmt_date(d)}" if d else ""]
