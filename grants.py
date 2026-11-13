@@ -1621,8 +1621,17 @@ HOME = """<!doctype html>
   .pills a:hover .tag, .pills a:focus-visible .tag {{ filter: brightness(1.08); }}
   .pills a:hover .met {{ color: var(--text); }}
   .pills .sec {{ display: flex; flex-direction: column; align-items: center; gap: 7px; }}
-  .pills .row {{ display: flex; align-items: center; justify-content: center; gap: 8px; }}
-  @media (max-width: 520px) {{ .pills .row {{ flex-direction: column; gap: 7px; }} }}
+  .pills .row {{ position: relative; display: inline-flex; align-items: center; }}
+  .pills .row > .soon, .pills .row > .side {{ position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); }}
+  .pills .cocreate.side {{ margin: 0; white-space: nowrap; padding: 7px 13px; }}
+  @media (max-width: 760px) {{
+    /* niente spazio a fianco: «Coming soon» diventa un bollino sull'angolo, «Get in touch» va sotto */
+    .pills .sec:has(.soon) {{ padding-top: 12px; }}
+    .pills .row > .soon {{ left: auto; right: -6px; top: -17px; transform: none; background: var(--bg); padding: 3px 7px;
+                          font-size: 8.5px; border-style: solid; border-color: var(--soft); }}
+    .pills .row {{ flex-direction: column; gap: 9px; }}
+    .pills .row > .side {{ position: static; transform: none; }}
+  }}
   .pills .soon {{ color: var(--soft); border: 1px dashed var(--muted); border-radius: 999px; padding: 6px 10px;
                  font: 700 10.5px/1 Inter, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }}
   .pills .cocreate {{ margin-top: 3px; background: transparent; color: var(--c); border: 1.5px solid var(--c); border-radius: 999px;
@@ -1967,8 +1976,8 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0, n_sc
 
 COCREATE = """<dialog class="cc" id="cc" aria-labelledby="cc-title">
   <form method="dialog"><button class="x" aria-label="Close">&times;</button></form>
-  <h2 id="cc-title">Co-create the service</h2>
-  <p class="lead">This section is still being built. Tell us what you would need from it, or how you would like to take part.</p>
+  <h2 id="cc-title">Co-create the clinical research ecosystem</h2>
+  <p class="lead">We are building this with the people who use it. Tell us what you would need, or how you would like to take part.</p>
   <form id="cc-form" action="https://api.web3forms.com/submit" method="POST">
     <input type="hidden" name="access_key" value="{key}">
     <input type="hidden" name="subject" value="Co-create: Clinical Research Chaos">
@@ -1999,7 +2008,7 @@ COCREATE = """<dialog class="cc" id="cc" aria-labelledby="cc-title">
       var t = b.dataset.topic || "";
       f.topic.value = t;
       f.subject.value = (t === "Partnership" ? "Partnership" : "Co-create: " + t) + " (Clinical Research Chaos)";
-      title.textContent = t === "Partnership" ? "Get in touch about partnerships" : "Co-create " + t;
+      title.textContent = t === "Partnership" ? "Get in touch about partnerships" : "Co-create the clinical research ecosystem";
       st.className = "status"; st.textContent = "";
       if (d.showModal) d.showModal(); else location.href = "feedback.html";
     }});
@@ -2559,8 +2568,9 @@ PARTNERSHIP = ("Partnership", "Research groups, societies and institutions: buil
 
 def section_pills(cfg, metrics=None, current=None, home=False):
     """Le quattro rubriche in colonna: pillola nel colore della rubrica e, sotto, la sua metrica.
-    In home (config «site_coming_soon»): le rubriche ancora in costruzione hanno a sinistra «Coming soon» e sotto
-    un pulsante che apre il modulo per scriverci; in fondo la pillola Partnership, anche lei in arrivo."""
+    In home (config «site_coming_soon»): le rubriche ancora in costruzione hanno a destra «Coming soon» e sotto
+    un pulsante che apre il modulo per scriverci; in fondo la pillola Partnership con «Get in touch» a fianco.
+    Le pillole restano sempre centrate: ciò che sta a fianco è fuori dal flusso."""
     from html import escape as esc
     soon = set(cfg.get("site_coming_soon") or []) if home else set()
     out = []
@@ -2571,11 +2581,11 @@ def section_pills(cfg, metrics=None, current=None, home=False):
         if kind in soon:
             plain = label.replace("&amp;", "&")
             out.append(f'<div class="sec" style="--c:{col};--on:{on_color(col)}">'
-                       f'<div class="row"><span class="soon">Coming soon</span>'
-                       f'<a href="{href}"{here}><span class="tag">{label.upper()}</span></a></div>'
+                       f'<div class="row"><a href="{href}"{here}><span class="tag">{label.upper()}</span></a>'
+                       f'<span class="soon">Coming soon</span></div>'
                        + (f'<span class="met">{esc(met)}</span>' if met else "")
                        + f'<button type="button" class="cocreate" data-topic="{esc(plain, quote=True)}">'
-                         f'Co-create the service</button></div>')
+                         f'Co-create the clinical research ecosystem with us</button></div>')
             continue
         out.append(f'<a href="{href}" style="--c:{col};--on:{on_color(col)}"{here}>'
                    f'<span class="tag">{label.upper()}</span>'
@@ -2583,10 +2593,9 @@ def section_pills(cfg, metrics=None, current=None, home=False):
     if "partnership" in soon:
         col = SITE_GREEN
         out.append(f'<div class="sec" style="--c:{col};--on:{on_color(col)}">'
-                   f'<div class="row"><span class="soon">Coming soon</span>'
-                   f'<span class="tag">{PARTNERSHIP[0].upper()}</span></div>'
-                   f'<span class="met">{esc(PARTNERSHIP[1])}</span>'
-                   f'<button type="button" class="cocreate" data-topic="Partnership">Get in touch</button></div>')
+                   f'<div class="row"><span class="tag">{PARTNERSHIP[0].upper()}</span>'
+                   f'<button type="button" class="cocreate side" data-topic="Partnership">Get in touch</button></div>'
+                   f'<span class="met">{esc(PARTNERSHIP[1])}</span></div>')
     return "\n".join(out)
 
 
