@@ -1238,7 +1238,8 @@ WHAT GOES ON EACH PAGE (Latest Science):
   the conclusion. No numbers.
 - PAGE 2 slide: heading = the clinical question or gap in a short phrase. Body = what the source is (type of paper,
   population or condition, what it set out to answer), so the reader knows exactly which paper we are talking
-  about. Stay inside the abstract and introduction.
+  about. Stay inside the abstract and introduction. Page 2 states NO finding and NO conclusion: those belong only
+  to page 3, otherwise page 3 repeats page 2.
 - PAGE 3 takeaway: the authors' own CONCLUSION for practice or for future care, close to their wording, with their
   qualifiers. Never a secondary or exploratory finding presented as the message. No concept that pages 1-2 did not
   prepare.
@@ -1280,8 +1281,9 @@ source truly has fewer distinct messages).
 
 WHAT GOES ON EACH PAGE (Methodology):
 - PAGE 1 title: the methodological problem, mistake or question, as a sharp hook (sentence case).
-- PAGE 2 slide: heading = the core concept in a short phrase. Body = why it matters in practice, as the source
-  explains it. If the source is a published paper, say what it is ("A methods review of stroke trials…",
+- PAGE 2 slide: heading = the core concept or problem in a short phrase. Body = why it matters in practice, as the
+  source explains it. Page 2 gives the PROBLEM, never the solution: the method or decision that solves it appears
+  only on page 3, otherwise page 3 repeats page 2. If the source is a published paper, say what it is ("A methods review of stroke trials…",
   "The CONSORT extension for pilot trials…"); if it is teaching material, do not invent a paper.
 - PAGE 3 takeaway: the lesson a researcher can act on: name the method, check, threshold or decision. Never "X is
   important", never a vague exhortation.
@@ -1424,6 +1426,11 @@ def _overlap(a, b):
     return sum(w in wb for w in wa) / len(wa) if wa else 0.0
 
 
+def _bigrams(text):
+    w = _content_words(text)
+    return {f"{a} {b}" for a, b in zip(w, w[1:])}
+
+
 def lay_problems(post, kind="science"):
     """Difetti del formato breve trovati senza AI: lunghezze, «…», frasi tronche, ripetizioni tra le pagine, altri
     studi citati, fonte nominata senza presentarla, numeri nei risultati (Latest Science)."""
@@ -1446,6 +1453,12 @@ def lay_problems(post, kind="science"):
     for a, b in pairs:
         if fields[a] and fields[b] and _overlap(fields[a], fields[b]) >= 0.6:
             probs.append(f"{a} repeats the {b} (same key words): it must add something new")
+    # stesse espressioni tra contesto e messaggio (le parole del tema, già nel titolo, non contano)
+    topic = _bigrams(fields["title"])
+    shared = (_bigrams(fields["takeaway"]) & (_bigrams(fields["body"]) | _bigrams(fields["heading"]))) - topic
+    if len(shared) >= 2:
+        probs.append("takeaway and page 2 share the same expressions (" + ", ".join(sorted(shared)[:4]) + "): page 2 "
+                     "must give only the question and the source, the takeaway only the answer")
     for f, t in visible.items():
         m = RX_OTHER_WORK.search(t)
         if m:
