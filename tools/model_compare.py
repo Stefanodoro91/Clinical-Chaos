@@ -185,12 +185,35 @@ def one(model, kind, idx, f, drive):
     pj = PREVIEW / "post.json"
     if not pj.exists():
         return f"{key}: post respinto dai controlli di qualità (vedi log)"
-    title = json.loads(pj.read_text(encoding="utf-8")).get("title", "")
+    data = json.loads(pj.read_text(encoding="utf-8"))
+    title, left = data.get("title", ""), data.get("lay_left") or []
     safe_model = model.replace('/', '_').replace(':', '-').replace('>', '_')
     pdf = pdf_of(f"{kind}{idx}-{safe_model}.pdf")
+    if pdf:
+        DONE.setdefault(model, []).append(pdf)
     saved = bool(fid and pdf and drive_preview.upload(pdf, None, "application/pdf", bot.CONFIG, file_id=fid))
-    location = f" → {pdf.name}" if pdf else " — PDF non generato"
-    return f"{key}: ok in {int(time.time() - t0)} s «{title[:80]}»" + (" ✓ Drive" if saved else f" (locale{location})")
+    location = " ✓ Drive" if saved else (f" → {pdf.name}" if pdf else " — PDF non generato")
+    return (f"{key}: ok in {int(time.time() - t0)} s «{title[:90]}»{location}"
+            + (f" | difetti residui: {'; '.join(x[:60] for x in left)}" if left else " | nessun difetto residuo"))
+
+
+DONE = {}          # modello → PDF dei post riusciti, uniti alla fine in un solo PDF (chiave «<modello>|ALL»)
+
+
+def merge_and_upload(model):
+    from pypdf import PdfWriter
+    pdfs = DONE.get(model) or []
+    if not pdfs:
+        return "nessun PDF da unire"
+    out = OUT / f"ALL-{model.replace('/', '_').replace(':', '-').replace('>', '_')}.pdf"
+    w = PdfWriter()
+    for p in pdfs:
+        w.append(str(p))
+    with open(out, "wb") as fh:
+        w.write(fh)
+    fid = FILES.get(f"{model}|ALL")
+    ok = bool(fid and drive_preview.upload(out, None, "application/pdf", bot.CONFIG, file_id=fid))
+    return f"PDF unico ({len(pdfs)} post) " + ("✓ Drive" if ok else f"locale {out.name}")
 
 
 def main():
@@ -216,6 +239,7 @@ def main():
                 report.append(line)
                 if ": ok in " in line:
                     i += 1                         # il segnaposto successivo solo dopo un post riuscito
+        report.append(f"  {merge_and_upload(model)}")
         spent = sum(float(v.get("costo_usd", 0)) for v in content.USAGE.values())
         report.append(f"  spesa a pagamento: {spent:.4f} $")
         report.append("  consumo per attività/modello: " + json.dumps(

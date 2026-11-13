@@ -272,20 +272,23 @@ CLINICAL_QUEUE_FILE = ROOT / "clinical_queue.json"     # post Latest Science gi�
 
 def _clinical_review(post, material):
     """Controlli prima dell'uscita sul testo dell'articolo: anti-copia, revisione incrociata (o verifica dei fatti),
-    reference. False se la revisione respinge il post."""
+    poi rifinitura con le note del revisore. Il post non viene mai scartato: i problemi si correggono."""
     content.rewrite_copied(post, material)
+    notes = []
     if CONFIG.get("cross_review", True):
         rev = content.cross_review(post, material)
         post["review"] = {k: rev.get(k) for k in ("passed", "scores", "critic", "arbiter", "fixed", "removed", "notes")}
         if rev.get("passed") is False:
-            print(f"::warning title=Latest Science respinto dalla revisione::{post['title'][:70]}: "
-                  f"{'; '.join(rev.get('notes', [])[:2])[:250]}")
-            return False
+            notes = [f"reviewer: {n}" for n in (rev.get("notes") or [])[:6]]
+            print(f"::notice title=Latest Science da correggere::{post['title'][:70]}: le note del revisore vanno "
+                  "alla rifinitura")
         if rev.get("passed") is None:
             content.verify_against_source(post, material)
     else:
         content.verify_against_source(post, material)
     content.fix_references(post)
+    if post.get("lay_abstract"):
+        content.finalize_lay(post, material, "science", extra=notes)
     return True
 
 
@@ -312,14 +315,11 @@ def _new_clinical_posts(drive, posted, sources, cq):
         note = None
         try:
             part = content.material_part(drive, f)
-            status_, label = content.license_status(content.material_text(part))
-            if status_ != "ok":
-                note = f"licenza: {label or 'non dichiarata nel testo'}"
-            else:
-                posts, focus, why = content.clinical_posts(part, f["name"], CONFIG["brand_name"], published,
-                                                           int(CONFIG.get("latest_science_posts_per_paper", 3)))
-                if not posts:
-                    note = f"nessun messaggio clinico ({focus}): {why[:150]}"
+            # la licenza non blocca: il post riassume con parole proprie e cita la fonte, senza testo né figure
+            posts, focus, why = content.clinical_posts(part, f["name"], CONFIG["brand_name"], published,
+                                                       int(CONFIG.get("latest_science_posts_per_paper", 3)))
+            if not posts:
+                note = f"nessun post ricavato ({focus}): {why[:150]}"
         except Exception as e:
             print(f"::warning title=Articolo clinico non letto::{f['name']}: {str(e)[:200]}")
             continue
@@ -436,6 +436,11 @@ def quality_gate(post, drive, queue):
             if rev.get("passed") is None and CONFIG.get("verify_source", True):
                 content.verify_against_source(post, material)      # nessun revisore indipendente: controllo di Gemini
             rejected = rev.get("passed") is False
+            if post.get("lay_abstract"):              # formato breve: mai scartato, le note vanno alla rifinitura
+                notes = [f"reviewer: {n}" for n in (rev.get("notes") or [])[:6]] if rejected else []
+                content.finalize_lay(post, material, "science" if post.get("category") == content.CLINICAL_CATEGORY
+                                     else "methods", extra=notes)
+                rejected = False
         if not rejected:
             content.fix_references(post)
             missing = [] if post.get("lay_abstract") else content.concreteness(post)   # Latest Science: niente numeri per scelta
@@ -1173,8 +1178,8 @@ def main():
             post["area_label"] = rubrics.AREA_NAMES[area]
             post["caption"] += f"\n\nOpen calls in this area: {grants.site_url(CONFIG, 'calls')}?area={area}"
     if (kind == "research" and CONFIG.get("review_slides", True) and post.get("rubric") != "Checklist"
-            and not (post.get("review") or {}).get("passed")):
-        content.review_slides(post)              # ogni slide un concetto, comprensibile da sola
+            and not (post.get("review") or {}).get("passed") and not post.get("lay_abstract")):
+        content.review_slides(post)              # ogni slide un concetto (il formato breve ha la sua rifinitura)
     apa = ""
     if kind == "research" and CONFIG.get("source_slide"):
         import sources
@@ -1182,8 +1187,11 @@ def main():
         apa = (meta or {}).get("apa", "")
     if kind == "research":
         polish.polish_post(post, apa)            # sentence case, reference coerenti con la slide «Based on», fonti
-    if kind == "research" and CONFIG.get("visual_plan"):
+    if kind == "research" and CONFIG.get("visual_plan") and not post.get("no_images"):
         plan_visuals(post)                       # schema, figura dell'articolo, foto o niente: slide per slide
+    elif post.get("no_images"):
+        for s in post.get("slides") or []:
+            s["visual"] = {"type": "none"}       # solo testo: niente schemi né figure
     slides = cards.render_carousel(post, CONFIG)
     caption = build_caption(post)
     print(f"\nPost scelto: {post['title']}  (fonte: {post['source']}, {post.get('source_hint', '')})")

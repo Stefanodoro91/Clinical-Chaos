@@ -1695,6 +1695,7 @@ def render_carousel(post, cfg):
     if post.get("kind") == "grant" and cfg.get("grant_cover_photo") and post.get("id") not in images.COVER_CACHE:
         images.cover_photo(post, cfg)          # foto vera per la copertina del bando (se Pixabay ne ha una adatta)
     if (EDITORIAL and not post.get("kind") and cfg.get("cover_photo_methods", True) and post.get("id") not in images.COVER_CACHE
+            and not post.get("no_images")                       # post solo testo: niente foto in copertina
             and (post.get("area") or post.get("rubric") == "Clinical Insights")):
         images.cover_photo(post, cfg)          # regola: foto in copertina solo per post di un'area clinica o Clinical Insights
     pages = [grant_cover(post, cfg, total) if post.get("kind") == "grant" else cover(post, cfg, total)]
