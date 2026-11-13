@@ -1236,6 +1236,7 @@ def clinical_posts(part, filename, brand, published=(), max_posts=1):
     for post in posts:
         post["slides"] = post["slides"][:1]                # formato lay abstract: una sola slide (il gap)
         post["lay_abstract"] = True
+        post["no_images"] = True                            # solo testo: niente immagini AI né foto Pixabay
         problems = lay_abstract_problems(post)
         if problems:
             print(f"  ::warning title=Latest Science da controllare::«{post['title']}»: {'; '.join(problems)}")
@@ -1250,7 +1251,13 @@ def generate_posts(part, filename, brand, max_posts=12, published=()):
                            published="; ".join(published) if published else "none")
     posts = gemini_json([{"text": prompt}, part], SCHEMA, task="nuovi post da Drive").get("posts", [])
     material = material_text(part)
-    return [c for c in (_clean_post(p, material) for p in posts) if c][:max_posts]
+    cleaned = [c for c in (_clean_post(p, material) for p in posts) if c][:max_posts]
+    # Formato breve (stesso di Latest Science): 1 sola slide, niente immagini
+    for post in cleaned:
+        post["slides"] = post["slides"][:1]
+        post["lay_abstract"] = True
+        post["no_images"] = True
+    return cleaned
 
 
 # ---------------------------------------------------------------- revisione delle slide prima della pubblicazione
