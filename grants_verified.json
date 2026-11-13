@@ -1457,20 +1457,21 @@
   },
   "GG-PAR-25-024": {
     "status": "ok",
-    "checked": "2026-10-22",
+    "checked": "2026-11-13",
     "official_source": "NIH Guide PAR-25-024",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-024.html",
     "is_open_call": "yes",
-    "title": "Development of Biomarkers or Composite Biomarkers for Neurological and Neuromuscular Disorders (R61/R33 - Clinical Trial Optional)",
-    "programme": "NIH – US National Institutes of Health",
+    "title": "Development of Biomarkers or Composite Biomarkers for Neurological and Neuromuscular Disorders (R61/R33)",
+    "programme": "National Institute of Neurological Disorders and Stroke (NINDS)",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This NIH funding opportunity promotes the discovery and development of candidate biomarkers or composite biomarkers for neurological and neuromuscular disorders. The phased R61/R33 mechanism supports initial proof-of-concept studies and preliminary clinical validation to ensure biomarkers are fit for use in clinical trials or clinical practice. Eligible applicant organizations include domestic U.S. higher education institutions, nonprofits, for-profit entities, and government bodies. Foreign entities are not eligible to apply.",
+    "summary": "This funding opportunity supports the development and preliminary clinical validation of biomarkers for neurological and neuromuscular disorders. Using a phased R61/R33 mechanism, projects first identify or confirm candidate biomarkers using human samples or data, then conduct initial clinical validation to test utility for specific contexts of use. The goal is to prepare biomarkers for definitive validation studies. Multidisciplinary teams from U.S. organizations, including higher education, nonprofits, and for-profit entities, are eligible to apply.",
     "coming_soon": false,
     "eligible_countries": "United States only (foreign organisations not eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
     "italy": "no",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
     "version": 3,
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2025-03-31",
       "2025-06-20",
@@ -1499,8 +1500,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
-    "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support."
+    "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director/Principal Investigator.",
+    "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
+    "deadline_raw": "2027-02-22 | February 22, 2027 February 22, 2027 Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-13",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-PAR-27-096": {
     "status": "ok",
@@ -2838,20 +2846,21 @@
   },
   "GG-RFA-MH-26-140": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-13",
     "official_source": "NIH Guide RFA-MH-26-140",
     "official_url": "https://grants.nih.gov/grants/guide/rfa-files/RFA-MH-26-140.html",
     "is_open_call": "yes",
-    "title": "BRAIN Initiative: Brain Behavior Quantification and Synchronization- Next Generation Sensor Technology Development (U01 Clinical Trial…",
-    "programme": "National Institutes of Health (NIH)",
+    "title": "BRAIN Initiative: Brain Behavior Quantification and Synchronization- Next Generation Sensor Technology Development",
+    "programme": "BRAIN Initiative",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity supports the development of next-generation sensor technologies and bioelectronic devices that synchronize with brain recordings to model organismal and human behavior. It aims to foster multidisciplinary collaborations among engineers and behavioral scientists to create reliable, compact, real-time sensing tools. Eligible applicants include higher education institutions, non-profits, for-profit organizations, governments, and international foreign organizations.",
+    "summary": "This funding opportunity supports the development of next-generation sensor technologies and bioelectronic devices to advance the Brain Behavior Quantification and Synchronization (BBQS) program. The call funds the design, fabrication, and validation of sensors that synchronize with neural recordings to create computational models of behavior. Multidisciplinary teams from academic, non-profit, and for-profit organizations worldwide are eligible to apply. Projects should focus on high-resolution, low-power, and biocompatible sensors for human or animal research.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2025-06-13",
       "2026-06-15",
@@ -2867,9 +2876,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2025-06-13 | June 13, 2025 Not Applicable Not Applicable November 2025 January 2026 April 2026"
+    "deadline_raw": "2027-06-15 | June 15, 2027 June 15, 2027 Not Applicable November 2027 January 2028 April 2028",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-13",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-RFA-DC-26-001": {
     "status": "ok",
@@ -3520,20 +3535,21 @@
   },
   "GG-PAR-25-103": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-13",
     "official_source": "NIH Guide PAR-25-103",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-103.html",
     "is_open_call": "yes",
     "title": "Cancer Prevention and Control Clinical Trials Planning Grant Program (U34 Clinical Trials Optional)",
-    "programme": "NIH – US National Institutes of Health",
+    "programme": "National Cancer Institute (NCI)",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity supports well-planned clinical trials across the cancer prevention and control spectrum, aiming to improve interception, screening, early detection, healthcare delivery, and survivorship outcomes. It funds preparatory activities and pilot feasibility studies to address information gaps in study population, accrual, and operational risks prior to a full-scale clinical trial. Eligible applicants include higher education institutions, non-profits, for-profit organizations, governments, and foreign organizations.",
+    "summary": "This program supports planning activities for future multi-center Phase II or later phase clinical trials in cancer prevention and control. It funds preparatory studies to address information gaps regarding study populations, recruitment strategies, interventions, and endpoints to ensure trial rigor and feasibility. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and foreign entities. The goal is to facilitate well-planned trials that improve cancer-related health outcomes and healthcare delivery.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2025-02-25",
       "2025-06-25",
@@ -3564,7 +3580,13 @@
     "deadline_source": "nih_key_dates",
     "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2025-02-25 | February 25, 2025 February 25, 2025 Not Applicable July 2025 October 2025 December 2025 ."
+    "deadline_raw": "2027-02-25 | February 25, 2027 February 25, 2027 Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-13",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "WEB-39a5e4093d78": {
     "status": "ok",
@@ -3693,20 +3715,21 @@
   },
   "GG-PAR-25-104": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-13",
     "official_source": "NIH Guide PAR-25-104",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-104.html",
     "is_open_call": "yes",
     "title": "Cancer Prevention and Control Clinical Trials Planning Grant Program (R34 Clinical Trials Optional)",
-    "programme": "NIH – US National Institutes of Health",
+    "programme": "National Cancer Institute (NCI)",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity supports the planning and preparation of clinical trials across the cancer prevention and control spectrum. It aims to address informational gaps concerning study populations, endpoints, and operational risks before launching full-scale trials. Funded activities include pilot studies, statistical planning, and protocol finalization. Eligible applicants include higher education institutions, non-profits, for-profit organizations, governments, and foreign organizations.",
+    "summary": "This National Cancer Institute (NCI) program supports the planning of Phase II or later clinical trials in cancer prevention and control. It funds activities to address information gaps in study populations, interventions, and operational risks, ensuring future trials are feasible and rigorous. Eligible areas include screening, early detection, healthcare delivery, and survivorship. Applications are open to diverse organizations, including higher education institutions, nonprofits, for-profit entities, and foreign organizations.",
     "coming_soon": false,
     "eligible_countries": "Any country (non-US organisations eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "italy": "yes",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
     "version": 3,
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2025-02-25",
       "2025-06-25",
@@ -3737,7 +3760,13 @@
     "deadline_source": "nih_key_dates",
     "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2025-02-25 | February 25, 2025 February 25, 2025 Not Applicable July 2025 October 2025 December 2025 ."
+    "deadline_raw": "2027-02-25 | February 25, 2027 February 25, 2027 Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-13",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-RFA-HD-28-002": {
     "status": "ok",
