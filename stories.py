@@ -13,6 +13,8 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 import requests
+
+import meta_token
 from PIL import Image, ImageDraw
 
 import cards
@@ -370,7 +372,7 @@ def publish_instagram(video_path):
 def publish_facebook(video_path):
     _social_guard()
     page = os.environ["FB_PAGE_ID"]
-    token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
+    token = meta_token.ensure_page_token()
     url = f"https://graph.facebook.com/{GRAPH_VERSION}/{page}/video_stories"
     r = requests.post(url, data={"upload_phase": "start", "access_token": token}, timeout=60)
     if not r.ok:

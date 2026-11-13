@@ -16,6 +16,8 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import requests
+
+import meta_token
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
@@ -502,8 +504,8 @@ def build_caption(post):
     return (head + tail).strip()
 
 
-def ig(method, path, **params):
-    params["access_token"] = os.environ["IG_ACCESS_TOKEN"]
+def ig(method, path, _token=None, **params):
+    params["access_token"] = _token or os.environ["IG_ACCESS_TOKEN"]
     url = f"https://graph.facebook.com/{GRAPH_VERSION}/{path}"
     r = requests.post(url, data=params, timeout=60) if method == "POST" else requests.get(url, params=params, timeout=60)
     if not r.ok:
@@ -577,7 +579,7 @@ def publish_facebook(image_urls, caption, kind=None, alts=None):
     """Pubblica le stesse slide sulla Pagina Facebook come un unico post con più foto. Restituisce l'id del post."""
     _social_guard()
     page_id = os.environ.get("FB_PAGE_ID")
-    token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
+    token = meta_token.ensure_page_token()
     base = f"https://graph.facebook.com/{GRAPH_VERSION}/{page_id}"
     media = []
     for i, url in enumerate(image_urls):
@@ -623,7 +625,7 @@ def publish_facebook_single(image_url, message):
     """Facebook: un'immagine con testo lungo (per il pubblico della Pagina rende più del carosello). Restituisce l'id del post."""
     _social_guard()
     page_id = os.environ.get("FB_PAGE_ID")
-    token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
+    token = meta_token.ensure_page_token()
     r = requests.post(f"https://graph.facebook.com/{GRAPH_VERSION}/{page_id}/photos",
                       data={"url": image_url, "caption": message, "published": "true", "access_token": token}, timeout=90)
     if not r.ok:
@@ -646,8 +648,9 @@ def wait_until_public(url):
 def publish_reel(video_path, caption):
     """Reel su Instagram con caricamento diretto del video (upload «resumable»): nessun hosting esterno."""
     _social_guard()
-    user, token = os.environ["IG_USER_ID"], os.environ["IG_ACCESS_TOKEN"]
-    c = ig("POST", f"{user}/media", media_type="REELS", upload_type="resumable", caption=caption, share_to_feed="true")
+    user, token = os.environ["IG_USER_ID"], meta_token.ensure_page_token()   # upload diretto: serve il token di Pagina
+    c = ig("POST", f"{user}/media", _token=token, media_type="REELS", upload_type="resumable", caption=caption,
+           share_to_feed="true")
     data = Path(video_path).read_bytes()
     r = requests.post(c.get("uri") or f"https://rupload.facebook.com/ig-api-upload/{GRAPH_VERSION}/{c['id']}",
                       headers={"Authorization": f"OAuth {token}", "offset": "0", "file_size": str(len(data))},
@@ -655,7 +658,7 @@ def publish_reel(video_path, caption):
     if not r.ok:
         raise RuntimeError(f"Caricamento del video rifiutato {r.status_code}: {r.text[:300]}")
     for _ in range(60):                        # l'elaborazione dei video può richiedere qualche minuto
-        status = ig("GET", c["id"], fields="status_code").get("status_code")
+        status = ig("GET", c["id"], _token=token, fields="status_code").get("status_code")
         if status == "FINISHED":
             break
         if status in ("ERROR", "EXPIRED"):
@@ -663,7 +666,7 @@ def publish_reel(video_path, caption):
         time.sleep(10)
     else:
         raise RuntimeError("Instagram non ha elaborato il video in tempo")
-    return ig("POST", f"{user}/media_publish", creation_id=c["id"])["id"]
+    return ig("POST", f"{user}/media_publish", _token=token, creation_id=c["id"])["id"]
 
 
 REEL_KINDS = {   # tipo di carosello → musica (cartella Drive «Musica/…»), testo e hashtag del reel
@@ -849,7 +852,7 @@ def publish_facebook_reel(video_path, caption):
     """Reel sulla Pagina Facebook (API video_reels: avvio, caricamento diretto, pubblicazione)."""
     _social_guard()
     page = os.environ["FB_PAGE_ID"]
-    token = os.environ.get("FB_PAGE_TOKEN") or os.environ["IG_ACCESS_TOKEN"]
+    token = meta_token.ensure_page_token()
     url = f"https://graph.facebook.com/{GRAPH_VERSION}/{page}/video_reels"
     r = requests.post(url, data={"upload_phase": "start", "access_token": token}, timeout=60)
     if not r.ok:
@@ -1349,7 +1352,7 @@ def check_token():
         print(f"::notice title=Pagina Facebook::ID impostato; permessi mancanti: {', '.join(missing) or 'nessuno'}")
         if os.environ.get("FB_TEST") == "true":
             # prova reale: carica una slide già pubblicata come foto NON pubblicata e la cancella subito
-            page, fb_token = os.environ["FB_PAGE_ID"], os.environ.get("FB_PAGE_TOKEN") or token
+            page, fb_token = os.environ["FB_PAGE_ID"], meta_token.ensure_page_token()
             sample = next(IMAGES_DIR.glob("*/slide-1.jpg"), None)
             sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
             url = f"https://raw.githubusercontent.com/{os.environ['GITHUB_REPOSITORY']}/{sha}/{sample.relative_to(ROOT).as_posix()}"
@@ -1686,7 +1689,7 @@ def corrections():
     items = load(CORRECTIONS_FILE, [])
     posted = {p.get("id"): p for p in load(POSTED_FILE, [])}
     token = os.environ["IG_ACCESS_TOKEN"]
-    fb_token = os.environ.get("FB_PAGE_TOKEN") or token
+    fb_token = meta_token.ensure_page_token()
     changed = False
     for c in items:
         if c.get("done"):
