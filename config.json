@@ -73,6 +73,13 @@
     "reel": "1TId-IlevYajm3u110YlzO6BXEnR-S0ZS"
   },
   "site_v4": true,
+  "ai_paid": {
+    "enabled": true,
+    "daily_budget_usd": 0.3,
+    "writing": ["deepseek/deepseek-v4-pro", "deepseek/deepseek-v4.1-flash"],
+    "review": ["deepseek/deepseek-v4.1-flash"],
+    "volume": []
+  },
   "site_logo_4c": true,
   "site_favicon": true,
   "linkedin_url": "https://www.linkedin.com/company/clinical-research-chaos/",

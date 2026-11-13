@@ -655,8 +655,12 @@ def publish_reel(video_path, caption):
     r = requests.post(c.get("uri") or f"https://rupload.facebook.com/ig-api-upload/{GRAPH_VERSION}/{c['id']}",
                       headers={"Authorization": f"OAuth {token}", "offset": "0", "file_size": str(len(data))},
                       data=data, timeout=300)
-    if not r.ok:
-        raise RuntimeError(f"Caricamento del video rifiutato {r.status_code}: {r.text[:300]}")
+    if not r.ok:                               # ripiego: Instagram scarica il video dal sito (come per Threads)
+        print(f"::warning title=Reel::caricamento diretto rifiutato {r.status_code}: {r.text[:200]}; "
+              "riprovo con l'indirizzo pubblico del video")
+        url = public_video_url(video_path, f"reel-{datetime.now(timezone.utc):%Y%m%d-%H%M%S}")
+        c = ig("POST", f"{user}/media", _token=token, media_type="REELS", video_url=url, caption=caption,
+               share_to_feed="true")
     for _ in range(60):                        # l'elaborazione dei video può richiedere qualche minuto
         status = ig("GET", c["id"], _token=token, fields="status_code").get("status_code")
         if status == "FINISHED":

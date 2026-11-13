@@ -552,7 +552,7 @@ def _ledger(folder=None):
     day = quota_day()
     if _LEDGER is not None and _LEDGER["day"] == day and folder is None:
         return _LEDGER
-    used, exhausted = {}, set()
+    used, exhausted, spent = {}, set(), 0.0
     run = os.environ.get("GITHUB_RUN_ID") or "locale"
     for f in Path(folder or Path(__file__).resolve().parent / "usage").glob("*.json"):
         if f.stem.endswith(f"-{run}"):
@@ -564,11 +564,12 @@ def _ledger(folder=None):
         if data.get("quota_day") != day:
             continue
         for k, c in data.get("consumo", {}).items():
+            spent += float(c.get("costo_usd", 0) or 0)
             task, _, model = k.partition("|")
             if model.startswith(("gemini", "gemma")) and task.split(" [", 1)[0] not in NOT_FREE_TASKS:
                 used[model] = used.get(model, 0) + int(c.get("richieste", 0))
         exhausted |= set(data.get("esauriti") or [])
-    led = {"day": day, "used": used, "exhausted": exhausted}
+    led = {"day": day, "used": used, "exhausted": exhausted, "spent": spent}
     if folder is None:
         _LEDGER = led
     return led
@@ -756,6 +757,39 @@ MIN_GAP = {"strong": 13.0, "lite": 4.5}   # secondi minimi tra due richieste all
 MAX_WAIT = 70                        # attesa massima di un modello forte in pausa per la scrittura
 
 WRITING = {"nuovi post da Drive", "post bando", "arbitro", "verifica fatti", "takeaway clinico", "revisione slide"}
+
+# Livello A PAGAMENTO su OpenRouter (config «ai_paid»): si usa SOLO in fondo alla catena, quando i modelli gratuiti
+# sono finiti o assenti, e mai oltre il tetto di spesa del giorno («daily_budget_usd», giorno della quota Gemini).
+#   writing → scrittura dei post e conferme; review → revisore indipendente («critica»); volume → verifiche di
+#   bandi e posizioni (di solito vuoto: lì i gratuiti bastano). Spesa reale letta dalla risposta di OpenRouter.
+def _load_paid():
+    try:
+        cfg = json.loads((Path(__file__).resolve().parent / "config.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        cfg = {}
+    p = cfg.get("ai_paid") or {}
+    off = os.environ.get("AI_PAID", "").lower() in ("0", "off", "false", "no")
+    return {"enabled": bool(p.get("enabled")) and not off,
+            "writing": list(p.get("writing") or []), "review": list(p.get("review") or []),
+            "volume": list(p.get("volume") or []), "daily_budget_usd": float(p.get("daily_budget_usd", 0.5))}
+
+
+PAID = _load_paid()
+
+
+def paid_chain(kind):
+    return [f"paid:{m}" for m in PAID.get(kind, [])] if PAID["enabled"] else []
+
+
+def paid_spent_today():
+    """Dollari spesi oggi sui modelli a pagamento: giri precedenti (file usage/) + questo giro."""
+    here = sum(float(c.get("costo_usd", 0)) for c in USAGE.values())
+    return round(_ledger()["spent"] + here, 4)
+
+
+def paid_allowed():
+    return PAID["enabled"] and paid_spent_today() < PAID["daily_budget_usd"]
+
 # modello forte preferito per alcune attività (se ha quota; altrimenti gli altri forti): 2.5 Flash ha una quota
 # separata dai 3.x, così bandi e controllo dei fatti non tolgono richieste ai post scientifici
 PREFERRED = {}       # es. {"post bando": ["gemini-3-flash-preview"]}: nessuna preferenza finché 2.5 Flash non è disponibile
@@ -869,16 +903,19 @@ def _strong_for(base):
 def route_for(task):
     base = task.split(" [", 1)[0]                  # «verifica bandi [A]» del confronto A/B → «verifica bandi»
     chain = ROUTE_OVERRIDES.get(base)
-    if chain is None and base in WRITING:
+    if chain is None and base in WRITING:          # a pagamento prima del ripiego leggero: è un modello forte
         chain = ([f"gemini:{m}" for m in _strong_for(base)]
                  + ([f"openrouter:{OR_STRONG}"] if base != "nuovi post da Drive" else [])
+                 + paid_chain("writing")
                  + [f"gemini:{m}" for m in lite_models()])
     elif chain is None and base in CONFIRM:        # secondo parere: solo forti, mai un ripiego leggero
-        chain = [f"gemini:{m}" for m in _strong_for(base)]
+        chain = [f"gemini:{m}" for m in _strong_for(base)] + paid_chain("writing")
     elif chain is None and base in SCREENING:      # screening: solo leggeri e gratuiti esterni, mai i forti
-        chain = [f"gemini:{m}" for m in lite_models()] + [f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}"]
+        chain = ([f"gemini:{m}" for m in lite_models()] + [f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}"]
+                 + paid_chain("volume"))
     elif chain is None:
-        chain = (ROUTES.get(base) or DEFAULT_ROUTE) + [f"gemini:{m}" for m in _strong_by_quota()]
+        chain = ((ROUTES.get(base) or DEFAULT_ROUTE) + [f"gemini:{m}" for m in _strong_by_quota()]
+                 + paid_chain("review" if base == "critica" else "volume"))
     out = []
     for spec in chain:
         provider, model = spec.split(":", 1)
@@ -1020,6 +1057,8 @@ def _openai_compatible(url, key, model, label, prompt_text, schema, temperature,
         u["richieste"] += 1
         u["ingresso"] += int(usage.get("prompt_tokens") or 0)
         u["uscita"] += int(usage.get("completion_tokens") or 0)
+        if usage.get("cost") is not None:          # OpenRouter: costo reale della richiesta in dollari
+            u["costo_usd"] = round(float(u.get("costo_usd", 0)) + float(usage["cost"] or 0), 6)
         globals()["LAST_MODEL"] = f"{label}-{model.split('/')[-1]}"
         return result
     raise ModelUnavailable(f"{label} {model}: non risponde")
@@ -1046,6 +1085,16 @@ def call_model(provider, model, parts, schema, temperature=0.3, task="altro", th
         return _openai_compatible("https://openrouter.ai/api/v1/chat/completions", key, model, "openrouter", text, schema,
                                   temperature, task, headers={"HTTP-Referer": "https://clinicalresearchchaos.com",
                                                               "X-Title": "Clinical Research Chaos"})
+    if provider == "paid":                         # OpenRouter a pagamento, entro il tetto di spesa del giorno
+        key = os.environ.get("OPENROUTER_API_KEY")
+        if not key:
+            raise ModelUnavailable("OPENROUTER_API_KEY mancante")
+        if not paid_allowed():
+            raise ModelUnavailable(f"a pagamento: tetto di {PAID['daily_budget_usd']} $ raggiunto o livello spento")
+        return _openai_compatible("https://openrouter.ai/api/v1/chat/completions", key, model, "paid", text, schema,
+                                  temperature, task, extra={"usage": {"include": True}},
+                                  headers={"HTTP-Referer": "https://clinicalresearchchaos.com",
+                                           "X-Title": "Clinical Research Chaos"})
     raise ModelUnavailable(f"fornitore sconosciuto: {provider}")
 
 
@@ -1068,8 +1117,9 @@ def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None, exc
             if provider == "gemini" and is_strong(model) and not writing and base not in ROUTE_OVERRIDES \
                     and model_left(model) <= STRONG_RESERVE:
                 continue                           # verifica: la quota rimasta di questo Flash serve ai post
-            if writing and provider == "gemini" and not is_strong(model) and cooling and round_ < 2:
-                break                              # un forte si libera fra poco: meglio aspettarlo che ripiegare
+            if writing and cooling and round_ < 2 and (provider == "paid" or
+                                                       (provider == "gemini" and not is_strong(model))):
+                break                              # un forte gratuito si libera fra poco: meglio aspettarlo che pagare o ripiegare
             try:
                 out = call_model(provider, model, parts, schema, temperature, task, thinking)
                 if errors:
@@ -1106,6 +1156,8 @@ def family(provider, model):
         return "alibaba"
     if "llama" in m:
         return "meta"
+    if "deepseek" in m:
+        return "deepseek"
     return m.split("/")[0]
 
 
