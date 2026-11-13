@@ -771,7 +771,8 @@ def _load_paid():
     off = os.environ.get("AI_PAID", "").lower() in ("0", "off", "false", "no")
     return {"enabled": bool(p.get("enabled")) and not off,
             "writing": list(p.get("writing") or []), "review": list(p.get("review") or []),
-            "volume": list(p.get("volume") or []), "daily_budget_usd": float(p.get("daily_budget_usd", 0.5))}
+            "volume": list(p.get("volume") or []),
+            "daily_budget_usd": float(os.environ.get("AI_PAID_BUDGET") or p.get("daily_budget_usd", 0.5))}
 
 
 PAID = _load_paid()

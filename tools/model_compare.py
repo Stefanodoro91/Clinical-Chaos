@@ -26,6 +26,7 @@ import requests  # noqa: E402
 
 MODE = os.environ.get("COMPARE_MODE", "run")
 N = int(os.environ.get("N") or 3)
+MAX_TRIES = int(os.environ.get("MAX_TRIES") or N)   # fonti da provare per rubrica finché non si hanno N post
 FAMILIES = ["deepseek/", "openai/gpt", "anthropic/claude", "qwen/", "moonshotai/", "z-ai/", "x-ai/", "mistralai/",
             "google/gemini", "meta-llama/", "nvidia/"]
 
@@ -55,14 +56,20 @@ PREVIEW = ROOT / "preview"
 OUT = ROOT / "compare_out"
 FILES = json.loads((ROOT / "compare_files.json").read_text(encoding="utf-8"))
 MODELS = [m.strip() for m in (os.environ.get("MODELS") or "").split(",") if m.strip()]
-FORCED = {"nuovi post da Drive", "takeaway clinico", "revisione slide", "verifica fatti"}
+# attività «complesse» (comprensione e lettura critica): le fa il modello in prova. FORCED_TASKS le cambia.
+FORCED = {t.strip() for t in (os.environ.get("FORCED_TASKS") or
+                              "nuovi post da Drive,takeaway clinico,revisione slide,verifica fatti").split(",") if t.strip()}
+# attività secondarie (revisore, verifiche, anti-copia…): con SECONDARY le fanno modelli open access, in questa
+# catena; vuoto = catene normali del bot
+SECONDARY = os.environ.get("SECONDARY") or ""
+FULL_TEXT_CHARS = 200_000          # ai modelli a pagamento (contesto ampio) l'articolo intero, non solo l'abstract
 CURRENT = {"model": None}
 
 _orig_route = content.route_for
 _orig_call = content.call_model
 
 
-_KNOWN_PROVIDERS = {"gemini", "groq", "openrouter"}
+_KNOWN_PROVIDERS = {"gemini", "groq", "openrouter", "paid"}
 
 
 def _expand_model_chain(model_str):
@@ -84,6 +91,8 @@ def _expand_model_chain(model_str):
 def route(task):
     if task.split(" [", 1)[0] in FORCED and CURRENT["model"]:
         return _expand_model_chain(CURRENT["model"])
+    if SECONDARY:
+        return _expand_model_chain(SECONDARY)
     return _orig_route(task)
 
 
@@ -95,6 +104,9 @@ def call(provider, model, parts, schema, temperature=0.3, task="altro", thinking
             if "text" in p:
                 new_parts.append(p)
             else:
+                if provider == "paid":           # contesto ampio: testo completo della fonte
+                    new_parts.append({"text": content.material_text(p)[:FULL_TEXT_CHARS]})
+                    continue
                 try:
                     import base64 as _b64
                     raw = _b64.b64decode(p["inline_data"]["data"])
@@ -121,9 +133,9 @@ def sources():
         part = content.material_part(drive, f)
         if part and content.license_status(content.material_text(part))[0] == "ok":
             ok.append(f)
-        if len(ok) >= N:
+        if len(ok) >= MAX_TRIES:
             break
-    return drive, ok, method[:N]
+    return drive, ok, method[:MAX_TRIES]
 
 
 def pdf_of(name):
@@ -190,16 +202,25 @@ def main():
     for model in MODELS:
         print(f"\n######## {model} ########", flush=True)
         for kind, files in (("LS", clin), ("ME", meth)):
-            for i, f in enumerate(files, 1):
+            i = 1
+            for f in files:
+                if i > N:
+                    break
                 try:
                     line = one(model, kind, i, f, drive)
                 except Exception as e:
                     traceback.print_exc()
                     line = f"{model}|{kind}|{i}: errore {str(e)[:200]}"
+                line += f"  [fonte: {f['name'][:70]}]"
                 print(line, flush=True)
                 report.append(line)
-        u = {k: v for k, v in content.USAGE.items() if f"openrouter-{model.split('/')[-1]}" in k}
-        report.append(f"  consumo {model}: {json.dumps(u, ensure_ascii=False)}")
+                if ": ok in " in line:
+                    i += 1                         # il segnaposto successivo solo dopo un post riuscito
+        spent = sum(float(v.get("costo_usd", 0)) for v in content.USAGE.values())
+        report.append(f"  spesa a pagamento: {spent:.4f} $")
+        report.append("  consumo per attività/modello: " + json.dumps(
+            {k: {kk: vv for kk, vv in v.items() if kk in ("richieste", "costo_usd", "respinte")}
+             for k, v in content.USAGE.items()}, ensure_ascii=False))
     print("\n===== RIEPILOGO =====\n" + "\n".join(report))
     (ROOT / "compare_report.txt").write_text("\n".join(report), encoding="utf-8")
 

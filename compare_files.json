@@ -4,5 +4,9 @@
   "nvidia/nemotron-3-ultra-550b-a55b:free>groq:openai/gpt-oss-120b>groq:qwen/qwen3.8-27b|LS|3": "1CoKgBJ6Ta3E0VWco0emTFEB78LrXAPax",
   "nvidia/nemotron-3-ultra-550b-a55b:free>groq:openai/gpt-oss-120b>groq:qwen/qwen3.8-27b|ME|1": "1jNoH11D5BkAzUfiTVBqzao0Gg57lmRcS",
   "nvidia/nemotron-3-ultra-550b-a55b:free>groq:openai/gpt-oss-120b>groq:qwen/qwen3.8-27b|ME|2": "1rn30mDcATH9z7CDXMYEML-YIZ-iWK61y",
-  "nvidia/nemotron-3-ultra-550b-a55b:free>groq:openai/gpt-oss-120b>groq:qwen/qwen3.8-27b|ME|3": "14rtdje6fZ7wKx3kkXgPI2urlq8ZC7BmJ"
+  "nvidia/nemotron-3-ultra-550b-a55b:free>groq:openai/gpt-oss-120b>groq:qwen/qwen3.8-27b|ME|3": "14rtdje6fZ7wKx3kkXgPI2urlq8ZC7BmJ",
+  "paid:deepseek/deepseek-v4-pro|LS|1": "13VxblLxbdFGaN6AeyRQ9IFJmTR5SDJcv",
+  "paid:deepseek/deepseek-v4-pro|LS|2": "1_K_Sl2tDCTRseEC1PoKmGdMa9GDxHMSL",
+  "paid:deepseek/deepseek-v4-pro|ME|1": "1Hfbj1xK9MBoGPm3KkcA7-yUVHhyTkfDz",
+  "paid:deepseek/deepseek-v4-pro|ME|2": "1aAS1YfsJt4p8SlZ3HL7pL1gfrKzqXTYP"
 }
