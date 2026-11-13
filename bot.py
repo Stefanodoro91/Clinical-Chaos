@@ -883,7 +883,8 @@ def public_video_url(video_path, name):
     import shutil
     rel = Path("docs") / "reels" / f"{name}.mp4"
     (ROOT / rel).parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy(video_path, ROOT / rel)
+    if Path(video_path).resolve() != (ROOT / rel).resolve():     # già al suo posto (ripubblicazione): niente copia
+        shutil.copy(video_path, ROOT / rel)
     sha = commit_and_push([rel.as_posix()], f"Video del reel {name}")
     trigger_deploy()
     site = grants.site_url(CONFIG, f"reels/{name}.mp4")
