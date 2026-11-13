@@ -1863,6 +1863,25 @@ def repost_social():
     for p in posted:
         if p["id"] not in ids:
             continue
+        if p.get("kind") == "reel":                # reel: il video è già sul sito (docs/reels), si recupera Threads
+            os.environ["POST_TYPE"] = "reel"
+            video = ROOT / "docs" / "reels" / f"{p['id']}.mp4"
+            if social.threads_enabled() and not p.get("threads_id") and video.exists():
+                kind_of = next((k for k in REEL_KINDS if p.get("reel_of", "").startswith(k)), "research")
+                caption = f"{p['title']}\n\n" + REEL_KINDS[kind_of]["text"].format(seconds=round(p.get("seconds", 30)))
+                link = CONFIG.get("links_page_url") or grants.site_url(CONFIG, "")
+                try:
+                    p["threads_id"] = social.publish_threads_video(grants.site_url(CONFIG, f"reels/{video.name}"),
+                                                                   social.reel_text(p["title"], caption, link, 500))
+                    print(f"::notice title=Threads (reel)::{p['title'][:60]} → {p['threads_id']}")
+                except Exception as e:
+                    print(f"::warning title=Threads non ripubblicato::{str(e)[:300]}")
+            elif not video.exists():
+                print(f"::warning title=Ripubblicazione::video del reel {p['id']} non trovato nel sito")
+            p["reposted"] = datetime.now(timezone.utc).date().isoformat()
+            save(POSTED_FILE, posted)
+            commit_and_push([POSTED_FILE.name], f"Reel ripubblicato su Threads: {p['title'][:60]}")
+            continue
         if p.get("kind") == "grant":
             d = grants._date(p.get("deadline"))
             post = {"kind": "grant", "id": p["id"], "grant_id": p.get("grant_id", ""), "title": p["title"], "funder": p.get("funder", ""),
@@ -1904,6 +1923,15 @@ def repost_social():
                 print(f"::notice title=Facebook (nuovo design)::{p['title'][:60]} → {p['facebook_id']}")
             except Exception as e:
                 print(f"::warning title=Facebook non ripubblicato::{str(e)[:300]}")
+        slides = sorted(folder.glob("slide-*.jpg"), key=lambda q: int(q.stem.split("-")[1]))
+        if social.threads_enabled() and not p.get("threads_id") and slides:
+            try:
+                urls = [base + q.relative_to(ROOT).as_posix() for q in slides[:10]]
+                wait_until_public(urls[0])
+                p["threads_id"] = social.publish_threads(urls, {**post, "caption": caption}, link)
+                print(f"::notice title=Threads::{p['title'][:60]} → {p['threads_id']}")
+            except Exception as e:
+                print(f"::warning title=Threads non ripubblicato::{str(e)[:300]}")
         if social.bluesky_enabled() and not p.get("bluesky_uri"):      # già uscito lì: niente doppione
             try:
                 p["bluesky_uri"] = social.publish_bluesky([single], {**post, "caption": caption}, link, max_images=1)

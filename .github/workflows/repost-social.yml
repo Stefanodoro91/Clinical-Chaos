@@ -1,4 +1,4 @@
-name: Ripubblica su Facebook e Bluesky (nuovo design)
+name: Ripubblica su Facebook, Bluesky e Threads (nuovo design)
 
 # Ripubblica post già usciti su Facebook e Bluesky con la grafica nuova. REPOST_IDS = id del registro, separati da virgola.
 on:
@@ -37,6 +37,8 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOST_IDS: ${{ inputs.ids }}
         run: python bot.py --repost
