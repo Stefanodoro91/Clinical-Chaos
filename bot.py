@@ -1860,7 +1860,6 @@ def repost_social():
     posted = load(POSTED_FILE, [])
     methods = methodology.load()
     sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
-    base_raw = f"https://raw.githubusercontent.com/{os.environ.get('GITHUB_REPOSITORY', '')}/{sha}/"
     for p in posted:
         if p["id"] not in ids:
             continue
@@ -1871,14 +1870,10 @@ def repost_social():
                 kind_of = next((k for k in REEL_KINDS if p.get("reel_of", "").startswith(k)), "research")
                 caption = f"{p['title']}\n\n" + REEL_KINDS[kind_of]["text"].format(seconds=round(p.get("seconds", 30)))
                 link = CONFIG.get("links_page_url") or grants.site_url(CONFIG, "")
-                url = grants.site_url(CONFIG, f"reels/{video.name}")
-                try:                                   # il sito non sempre si è aggiornato: allora il file su GitHub
-                    h = requests.head(url, timeout=15, allow_redirects=True)
-                    if not (h.status_code == 200 and "video" in h.headers.get("content-type", "")):
-                        raise requests.RequestException(f"{h.status_code}")
-                except requests.RequestException:
-                    url = base_raw + video.relative_to(ROOT).as_posix()
-                    print(f"::notice title=Threads (reel)::video non ancora sul sito, uso il file su GitHub")
+                # Threads vuole un vero indirizzo video (il file su GitHub è «octet-stream»): si chiede a Cloudflare di
+                # ripubblicare il sito e si aspetta che il video risponda (public_video_url, max ~6 minuti)
+                url = public_video_url(video, p["id"])
+                print(f"::notice title=Threads (reel)::video da {'sito' if 'githubusercontent' not in url else 'GitHub'}")
                 try:
                     p["threads_id"] = social.publish_threads_video(url, social.reel_text(p["title"], caption, link, 500))
                     print(f"::notice title=Threads (reel)::{p['title'][:60]} → {p['threads_id']}")
