@@ -719,5 +719,24 @@
     "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-CARE-02",
     "grant_title": "Personalised approaches to reduce risks from Adverse Drug Reactions due to administration of multiple medications"
+  },
+  {
+    "date": "2026-11-13",
+    "time": "2026-11-13T15:53:12+00:00",
+    "id": "grant-GG-PAR-25-287",
+    "title": "Building next-gen brain stimulation for mental health? R01 funds device development",
+    "source": "GrantFinder",
+    "media_id": "17918225187544375",
+    "facebook_id": null,
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n27dqhkikw2c",
+    "kind": "grant",
+    "grant_id": "GG-PAR-25-287",
+    "url": "https://www.grants.gov/search-results-detail/357309",
+    "deadline": "2027-02-05",
+    "funder": "National Institute of Mental Health (NIMH)",
+    "summary": "This funding opportunity supports the development of next-generation brain stimulation devices for treating mental health disorders. It funds the creation of novel devices or significant enhancements to existing FDA-approved hardware and software. Projects should focus on engineering, design-directed research, and initial proof-of-concept testing. Multidisciplinary teams from academic, non-profit, and for-profit organizations worldwide, including those in Italy, are eligible to apply for these R01 research project grants.",
+    "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+    "official_source": "NIH Guide PAR-25-287",
+    "grant_title": "Neuromodulation/Neurostimulation Device Development for Mental Health Applications (R01 Clinical Trial Not Allowed)"
   }
 ]
