@@ -2008,7 +2008,7 @@ COCREATE = """<dialog class="cc" id="cc" aria-labelledby="cc-title">
     b.addEventListener("click", function () {{
       var t = b.dataset.topic || "";
       f.topic.value = t;
-      f.subject.value = (t === "Partnership" ? "Partnership" : "Co-create: " + t) + " (Clinical Research Chaos)";
+      f.subject.value = (t === "Partnership" ? "Partnership" : "Co-create") + " (Clinical Research Chaos)";
       title.textContent = t === "Partnership" ? "Get in touch about partnerships" : "Co-create the clinical research ecosystem";
       st.className = "status"; st.textContent = "";
       if (d.showModal) d.showModal(); else location.href = "feedback.html";
@@ -2552,11 +2552,11 @@ def _quad4(cx, cy):
 
 
 
-SECTIONS = [("methods", "methodology.html", "Design, Reporting &amp; Appraisal"),
-            ("science", "science.html", "Latest Science"),
-            ("grant", "calls.html", "Funding calls"),
+SECTIONS = [("grant", "calls.html", "Funding calls"),
             ("positions", "positions.html", "Academic positions"),
-            ("trials", "trials.html", "Find your trial")]
+            ("trials", "trials.html", "Find your trial"),
+            ("methods", "methodology.html", "Design, Reporting &amp; Appraisal"),
+            ("science", "science.html", "Latest Science")]
 
 
 def on_color(hexa):
@@ -2576,19 +2576,21 @@ def section_pills(cfg, metrics=None, current=None, home=False):
     Le pillole restano sempre centrate: ciò che sta a fianco è fuori dal flusso."""
     from html import escape as esc
     soon = set(cfg.get("site_coming_soon") or []) if home else set()
+    last_soon = next((k for k, _, _ in reversed(SECTIONS) if k in soon), None)
     out = []
     for kind, href, label in SECTIONS:
         col = site_accent(cfg, kind)
         here = ' aria-current="page"' if kind == current else ""
         met = (metrics or {}).get(kind, "")
         if kind in soon:
-            plain = label.replace("&amp;", "&")
             out.append(f'<div class="sec" style="--c:{col};--on:{on_color(col)}">'
                        f'<div class="row"><a href="{href}"{here}><span class="tag">{label.upper()}</span></a>'
                        f'<span class="soon">Coming soon</span></div>'
-                       + (f'<span class="met">{esc(met)}</span>' if met else "")
-                       + f'<button type="button" class="cocreate" data-topic="{esc(plain, quote=True)}">'
-                         f'Co-create the clinical research ecosystem with us</button></div>')
+                       + (f'<span class="met">{esc(met)}</span>' if met else "") + '</div>')
+            if kind == last_soon:                  # un solo pulsante, in fondo alle rubriche in arrivo
+                out.append(f'<div class="sec" style="--c:{SITE_GREEN};--on:{on_color(SITE_GREEN)}">'
+                           f'<button type="button" class="cocreate" data-topic="Co-create">'
+                           f'Co-create the clinical research ecosystem with us</button></div>')
             continue
         out.append(f'<a href="{href}" style="--c:{col};--on:{on_color(col)}"{here}>'
                    f'<span class="tag">{label.upper()}</span>'
