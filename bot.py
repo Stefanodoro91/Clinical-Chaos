@@ -295,11 +295,14 @@ def _new_clinical_posts(drive, posted, sources, cq):
     inbox = os.environ["GDRIVE_FOLDER_ID"]
     reuse = os.environ.get("REUSE_CLINICAL_SINCE", "").strip()   # anteprime: articoli già usati di nuovo leggibili
     if reuse:                                                     # (tranne quelli riusati da questa data in poi)
-        read = {x.get("name") for x in sources if x.get("clinical_skipped")
+        read = {x.get("name") for x in sources
+                if (x.get("clinical_skipped") and not str(x["clinical_skipped"]).startswith("nessun messaggio clinico"))
                 or (x.get("clinical_used") and (x.get("date") or "") >= reuse)}
         read |= {q.get("source") for q in cq}
     else:
-        read = {x.get("name") for x in sources if x.get("clinical_used") or x.get("clinical_skipped")}
+        # gli articoli scartati solo perché «senza messaggio clinico» (le revisioni, prima) tornano leggibili
+        read = {x.get("name") for x in sources if x.get("clinical_used")
+                or (x.get("clinical_skipped") and not str(x["clinical_skipped"]).startswith("nessun messaggio clinico"))}
         read |= {q.get("source") for q in cq} | {p.get("source") for p in posted if p.get("category") == content.CLINICAL_CATEGORY}
     files = [f for f in list_inbox(drive, inbox) if f.get("parent") != inbox and f["name"] not in read and content.is_supported(f)]
     print(f"Latest Science: {len(files)} articoli clinici non ancora letti nelle cartelle «Clinica…»")

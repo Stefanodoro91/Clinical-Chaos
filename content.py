@@ -35,7 +35,10 @@ PROMPT = """You create Instagram carousel posts for "{brand}", a page for resear
 professionals about clinical research on human subjects and research methodology.
 
 You are given teaching material written by the page owner (slides, notes or a document; it may be in
-Italian or another language). Turn it into self-contained educational posts IN ENGLISH.
+Italian or another language) or a methodological paper, including secondary literature (a review, a
+methodological guideline, a reporting-standard paper). Turn it into self-contained educational posts IN ENGLISH.
+The post must teach RESEARCH METHODOLOGY (design, bias, measurement, statistics, reporting, appraisal), whatever
+the type of source.
 
 STRICT ACCURACY RULES (this audience will notice mistakes):
 - Use ONLY content that is in the material. You may rephrase and clarify, and you may define a
@@ -1173,12 +1176,26 @@ explains an interesting paper in lay-abstract mode: clear, plain and precise, ne
 The goal is to make the reader want to READ THE PAPER, not to replace it. Write everything IN ENGLISH, even if
 these instructions or the paper use another language.
 
+The paper may be a primary study (trial, cohort, case-control, cross-sectional) OR secondary literature (narrative
+review, systematic review, meta-analysis, scoping review, guideline, consensus statement, clinical overview).
+Both are welcome: what matters is that the post is about CLINICS.
+
 FIRST decide the clinical focus of the paper (field clinical_focus):
-- "treatment": the paper reports what an intervention, therapy, device or rehabilitation programme does to patients;
+- "treatment": the paper reports or reviews what an intervention, therapy, device or rehabilitation programme does
+  to patients;
 - "patient_health": the paper describes patients' health status, recovery course, prognosis, symptoms, function or
   risk factors;
-- "none": the paper is mainly about methodology, measurement scales, psychometrics, statistics, study design,
-  reporting, or engineering without patient results. In that case return an EMPTY posts list.
+- "clinical_overview": a review, guideline or overview that maps what is known, what works and what is still open
+  for a clinical condition or clinical practice question (e.g. motor recovery after stroke, rehabilitation robotics
+  for patients), even when it does not test one single intervention;
+- "none": the paper has no clinical content for patients or clinicians: it is purely about measurement scales,
+  psychometrics, statistics, study design, reporting standards, or technical engineering (architecture,
+  algorithms) without a clinical question. In that case return an EMPTY posts list.
+When the paper is a REVIEW or a guideline: the hook names the clinical question the review addresses; page 2 states
+the scope (population, condition, intervention or topic and the aim of the review); the take-home message comes from
+the authors' own conclusions about what the evidence means for practice or for future research, keeping every
+qualifier ("evidence is limited", "heterogeneous", "more trials are needed"). Never present the review as a single
+trial, never invent a number of studies or patients, and never turn one cited study into the message.
 
 Then write exactly ONE post (posts list with one item). The post has 4 pages, filled by these fields:
 
@@ -1202,7 +1219,8 @@ PAGE 3 — TAKE-HOME MESSAGE  →  field "takeaway", max 150 characters, ONE sen
   not already present in the title (page 1) or the slide (page 2); if a secondary outcome or mechanism
   appears only in the conclusions, omit it from the takeaway.
 PAGE 4 — SOURCE  →  built automatically from the paper's metadata (title and Harvard reference). Put THIS paper,
-  and only this paper, in "references" (APA 7, authors, year, title, journal, DOI exactly as printed).
+  and only this paper, in "references" (APA 7, authors, year, title, journal, DOI exactly as printed). For a review
+  do NOT list the studies it cites.
 
 GENERAL RULES (they apply to every field: title, slide, takeaway, hook, caption):
 - No specific numerical data: no percentages, p-values, hazard/odds ratios, confidence intervals, NNT, effect
@@ -1242,7 +1260,7 @@ Already published posts (do not repeat these topics): {published}
 File name of the paper: {filename}"""
 
 CLINICAL_POST_SCHEMA = {"type": "OBJECT", "properties": {
-    "clinical_focus": {"type": "STRING", "enum": ["treatment", "patient_health", "none"]},
+    "clinical_focus": {"type": "STRING", "enum": ["treatment", "patient_health", "clinical_overview", "none"]},
     "focus_reason": {"type": "STRING"},
     "posts": SCHEMA["properties"]["posts"]}, "required": ["clinical_focus", "focus_reason", "posts"]}
 
