@@ -1897,13 +1897,13 @@ def repost_social():
         base = f"https://raw.githubusercontent.com/{os.environ['GITHUB_REPOSITORY']}/{sha}/"
         fb_url = base + (rels[-1])
         wait_until_public(fb_url)
-        if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID"):
+        if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID") and not p.get("facebook_id"):
             try:
                 p["facebook_id"] = publish_facebook_single(fb_url, facebook_text({**post, "caption": caption}, caption, None if kind == "research" else kind, link))
                 print(f"::notice title=Facebook (nuovo design)::{p['title'][:60]} → {p['facebook_id']}")
             except Exception as e:
                 print(f"::warning title=Facebook non ripubblicato::{str(e)[:300]}")
-        if social.bluesky_enabled():
+        if social.bluesky_enabled() and not p.get("bluesky_uri"):      # già uscito lì: niente doppione
             try:
                 p["bluesky_uri"] = social.publish_bluesky([single], {**post, "caption": caption}, link, max_images=1)
                 print(f"::notice title=Bluesky (nuovo design)::{p['title'][:60]} → {p['bluesky_uri']}")
