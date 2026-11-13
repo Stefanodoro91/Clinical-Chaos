@@ -1882,6 +1882,7 @@ def repost_social():
             caption = f"{m['title']}\n\n{m.get('takeaway', '')}\n\nKey points: {heads}"
             link = grants.site_url(CONFIG, polish.page_anchor({"id": p["id"], "category": m.get("category")}))
             kind = "research"
+        os.environ["POST_TYPE"] = kind            # la sicura dei social riconosce le rubriche attive (es. grant)
         safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in p["id"])
         folder = IMAGES_DIR / f"{p['date']}-{safe}"
         folder.mkdir(parents=True, exist_ok=True)
