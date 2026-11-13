@@ -1461,7 +1461,7 @@ def write_sitemap():
     old = sm.read_text(encoding="utf-8") if sm.exists() else ""
     prev = dict(_re.findall(r"<loc>([^<]+)</loc><lastmod>([^<]+)</lastmod>", old))
     changed = _changed_docs()
-    files = (["docs/index.html"] + [f"docs/{p}.html" for p in ("calls", "positions", "methodology", "science", "feedback", "rss")]
+    files = (["docs/index.html"] + [f"docs/{p}.html" for p in ("calls", "positions", "methodology", "science", "trials", "feedback", "rss")]
              + sorted(f.relative_to(ROOT).as_posix() for f in JOBS_DIR.glob("*.html"))
              + sorted(f.relative_to(ROOT).as_posix() for f in CALLS_DIR.glob("*.html")))
     urls = []
@@ -1535,6 +1535,8 @@ def write_home():
     (ROOT / "docs" / "science.html").write_text(grants.add_decor(science.build_page(methods, CONFIG)), encoding="utf-8")
     import feedback
     (ROOT / "docs" / "feedback.html").write_text(grants.add_decor(feedback.build_page(CONFIG)), encoding="utf-8")
+    import trials
+    (ROOT / "docs" / "trials.html").write_text(grants.add_decor(trials.build_page(CONFIG)), encoding="utf-8")
     (ROOT / "docs" / "rss.html").write_text(grants.add_decor(feedback.build_feeds_page(CONFIG)), encoding="utf-8")
     HOME_FILE.write_text(grants.add_decor(grants.build_home(n_calls, int(m.group(1)) if m else 0, n_positions, CONFIG,
                                                             n_methods=sum(1 for e in methods.values() if not e.get("duplicate_of")

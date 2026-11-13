@@ -1963,7 +1963,8 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0, n_sc
         "methods": f"{n_methods} carousel{'s' if n_methods != 1 else ''}, with key points and references" if n_methods
                    else "Practical topics with key points and references",
         "science": f"{n_science} clinical lesson{'s' if n_science != 1 else ''}, one new every Saturday" if n_science
-                   else "One clinical paper, one lesson for practice: every Saturday"}
+                   else "One clinical paper, one lesson for practice: every Saturday",
+        "trials": "For patients: search ongoing studies that are looking for volunteers"}
     return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"], social=social_links(cfg),
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
                        amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"), sci=site_accent(cfg, "science"), meth=site_accent(cfg, "methods"),
@@ -2524,7 +2525,8 @@ def site_palette(cfg):
     return c
 
 
-SITE_V4 = {"grant": "#F8B048", "positions": "#8858F0", "methods": "#88B0F8", "science": "#FFFFFF"}   # rubriche (colori del logo v3)
+SITE_V4 = {"grant": "#F8B048", "positions": "#8858F0", "methods": "#88B0F8", "science": "#FFFFFF",   # rubriche (colori del logo v3)
+           "trials": "#F2698E"}   # «Find your trial» per i pazienti: rosa corallo (trials.TRIALS_ACCENT)
 SITE_GREEN = "#3CC9B0"   # colore del sito (logo verde)
 
 
@@ -2534,7 +2536,7 @@ def site_accent(cfg, kind):
     if cfg.get("site_v4"):
         return SITE_V4[kind]
     return {"grant": cfg.get("grant_accent", "#FFB547"), "positions": cfg.get("positions_accent", "#A78BFA"),
-            "methods": "#6EC1FF", "science": "#6EC1FF"}[kind]
+            "methods": "#6EC1FF", "science": "#6EC1FF", "trials": "#F2698E"}[kind]
 
 
 LOGO_4C = {"ul": SITE_V4["methods"], "ur": SITE_V4["grant"], "lr": SITE_GREEN, "ll": SITE_V4["positions"]}   # simbolo a 4 colori: i colori attuali del sito
@@ -2553,7 +2555,8 @@ def _quad4(cx, cy):
 SECTIONS = [("methods", "methodology.html", "Design, Reporting &amp; Appraisal"),
             ("science", "science.html", "Latest Science"),
             ("grant", "calls.html", "Funding calls"),
-            ("positions", "positions.html", "Academic positions")]
+            ("positions", "positions.html", "Academic positions"),
+            ("trials", "trials.html", "Find your trial")]
 
 
 def on_color(hexa):
