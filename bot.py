@@ -1372,6 +1372,27 @@ def check_token():
     if not data.get("is_valid") or (days and min(days) < 14):
         notify("Il token Instagram sta per scadere",
                f"Scadenza: {when(exp)}; accesso ai dati fino al {when(access)}. Genera un nuovo token e aggiorna il secret IG_ACCESS_TOKEN.")
+    check_other_socials()
+
+
+def check_other_socials():
+    """Threads e Bluesky: una lettura del profilo (nessuna pubblicazione). Token invalidato → avviso via issue."""
+    if os.environ.get("THREADS_ACCESS_TOKEN"):
+        r = requests.get("https://graph.threads.net/v1.0/me", timeout=30,
+                         params={"fields": "id,username", "access_token": os.environ["THREADS_ACCESS_TOKEN"]})
+        if r.ok:
+            same = r.json().get("id") == os.environ.get("THREADS_USER_ID", r.json().get("id"))
+            print(f"::notice title=Threads::token valido (@{r.json().get('username')})"
+                  + ("" if same else " ma THREADS_USER_ID non corrisponde"))
+        else:
+            print(f"::error title=Threads::token non valido {r.status_code}: {r.text[:200]}")
+            notify("Token Threads non valido", "Threads rifiuta il token (THREADS_ACCESS_TOKEN): i post non escono su "
+                   "Threads. Generane uno nuovo dal pannello dell'app Meta (Threads API → User Token Generator).")
+    if os.environ.get("BLUESKY_HANDLE") and os.environ.get("BLUESKY_APP_PASSWORD"):
+        r = requests.post("https://bsky.social/xrpc/com.atproto.server.createSession", timeout=30,
+                          json={"identifier": os.environ["BLUESKY_HANDLE"], "password": os.environ["BLUESKY_APP_PASSWORD"]})
+        print(f"::notice title=Bluesky::accesso riuscito" if r.ok else
+              f"::error title=Bluesky::accesso rifiutato {r.status_code}: {r.text[:150]}")
 
 
 POSITIONS_PAGE = ROOT / "docs" / "positions.html"
