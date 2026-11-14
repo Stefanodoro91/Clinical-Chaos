@@ -907,6 +907,19 @@ def public_video_url(video_path, name):
     return f"https://raw.githubusercontent.com/{os.environ.get('GITHUB_REPOSITORY', '')}/{sha}/{rel.as_posix()}"
 
 
+def threads_video_url(video, name):
+    """Indirizzo pubblico del video per Threads: copia nel formato che Threads accetta (senza edit list, GOP chiuso,
+    30 fps, AAC): se la conversione non riesce si usa il file originale."""
+    import social
+    try:
+        tv = social.threads_ready_video(video)
+        print(f"::notice title=Video per Threads::{tv.name} ({tv.stat().st_size // 1024} KB)")
+        return public_video_url(tv, f"{name}-threads")
+    except Exception as e:
+        print(f"::warning title=Conversione video per Threads::{str(e)[:200]}: si usa l'originale")
+        return public_video_url(video, name)
+
+
 def crosspost_reel(video, caption, title, link, entry, name):
     """Lo stesso reel su Facebook, Threads e Bluesky (config reels_crosspost); gli errori non fermano il resto."""
     import social
@@ -920,7 +933,7 @@ def crosspost_reel(video, caption, title, link, entry, name):
             print(f"::warning title=Reel non pubblicato su Facebook::{str(e)[:300]}")
     if social.threads_enabled() and not entry.get("threads_id"):
         try:
-            url = public_video_url(video, name)
+            url = threads_video_url(video, name)
             entry["threads_id"] = social.publish_threads_video(url, social.reel_text(title, caption, link, 500))
             print(f"::notice title=Reel su Threads::{entry['threads_id']}")
         except Exception as e:
@@ -1884,7 +1897,7 @@ def repost_social():
                 link = CONFIG.get("links_page_url") or grants.site_url(CONFIG, "")
                 # Threads vuole un vero indirizzo video (il file su GitHub è «octet-stream»): si chiede a Cloudflare di
                 # ripubblicare il sito e si aspetta che il video risponda (public_video_url, max ~6 minuti)
-                url = public_video_url(video, p["id"])
+                url = threads_video_url(video, p["id"])
                 print(f"::notice title=Threads (reel)::video da {'sito' if 'githubusercontent' not in url else 'GitHub'}")
                 try:
                     p["threads_id"] = social.publish_threads_video(url, social.reel_text(p["title"], caption, link, 500))
