@@ -2103,13 +2103,34 @@ thread and takeaway rules below:
 """
 
 
+STORY_CRITIC_RULES = """This post is a 7-page educational carousel (hook, context, lens, data, meaning, then the source and an
+invitation added automatically). These rules replace the thread and takeaway rules below:
+- It has exactly 3 slides: CONTEXT (what the source is and why it matters), LENS (how the work was done: type of work,
+  who or what and how many ONLY if the SOURCE says so, comparison or control group, the main design limit) and DATA (the
+  real finding versus the headline, or the limit the authors themselves declare). Do not ask for more or fewer slides.
+- Numbers (sample sizes, dates, percentages, absolute vs relative figures) are allowed and wanted when they are printed
+  in the SOURCE with what they compare. Flag as "unsupported" any number that is not in the SOURCE.
+- Flag as "imprecise" hype or aggressive judgments ("this study is bad", "proves", "useless", "breakthrough"): the tone
+  is a neutral expert's ("a useful first step, but..."). A small sample or missing control group is stated plainly.
+- The title is a hook grounded in the paper (the question it answers, or an assumption it addresses). Flag a "myth" or
+  headline that the paper does not touch.
+- The takeaway is 1-2 sentences: the practical meaning, faithful to the authors' conclusions with their qualifiers, not
+  a repetition of the data slide. Staying close to the authors' wording is correct.
+- Flag repetition between pages and any mention of another study. Your fixes must respect these rules too.
+"""
+
+
 def _critique(post, source, kind, label, writer_family):
-    extra = GRANT_RULES if kind == "funding-call carousel" else (LAY_RULES if post.get("lay_abstract") else "")
+    extra = GRANT_RULES if kind == "funding-call carousel" else (
+        STORY_CRITIC_RULES if post.get("lay_story") else (LAY_RULES if post.get("lay_abstract") else ""))
     prompt = CRITIC_PROMPT.format(kind=kind, extra_rules=extra,
                                   post=_post_listing(post), source_label=label,
                                   source=relevant_excerpt(source, post, REVIEW_CHARS))
     if kind == "funding-call carousel":           # le slide dei bandi sono più lunghe (fino a 220 caratteri)
         prompt = prompt.replace("slide body ≤ 160", "slide body ≤ 220")
+    elif post.get("lay_story"):
+        prompt = prompt.replace("title ≤ 70 characters", "title ≤ 95 characters").replace(
+            "slide body ≤ 160", "slide body ≤ 210").replace("takeaway ≤ 130", "takeaway ≤ 190")
     out = gemini_json([{"text": prompt}], CRITIC_SCHEMA, 0.1, task="critica", exclude_family=writer_family)
     return out, LAST_MODEL, _family_of_last()
 
