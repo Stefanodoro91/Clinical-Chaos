@@ -1613,24 +1613,23 @@ HOME = """<!doctype html>
   .top {{ background: var(--bg); padding: 34px 16px 36px; text-align: center; border-top: 4px solid var(--teal); }}
   .top img {{ width: 340px; max-width: 100%; height: auto; display: block; margin: 0 auto 14px; }}
   .top p {{ color: var(--text); margin: 0 auto; max-width: 460px; font: 600 17px/1.45 Inter, system-ui, sans-serif; }}
-  .pills {{ display: flex; flex-direction: column; align-items: center; gap: 17px; margin: 0 auto 22px; max-width: 520px; }}
-  .pills a {{ display: flex; flex-direction: column; align-items: center; gap: 7px; text-decoration: none; }}
+  .pills {{ display: flex; flex-direction: column; align-items: center; gap: 24px; margin: 0 auto 28px; max-width: 520px; }}
+  .pills a {{ display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; }}
   .pills .tag {{ background: var(--c); color: var(--on); border-radius: 999px; padding: 9px 17px; letter-spacing: .045em;
                 font: 800 12.5px/1 Inter, system-ui, sans-serif; }}
   .pills .met {{ color: var(--soft); font-size: 14px; line-height: 1.35; }}
   .pills a:hover .tag, .pills a:focus-visible .tag {{ filter: brightness(1.08); }}
   .pills a:hover .met {{ color: var(--text); }}
-  .pills .sec {{ display: flex; flex-direction: column; align-items: center; gap: 7px; }}
+  .pills .sec {{ display: flex; flex-direction: column; align-items: center; gap: 8px; }}
   .pills .row {{ position: relative; display: inline-flex; align-items: center; }}
   .pills .row > .soon, .pills .row > .side {{ position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); }}
   .pills .cocreate.side {{ margin: 0; white-space: nowrap; padding: 7px 13px; }}
   @media (max-width: 760px) {{
-    /* niente spazio a fianco: «Coming soon» diventa un bollino sull'angolo, «Get in touch» va sotto */
-    .pills .sec:has(.soon) {{ padding-top: 12px; }}
-    .pills .row > .soon {{ left: auto; right: -6px; top: -17px; transform: none; background: var(--bg); padding: 3px 7px;
-                          font-size: 8.5px; border-style: solid; border-color: var(--soft); }}
-    .pills .row {{ flex-direction: column; gap: 9px; }}
-    .pills .row > .side {{ position: static; transform: none; }}
+    /* niente spazio a fianco: «Coming soon» va sotto la pillola, nel flusso, così le rubriche restano ordinate */
+    .pills {{ gap: 24px; }}
+    .pills .row {{ flex-direction: column; gap: 8px; }}
+    .pills .row > .soon {{ position: static; transform: none; padding: 5px 9px; font-size: 9.5px; }}
+    .cta .cocreate {{ width: 100%; max-width: 340px; }}
   }}
   .pills .soon {{ color: var(--soft); border: 1px dashed var(--muted); border-radius: 999px; padding: 6px 10px;
                  font: 700 10.5px/1 Inter, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }}
@@ -2687,9 +2686,43 @@ def fit_decor(html):
                    lambda x: f"{x.group(1)}{w}{x.group(2)}", html, count=1)
 
 
+SWITCHBAR_CSS = """<style id="crc-switchbar">
+  /* menu tra le schede del sito: griglia ordinata, celle uguali, stessa distanza */
+  nav.switchbar {display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 0 0 22px;}
+  nav.switchbar .switch, nav.switchbar .switch.soon {display: flex; align-items: center; justify-content: center; text-align: center;
+      min-height: 42px; margin: 0 !important; padding: 8px 12px; line-height: 1.25; box-sizing: border-box;}
+  nav.switchbar .switch.soon {color: var(--muted, #8A8A8A); border: 1px dashed var(--muted, #8A8A8A); border-radius: 999px;
+      font-size: 13px; font-weight: 600; cursor: default; flex-direction: column; gap: 2px;}
+  nav.switchbar .switch.soon small {display: block; font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase; margin: 0;}
+  @media (max-width: 520px) {nav.switchbar {grid-template-columns: repeat(2, 1fr);}
+      nav.switchbar > :last-child:nth-child(odd) {grid-column: 1 / -1;}}
+</style>
+"""
+
+
+def tidy_switchbar(html):
+    """Raccoglie i pulsanti di passaggio tra le schede in una griglia ordinata e aggiunge Partnership (Coming soon)
+    prima di RSS, così in ogni pagina il menu ha le stesse voci."""
+    import re as _re
+    if 'class="switch"' not in html or "crc-switchbar" in html:
+        return html
+    pat = _re.compile(r'(?:<a class="switch"[^>]*>.*?</a>\s*)+(?:<br>)?', _re.S)
+    m = pat.search(html)
+    if not m:
+        return html
+    links = _re.findall(r'<a class="switch"[^>]*>.*?</a>', m.group(0), _re.S)
+    soon = '<span class="switch soon">Partnership<small>Coming soon</small></span>'
+    at = next((i for i, l in enumerate(links) if l.endswith('>RSS &rarr;</a>')), len(links))
+    links.insert(at, soon)
+    nav = '<nav class="switchbar" aria-label="Sections">' + "".join(links) + "</nav>"
+    html = html[:m.start()] + nav + html[m.end():]
+    return html.replace("</head>", SWITCHBAR_CSS + "</head>", 1)
+
+
 def add_decor(html):
     """Aggiunge prima di </body> la decorazione animata ai lati (cascata di quadratini) e, se la pagina ha
     pulsanti «Share», il menu di condivisione."""
+    html = tidy_switchbar(html)
     if SITE_MONO:
         html = html.replace("#15304A", "#161616").replace("#2A4058", "#2E2E2E")
         if "crc-editorial" not in html:
