@@ -11,6 +11,12 @@ on:
       models:
         description: "slug OpenRouter separati da virgola"
         default: "openai/gpt-image-2"
+      count:
+        description: "numero di articoli (1 = solo quello indicato in source)"
+        default: "1"
+      skip:
+        description: "parti di nome da saltare, separate da |"
+        default: "Smart exoskeleton"
       pdf_id:
         description: "id del file Drive che riceve il PDF"
         default: "1L1_5nYzFYq5Hv6jDDnaiQtfXIsD49gYH"
@@ -38,6 +44,8 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           SOURCE: ${{ inputs.source }}
           IMAGE_MODELS: ${{ inputs.models }}
+          COUNT: ${{ inputs.count }}
+          SKIP: ${{ inputs.skip }}
           PDF_ID: ${{ inputs.pdf_id }}
           PYTHONUNBUFFERED: "1"
         run: python tools/image_compare.py
