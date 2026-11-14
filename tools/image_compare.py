@@ -11,7 +11,7 @@ from PIL import Image, ImageDraw                         # noqa: E402
 
 KEY = os.environ["OPENROUTER_API_KEY"]
 H = {"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"}
-MODELS = [m for m in os.environ.get("IMAGE_MODELS", "google/gemini-3.1-flash-image,openai/gpt-image-2").split(",") if m]
+MODELS = [m for m in os.environ.get("IMAGE_MODELS", "openai/gpt-image-2").split(",") if m]
 WRITER = os.environ.get("PROMPT_MODEL", "anthropic/claude-sonnet-5.5")
 SOURCE = os.environ.get("SOURCE", "Smart exoskeleton")
 PDF_ID = os.environ["PDF_ID"]
@@ -20,11 +20,14 @@ OUT.mkdir(exist_ok=True)
 
 BRIEF = """Read the article below and write ONE prompt for an image generator. The image is the cover of an Instagram
 carousel about this paper, for a clinical-research account.
-Rules for the image: portrait 4:5; deep black background (#0A0A0A) with one accent colour; editorial, photographic or
-abstract, one clear subject that suggests the paper's topic; NO text, letters, numbers, logos or watermarks; NO diagrams,
-charts, infographics or schematic anatomy; NO recognisable faces; nothing that states a result or implies a clinical claim;
-leave the lower third calm and dark for a title overlay.
-Answer with the prompt only (max 90 words), in English.
+The image MUST show the paper's actual subject, recognisable at a glance (for example the specific device or
+intervention the paper is about, in a realistic clinical or rehabilitation setting). A patient and/or therapists may
+appear, but never show a face: shoot from behind, from the side, cropped at the neck, or with the head out of frame.
+Style: realistic editorial photograph, natural but moody lighting, deep black or very dark background with one
+accent colour; portrait 4:5; the lower third calm and dark for a title overlay.
+Forbidden: any text, letters, numbers, logos or watermarks; diagrams, charts, infographics or schematic anatomy;
+visible faces; invented medical claims or results; devices that look implausible (wrong number of limbs, impossible joints).
+Answer with the prompt only (max 100 words), in English.
 
 ARTICLE:
 """
@@ -40,7 +43,7 @@ def chat(prompt):
 
 def image(model, prompt):
     last = None
-    for ratio in ("4:5", "1:1"):
+    for ratio in ("4:5", "3:4", "2:3", "1:1"):
         for attempt in range(2):
             try:
                 r = requests.post("https://openrouter.ai/api/v1/images", headers=H, timeout=600,

@@ -10,7 +10,7 @@ on:
         default: "Smart exoskeleton"
       models:
         description: "slug OpenRouter separati da virgola"
-        default: "google/gemini-3.1-flash-image,openai/gpt-image-2"
+        default: "openai/gpt-image-2"
       pdf_id:
         description: "id del file Drive che riceve il PDF"
         default: "1L1_5nYzFYq5Hv6jDDnaiQtfXIsD49gYH"
