@@ -886,6 +886,20 @@ def publish_facebook_reel(video_path, caption):
     raise RuntimeError(f"Reel Facebook: pubblicazione rifiutata {r.status_code}: {r.text[:300]}")
 
 
+def _diagnose_video_url(site):
+    """Nel log: come risponde il sito a chi scarica il video (Threads lo scarica da solo): tipo, intervalli, cache e
+    il comportamento con i programmi di Meta. Serve a capire un rifiuto «UNKNOWN»."""
+    for ua in ("python-requests", "facebookexternalhit/1.1", "meta-externalagent/1.1", "Threads"):
+        try:
+            r = requests.get(site, headers={"User-Agent": ua, "Range": "bytes=0-1023"}, timeout=30, allow_redirects=False)
+            hd = {k: v for k, v in r.headers.items() if k.lower() in (
+                "content-type", "content-length", "content-range", "accept-ranges", "content-encoding", "cache-control",
+                "server", "location", "cf-mitigated", "cf-cache-status")}
+            print(f"::notice title=Video, risposta del sito a «{ua}»::{r.status_code} {hd}")
+        except requests.RequestException as e:
+            print(f"::notice title=Video, risposta del sito a «{ua}»::errore {str(e)[:120]}")
+
+
 def public_video_url(video_path, name):
     """Copia il video nel sito (docs/reels/) e lo rende pubblico: Threads vuole un indirizzo, non il file."""
     import shutil
@@ -900,6 +914,7 @@ def public_video_url(video_path, name):
         try:
             h = requests.head(site, timeout=15)
             if h.status_code == 200 and "video" in h.headers.get("content-type", ""):
+                _diagnose_video_url(site)
                 return site
         except requests.RequestException:
             pass
