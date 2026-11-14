@@ -8,6 +8,12 @@ on:
       files:
         description: 'JSON {"grant_pdf","grant_reel","positions_pdf","positions_reel"} con gli id dei file Drive'
         required: true
+      kinds:
+        description: "grant, positions o entrambi (grant,positions)"
+        default: "grant,positions"
+      writer:
+        description: "modello scrittore (vuoto = catene normali del bot)"
+        default: ""
       budget:
         description: "tetto di spesa in $"
         default: "2"
@@ -39,6 +45,8 @@ jobs:
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           PREVIEW_FILES: ${{ inputs.files }}
+          KINDS: ${{ inputs.kinds }}
+          WRITER: ${{ inputs.writer }}
           AI_PAID_BUDGET: ${{ inputs.budget }}
           PYTHONUNBUFFERED: "1"
         run: python tools/rubric_preview.py

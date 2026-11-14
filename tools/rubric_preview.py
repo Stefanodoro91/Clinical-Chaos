@@ -10,11 +10,19 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "tools"))
 os.environ["DRY_RUN"] = "true"
 os.environ["SKIP_INGEST"] = "1"
 os.environ.pop("GITHUB_EVENT_NAME", None)
+os.environ["COMPARE_MODE"] = "run"
+os.environ.setdefault("FORCED_TASKS", "post bando,revisione slide,verifica fatti,arbitro,rifinitura")
+WRITER = os.environ.get("WRITER", "")          # es. paid:anthropic/claude-sonnet-5.5: scrive e rivede i bandi
 
+import model_compare as mc          # noqa: E402,F401  (instrada le attività forzate sul modello scelto)
 import bot, drive_preview            # noqa: E402
+
+if WRITER:
+    mc.CURRENT["model"] = WRITER
 
 PREVIEW = ROOT / "preview"
 FILES = json.loads(os.environ.get("PREVIEW_FILES", "{}"))
@@ -39,7 +47,7 @@ def up(path, key, mime):
 
 def main():
     report = []
-    for kind in ("grant", "positions"):
+    for kind in [k for k in (os.environ.get("KINDS") or "grant,positions").split(",") if k in ("grant", "positions")]:
         shutil.rmtree(PREVIEW, ignore_errors=True)
         PREVIEW.mkdir()
         os.environ["POST_TYPE"] = kind
