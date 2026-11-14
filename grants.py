@@ -1619,7 +1619,7 @@ HOME = """<!doctype html>
                 font: 800 12.5px/1 Inter, system-ui, sans-serif; }}
   .pills .met {{ color: var(--soft); font-size: 14px; line-height: 1.35; }}
   /* telefono: ogni metrica occupa due righe, così le pillole restano alla stessa distanza */
-  @media (max-width: 520px) {{ .pills {{ gap: 20px; }} .pills .met {{ min-height: 2.7em; text-align: center; text-wrap: balance; }}
+  @media (max-width: 520px) {{ .pills {{ gap: 20px; }} .pills .met {{ text-align: center; white-space: nowrap; font-size: 13.5px; }}
                               .cta .cocreate {{ width: 100%; max-width: 400px; }} }}
   .pills a:hover .tag, .pills a:focus-visible .tag {{ filter: brightness(1.08); }}
   .pills a:hover .met {{ color: var(--text); }}
@@ -1957,14 +1957,14 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0, n_sc
     today = today or date.today()
     c = site_palette(cfg)
     metrics = {       # la metrica di ogni rubrica, sotto la sua pillola
-        "grant": f"{n_calls} open calls worldwide" + (f" · {n_italy} open to Italian institutions" if n_italy else ""),
-        "positions": f"{n_positions} open PhD, post-doc and faculty positions" if n_positions
+        "grant": f"{n_calls} open calls" + (f" · {n_italy} open to Italy" if n_italy else " worldwide"),
+        "positions": f"{n_positions} PhD, post-doc and faculty positions" if n_positions
                      else "PhD, post-doc and faculty positions",
         "methods": f"{n_methods} carousel{'s' if n_methods != 1 else ''}, with key points and references" if n_methods
-                   else "Practical topics with key points and references",
+                   else "Practical topics, key points, references",
         "science": f"{n_science} clinical lesson{'s' if n_science != 1 else ''}, one new every Saturday" if n_science
-                   else "One clinical paper, one lesson for practice: every Saturday",
-        "trials": "For patients: search ongoing studies that are looking for volunteers"}
+                   else "One paper, one lesson: every Saturday",
+        "trials": "For patients: find studies seeking volunteers"}
     return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"], social=social_links(cfg),
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
                        amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"), sci=site_accent(cfg, "science"), meth=site_accent(cfg, "methods"), trial=site_accent(cfg, "trials"),
