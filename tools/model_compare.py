@@ -26,6 +26,7 @@ import requests  # noqa: E402
 
 MODE = os.environ.get("COMPARE_MODE", "run")
 N = int(os.environ.get("N") or 3)
+MAX_TRIES = int(os.environ.get("MAX_TRIES") or N)   # fonti da provare per rubrica finché non si hanno N post
 FAMILIES = ["deepseek/", "openai/gpt", "anthropic/claude", "qwen/", "moonshotai/", "z-ai/", "x-ai/", "mistralai/",
             "google/gemini", "meta-llama/", "nvidia/"]
 
@@ -55,14 +56,21 @@ PREVIEW = ROOT / "preview"
 OUT = ROOT / "compare_out"
 FILES = json.loads((ROOT / "compare_files.json").read_text(encoding="utf-8"))
 MODELS = [m.strip() for m in (os.environ.get("MODELS") or "").split(",") if m.strip()]
-FORCED = {"nuovi post da Drive", "takeaway clinico", "revisione slide", "verifica fatti"}
+# attività «complesse» (comprensione e lettura critica): le fa il modello in prova. FORCED_TASKS le cambia.
+FORCED = {t.strip() for t in (os.environ.get("FORCED_TASKS") or
+                              "nuovi post da Drive,takeaway clinico,revisione slide,verifica fatti").split(",") if t.strip()}
+# attività secondarie (revisore, verifiche, anti-copia…): con SECONDARY le fanno modelli open access, in questa
+# catena; vuoto = catene normali del bot
+SECONDARY = os.environ.get("SECONDARY") or ""
+FULL_TEXT_CHARS = 200_000          # ai modelli a pagamento (contesto ampio) l'articolo intero, non solo l'abstract
 CURRENT = {"model": None}
+PRE_RENDER = None      # funzione(post, material_text) chiamata prima del carosello (es. immagine di copertina)
 
 _orig_route = content.route_for
 _orig_call = content.call_model
 
 
-_KNOWN_PROVIDERS = {"gemini", "groq", "openrouter"}
+_KNOWN_PROVIDERS = {"gemini", "groq", "openrouter", "paid"}
 
 
 def _expand_model_chain(model_str):
@@ -84,6 +92,8 @@ def _expand_model_chain(model_str):
 def route(task):
     if task.split(" [", 1)[0] in FORCED and CURRENT["model"]:
         return _expand_model_chain(CURRENT["model"])
+    if SECONDARY:
+        return _expand_model_chain(SECONDARY)
     return _orig_route(task)
 
 
@@ -95,6 +105,9 @@ def call(provider, model, parts, schema, temperature=0.3, task="altro", thinking
             if "text" in p:
                 new_parts.append(p)
             else:
+                if provider == "paid":           # contesto ampio: testo completo della fonte
+                    new_parts.append({"text": content.material_text(p)[:FULL_TEXT_CHARS]})
+                    continue
                 try:
                     import base64 as _b64
                     raw = _b64.b64decode(p["inline_data"]["data"])
@@ -121,9 +134,9 @@ def sources():
         part = content.material_part(drive, f)
         if part and content.license_status(content.material_text(part))[0] == "ok":
             ok.append(f)
-        if len(ok) >= N:
+        if len(ok) >= MAX_TRIES:
             break
-    return drive, ok, method[:N]
+    return drive, ok, method[:MAX_TRIES]
 
 
 def pdf_of(name):
@@ -166,6 +179,8 @@ def one(model, kind, idx, f, drive):
         os.environ["PREVIEW_DATE"] = "2026-11-17"       # martedì: metodologia
     bot.save(bot.SOURCES_FILE, [{"drive_id": f["id"], "name": f["name"], "posts": 1}])
     os.environ["POST_TYPE"] = "research"
+    if PRE_RENDER:
+        PRE_RENDER(posts[0], content.material_text(part))
     try:
         bot.main()
     except SystemExit as e:
@@ -173,12 +188,43 @@ def one(model, kind, idx, f, drive):
     pj = PREVIEW / "post.json"
     if not pj.exists():
         return f"{key}: post respinto dai controlli di qualità (vedi log)"
-    title = json.loads(pj.read_text(encoding="utf-8")).get("title", "")
+    data = json.loads(pj.read_text(encoding="utf-8"))
+    title, left = data.get("title", ""), data.get("lay_left") or []
     safe_model = model.replace('/', '_').replace(':', '-').replace('>', '_')
     pdf = pdf_of(f"{kind}{idx}-{safe_model}.pdf")
+    if pdf:
+        DONE.setdefault(model, []).append(pdf)
     saved = bool(fid and pdf and drive_preview.upload(pdf, None, "application/pdf", bot.CONFIG, file_id=fid))
-    location = f" → {pdf.name}" if pdf else " — PDF non generato"
-    return f"{key}: ok in {int(time.time() - t0)} s «{title[:80]}»" + (" ✓ Drive" if saved else f" (locale{location})")
+    location = " ✓ Drive" if saved else (f" → {pdf.name}" if pdf else " — PDF non generato")
+    return (f"{key}: ok in {int(time.time() - t0)} s «{title[:90]}»{location}"
+            + (f" | difetti residui: {'; '.join(x[:60] for x in left)}" if left else " | nessun difetto residuo"))
+
+
+DONE = {}          # modello → PDF dei post riusciti, uniti alla fine in un solo PDF (chiave «<modello>|ALL»)
+
+
+def merge_and_upload(model):
+    from pypdf import PdfWriter
+    pdfs = DONE.get(model) or []
+    if not pdfs:
+        return "nessun PDF da unire"
+    out = OUT / f"ALL-{model.replace('/', '_').replace(':', '-').replace('>', '_')}.pdf"
+    w = PdfWriter()
+    for p in pdfs:
+        w.append(str(p))
+    with open(out, "wb") as fh:
+        w.write(fh)
+    fid = FILES.get(f"{model}|ALL")
+    ok = False
+    for attempt in range(4):                       # connessione caduta (Broken pipe): si riprova
+        try:
+            ok = bool(fid and drive_preview.upload(out, None, "application/pdf", bot.CONFIG, file_id=fid))
+        except Exception as e:
+            print(f"  caricamento su Drive, tentativo {attempt + 1}: {str(e)[:120]}")
+        if ok:
+            break
+        time.sleep(5 * (attempt + 1))
+    return f"PDF unico ({len(pdfs)} post) " + ("✓ Drive" if ok else f"locale {out.name}")
 
 
 def main():
@@ -190,16 +236,26 @@ def main():
     for model in MODELS:
         print(f"\n######## {model} ########", flush=True)
         for kind, files in (("LS", clin), ("ME", meth)):
-            for i, f in enumerate(files, 1):
+            i = 1
+            for f in files:
+                if i > N:
+                    break
                 try:
                     line = one(model, kind, i, f, drive)
                 except Exception as e:
                     traceback.print_exc()
                     line = f"{model}|{kind}|{i}: errore {str(e)[:200]}"
+                line += f"  [fonte: {f['name'][:70]}]"
                 print(line, flush=True)
                 report.append(line)
-        u = {k: v for k, v in content.USAGE.items() if f"openrouter-{model.split('/')[-1]}" in k}
-        report.append(f"  consumo {model}: {json.dumps(u, ensure_ascii=False)}")
+                if ": ok in " in line:
+                    i += 1                         # il segnaposto successivo solo dopo un post riuscito
+        report.append(f"  {merge_and_upload(model)}")
+        spent = sum(float(v.get("costo_usd", 0)) for v in content.USAGE.values())
+        report.append(f"  spesa a pagamento: {spent:.4f} $")
+        report.append("  consumo per attività/modello: " + json.dumps(
+            {k: {kk: vv for kk, vv in v.items() if kk in ("richieste", "costo_usd", "respinte")}
+             for k, v in content.USAGE.items()}, ensure_ascii=False))
     print("\n===== RIEPILOGO =====\n" + "\n".join(report))
     (ROOT / "compare_report.txt").write_text("\n".join(report), encoding="utf-8")
 

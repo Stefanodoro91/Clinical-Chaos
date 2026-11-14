@@ -14,6 +14,18 @@ on:
       n:
         description: "post per rubrica"
         default: "3"
+      max_tries:
+        description: "fonti da provare per rubrica finché non si hanno n post (vuoto = n)"
+        default: ""
+      secondary:
+        description: "catena per le attività secondarie (revisore, verifiche…), es. modelli open access; vuoto = normale"
+        default: ""
+      forced_tasks:
+        description: "attività complesse fatte dal modello in prova (vuoto = scrittura, takeaway, revisione, verifica fatti)"
+        default: ""
+      budget:
+        description: "tetto di spesa in $ per i modelli a pagamento in questo giro (vuoto = config)"
+        default: ""
 
 permissions:
   contents: read
@@ -43,6 +55,10 @@ jobs:
           COMPARE_MODE: ${{ inputs.mode }}
           MODELS: ${{ inputs.models }}
           N: ${{ inputs.n }}
+          MAX_TRIES: ${{ inputs.max_tries }}
+          SECONDARY: ${{ inputs.secondary }}
+          FORCED_TASKS: ${{ inputs.forced_tasks }}
+          AI_PAID_BUDGET: ${{ inputs.budget }}
           PYTHONUNBUFFERED: "1"
         run: python tools/model_compare.py
       - name: Riepilogo

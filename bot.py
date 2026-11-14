@@ -272,20 +272,23 @@ CLINICAL_QUEUE_FILE = ROOT / "clinical_queue.json"     # post Latest Science gi�
 
 def _clinical_review(post, material):
     """Controlli prima dell'uscita sul testo dell'articolo: anti-copia, revisione incrociata (o verifica dei fatti),
-    reference. False se la revisione respinge il post."""
+    poi rifinitura con le note del revisore. Il post non viene mai scartato: i problemi si correggono."""
     content.rewrite_copied(post, material)
+    notes = []
     if CONFIG.get("cross_review", True):
         rev = content.cross_review(post, material)
         post["review"] = {k: rev.get(k) for k in ("passed", "scores", "critic", "arbiter", "fixed", "removed", "notes")}
         if rev.get("passed") is False:
-            print(f"::warning title=Latest Science respinto dalla revisione::{post['title'][:70]}: "
-                  f"{'; '.join(rev.get('notes', [])[:2])[:250]}")
-            return False
+            notes = [f"reviewer: {n}" for n in (rev.get("notes") or [])[:6]]
+            print(f"::notice title=Latest Science da correggere::{post['title'][:70]}: le note del revisore vanno "
+                  "alla rifinitura")
         if rev.get("passed") is None:
             content.verify_against_source(post, material)
     else:
         content.verify_against_source(post, material)
     content.fix_references(post)
+    if post.get("lay_abstract"):
+        content.finalize_lay(post, material, "science", extra=notes)
     return True
 
 
@@ -295,11 +298,14 @@ def _new_clinical_posts(drive, posted, sources, cq):
     inbox = os.environ["GDRIVE_FOLDER_ID"]
     reuse = os.environ.get("REUSE_CLINICAL_SINCE", "").strip()   # anteprime: articoli già usati di nuovo leggibili
     if reuse:                                                     # (tranne quelli riusati da questa data in poi)
-        read = {x.get("name") for x in sources if x.get("clinical_skipped")
+        read = {x.get("name") for x in sources
+                if (x.get("clinical_skipped") and not str(x["clinical_skipped"]).startswith("nessun messaggio clinico"))
                 or (x.get("clinical_used") and (x.get("date") or "") >= reuse)}
         read |= {q.get("source") for q in cq}
     else:
-        read = {x.get("name") for x in sources if x.get("clinical_used") or x.get("clinical_skipped")}
+        # gli articoli scartati solo perché «senza messaggio clinico» (le revisioni, prima) tornano leggibili
+        read = {x.get("name") for x in sources if x.get("clinical_used")
+                or (x.get("clinical_skipped") and not str(x["clinical_skipped"]).startswith("nessun messaggio clinico"))}
         read |= {q.get("source") for q in cq} | {p.get("source") for p in posted if p.get("category") == content.CLINICAL_CATEGORY}
     files = [f for f in list_inbox(drive, inbox) if f.get("parent") != inbox and f["name"] not in read and content.is_supported(f)]
     print(f"Latest Science: {len(files)} articoli clinici non ancora letti nelle cartelle «Clinica…»")
@@ -309,14 +315,11 @@ def _new_clinical_posts(drive, posted, sources, cq):
         note = None
         try:
             part = content.material_part(drive, f)
-            status_, label = content.license_status(content.material_text(part))
-            if status_ != "ok":
-                note = f"licenza: {label or 'non dichiarata nel testo'}"
-            else:
-                posts, focus, why = content.clinical_posts(part, f["name"], CONFIG["brand_name"], published,
-                                                           int(CONFIG.get("latest_science_posts_per_paper", 3)))
-                if not posts:
-                    note = f"nessun messaggio clinico ({focus}): {why[:150]}"
+            # la licenza non blocca: il post riassume con parole proprie e cita la fonte, senza testo né figure
+            posts, focus, why = content.clinical_posts(part, f["name"], CONFIG["brand_name"], published,
+                                                       int(CONFIG.get("latest_science_posts_per_paper", 3)))
+            if not posts:
+                note = f"nessun post ricavato ({focus}): {why[:150]}"
         except Exception as e:
             print(f"::warning title=Articolo clinico non letto::{f['name']}: {str(e)[:200]}")
             continue
@@ -433,6 +436,11 @@ def quality_gate(post, drive, queue):
             if rev.get("passed") is None and CONFIG.get("verify_source", True):
                 content.verify_against_source(post, material)      # nessun revisore indipendente: controllo di Gemini
             rejected = rev.get("passed") is False
+            if post.get("lay_abstract"):              # formato breve: mai scartato, le note vanno alla rifinitura
+                notes = [f"reviewer: {n}" for n in (rev.get("notes") or [])[:6]] if rejected else []
+                content.finalize_lay(post, material, "science" if post.get("category") == content.CLINICAL_CATEGORY
+                                     else "methods", extra=notes)
+                rejected = False
         if not rejected:
             content.fix_references(post)
             missing = [] if post.get("lay_abstract") else content.concreteness(post)   # Latest Science: niente numeri per scelta
@@ -655,8 +663,12 @@ def publish_reel(video_path, caption):
     r = requests.post(c.get("uri") or f"https://rupload.facebook.com/ig-api-upload/{GRAPH_VERSION}/{c['id']}",
                       headers={"Authorization": f"OAuth {token}", "offset": "0", "file_size": str(len(data))},
                       data=data, timeout=300)
-    if not r.ok:
-        raise RuntimeError(f"Caricamento del video rifiutato {r.status_code}: {r.text[:300]}")
+    if not r.ok:                               # ripiego: Instagram scarica il video dal sito (come per Threads)
+        print(f"::warning title=Reel::caricamento diretto rifiutato {r.status_code}: {r.text[:200]}; "
+              "riprovo con l'indirizzo pubblico del video")
+        url = public_video_url(video_path, f"reel-{datetime.now(timezone.utc):%Y%m%d-%H%M%S}")
+        c = ig("POST", f"{user}/media", _token=token, media_type="REELS", video_url=url, caption=caption,
+               share_to_feed="true")
     for _ in range(60):                        # l'elaborazione dei video può richiedere qualche minuto
         status = ig("GET", c["id"], _token=token, fields="status_code").get("status_code")
         if status == "FINISHED":
@@ -874,12 +886,27 @@ def publish_facebook_reel(video_path, caption):
     raise RuntimeError(f"Reel Facebook: pubblicazione rifiutata {r.status_code}: {r.text[:300]}")
 
 
+def _diagnose_video_url(site):
+    """Nel log: come risponde il sito a chi scarica il video (Threads lo scarica da solo): tipo, intervalli, cache e
+    il comportamento con i programmi di Meta. Serve a capire un rifiuto «UNKNOWN»."""
+    for ua in ("python-requests", "facebookexternalhit/1.1", "meta-externalagent/1.1", "Threads"):
+        try:
+            r = requests.get(site, headers={"User-Agent": ua, "Range": "bytes=0-1023"}, timeout=30, allow_redirects=False)
+            hd = {k: v for k, v in r.headers.items() if k.lower() in (
+                "content-type", "content-length", "content-range", "accept-ranges", "content-encoding", "cache-control",
+                "server", "location", "cf-mitigated", "cf-cache-status")}
+            print(f"::notice title=Video, risposta del sito a «{ua}»::{r.status_code} {hd}")
+        except requests.RequestException as e:
+            print(f"::notice title=Video, risposta del sito a «{ua}»::errore {str(e)[:120]}")
+
+
 def public_video_url(video_path, name):
     """Copia il video nel sito (docs/reels/) e lo rende pubblico: Threads vuole un indirizzo, non il file."""
     import shutil
     rel = Path("docs") / "reels" / f"{name}.mp4"
     (ROOT / rel).parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy(video_path, ROOT / rel)
+    if Path(video_path).resolve() != (ROOT / rel).resolve():     # già al suo posto (ripubblicazione): niente copia
+        shutil.copy(video_path, ROOT / rel)
     sha = commit_and_push([rel.as_posix()], f"Video del reel {name}")
     trigger_deploy()
     site = grants.site_url(CONFIG, f"reels/{name}.mp4")
@@ -887,11 +914,25 @@ def public_video_url(video_path, name):
         try:
             h = requests.head(site, timeout=15)
             if h.status_code == 200 and "video" in h.headers.get("content-type", ""):
+                _diagnose_video_url(site)
                 return site
         except requests.RequestException:
             pass
         time.sleep(10)
     return f"https://raw.githubusercontent.com/{os.environ.get('GITHUB_REPOSITORY', '')}/{sha}/{rel.as_posix()}"
+
+
+def threads_video_url(video, name):
+    """Indirizzo pubblico del video per Threads: copia nel formato che Threads accetta (senza edit list, GOP chiuso,
+    30 fps, AAC): se la conversione non riesce si usa il file originale."""
+    import social
+    try:
+        tv = social.threads_ready_video(video)
+        print(f"::notice title=Video per Threads::{tv.name} ({tv.stat().st_size // 1024} KB)")
+        return public_video_url(tv, f"{name}-threads")
+    except Exception as e:
+        print(f"::warning title=Conversione video per Threads::{str(e)[:200]}: si usa l'originale")
+        return public_video_url(video, name)
 
 
 def crosspost_reel(video, caption, title, link, entry, name):
@@ -907,7 +948,7 @@ def crosspost_reel(video, caption, title, link, entry, name):
             print(f"::warning title=Reel non pubblicato su Facebook::{str(e)[:300]}")
     if social.threads_enabled() and not entry.get("threads_id"):
         try:
-            url = public_video_url(video, name)
+            url = threads_video_url(video, name)
             entry["threads_id"] = social.publish_threads_video(url, social.reel_text(title, caption, link, 500))
             print(f"::notice title=Reel su Threads::{entry['threads_id']}")
         except Exception as e:
@@ -1165,8 +1206,8 @@ def main():
             post["area_label"] = rubrics.AREA_NAMES[area]
             post["caption"] += f"\n\nOpen calls in this area: {grants.site_url(CONFIG, 'calls')}?area={area}"
     if (kind == "research" and CONFIG.get("review_slides", True) and post.get("rubric") != "Checklist"
-            and not (post.get("review") or {}).get("passed")):
-        content.review_slides(post)              # ogni slide un concetto, comprensibile da sola
+            and not (post.get("review") or {}).get("passed") and not post.get("lay_abstract")):
+        content.review_slides(post)              # ogni slide un concetto (il formato breve ha la sua rifinitura)
     apa = ""
     if kind == "research" and CONFIG.get("source_slide"):
         import sources
@@ -1174,8 +1215,11 @@ def main():
         apa = (meta or {}).get("apa", "")
     if kind == "research":
         polish.polish_post(post, apa)            # sentence case, reference coerenti con la slide «Based on», fonti
-    if kind == "research" and CONFIG.get("visual_plan"):
+    if kind == "research" and CONFIG.get("visual_plan") and not post.get("no_images"):
         plan_visuals(post)                       # schema, figura dell'articolo, foto o niente: slide per slide
+    elif post.get("no_images"):
+        for s in post.get("slides") or []:
+            s["visual"] = {"type": "none"}       # solo testo: niente schemi né figure
     slides = cards.render_carousel(post, CONFIG)
     caption = build_caption(post)
     print(f"\nPost scelto: {post['title']}  (fonte: {post['source']}, {post.get('source_hint', '')})")
@@ -1368,6 +1412,27 @@ def check_token():
     if not data.get("is_valid") or (days and min(days) < 14):
         notify("Il token Instagram sta per scadere",
                f"Scadenza: {when(exp)}; accesso ai dati fino al {when(access)}. Genera un nuovo token e aggiorna il secret IG_ACCESS_TOKEN.")
+    check_other_socials()
+
+
+def check_other_socials():
+    """Threads e Bluesky: una lettura del profilo (nessuna pubblicazione). Token invalidato → avviso via issue."""
+    if os.environ.get("THREADS_ACCESS_TOKEN"):
+        r = requests.get("https://graph.threads.net/v1.0/me", timeout=30,
+                         params={"fields": "id,username", "access_token": os.environ["THREADS_ACCESS_TOKEN"]})
+        if r.ok:
+            same = r.json().get("id") == os.environ.get("THREADS_USER_ID", r.json().get("id"))
+            print(f"::notice title=Threads::token valido (@{r.json().get('username')})"
+                  + ("" if same else " ma THREADS_USER_ID non corrisponde"))
+        else:
+            print(f"::error title=Threads::token non valido {r.status_code}: {r.text[:200]}")
+            notify("Token Threads non valido", "Threads rifiuta il token (THREADS_ACCESS_TOKEN): i post non escono su "
+                   "Threads. Generane uno nuovo dal pannello dell'app Meta (Threads API → User Token Generator).")
+    if os.environ.get("BLUESKY_HANDLE") and os.environ.get("BLUESKY_APP_PASSWORD"):
+        r = requests.post("https://bsky.social/xrpc/com.atproto.server.createSession", timeout=30,
+                          json={"identifier": os.environ["BLUESKY_HANDLE"], "password": os.environ["BLUESKY_APP_PASSWORD"]})
+        print(f"::notice title=Bluesky::accesso riuscito" if r.ok else
+              f"::error title=Bluesky::accesso rifiutato {r.status_code}: {r.text[:150]}")
 
 
 POSITIONS_PAGE = ROOT / "docs" / "positions.html"
@@ -1840,6 +1905,28 @@ def repost_social():
     for p in posted:
         if p["id"] not in ids:
             continue
+        if p.get("kind") == "reel":                # reel: il video è già sul sito (docs/reels), si recupera Threads
+            os.environ["POST_TYPE"] = "reel"
+            video = ROOT / "docs" / "reels" / f"{p['id']}.mp4"
+            if social.threads_enabled() and not p.get("threads_id") and video.exists():
+                kind_of = next((k for k in REEL_KINDS if p.get("reel_of", "").startswith(k)), "research")
+                caption = f"{p['title']}\n\n" + REEL_KINDS[kind_of]["text"].format(seconds=round(p.get("seconds", 30)))
+                link = CONFIG.get("links_page_url") or grants.site_url(CONFIG, "")
+                # Threads vuole un vero indirizzo video (il file su GitHub è «octet-stream»): si chiede a Cloudflare di
+                # ripubblicare il sito e si aspetta che il video risponda (public_video_url, max ~6 minuti)
+                url = threads_video_url(video, p["id"])
+                print(f"::notice title=Threads (reel)::video da {'sito' if 'githubusercontent' not in url else 'GitHub'}")
+                try:
+                    p["threads_id"] = social.publish_threads_video(url, social.reel_text(p["title"], caption, link, 500))
+                    print(f"::notice title=Threads (reel)::{p['title'][:60]} → {p['threads_id']}")
+                except Exception as e:
+                    print(f"::warning title=Threads non ripubblicato::{str(e)[:300]}")
+            elif not video.exists():
+                print(f"::warning title=Ripubblicazione::video del reel {p['id']} non trovato nel sito")
+            p["reposted"] = datetime.now(timezone.utc).date().isoformat()
+            save(POSTED_FILE, posted)
+            commit_and_push([POSTED_FILE.name], f"Reel ripubblicato su Threads: {p['title'][:60]}")
+            continue
         if p.get("kind") == "grant":
             d = grants._date(p.get("deadline"))
             post = {"kind": "grant", "id": p["id"], "grant_id": p.get("grant_id", ""), "title": p["title"], "funder": p.get("funder", ""),
@@ -1859,6 +1946,7 @@ def repost_social():
             caption = f"{m['title']}\n\n{m.get('takeaway', '')}\n\nKey points: {heads}"
             link = grants.site_url(CONFIG, polish.page_anchor({"id": p["id"], "category": m.get("category")}))
             kind = "research"
+        os.environ["POST_TYPE"] = kind            # la sicura dei social riconosce le rubriche attive (es. grant)
         safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in p["id"])
         folder = IMAGES_DIR / f"{p['date']}-{safe}"
         folder.mkdir(parents=True, exist_ok=True)
@@ -1874,13 +1962,22 @@ def repost_social():
         base = f"https://raw.githubusercontent.com/{os.environ['GITHUB_REPOSITORY']}/{sha}/"
         fb_url = base + (rels[-1])
         wait_until_public(fb_url)
-        if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID"):
+        if CONFIG.get("facebook", True) and os.environ.get("FB_PAGE_ID") and not p.get("facebook_id"):
             try:
                 p["facebook_id"] = publish_facebook_single(fb_url, facebook_text({**post, "caption": caption}, caption, None if kind == "research" else kind, link))
                 print(f"::notice title=Facebook (nuovo design)::{p['title'][:60]} → {p['facebook_id']}")
             except Exception as e:
                 print(f"::warning title=Facebook non ripubblicato::{str(e)[:300]}")
-        if social.bluesky_enabled():
+        slides = sorted(folder.glob("slide-*.jpg"), key=lambda q: int(q.stem.split("-")[1]))
+        if social.threads_enabled() and not p.get("threads_id") and slides:
+            try:
+                urls = [base + q.relative_to(ROOT).as_posix() for q in slides[:10]]
+                wait_until_public(urls[0])
+                p["threads_id"] = social.publish_threads(urls, {**post, "caption": caption}, link)
+                print(f"::notice title=Threads::{p['title'][:60]} → {p['threads_id']}")
+            except Exception as e:
+                print(f"::warning title=Threads non ripubblicato::{str(e)[:300]}")
+        if social.bluesky_enabled() and not p.get("bluesky_uri"):      # già uscito lì: niente doppione
             try:
                 p["bluesky_uri"] = social.publish_bluesky([single], {**post, "caption": caption}, link, max_images=1)
                 print(f"::notice title=Bluesky (nuovo design)::{p['title'][:60]} → {p['bluesky_uri']}")

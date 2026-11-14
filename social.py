@@ -200,6 +200,24 @@ def reel_text(title, caption, link, limit):
     return _clip_text(out, limit - len(tail)) + tail
 
 
+def threads_ready_video(path):
+    """Copia del video nel formato che accetta Threads: MP4 con moov in testa e senza edit list, H.264 progressivo 4:2:0
+    a 30 fps con GOP chiuso, AAC stereo 44,1 kHz, 1080 px al massimo, bitrate video contenuto. Il file originale
+    (usato per Instagram, Facebook e Bluesky) resta com'è. Restituisce il percorso della copia."""
+    import subprocess
+    src = Path(path)
+    out = src.with_name(src.stem + "-threads.mp4")
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", str(src), "-map", "0:v:0", "-map", "0:a:0?",
+           "-vf", "scale='min(1080,iw)':-2,format=yuv420p,fps=30", "-c:v", "libx264", "-profile:v", "high", "-level", "4.0",
+           "-preset", "medium", "-crf", "21", "-maxrate", "6M", "-bufsize", "12M",
+           "-x264-params", "open-gop=0:keyint=60:min-keyint=60:scenecut=0", "-bf", "2",
+           "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-ac", "2", "-af", "aresample=async=1:first_pts=0",
+           "-use_editlist", "0", "-movflags", "+faststart", "-fflags", "+bitexact", "-map_metadata", "-1",
+           "-f", "mp4", str(out)]
+    subprocess.run(cmd, check=True, timeout=600)
+    return out
+
+
 def publish_threads_video(video_url, text):
     """Video su Threads da un URL pubblico (mp4). Restituisce l'id del post."""
     _social_guard()

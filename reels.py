@@ -188,6 +188,12 @@ def _photo(query):
     return _PHOTOS[query]
 
 
+def _ink_on(color):
+    """Colore del testo sopra l'evidenziatura: scuro sui colori chiari, bianco sui colori scuri."""
+    r, g, b = (int(color.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    return "#0A0A0A" if (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.55 else "#FFFFFF"
+
+
 def story_frame(slide, cfg, index, total, accent, cubes=True):
     """Slide 1080×1920 per i reel di annuncio: copertina chiara, punti numerati scuri, chiusura con il logo."""
     cards.EDITORIAL = bool(cfg.get("design_v3"))
@@ -198,7 +204,7 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
     kind = slide.get("type", "point")
     accent = slide.get("accent") or accent
     cards.LOGO_ACCENT = accent
-    bg = slide.get("bg") or (("#F2F2F2" if mono else LIGHT_BG) if kind == "cover" else c["background"])
+    bg = slide.get("bg") or ("#0A0A0A" if mono else (LIGHT_BG if kind == "cover" else c["background"]))
     rgb = tuple(int(bg.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
     light = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 > 0.55       # fondo chiaro: testo scuro
     fg = ("#0A0A0A" if mono else DARK_TEXT) if light else "#FFFFFF"
@@ -240,8 +246,33 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
                 img.paste(pic, (M, y), mask)
                 if cards.EDITORIAL:
                     d.rounded_rectangle((M, y, W - M, y + ph), radius=32, outline=accent, width=4)
+    elif kind in ("cover", "scene") and slide.get("cover_image"):
+        # copertina con immagine a tutta larghezza: sfuma nel nero e il titolo sta sotto, come le copertine foto dei caroselli
+        pic = ImageOps.fit(Image.open(slide["cover_image"]).convert("RGB"), (W, 1250), Image.LANCZOS, centering=(0.5, 0.42))
+        img.paste(pic, (0, 14))
+        fade_h = 520
+        mask = Image.new("L", (W, fade_h))
+        mask.putdata([int(255 * (y / (fade_h - 1)) ** 1.4) for y in range(fade_h) for _ in range(W)])
+        img.paste(Image.new("RGB", (W, fade_h), bg), (0, 14 + 1250 - fade_h), mask)
+        if kind == "cover":
+            d.rounded_rectangle((M - 30, 90, M + 650, 260), radius=28, fill="#0A0A0A")
+            sz = cards.paste_logo(img, "logo-symbol-light", M - 14, 106, height=138)
+            cards.paste_logo(img, "logo-wordmark-light", M - 14 + sz[0] + 24, 124, height=102)
+        y = 1100
+        kick = slide.get("kicker", "")
+        if kick:
+            f = cards.font("Bold", 34)
+            tw = d.textlength(kick, font=f)
+            a_rgb = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+            a_ink = "#0A0A0A" if (0.299 * a_rgb[0] + 0.587 * a_rgb[1] + 0.114 * a_rgb[2]) / 255 > 0.55 else "#FFFFFF"
+            d.rounded_rectangle([M, y, M + tw + 48, y + 66], radius=33, fill=accent)
+            d.text((M + 24, y + 13), kick, font=f, fill=a_ink)
+            y += 112
+        fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 96, 58, W - 2 * M, 1920 - 190 - 110 - y, 1.12)
+        cards.draw_rich(d, " ".join(lines), slide.get("highlight", ""), fnt, size, M, y, W - 2 * M, "#FFFFFF",
+                        1.12, slide.get("mark") or accent, half=True)
     elif kind == "cover":
-        inkc = "#0A0A0A" if mono else DARK_TEXT
+        inkc = ("#FFFFFF" if not light else "#0A0A0A") if mono else DARK_TEXT
         if cards.EDITORIAL:                          # logo v3 nel colore del tipo
             sz = cards.paste_logo(img, "logo-symbol" if light else "logo-symbol-light", M - 10, 260, height=170)
             cards.paste_logo(img, "logo-wordmark" if light else "logo-wordmark-light", M - 10 + sz[0] + 28, 278, height=126)
@@ -270,12 +301,13 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
             y += 130
         fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 112, 70, W - 2 * M, 620, 1.12)
         y = cards.draw_rich(d, " ".join(lines), slide.get("highlight", ""), fnt, size, M, y, W - 2 * M, inkc,
-                            1.12, slide.get("mark") or accent, half=True)
+                            1.12, slide.get("mark") or accent,
+                            **({"mark_text": _ink_on(slide.get("mark") or accent), "half": False} if not light else {"half": True}))
         if slide.get("body"):
             fb = cards.font("Regular", 44)
             y += 50
             for line in _wrap(d, slide["body"], fb, W - 2 * M):
-                d.text((M, y), line, font=fb, fill=("#3A3A3A" if mono else "#3D5266") if not slide.get("bg") else inkc)
+                d.text((M, y), line, font=fb, fill=(("#BDBDBD" if not light else "#3A3A3A") if mono else "#3D5266") if not slide.get("bg") else inkc)
                 y += 62
     elif kind == "image":
         # schermata con immagini (schermate del sito in un telefono, oppure copertine affiancate)
@@ -383,6 +415,13 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
                 ImageDraw.Draw(mask).rounded_rectangle((0, 0, pic.width - 1, pic.height - 1), radius=32, fill=255)
                 img.paste(pic, (M, y), mask)
                 d.rounded_rectangle((M, y, W - M, y + ph), radius=32, outline=accent, width=4)
+    if kind == "cover" and slide.get("source_line"):       # fonte in piccolo (titolo/DOI) sulla prima schermata
+        fs = cards.font("Regular", 30)
+        sl_lines = cards.wrap(d, slide["source_line"], fs, W - 2 * M)
+        yy = H - 190 - 40 - 40 * len(sl_lines[:3])
+        for ln in sl_lines[:3]:
+            d.text((M, yy), ln, font=fs, fill="#9A9A9A" if mono and not light else "#5B5B5B")
+            yy += 40
     # avanzamento in basso, nel colore del tipo
     yb = H - 190
     seg = (W - 2 * M - (total - 1) * 12) / total
@@ -394,7 +433,7 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
     if kind != "closing":
         f_h = cards.font("SemiBold", 32)
         d.text((M, yb + 40), cfg.get("handle", ""), font=f_h, fill="#5B7186" if light else c["muted_text"])
-    if cubes and cards.EDITORIAL and kind != "image":    # cubetti negli spazi liberi (i pixel già disegnati si evitano da soli)
+    if cubes and cards.EDITORIAL and kind != "image" and not slide.get("cover_image"):    # cubetti negli spazi liberi (i pixel già disegnati si evitano da soli)
         _cubes(img, f"{kind}-{index}-{slide.get('title', '')[:24]}", accent, not light, cfg,
                keep_out=[(0, yb - 30, W, H), (0, 0, W, 30)], density=0.8 if kind in ("cover", "closing") else 0.55)
     return img
@@ -406,6 +445,8 @@ def frame_seconds(slide):
     if slide.get("type") in ("cover", "closing"):
         return 3.0 if slide.get("type") == "cover" else 3.5
     if slide.get("type") == "image":
+        return 4.5
+    if slide.get("type") == "scene":
         return 4.5
     if slide.get("type") == "stat":
         return 4.5
@@ -465,7 +506,7 @@ def _back_out(x):
 def _slide_layers(slide, cfg, index, total, accent):
     """Fondo (cornice, logo), righe di testo animabili e strato dei cubetti di una schermata."""
     import numpy as np
-    blank = {k: v for k, v in slide.items() if k in ("type", "accent", "bg", "images", "frame", "photo_query")}
+    blank = {k: v for k, v in slide.items() if k in ("type", "accent", "bg", "images", "frame", "photo_query", "cover_image")}
     blank.update(title="", body="", kicker="", number="")
     base = story_frame(blank, cfg, index, total, accent, cubes=False)
     text = story_frame(slide, cfg, index, total, accent, cubes=False)
@@ -770,8 +811,8 @@ def positions_spec(p, archive, cfg, today=None, max_jobs=4):
     if len(jobs) < 2:
         return None
     kicker, accent = rubric_tag({"kind": "positions"}, cfg, "ACADEMIC POSITIONS", cfg["colors"]["accent"])
-    slides = [{"type": "cover", "kicker": kicker, "title": f"{len(jobs)} open positions this week",
-               "body": "Clinical research, biomedical engineering and rehabilitation."}]
+    slides = [{"type": "cover", "kicker": kicker, "title": "Academic positions for clinical researchers",
+               "body": f"{len(jobs)} open positions this week"}]
     for i, (v, d) in enumerate(jobs[:max_jobs], 1):
         bits = [positions.TYPES.get(v.get("type"), ""), _clip_words(v.get("institution", ""), 6), v.get("country", ""),
                 f"deadline {grants._fmt_date(d)}" if d else ""]

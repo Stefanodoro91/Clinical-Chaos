@@ -1399,7 +1399,7 @@ def rule_slide(post, cfg, index, total, with_cta=False):
     c = cfg["colors"]
     navy = c["background"]
     img, d = light_canvas(cfg, index, total)
-    d.text((MARGIN, 170), "KEY TAKEAWAY", font=font("Bold", 36), fill=hlc(False, DARK_ACCENT.get(c["accent"], navy)))
+    d.text((MARGIN, 170), post.get("takeaway_label") or "KEY TAKEAWAY", font=font("Bold", 36), fill=hlc(False, DARK_ACCENT.get(c["accent"], navy)))
     room = H - 300 - (250 if not with_cta else 560)
     fnt, lines, size = fit(d, post["takeaway"], H_("ExtraBold"), 100 if not with_cta else 88, 52, W - 2 * MARGIN, room, 1.12)
     draw_rich(d, post["takeaway"], post.get("takeaway_highlight"), fnt, size, MARGIN, 260, W - 2 * MARGIN,
@@ -1427,15 +1427,22 @@ def cta_slide(post, cfg, index, total):
     import re as _re
     save_line = _re.sub(r"^save (it|this)( post)?\s*", "", ((post.get("closing_cta") or ("",))[0] or ""), flags=_re.I).strip()
     save_line = save_line if len(save_line) > 6 else "for your next protocol"
-    rows = ((_bookmark, "Save this post", save_line), (_person_plus, "Comment", _question(post)),
-            (_plane, "Share it", "with a colleague who needs it"))
-    y = 280
+    if post.get("cta_text"):                       # formato a 7 pagine: invito della rubrica + salva / condividi
+        cf, cl, cs = fit(d, post["cta_text"], H_("ExtraBold"), 62, 44, W - 2 * MARGIN, 330, 1.15)
+        yy0 = draw_lines(d, cl, cf, cs, MARGIN, 250, "#FFFFFF", 1.15)
+        rows = ((_bookmark, "Save this post", save_line), (_plane, "Share it", "with a colleague who needs it"))
+        y = max(int(yy0) + 40, 560)
+    else:
+        rows = ((_bookmark, "Save this post", save_line), (_person_plus, "Comment", _question(post)),
+                (_plane, "Share it", "with a colleague who needs it"))
+        y = 280
+    step = 170 if post.get("cta_text") else 250
     for icon, head, sub in rows:
         icon(d, MARGIN, y + 8, c["accent"], s=60)
         d.text((MARGIN + 120, y), head, font=font("ExtraBold", 62), fill="#FFFFFF")
         sf, sl, ss = fit(d, sub, "Regular", 40, 28, W - 2 * MARGIN - 120, 112, 1.3)
         draw_lines(d, sl, sf, ss, MARGIN + 120, y + 84, c["muted_text"], 1.3)
-        y += 250
+        y += step
     d.text((MARGIN, y + 10), "More: link in bio", font=font("Bold", 46), fill=HLT(True, c["accent"]))
     x, yy = MARGIN, y + 100
     nets = post.get("networks") or (["instagram", "facebook"] + [n for n in ("threads", "bluesky") if cfg.get(f"{n}_handle")] + ["linkedin"])
@@ -1688,13 +1695,15 @@ def render_carousel(post, cfg):
     lay = bool(post.get("lay_abstract")) and v2      # Latest Science lay abstract: hook, gap, take home, fonte (Harvard)
     if lay:
         src = sources.lay_reference(post, src)       # pagina 4 sempre presente: titolo + reference Harvard
-    total = (len(post["slides"]) + 2 + bool(src)) if lay else len(post["slides"]) + 2 + has_facts + has_numbers + bool(extra) + bool(v2 and not merge) + bool(src)
+    story = lay and bool(post.get("lay_story"))        # formato a 7 pagine: hook, contesto (con immagine), metodo, dato, significato, fonte, invito
+    total = (len(post["slides"]) + 2 + bool(src) + story) if lay else len(post["slides"]) + 2 + has_facts + has_numbers + bool(extra) + bool(v2 and not merge) + bool(src)
     use_images = cfg.get("ai_images", True) and not post.get("no_images")
     max_images = int(cfg.get("max_images_v3", 3)) if cfg.get("design_v3") else int(cfg.get("max_images_per_post", 2))
     used = 0
     if post.get("kind") == "grant" and cfg.get("grant_cover_photo") and post.get("id") not in images.COVER_CACHE:
         images.cover_photo(post, cfg)          # foto vera per la copertina del bando (se Pixabay ne ha una adatta)
     if (EDITORIAL and not post.get("kind") and cfg.get("cover_photo_methods", True) and post.get("id") not in images.COVER_CACHE
+            and not post.get("no_images")                       # post solo testo: niente foto in copertina
             and (post.get("area") or post.get("rubric") == "Clinical Insights")):
         images.cover_photo(post, cfg)          # regola: foto in copertina solo per post di un'area clinica o Clinical Insights
     pages = [grant_cover(post, cfg, total) if post.get("kind") == "grant" else cover(post, cfg, total)]
@@ -1710,6 +1719,11 @@ def render_carousel(post, cfg):
     for i, slide in enumerate(post["slides"], start=1):
         index = len(pages) + 1
         picture = None
+        fixed = images.SLIDE_CACHE.get(post.get("id")) if (story and index == 2) else None
+        if fixed is not None:                      # seconda pagina: immagine generata dal paper (ChatGPT)
+            pages.append(illustrated(slide, i, cfg, index, total, fixed))
+            metas.append(None)
+            continue
         if planned:
             import visuals
             v = (slide.get("visual") or {}).get("type")
@@ -1743,9 +1757,11 @@ def render_carousel(post, cfg):
                                  cfg, len(pages) + 1, total))
         metas.append(fill_meta(extra.get("label", "grant tips"), "grant proposal budget funding"))
     if lay:                                   # pagina 3: take home (con salva/commenta/condividi), pagina 4: fonte
-        pages.append(rule_slide(post, cfg, len(pages) + 1, total, with_cta=True))
+        pages.append(rule_slide(post, cfg, len(pages) + 1, total, with_cta=not story))
         if src:
             pages.append(source_slide(post, cfg, len(pages) + 1, total, src, None))
+        if story:
+            pages.append(cta_slide(post, cfg, len(pages) + 1, total))
     elif src:                                 # l'articolo di origine, prima del messaggio finale
         pages.append(source_slide(post, cfg, len(pages) + 1, total, src, sources.THUMBS.get(post.get("id"))))
     if lay:

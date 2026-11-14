@@ -1,0 +1,58 @@
+name: Anteprima carosello e reel con immagine (Latest Science e Methodology)
+
+# Testo e logiche: Claude Sonnet 5.5; immagine di copertina: ChatGPT (GPT Image 2). Non pubblica niente:
+# carosello (PDF) e reel (MP4) vanno nei file segnaposto su Drive indicati in `files`.
+on:
+  workflow_dispatch:
+    inputs:
+      files:
+        description: 'JSON {"LS_pdf","ME_pdf","LS_reel","ME_reel"} con gli id dei file Drive'
+        required: true
+      ls_source:
+        description: "parte del nome della fonte Latest Science"
+        default: "Smart exoskeleton"
+      me_source:
+        description: "parte del nome della fonte Methodology"
+        default: "Blinding"
+      budget:
+        description: "tetto di spesa in $"
+        default: "2"
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Anteprime
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GDRIVE_DONE_FOLDER_ID: ${{ secrets.GDRIVE_DONE_FOLDER_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          PREVIEW_FILES: ${{ inputs.files }}
+          LS_SOURCE: ${{ inputs.ls_source }}
+          ME_SOURCE: ${{ inputs.me_source }}
+          AI_PAID_BUDGET: ${{ inputs.budget }}
+          PYTHONUNBUFFERED: "1"
+        run: python tools/preview_images.py
+      - name: Carica file
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: anteprime-immagini
+          path: compare_out/

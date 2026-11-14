@@ -35,7 +35,10 @@ PROMPT = """You create Instagram carousel posts for "{brand}", a page for resear
 professionals about clinical research on human subjects and research methodology.
 
 You are given teaching material written by the page owner (slides, notes or a document; it may be in
-Italian or another language). Turn it into self-contained educational posts IN ENGLISH.
+Italian or another language) or a methodological paper, including secondary literature (a review, a
+methodological guideline, a reporting-standard paper). Turn it into self-contained educational posts IN ENGLISH.
+The post must teach RESEARCH METHODOLOGY (design, bias, measurement, statistics, reporting, appraisal), whatever
+the type of source.
 
 STRICT ACCURACY RULES (this audience will notice mistakes):
 - Use ONLY content that is in the material. You may rephrase and clarify, and you may define a
@@ -476,14 +479,15 @@ def _source_ok(source, refs):
 RX_TEX = re.compile(r"\$\\?([A-Za-z]{1,12})\$")
 
 
-def _clean_post(p, material="", min_slides=2):
+def _clean_post(p, material="", min_slides=2, lay=False):
     refs = [RX_TEX.sub(r"\1", r) for r in verified_references(p.get("references"), material)]   # «$t$-Test» → «t-Test»
     slides = []
     for s in p.get("slides", []):
         if not (s.get("heading") and s.get("body")):
             continue
-        body = _fit(s.get("body", ""), 320)
-        slides.append({"heading": _clip(s.get("heading", ""), 70), "body": body,
+        body = " ".join(s.get("body", "").split()) if lay else _fit(s.get("body", ""), 320)
+        slides.append({"heading": " ".join(s.get("heading", "").split()) if lay else _clip(s.get("heading", ""), 70),
+                       "body": body,
                        "image_prompt": _clip(s.get("image_prompt", ""), 300),
                        "photo_query": _clip(s.get("photo_query", ""), 60),
                        "highlight": exact_phrase(s.get("highlight"), body),
@@ -493,7 +497,10 @@ def _clean_post(p, material="", min_slides=2):
         return None
     tags = ["#" + t.lstrip("#").replace(" ", "") for t in p.get("hashtags", []) if t.strip("# ")]
     category = p.get("category") if p.get("category") in CATEGORIES else "Research methods"
-    title, takeaway = _clip(p["title"], 90), _clip(p["takeaway"], 160)
+    title, takeaway = ((" ".join(p["title"].split()), " ".join(p["takeaway"].split())) if lay   # formato breve: la
+                       else (_clip(p["title"], 90), _clip(p["takeaway"], 160)))                  # rifinitura accorcia
+    if lay and RX_ELLIPSIS.search(p.get("caption", "")):
+        p["caption"] = RX_ELLIPSIS.sub(".", p["caption"])
     return {
         "title": title,
         "title_highlight": exact_phrase(p.get("title_highlight"), title, 4),
@@ -502,7 +509,8 @@ def _clean_post(p, material="", min_slides=2):
         "takeaway": takeaway,
         "takeaway_highlight": exact_phrase(p.get("takeaway_highlight"), takeaway, 5),
         "references": refs,
-        "caption": with_hook(p.get("hook"), p.get("caption", ""), 1200),
+        "caption": p.get("caption", "").strip() if lay else with_hook(p.get("hook"), p.get("caption", ""), 1200),
+        **({"hook": " ".join(str(p.get("hook") or "").split())} if lay else {}),
         "hashtags": tags[:15],
         "source_hint": p.get("source_hint", ""),
     }
@@ -552,7 +560,7 @@ def _ledger(folder=None):
     day = quota_day()
     if _LEDGER is not None and _LEDGER["day"] == day and folder is None:
         return _LEDGER
-    used, exhausted = {}, set()
+    used, exhausted, spent = {}, set(), 0.0
     run = os.environ.get("GITHUB_RUN_ID") or "locale"
     for f in Path(folder or Path(__file__).resolve().parent / "usage").glob("*.json"):
         if f.stem.endswith(f"-{run}"):
@@ -564,11 +572,12 @@ def _ledger(folder=None):
         if data.get("quota_day") != day:
             continue
         for k, c in data.get("consumo", {}).items():
+            spent += float(c.get("costo_usd", 0) or 0)
             task, _, model = k.partition("|")
             if model.startswith(("gemini", "gemma")) and task.split(" [", 1)[0] not in NOT_FREE_TASKS:
                 used[model] = used.get(model, 0) + int(c.get("richieste", 0))
         exhausted |= set(data.get("esauriti") or [])
-    led = {"day": day, "used": used, "exhausted": exhausted}
+    led = {"day": day, "used": used, "exhausted": exhausted, "spent": spent}
     if folder is None:
         _LEDGER = led
     return led
@@ -755,7 +764,42 @@ STRONG_RESERVE = 10                  # richieste per modello forte tenute per la
 MIN_GAP = {"strong": 13.0, "lite": 4.5}   # secondi minimi tra due richieste allo stesso modello (≈5 e ≈13 al minuto)
 MAX_WAIT = 70                        # attesa massima di un modello forte in pausa per la scrittura
 
-WRITING = {"nuovi post da Drive", "post bando", "arbitro", "verifica fatti", "takeaway clinico", "revisione slide"}
+WRITING = {"nuovi post da Drive", "post bando", "arbitro", "verifica fatti", "takeaway clinico", "revisione slide",
+           "rifinitura"}
+
+# Livello A PAGAMENTO su OpenRouter (config «ai_paid»): si usa SOLO in fondo alla catena, quando i modelli gratuiti
+# sono finiti o assenti, e mai oltre il tetto di spesa del giorno («daily_budget_usd», giorno della quota Gemini).
+#   writing → scrittura dei post e conferme; review → revisore indipendente («critica»); volume → verifiche di
+#   bandi e posizioni (di solito vuoto: lì i gratuiti bastano). Spesa reale letta dalla risposta di OpenRouter.
+def _load_paid():
+    try:
+        cfg = json.loads((Path(__file__).resolve().parent / "config.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        cfg = {}
+    p = cfg.get("ai_paid") or {}
+    off = os.environ.get("AI_PAID", "").lower() in ("0", "off", "false", "no")
+    return {"enabled": bool(p.get("enabled")) and not off,
+            "writing": list(p.get("writing") or []), "review": list(p.get("review") or []),
+            "volume": list(p.get("volume") or []),
+            "daily_budget_usd": float(os.environ.get("AI_PAID_BUDGET") or p.get("daily_budget_usd", 0.5))}
+
+
+PAID = _load_paid()
+
+
+def paid_chain(kind):
+    return [f"paid:{m}" for m in PAID.get(kind, [])] if PAID["enabled"] else []
+
+
+def paid_spent_today():
+    """Dollari spesi oggi sui modelli a pagamento: giri precedenti (file usage/) + questo giro."""
+    here = sum(float(c.get("costo_usd", 0)) for c in USAGE.values())
+    return round(_ledger()["spent"] + here, 4)
+
+
+def paid_allowed():
+    return PAID["enabled"] and paid_spent_today() < PAID["daily_budget_usd"]
+
 # modello forte preferito per alcune attività (se ha quota; altrimenti gli altri forti): 2.5 Flash ha una quota
 # separata dai 3.x, così bandi e controllo dei fatti non tolgono richieste ai post scientifici
 PREFERRED = {}       # es. {"post bando": ["gemini-3-flash-preview"]}: nessuna preferenza finché 2.5 Flash non è disponibile
@@ -869,16 +913,19 @@ def _strong_for(base):
 def route_for(task):
     base = task.split(" [", 1)[0]                  # «verifica bandi [A]» del confronto A/B → «verifica bandi»
     chain = ROUTE_OVERRIDES.get(base)
-    if chain is None and base in WRITING:
+    if chain is None and base in WRITING:          # a pagamento prima del ripiego leggero: è un modello forte
         chain = ([f"gemini:{m}" for m in _strong_for(base)]
                  + ([f"openrouter:{OR_STRONG}"] if base != "nuovi post da Drive" else [])
+                 + paid_chain("writing")
                  + [f"gemini:{m}" for m in lite_models()])
     elif chain is None and base in CONFIRM:        # secondo parere: solo forti, mai un ripiego leggero
-        chain = [f"gemini:{m}" for m in _strong_for(base)]
+        chain = [f"gemini:{m}" for m in _strong_for(base)] + paid_chain("writing")
     elif chain is None and base in SCREENING:      # screening: solo leggeri e gratuiti esterni, mai i forti
-        chain = [f"gemini:{m}" for m in lite_models()] + [f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}"]
+        chain = ([f"gemini:{m}" for m in lite_models()] + [f"groq:{GROQ_STRONG}", f"openrouter:{OR_STRONG}"]
+                 + paid_chain("volume"))
     elif chain is None:
-        chain = (ROUTES.get(base) or DEFAULT_ROUTE) + [f"gemini:{m}" for m in _strong_by_quota()]
+        chain = ((ROUTES.get(base) or DEFAULT_ROUTE) + [f"gemini:{m}" for m in _strong_by_quota()]
+                 + paid_chain("review" if base == "critica" else "volume"))
     out = []
     for spec in chain:
         provider, model = spec.split(":", 1)
@@ -986,8 +1033,12 @@ def _openai_compatible(url, key, model, label, prompt_text, schema, temperature,
     for attempt in range(3):
         try:
             r = requests.post(url, headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json",
-                                            **(headers or {})}, json=body, timeout=240)
+                                            **(headers or {})}, json=body, timeout=300)
         except requests.RequestException as e:
+            if attempt < 2:                        # connessione caduta (SSL, broken pipe): si riprova
+                print(f"  {label} {model}: connessione interrotta ({str(e)[:80]}), riprovo")
+                time.sleep(10 * (attempt + 1))
+                continue
             raise ModelUnavailable(f"{label} {model}: {str(e)[:120]}")
         if r.status_code == 400 and "response_format" in body and any(
                 w in r.text for w in ("response_format", "json_validate_failed", "Failed to validate")):
@@ -1020,6 +1071,8 @@ def _openai_compatible(url, key, model, label, prompt_text, schema, temperature,
         u["richieste"] += 1
         u["ingresso"] += int(usage.get("prompt_tokens") or 0)
         u["uscita"] += int(usage.get("completion_tokens") or 0)
+        if usage.get("cost") is not None:          # OpenRouter: costo reale della richiesta in dollari
+            u["costo_usd"] = round(float(u.get("costo_usd", 0)) + float(usage["cost"] or 0), 6)
         globals()["LAST_MODEL"] = f"{label}-{model.split('/')[-1]}"
         return result
     raise ModelUnavailable(f"{label} {model}: non risponde")
@@ -1046,6 +1099,16 @@ def call_model(provider, model, parts, schema, temperature=0.3, task="altro", th
         return _openai_compatible("https://openrouter.ai/api/v1/chat/completions", key, model, "openrouter", text, schema,
                                   temperature, task, headers={"HTTP-Referer": "https://clinicalresearchchaos.com",
                                                               "X-Title": "Clinical Research Chaos"})
+    if provider == "paid":                         # OpenRouter a pagamento, entro il tetto di spesa del giorno
+        key = os.environ.get("OPENROUTER_API_KEY")
+        if not key:
+            raise ModelUnavailable("OPENROUTER_API_KEY mancante")
+        if not paid_allowed():
+            raise ModelUnavailable(f"a pagamento: tetto di {PAID['daily_budget_usd']} $ raggiunto o livello spento")
+        return _openai_compatible("https://openrouter.ai/api/v1/chat/completions", key, model, "paid", text, schema,
+                                  temperature, task, extra={"usage": {"include": True}},
+                                  headers={"HTTP-Referer": "https://clinicalresearchchaos.com",
+                                           "X-Title": "Clinical Research Chaos"})
     raise ModelUnavailable(f"fornitore sconosciuto: {provider}")
 
 
@@ -1068,8 +1131,9 @@ def gemini_json(parts, schema, temperature=0.5, task="altro", thinking=None, exc
             if provider == "gemini" and is_strong(model) and not writing and base not in ROUTE_OVERRIDES \
                     and model_left(model) <= STRONG_RESERVE:
                 continue                           # verifica: la quota rimasta di questo Flash serve ai post
-            if writing and provider == "gemini" and not is_strong(model) and cooling and round_ < 2:
-                break                              # un forte si libera fra poco: meglio aspettarlo che ripiegare
+            if writing and cooling and round_ < 2 and (provider == "paid" or
+                                                       (provider == "gemini" and not is_strong(model))):
+                break                              # un forte gratuito si libera fra poco: meglio aspettarlo che pagare o ripiegare
             try:
                 out = call_model(provider, model, parts, schema, temperature, task, thinking)
                 if errors:
@@ -1106,6 +1170,8 @@ def family(provider, model):
         return "alibaba"
     if "llama" in m:
         return "meta"
+    if "deepseek" in m:
+        return "deepseek"
     return m.split("/")[0]
 
 
@@ -1114,82 +1180,136 @@ def groq_json(prompt_text, schema, temperature=0.0, task="altro"):
     return gemini_json([{"text": prompt_text}], schema, temperature, task)
 
 
-CLINICAL_POST_PROMPT = """You are a senior clinical researcher. You write the weekly "Latest Science" post of "{brand}" about ONE
-real paper, for clinical researchers and clinicians. The tone is that of an expert colleague who points out and
-explains an interesting paper in lay-abstract mode: clear, plain and precise, never promotional, never academic.
-The goal is to make the reader want to READ THE PAPER, not to replace it. Write everything IN ENGLISH, even if
-these instructions or the paper use another language.
+# Regole comuni del formato breve (4 pagine) di Latest Science e Methodology. Ogni regola nasce da un difetto visto
+# nelle anteprime: ripetizioni tra le pagine, testi tagliati con «…», studi citati senza presentarli o diversi dalla
+# fonte, messaggio finale che rimanda a slide che non esistono.
+LAY_FORMAT_RULES = """THE FORMAT: 4 pages read in order, each also readable alone as a screenshot.
+  PAGE 1 HOOK      "title"            max 90 characters (about 14 words). One sharp sentence or question.
+  PAGE 2 CONTEXT   one slide           "heading" max 55 characters (about 8 words) + "body" max 160 characters
+                                       (about 26 words, 2 short complete sentences).
+  PAGE 3 MESSAGE   "takeaway"          max 150 characters (about 22 words). ONE complete sentence.
+  PAGE 4 SOURCE    built automatically from the source's reference: write nothing for it.
 
-FIRST decide the clinical focus of the paper (field clinical_focus):
-- "treatment": the paper reports what an intervention, therapy, device or rehabilitation programme does to patients;
-- "patient_health": the paper describes patients' health status, recovery course, prognosis, symptoms, function or
-  risk factors;
-- "none": the paper is mainly about methodology, measurement scales, psychometrics, statistics, study design,
-  reporting, or engineering without patient results. In that case return an EMPTY posts list.
+THE THREAD: hook (the question) → context (why it matters and which source answers it) → message (the answer).
+Each page ADDS something new. Plan the three pages first, then write the title LAST.
 
-Then write exactly ONE post (posts list with one item). The post has 4 pages, filled by these fields:
+HARD RULES (a post that breaks one of them is sent back to you):
+1. LENGTH: respect every limit. Count the characters. Write shorter rather than longer: the text is never cut, so
+   a sentence that does not fit must be rewritten, not trimmed. Never use "…" or "..." anywhere.
+2. COMPLETE: every sentence is grammatically complete and ends with a full stop or a question mark. The takeaway
+   is a real message (what to know or do), never a teaser, never an open question, never "more research is
+   needed" alone.
+3. NO REPETITION: no page repeats or paraphrases another. The takeaway must not restate the slide body or the
+   title with other words; the heading must not repeat the title; the hook (caption first line) must not repeat
+   the title. Do not reuse the same key phrase on two pages.
+4. ONE SOURCE ONLY: the post talks about THIS source and nothing else. Never mention, cite or allude to any other
+   study, trial, review, guideline, author, year, cohort or dataset (no "et al.", no "previous studies", no "a recent
+   trial", no "research shows"), even if the source cites them. The only reference is the source itself.
+5. INTRODUCE THE SOURCE BEFORE REFERRING TO IT: page 2 must say in plain words what the source is ("This review of
+   rehabilitation trials after stroke…", "A guideline for reporting pilot studies…", "This trial in older adults
+   with hip fracture…"). Only after that may page 3 say "the review", "the authors", "the trial". The title never
+   says "the study", "the authors" or "these patients" as if the reader already knew them.
+6. SELF-CONTAINED: name the subject of every sentence (never "it", "this", "they" without saying what); spell out
+   any acronym the first time (or avoid it); no jargon stacks.
+7. FAITHFUL: only what the source says, keeping its qualifiers ("may", "in adults with…", "evidence is limited").
+   No causal claims, mechanisms or recommendations the source does not state. No hype ("breakthrough",
+   "game-changer", "proves", "revolutionary", "massive").
+8. TEXT ONLY: there are no images or diagrams; never refer to a figure, chart, table or picture."""
 
-PAGE 1 — HOOK  →  field "title" (shown alone on the cover), max 90 characters, sentence case.
-  One or two short sentences (or a sharp question) on the central topic of the paper. It may use one concrete
-  element of the paper (the patients, the clinical problem, the intervention) to create curiosity or tension.
-  It must NOT reveal the outcome or suggest that something works or does not work.
-PAGE 2 — ABSTRACT POINTS  →  "slides": exactly ONE slide. heading max 55 characters (a short phrase that
-  anchors the slide to the hook's question, e.g. "What the paper set out to answer", "The clinical question
-  behind it"); body max 160 characters, 2-3 short sentences: the key points from the abstract — population,
-  intervention or exposure, and primary aim — that directly address the hook's question. Stay strictly inside
-  the abstract. No results, no design labels (e.g. "RCT", "cohort") unless the hook already named them.
-PAGE 3 — TAKE-HOME MESSAGE  →  field "takeaway", max 150 characters, ONE sentence.
-  Take it from the CONCLUSIONS of the paper (the authors' own conclusion section or last abstract sentence), not
-  from the results section. Stay close to the authors' wording and keep every qualifier they use ("may", "in
-  patients with...", "further trials are needed" when that is their point). It must say what a reader learns by
-  reading this paper, useful to someone working in the clinic or in clinical research.
-  CRITICAL — no repetition and no new concepts: the takeaway must NOT restate or paraphrase the slide body
-  (page 2) with different words. It advances the thread: where the slide states the QUESTION or GAP, the
-  takeaway states what the paper CONCLUDES. It must also introduce NO concept, finding or detail that was
-  not already present in the title (page 1) or the slide (page 2); if a secondary outcome or mechanism
-  appears only in the conclusions, omit it from the takeaway.
-PAGE 4 — SOURCE  →  built automatically from the paper's metadata (title and Harvard reference). Put THIS paper,
-  and only this paper, in "references" (APA 7, authors, year, title, journal, DOI exactly as printed).
+CLINICAL_POST_PROMPT = """You are a senior clinical researcher and a skilled science communicator. You write the weekly
+"Latest Science" post of "{brand}" for clinicians and clinical researchers, about ONE source: the paper below.
+The tone is that of an expert colleague who explains why a paper is worth reading, in lay-abstract style: clear,
+plain, precise, never promotional, never academic. Write IN ENGLISH, whatever the language of the paper.
 
-GENERAL RULES (they apply to every field: title, slide, takeaway, hook, caption):
-- No specific numerical data: no percentages, p-values, hazard/odds ratios, confidence intervals, NNT, effect
-  sizes, sample sizes or scores.
-- No names of groups or arms, centres, trial acronyms, devices' brand names or people from the paper.
-- Do not reveal the results. If the primary outcome showed no difference, never build the post on a secondary
-  outcome that did; never present a secondary or exploratory finding as the message of the paper.
-- No causal claims or mechanisms the authors do not state as conclusions ("is attributed to", "because of the
-  resistance component"): speculation from the discussion is not a conclusion.
-- Short sentences, precise language. No promotional formulas: "researchers discovered", "groundbreaking",
-  "revolutionary", "game-changer", "boosts", "massive", "proves", "breakthrough".
-- Do not overuse technical terms: use one only where it is needed, never stack them; spell out an acronym the
-  first time (or avoid it).
-- The four pages read as ONE thread: hook (the topic) → gap (why the question is open) → take-home (what the paper
-  concludes) → source. Each page must make sense on its own, even as a screenshot.
-- NO repetition between consecutive pages: the takeaway must not repeat the slide body; each page adds
-  something new to the thread. Read the four pages in order and check that no sentence appears twice.
+THE SOURCE CAN BE ANY KIND OF PAPER: a trial, a cohort or other primary study, a narrative or systematic review, a
+meta-analysis, a guideline, a consensus statement or a technical paper. Your job is ALWAYS to extract its CLINICAL
+message: what it means for patients or for clinical practice. Every paper about health has one:
+- primary study → what the intervention, exposure or follow-up showed about patients, as the authors conclude;
+- review or guideline → what the evidence says, or does not yet say, for the clinical question it covers;
+- technical or engineering paper → which clinical problem it addresses, for which patients, and what the authors
+  conclude about its readiness or role in care.
+Never return an empty list: write exactly ONE post. Set clinical_focus to the closest option ("treatment",
+"patient_health" or "clinical_overview") and explain it in focus_reason.
+
+{format_rules}
+
+WHAT GOES ON EACH PAGE (Latest Science):
+- PAGE 1 title: the clinical question behind the paper, as a hook that makes a clinician curious. Do not reveal
+  the conclusion. No numbers.
+- PAGE 2 slide: heading = the clinical question or gap in a short phrase. Body = what the source is (type of paper,
+  population or condition, what it set out to answer), so the reader knows exactly which paper we are talking
+  about. Stay inside the abstract and introduction. Page 2 states NO finding and NO conclusion: those belong only
+  to page 3, otherwise page 3 repeats page 2.
+- PAGE 3 takeaway: the authors' own CONCLUSION for practice or for future care, close to their wording, with their
+  qualifiers. Never a secondary or exploratory finding presented as the message. No concept that pages 1-2 did not
+  prepare.
+- LATEST SCIENCE ONLY: no numerical results at all (no percentages, p-values, ratios, confidence intervals, sample
+  sizes, scores, numbers of studies) and no names of trial arms, centres, devices' brands or people.
 
 OTHER FIELDS:
-- title_highlight: 1-4 words copied EXACTLY from the title.
-- takeaway_highlight: 2-5 words copied EXACTLY from the takeaway.
-- highlight (the slide): 2-6 words copied EXACTLY from the slide body.
-- image_prompt (the slide): 15-35 words, one simple illustration of the open question, no text, no numbers, no
-  real people. photo_query (the slide): 2-4 English keywords for a real stock photo of the clinical setting of the
-  paper (patients, therapy, clinicians), or "".
-- source (the slide): "".
-- hook: the first line of the caption, max 120 characters, different from the title, with the main searchable term
-  of the topic; no results, no numbers.
-- caption: 3-5 short lines after the hook, in the same lay-abstract tone: what the paper is about and why it is
-  worth reading, never its results; end with a question that invites clinicians and researchers to share their
-  experience. Max 700 characters, no hashtags, no numbers.
+- title_highlight: 1-4 words copied EXACTLY from the title. takeaway_highlight: 2-5 words copied EXACTLY from the
+  takeaway. highlight (slide): 2-6 words copied EXACTLY from the slide body.
+- image_prompt and photo_query (slide): "" (the post is text only). source (slide): "".
+- references: ONLY this paper, in APA 7 (authors, year, title, journal, DOI exactly as printed on the paper).
+- hook: first line of the caption, max 120 characters, different from the title, with the main searchable term of
+  the topic; no results, no numbers.
+- caption: 3-5 short lines after the hook, same tone: what the paper is about and why it is worth reading, never its
+  numerical results; end with a question that invites clinicians and researchers to share their experience. Max 700
+  characters, no hashtags, no numbers.
 - hashtags: 3 specific hashtags for the clinical topic.
 - category: "{category}".
+
+BEFORE ANSWERING, check the post against every HARD RULE and fix it yourself.
 
 Already published posts (do not repeat these topics): {published}
 
 File name of the paper: {filename}"""
 
+METHOD_POST_PROMPT = """You are a senior research methodologist and a skilled science communicator. You write the
+"Design, Reporting & Appraisal" posts of "{brand}" for clinical researchers and health professionals. Write IN
+ENGLISH, whatever the language of the material.
+
+THE SOURCE can be teaching material written by the page owner (slides, notes), a methodological paper, a reporting
+guideline, a tutorial, or secondary literature (a narrative or systematic review, a methods review). Your job is
+ALWAYS to extract METHODOLOGICAL messages: how to design, conduct, measure, analyse, report or appraise clinical
+research. Every source about research has at least one. Never return an empty list.
+
+Write {max_posts} post(s), each about ONE different methodological message from the source (fewer only if the
+source truly has fewer distinct messages).
+
+{format_rules}
+
+WHAT GOES ON EACH PAGE (Methodology):
+- PAGE 1 title: the methodological problem, mistake or question, as a sharp hook (sentence case).
+- PAGE 2 slide: heading = the core concept or problem in a short phrase. Body = why it matters in practice, as the
+  source explains it. Page 2 gives the PROBLEM, never the solution: the method or decision that solves it appears
+  only on page 3, otherwise page 3 repeats page 2. If the source is a published paper, say what it is ("A methods review of stroke trials…",
+  "The CONSORT extension for pilot trials…"); if it is teaching material, do not invent a paper.
+- PAGE 3 takeaway: the lesson a researcher can act on: name the method, check, threshold or decision. Never "X is
+  important", never a vague exhortation.
+- Numbers only if they are in the source, with their unit and what they compare. Keep exact methodological
+  language: risk vs odds, association vs causation, efficacy vs effectiveness.
+
+OTHER FIELDS:
+- title_highlight: 1-4 words copied EXACTLY from the title. takeaway_highlight: 2-5 words copied EXACTLY from the
+  takeaway. highlight (slide): 2-6 words copied EXACTLY from the slide body.
+- image_prompt and photo_query (slide): "" (the post is text only). source (slide): "".
+- references: ONLY the source itself if it is a published paper or guideline (APA 7, exactly as printed); empty list
+  for the owner's teaching material. Never other works.
+- hook: first line of the caption, max 120 characters, different from the title, with the main searchable term
+  (e.g. "PICO", "blinding", "sample size").
+- caption: 3-5 short lines after the hook adding context beyond the slide; end with a question that invites
+  professionals to share their experience. Max 700 characters, no hashtags.
+- hashtags: 3 specific hashtags. category: one of {categories}. source_hint: where in the source this comes from.
+
+BEFORE ANSWERING, check every post against every HARD RULE and fix it yourself.
+
+Already published posts (do not repeat these topics): {published}
+
+File name of the source: {filename}"""
+
 CLINICAL_POST_SCHEMA = {"type": "OBJECT", "properties": {
-    "clinical_focus": {"type": "STRING", "enum": ["treatment", "patient_health", "none"]},
+    "clinical_focus": {"type": "STRING", "enum": ["treatment", "patient_health", "clinical_overview"]},
     "focus_reason": {"type": "STRING"},
     "posts": SCHEMA["properties"]["posts"]}, "required": ["clinical_focus", "focus_reason", "posts"]}
 
@@ -1221,43 +1341,242 @@ def _design_rules():
     return "FORM RULES:\n- " + "\n- ".join(keep).replace("a researcher", "a clinician").rstrip()
 
 
+def _lay_setup(post, category=None):
+    """Formato breve (4 pagine) solo testo: una slide, niente immagini né schemi."""
+    story = story_on()
+    post["slides"] = post["slides"][:3] if story else post["slides"][:1]
+    for s in post["slides"]:
+        s["image_prompt"], s["photo_query"], s["source"] = "", "", ""
+    post["lay_abstract"] = True
+    post["no_images"] = True
+    if story:
+        post["lay_story"] = True
+        post["cta_text"] = CTA_TEXT
+    if category:
+        post["category"] = category
+    return post
+
+
 def clinical_posts(part, filename, brand, published=(), max_posts=1):
-    """Post «Latest Science» da un articolo clinico: 1-`max_posts` caroselli, ognuno con un messaggio clinico diverso
-    sul trattamento o sullo stato di salute dei pazienti. Restituisce (post, focus, motivo); lista vuota se
-    l'articolo non ha un messaggio clinico sui pazienti (scale, metodologia, ingegneria senza risultati)."""
-    prompt = CLINICAL_POST_PROMPT.format(brand=brand, category=CLINICAL_CATEGORY, design=_design_rules(),
-                                         max_posts=max_posts, filename=filename,
-                                         published="; ".join(published) if published else "none")
-    out = gemini_json([{"text": prompt}, part], CLINICAL_POST_SCHEMA, 0.4, task="nuovi post da Drive")
-    focus, why = out.get("clinical_focus", "none"), out.get("focus_reason", "")
-    if focus == "none":
-        return [], focus, why
-    posts = [c for c in (_clean_post(p, material_text(part), min_slides=1) for p in out.get("posts", [])) if c][:1]
+    """Post «Latest Science» da QUALSIASI articolo delle cartelle cliniche (studio primario, revisione, linea guida,
+    articolo tecnico): se ne estrae sempre il messaggio clinico. Restituisce (post, focus, motivo). Il post passa
+    subito dalla rifinitura (finalize_lay): niente testi tagliati, ripetizioni o riferimenti ad altri studi."""
+    story = story_on()
+    prompt = (CLINICAL_STORY_PROMPT if story else CLINICAL_POST_PROMPT).format(
+        brand=brand, category=CLINICAL_CATEGORY, format_rules=STORY_RULES if story else LAY_FORMAT_RULES,
+        other_fields=_STORY_OTHER_FIELDS, filename=filename, published="; ".join(published) if published else "none")
+    material = material_text(part)
+    posts, focus, why = [], "clinical_overview", ""
+    for attempt in range(2):                       # mai un articolo senza post: se la risposta è vuota si richiede
+        out = gemini_json([{"text": prompt + ("" if not attempt else "\n\nYour previous answer had no usable post. "
+                                              "Write exactly ONE complete post now.")}, part],
+                          CLINICAL_POST_SCHEMA, 0.4, task="nuovi post da Drive")
+        focus, why = out.get("clinical_focus") or "clinical_overview", out.get("focus_reason", "")
+        posts = [c for c in (_clean_post(p, material, min_slides=3 if story else 1, lay=True) for p in out.get("posts", [])) if c][:1]
+        if posts:
+            break
     for post in posts:
-        post["slides"] = post["slides"][:1]                # formato lay abstract: una sola slide (il gap)
-        post["lay_abstract"] = True
-        post["no_images"] = True                            # solo testo: niente immagini AI né foto Pixabay
-        problems = lay_abstract_problems(post)
-        if problems:
-            print(f"  ::warning title=Latest Science da controllare::«{post['title']}»: {'; '.join(problems)}")
-        post["category"] = CLINICAL_CATEGORY
+        _lay_setup(post, CLINICAL_CATEGORY)
         post["clinical_focus"] = focus
+        post["takeaway_label"] = STORY_LABEL["science"] if story else ""
+        finalize_lay(post, material, "science")
     return posts, focus, why
 
 
 def generate_posts(part, filename, brand, max_posts=12, published=()):
-    prompt = PROMPT.format(brand=brand, max_posts=max_posts, filename=filename,
-                           categories=", ".join(CATEGORIES),
-                           published="; ".join(published) if published else "none")
-    posts = gemini_json([{"text": prompt}, part], SCHEMA, task="nuovi post da Drive").get("posts", [])
+    """Post di metodologia nel formato breve da QUALSIASI fonte (materiale del proprietario, paper metodologico,
+    linea guida, revisione): se ne estraggono sempre i messaggi metodologici, poi la rifinitura."""
+    story = story_on()
+    prompt = (METHOD_STORY_PROMPT if story else METHOD_POST_PROMPT).format(
+        brand=brand, max_posts=max_posts, filename=filename, categories=", ".join(CATEGORIES),
+        format_rules=STORY_RULES if story else LAY_FORMAT_RULES, other_fields=_STORY_OTHER_FIELDS,
+        published="; ".join(published) if published else "none")
     material = material_text(part)
-    cleaned = [c for c in (_clean_post(p, material) for p in posts) if c][:max_posts]
-    # Formato breve (stesso di Latest Science): 1 sola slide, niente immagini
+    cleaned = []
+    for attempt in range(2):
+        posts = gemini_json([{"text": prompt + ("" if not attempt else "\n\nYour previous answer had no usable post. "
+                                                "Write at least ONE complete post now.")}, part],
+                            SCHEMA, task="nuovi post da Drive").get("posts", [])
+        cleaned = [c for c in (_clean_post(p, material, min_slides=3 if story else 1, lay=True) for p in posts) if c][:max_posts]
+        if cleaned:
+            break
     for post in cleaned:
-        post["slides"] = post["slides"][:1]
-        post["lay_abstract"] = True
-        post["no_images"] = True
+        _lay_setup(post)
+        if not post.get("references"):            # una sola fonte: niente slide «fonte» di altri lavori
+            post["references"] = []
+        post["takeaway_label"] = STORY_LABEL["methods"] if story else ""
+        finalize_lay(post, material, "methods")
     return cleaned
+
+
+# ---------------------------------------------------------------- rifinitura del formato breve
+LAY_LIMITS = {"title": 90, "heading": 55, "body": 160, "takeaway": 150, "hook": 120}
+RX_ELLIPSIS = re.compile(r"…|\.\.\.")
+RX_OTHER_WORK = re.compile(
+    r"\bet al\b|\b(?:another|other|previous|prior|earlier|several|many|some|recent|older|newer|landmark|large)\s+"
+    r"(?:\w+\s+)?(?:stud(?:y|ies)|trials?|reviews?|meta-analys[ie]s|papers?|guidelines?|cohorts?)\b|"
+    r"\b(?:research|studies|evidence|literature|data) (?:shows?|suggests?|has shown|have shown)\b", re.I)
+RX_SOURCE_WORD = re.compile(r"\b(?:the|this|these|that)\s+(?:\w+[- ]){0,3}?(?:study|studies|trial|review|paper|"
+                            r"authors?|researchers|article|guideline|analysis|meta-analysis|cohort|survey)\b", re.I)
+RX_SOURCE_INTRO = re.compile(r"\b(?:this|a|an|the)\s+(?:\w+[- ]){0,5}?(?:review|trial|study|guideline|meta-analysis|"
+                             r"analysis|paper|cohort|survey|statement|framework|tutorial|article|report|consensus|"
+                             r"protocol|checklist|extension|overview)\b", re.I)
+RX_YEAR = re.compile(r"\b(?:19|20)\d{2}\b")
+
+
+def _content_words(text):
+    stop = {"the", "a", "an", "of", "in", "and", "or", "to", "for", "with", "on", "is", "are", "be", "can", "may", "this",
+            "that", "it", "its", "as", "by", "at", "from", "what", "how", "do", "does", "not", "but", "their", "they"}
+    return [w for w in _words(text) if w not in stop and len(w) > 2]
+
+
+def _overlap(a, b):
+    """Quota di parole significative di `a` che compaiono anche in `b` (0-1)."""
+    wa, wb = _content_words(a), set(_content_words(b))
+    return sum(w in wb for w in wa) / len(wa) if wa else 0.0
+
+
+def _bigrams(text):
+    w = _content_words(text)
+    return {f"{a} {b}" for a, b in zip(w, w[1:])}
+
+
+def lay_problems(post, kind="science"):
+    """Difetti del formato breve trovati senza AI: lunghezze, «…», frasi tronche, ripetizioni tra le pagine, altri
+    studi citati, fonte nominata senza presentarla, numeri nei risultati (Latest Science)."""
+    if post.get("lay_story"):
+        return story_problems(post, kind)
+    probs = []
+    slide = (post.get("slides") or [{}])[0]
+    fields = {"title": post.get("title", ""), "heading": slide.get("heading", ""), "body": slide.get("body", ""),
+              "takeaway": post.get("takeaway", ""), "hook": post.get("hook", "")}
+    for f, n in LAY_LIMITS.items():
+        if len(fields[f]) > n:
+            probs.append(f"{f}: {len(fields[f])} characters, the limit is {n}: rewrite it shorter (do not cut it)")
+    visible = {**fields, "caption": post.get("caption", "")}
+    for f, t in visible.items():
+        if RX_ELLIPSIS.search(t):
+            probs.append(f"{f}: contains an ellipsis («…»): write a complete sentence instead")
+    for f in ("body", "takeaway"):
+        t = fields[f].strip()
+        if t and t[-1] not in ".?!":
+            probs.append(f"{f}: does not end with a complete sentence")
+    pairs = [("takeaway", "body"), ("takeaway", "title"), ("heading", "title"), ("body", "title"), ("hook", "title")]
+    for a, b in pairs:
+        if fields[a] and fields[b] and _overlap(fields[a], fields[b]) >= 0.6:
+            probs.append(f"{a} repeats the {b} (same key words): it must add something new")
+    # stesse espressioni tra contesto e messaggio (le parole del tema, già nel titolo, non contano)
+    topic = _bigrams(fields["title"])
+    shared = (_bigrams(fields["takeaway"]) & (_bigrams(fields["body"]) | _bigrams(fields["heading"]))) - topic
+    if len(shared) >= 2:
+        probs.append("takeaway and page 2 share the same expressions (" + ", ".join(sorted(shared)[:4]) + "): page 2 "
+                     "must give only the question and the source, the takeaway only the answer")
+    for f, t in visible.items():
+        m = RX_OTHER_WORK.search(t)
+        if m:
+            probs.append(f"{f}: mentions other work («{m.group(0)}»): talk only about this source")
+    if RX_SOURCE_WORD.search(fields["title"]):
+        probs.append(f"title: refers to «{RX_SOURCE_WORD.search(fields['title']).group(0)}» before it is introduced")
+    page2 = f"{fields['heading']} {fields['body']}"
+    if post.get("references") and not RX_SOURCE_INTRO.search(page2):
+        probs.append("body: page 2 must say in plain words what the source is (e.g. 'This review of…', 'A trial in…')")
+    if kind == "science":
+        for f in ("title", "heading", "body", "takeaway", "hook"):
+            if RX_LAY_NUMBERS.search(fields[f]):
+                probs.append(f"{f}: contains numerical results: Latest Science has no numbers")
+            elif RX_YEAR.search(fields[f]):
+                probs.append(f"{f}: contains a year: do not refer to dates or other publications")
+    return list(dict.fromkeys(probs))
+
+
+REPAIR_PROMPT = """You are the editor of an educational post for clinical researchers. The post below has problems
+that must be fixed before publication. Rewrite ONLY what is needed to fix them, keeping the meaning, the source and
+the thread hook → context → message. Return ALL fields, also the unchanged ones.
+
+{format_rules}
+
+{kind_rules}
+
+THE POST:
+title: {title}
+page 2 heading: {heading}
+page 2 body: {body}
+takeaway: {takeaway}
+hook (caption first line): {hook}
+caption: {caption}
+
+PROBLEMS TO FIX:
+{problems}
+
+THE SOURCE (excerpt; use only this):
+{source}"""
+
+REPAIR_SCHEMA = {"type": "OBJECT", "properties": {
+    "title": {"type": "STRING"}, "heading": {"type": "STRING"}, "body": {"type": "STRING"},
+    "takeaway": {"type": "STRING"}, "hook": {"type": "STRING"}, "caption": {"type": "STRING"},
+    "title_highlight": {"type": "STRING"}, "takeaway_highlight": {"type": "STRING"}, "highlight": {"type": "STRING"}},
+    "required": ["title", "heading", "body", "takeaway", "hook", "caption"]}
+
+KIND_RULES = {
+    "science": "Latest Science: the message is the CLINICAL conclusion of the source. No numerical results, no years.",
+    "methods": "Methodology: the message is a METHODOLOGICAL lesson a researcher can act on. Numbers only if in the "
+               "source, with unit and comparison."}
+
+
+def _no_cut(text, n):
+    """Ultima risorsa senza «…»: si ferma all'ultima frase intera che ci sta; se non c'è, il testo resta intero."""
+    text = " ".join((text or "").split())
+    if len(text) <= n:
+        return text
+    cut = max(text.rfind(". ", 0, n), text.rfind("? ", 0, n), text.rfind("! ", 0, n))
+    return text[:cut + 1] if cut >= n // 3 else text
+
+
+def finalize_lay(post, material, kind="science", extra=(), rounds=3):
+    """Rifinitura del formato breve: i difetti trovati (lay_problems + `extra`, es. le note del revisore) tornano al
+    modello che scrive finché il post non è pulito (max `rounds` giri). Mai tagli con «…», mai post scartati."""
+    if post.get("lay_story"):
+        return finalize_story(post, material, kind, extra, rounds)
+    extra = [e for e in extra if e]
+    hook = post.get("hook", "")
+    if hook and post.get("caption", "").startswith(hook):          # la didascalia si ricompone alla fine
+        post["caption"] = post["caption"][len(hook):].strip()
+    for n in range(rounds):
+        probs = lay_problems(post, kind) + (list(extra) if n == 0 else [])
+        if not probs:
+            break
+        print(f"  Rifinitura {n + 1}: " + " | ".join(p[:90] for p in probs[:6]))
+        slide = post["slides"][0]
+        prompt = REPAIR_PROMPT.format(format_rules=LAY_FORMAT_RULES, kind_rules=KIND_RULES[kind],
+                                      title=post.get("title", ""), heading=slide.get("heading", ""),
+                                      body=slide.get("body", ""), takeaway=post.get("takeaway", ""),
+                                      hook=post.get("hook", ""), caption=post.get("caption", ""),
+                                      problems="\n".join(f"- {p}" for p in probs),
+                                      source=relevant_excerpt(material, post, 30000) if material else "(not available)")
+        try:
+            out = gemini_json([{"text": prompt}], REPAIR_SCHEMA, 0.3, task="rifinitura")
+        except Exception as e:
+            print(f"  Rifinitura non disponibile ({str(e)[:120]})")
+            break
+        for f in ("title", "takeaway", "hook", "caption"):
+            if (out.get(f) or "").strip():
+                post[f] = " ".join(out[f].split()) if f != "caption" else out[f].strip()
+        for f in ("heading", "body"):
+            if (out.get(f) or "").strip():
+                slide[f] = " ".join(out[f].split())
+        post["title_highlight"] = exact_phrase(out.get("title_highlight") or post.get("title_highlight"), post["title"], 4)
+        post["takeaway_highlight"] = exact_phrase(out.get("takeaway_highlight") or post.get("takeaway_highlight"),
+                                                  post["takeaway"], 5)
+        slide["highlight"] = exact_phrase(out.get("highlight") or slide.get("highlight"), slide["body"])
+    left = lay_problems(post, kind)
+    slide = post["slides"][0]
+    post["title"], post["takeaway"] = _no_cut(post["title"], LAY_LIMITS["title"]), _no_cut(post["takeaway"], LAY_LIMITS["takeaway"])
+    slide["heading"], slide["body"] = _no_cut(slide["heading"], LAY_LIMITS["heading"]), _no_cut(slide["body"], LAY_LIMITS["body"])
+    if left:
+        print(f"  ::warning title=Rifinitura incompleta::«{post['title'][:60]}»: " + "; ".join(p[:80] for p in left[:4]))
+    post["lay_left"] = left
+    post["caption"] = with_hook(post.get("hook"), post.get("caption", ""), 1200)
+    return post
 
 
 # ---------------------------------------------------------------- revisione delle slide prima della pubblicazione
@@ -1784,13 +2103,34 @@ thread and takeaway rules below:
 """
 
 
+STORY_CRITIC_RULES = """This post is a 7-page educational carousel (hook, context, lens, data, meaning, then the source and an
+invitation added automatically). These rules replace the thread and takeaway rules below:
+- It has exactly 3 slides: CONTEXT (what the source is and why it matters), LENS (how the work was done: type of work,
+  who or what and how many ONLY if the SOURCE says so, comparison or control group, the main design limit) and DATA (the
+  real finding versus the headline, or the limit the authors themselves declare). Do not ask for more or fewer slides.
+- Numbers (sample sizes, dates, percentages, absolute vs relative figures) are allowed and wanted when they are printed
+  in the SOURCE with what they compare. Flag as "unsupported" any number that is not in the SOURCE.
+- Flag as "imprecise" hype or aggressive judgments ("this study is bad", "proves", "useless", "breakthrough"): the tone
+  is a neutral expert's ("a useful first step, but..."). A small sample or missing control group is stated plainly.
+- The title is a hook grounded in the paper (the question it answers, or an assumption it addresses). Flag a "myth" or
+  headline that the paper does not touch.
+- The takeaway is 1-2 sentences: the practical meaning, faithful to the authors' conclusions with their qualifiers, not
+  a repetition of the data slide. Staying close to the authors' wording is correct.
+- Flag repetition between pages and any mention of another study. Your fixes must respect these rules too.
+"""
+
+
 def _critique(post, source, kind, label, writer_family):
-    extra = GRANT_RULES if kind == "funding-call carousel" else (LAY_RULES if post.get("lay_abstract") else "")
+    extra = GRANT_RULES if kind == "funding-call carousel" else (
+        STORY_CRITIC_RULES if post.get("lay_story") else (LAY_RULES if post.get("lay_abstract") else ""))
     prompt = CRITIC_PROMPT.format(kind=kind, extra_rules=extra,
                                   post=_post_listing(post), source_label=label,
                                   source=relevant_excerpt(source, post, REVIEW_CHARS))
     if kind == "funding-call carousel":           # le slide dei bandi sono più lunghe (fino a 220 caratteri)
         prompt = prompt.replace("slide body ≤ 160", "slide body ≤ 220")
+    elif post.get("lay_story"):
+        prompt = prompt.replace("title ≤ 70 characters", "title ≤ 95 characters").replace(
+            "slide body ≤ 160", "slide body ≤ 210").replace("takeaway ≤ 130", "takeaway ≤ 190")
     out = gemini_json([{"text": prompt}], CRITIC_SCHEMA, 0.1, task="critica", exclude_family=writer_family)
     return out, LAST_MODEL, _family_of_last()
 
@@ -1913,3 +2253,277 @@ def cross_review(post, source, kind="research", writer_family="google"):
     for x in left:
         report["notes"].append(f"residuo {x.get('where')} [{x.get('kind')}]: {(x.get('why') or '')[:200]}")
     return report
+
+
+# ================================================================== formato «storia» a 7 pagine (Latest Science e Methodology)
+# 1 hook · 2 contesto (con immagine) · 3 sotto la lente (metodo) · 4 il dato reale · 5 cosa significa · 6 fonte · 7 invito
+STORY_LIMITS = {"title": 95, "heading": 55, "body": 210, "takeaway": 190, "hook": 120}
+STORY_BODY_LIMITS = (190, 210, 210)           # contesto, metodo, dato reale
+CTA_TEXT = "Looking for funding or positions in labs that do rigorous research like this? Link in bio."
+STORY_LABEL = {"science": "WHAT IT MEANS FOR YOU", "methods": "WHAT TO DO IN YOUR RESEARCH"}
+RX_HYPE = re.compile(r"\b(?:breakthrough|game[- ]chang\w*|revolution\w*|massive|miracle|proves?|proven|"
+                     r"junk|worthless|useless|garbage|terrible|fails? completely)\b", re.I)
+
+
+def story_on():
+    if os.environ.get("LAY_STORY") == "1":
+        return True
+    try:
+        return bool(json.loads((Path(__file__).resolve().parent / "config.json").read_text(encoding="utf-8")).get("lay_story"))
+    except Exception:
+        return False
+
+
+STORY_RULES = """THE FORMAT: a 7-page educational carousel. Pages are read in order and each must also work as a screenshot.
+You write pages 1-5; page 6 (the source) and page 7 (the invitation) are added automatically.
+  PAGE 1 HOOK      "title"           max 95 characters. One sharp sentence or question that makes the reader stop.
+  PAGE 2 CONTEXT   slides[0]         "heading" max 55 + "body" max 190 characters: what the source is, what its authors
+                                     set out to do and why it matters. Plain language, 2 short complete sentences.
+  PAGE 3 THE LENS  slides[1]         "heading" max 55 + "body" max 210: HOW the work was done (see below).
+  PAGE 4 THE DATA  slides[2]         "heading" max 55 + "body" max 210: the real finding versus the headline (see below).
+  PAGE 5 MEANING   "takeaway"        max 190 characters, ONE or TWO complete sentences: what this means in practice.
+
+THE THREAD: hook (the question or the myth) → context (the source and why it matters) → lens (how solid is it) →
+data (what it really shows, with its limit) → meaning (what to do with it). Each page ADDS something new. Plan the five
+pages first, write the title LAST.
+
+THE HOOK: it must come FROM THE PAPER. It either challenges a common assumption that the paper itself addresses, or
+states a counterintuitive point the paper makes, or asks the exact question the paper answers. Never invent a
+headline, a news story or a myth the paper does not touch. No hype.
+
+THE LENS (page 3) shows the reader how to judge the work. Say, using only what the source states: the type of work
+(randomised trial, cohort, narrative review, guideline, technical paper, animal or laboratory study...), who or what it
+covers and how many (only if the source gives the number), whether there was a comparison or control group, and the
+design feature that most limits what can be concluded. A small sample or a missing control group is stated plainly,
+never mocked. If the source is a review, tutorial or guideline, say what material it covers and how it was assembled.
+
+THE DATA (page 4) is where the real number or limit is: if the source reports both relative and absolute figures, show
+the difference (a relative reduction can hide a small absolute gain); otherwise state the most important limitation
+the authors themselves declare, in their own terms. Numbers only if printed in the source, with what they compare.
+
+TONE: an expert colleague, never aggressive. Never say a study is bad. Use the scientific method: "a useful first
+step, but here is why it cannot yet be applied to patients". Keep every qualifier of the source ("may", "in adults
+with...", "evidence is limited").
+
+HARD RULES (a post that breaks one of them is sent back to you):
+1. LENGTH: respect every limit; the text is never cut, so rewrite instead of trimming. Never use "…" or "...".
+2. COMPLETE: every sentence is grammatically complete and ends with a full stop or question mark.
+3. NO REPETITION: no page repeats or paraphrases another; do not reuse the same key phrase on two pages. The meaning
+   page must not restate the data page.
+4. ONE SOURCE ONLY: talk only about THIS source. Never mention, cite or allude to any other study, trial, review,
+   guideline, author, cohort or dataset ("et al.", "previous studies", "recent trials", "research shows"), even if the
+   source cites them.
+5. INTRODUCE THE SOURCE: page 2 says in plain words what the source is ("This narrative review of...", "A randomised
+   trial in..."). Only afterwards may other pages say "the review", "the authors", "the trial". The title never says
+   "the study" or "the authors" as if the reader already knew them.
+6. SELF-CONTAINED: name the subject of every sentence; spell out acronyms the first time.
+7. FAITHFUL: only what the source says. No invented numbers, sample sizes, designs or results. If the source does not
+   say something the lens or data page would need, say what the source IS (its type and aim) and what it does not
+   establish, instead of guessing. No causal claims or recommendations the source does not make.
+8. TEXT ONLY: never refer to a figure, chart, table or picture."""
+
+_STORY_OTHER_FIELDS = """OTHER FIELDS:
+- title_highlight: 1-4 words copied EXACTLY from the title. takeaway_highlight: 2-5 words copied EXACTLY from the
+  takeaway. highlight (each slide): 2-6 words copied EXACTLY from that slide's body.
+- image_prompt, photo_query, source (each slide): "".
+- references: ONLY this paper, APA 7 (authors, year, title, journal, DOI exactly as printed on the paper).
+- hook: first line of the caption, max 120 characters, different from the title, with the main searchable term; no numbers.
+- caption: 3-5 short lines after the hook: what the paper is and why it is worth reading, no results; end with a
+  question that invites clinicians and researchers to share their experience. Max 700 characters, no hashtags.
+- hashtags: 3 specific hashtags."""
+
+CLINICAL_STORY_PROMPT = """You are a senior clinical researcher and a skilled science communicator. You write the weekly
+"Latest Science" carousel of "{brand}" for clinicians and clinical researchers about ONE source: the paper below. Your
+aim: educate, earn saves and show the reader how to judge a paper. Write IN ENGLISH, whatever the language of the paper.
+
+THE SOURCE CAN BE ANY KIND OF PAPER (primary study, narrative or systematic review, meta-analysis, guideline, technical
+paper). Always extract its CLINICAL message: what it means for patients or clinical practice. Never return an empty
+list: write exactly ONE post. Set clinical_focus to the closest option ("treatment", "patient_health" or
+"clinical_overview") and explain it in focus_reason.
+
+{format_rules}
+
+PAGE 5 (Latest Science) translates the result into practice: is it useful to patients or clinicians today, or is it
+still early (small sample, no control group, laboratory or first-phase work, evidence still limited)? Close to the
+authors' own conclusion, with their qualifiers.
+
+{other_fields}
+- category: "{category}".
+
+BEFORE ANSWERING, check the post against every HARD RULE and fix it yourself.
+
+Already published posts (do not repeat these topics): {published}
+
+File name of the paper: {filename}"""
+
+METHOD_STORY_PROMPT = """You are a senior research methodologist and a skilled science communicator. You write the
+"Design, Reporting & Appraisal" carousels of "{brand}" for clinical researchers and health professionals. Your aim:
+educate, earn saves and make the reader better at judging and running clinical research. Write IN ENGLISH.
+
+THE SOURCE can be teaching material by the page owner, a methodological paper, a reporting guideline, a tutorial or
+secondary literature. Always extract METHODOLOGICAL messages: how to design, conduct, measure, analyse, report or
+appraise clinical research. Never return an empty list.
+
+Write {max_posts} post(s), each about ONE different methodological message of the source.
+
+{format_rules}
+
+HOW THE FORMAT APPLIES TO METHODOLOGY:
+- PAGE 1: the common mistake, the misunderstanding or the question about the method.
+- PAGE 2: what the source is and why this method matters in practice. If the source is published, say what it is; if
+  it is the owner's teaching material, do not invent a paper.
+- PAGE 3 (lens): how the method works or what it requires, in its own terms.
+- PAGE 4 (data): where it goes wrong or the limit the source declares; if the source gives numbers or an example,
+  they show the difference (relative vs absolute, with vs without the method). Only numbers printed in the source.
+- PAGE 5: the check, threshold or decision a researcher can apply tomorrow. Never a vague exhortation.
+
+{other_fields}
+- category: one of {categories}. source_hint: where in the source this comes from.
+
+BEFORE ANSWERING, check every post against every HARD RULE and fix it yourself.
+
+Already published posts (do not repeat these topics): {published}
+
+File name of the source: {filename}"""
+
+
+def _num_tokens(text):
+    return re.findall(r"\d+(?:[.,]\d+)?", text or "")
+
+
+def story_problems(post, kind="science", material=None):
+    """Difetti del formato a 7 pagine, senza AI: lunghezze, «…», frasi tronche, ripetizioni, altri studi, fonte non
+    presentata, enfasi, e numeri che non compaiono nella fonte."""
+    probs = []
+    slides = post.get("slides") or []
+    if len(slides) < 3:
+        return ["the post needs exactly 3 slides (context, lens, data)"]
+    fields = {"title": post.get("title", ""), "takeaway": post.get("takeaway", ""), "hook": post.get("hook", "")}
+    for i, s in enumerate(slides[:3], 1):
+        fields[f"heading{i}"], fields[f"body{i}"] = s.get("heading", ""), s.get("body", "")
+    for f, t in fields.items():
+        key = "heading" if f.startswith("heading") else "body" if f.startswith("body") else f
+        limit = STORY_BODY_LIMITS[int(f[-1]) - 1] if key == "body" else STORY_LIMITS[key]
+        if len(t) > limit:
+            probs.append(f"{f}: {len(t)} characters, the limit is {limit}: rewrite it shorter (do not cut it)")
+    visible = {**fields, "caption": post.get("caption", "")}
+    for f, t in visible.items():
+        if RX_ELLIPSIS.search(t):
+            probs.append(f"{f}: contains an ellipsis: write a complete sentence instead")
+        m = RX_OTHER_WORK.search(t)
+        if m:
+            probs.append(f"{f}: mentions other work («{m.group(0)}»): talk only about this source")
+        m = RX_HYPE.search(t)
+        if m:
+            probs.append(f"{f}: uses hype or aggressive wording («{m.group(0)}»): keep an expert, neutral tone")
+    for f in [k for k in fields if k.startswith("body")] + ["takeaway"]:
+        t = fields[f].strip()
+        if t and t[-1] not in ".?!":
+            probs.append(f"{f}: does not end with a complete sentence")
+    keys = ["title", "body1", "body2", "body3", "takeaway"]
+    for i, a in enumerate(keys):
+        for b in keys[i + 1:]:
+            if fields[a] and fields[b] and _overlap(fields[a], fields[b]) >= 0.6 and _overlap(fields[b], fields[a]) >= 0.45:
+                probs.append(f"{a} repeats {b} (same key words): each page must add something new")
+    topic = _bigrams(fields["title"])
+    for a, b in (("takeaway", "body3"), ("takeaway", "body1"), ("body3", "body2"), ("body2", "body1")):
+        shared = (_bigrams(fields[a]) & _bigrams(fields[b])) - topic
+        if len(shared) >= 3:
+            probs.append(f"{a} and {b} share the same expressions ({', '.join(sorted(shared)[:4])}): say it only once")
+    for i in (1, 2, 3):
+        if fields[f"heading{i}"] and _overlap(fields[f"heading{i}"], fields["title"]) >= 0.7:
+            probs.append(f"heading{i} repeats the title")
+    if RX_SOURCE_WORD.search(fields["title"]):
+        probs.append(f"title: refers to «{RX_SOURCE_WORD.search(fields['title']).group(0)}» before it is introduced")
+    page2 = f"{fields['heading1']} {fields['body1']}"
+    if post.get("references") and not RX_SOURCE_INTRO.search(page2):
+        probs.append("body1: page 2 must say in plain words what the source is (e.g. 'This narrative review of...')")
+    if material:
+        src = re.sub(r"\s+", " ", material)
+        for f in ("title", "body1", "body2", "body3", "takeaway"):
+            for n in _num_tokens(fields[f]):
+                if n not in src and n.replace(",", ".") not in src:
+                    probs.append(f"{f}: the number {n} is not in the source: remove it or use only numbers printed in the source")
+    return list(dict.fromkeys(probs))
+
+
+STORY_REPAIR_PROMPT = """You are the editor of an educational carousel for clinical researchers. The post below has
+problems that must be fixed before publication. Rewrite ONLY what is needed to fix them, keeping the meaning, the
+source and the thread hook → context → lens → data → meaning. Return ALL fields, also the unchanged ones.
+
+{format_rules}
+
+{kind_rules}
+
+THE POST:
+title: {title}
+page 2 (context) heading: {h1} | body: {b1}
+page 3 (lens) heading: {h2} | body: {b2}
+page 4 (data) heading: {h3} | body: {b3}
+page 5 (meaning) takeaway: {takeaway}
+hook (caption first line): {hook}
+caption: {caption}
+
+PROBLEMS TO FIX:
+{problems}
+
+THE SOURCE (excerpt; use only this):
+{source}"""
+
+STORY_REPAIR_SCHEMA = {"type": "OBJECT", "properties": {
+    "title": {"type": "STRING"}, "takeaway": {"type": "STRING"}, "hook": {"type": "STRING"}, "caption": {"type": "STRING"},
+    "title_highlight": {"type": "STRING"}, "takeaway_highlight": {"type": "STRING"},
+    "slides": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {
+        "heading": {"type": "STRING"}, "body": {"type": "STRING"}, "highlight": {"type": "STRING"}},
+        "required": ["heading", "body"]}}},
+    "required": ["title", "takeaway", "hook", "caption", "slides"]}
+
+STORY_KIND_RULES = {
+    "science": "Latest Science: page 5 is the CLINICAL meaning in practice, close to the authors' conclusion. Numbers only if printed in the source.",
+    "methods": "Methodology: page 5 is a METHODOLOGICAL action a researcher can take. Numbers only if printed in the source."}
+
+
+def finalize_story(post, material, kind="science", extra=(), rounds=3):
+    """Rifinitura del formato a 7 pagine: i difetti tornano al modello che scrive finché il post non è pulito."""
+    extra = [e for e in extra if e]
+    hook = post.get("hook", "")
+    if hook and post.get("caption", "").startswith(hook):
+        post["caption"] = post["caption"][len(hook):].strip()
+    for n in range(rounds):
+        probs = story_problems(post, kind, material) + (list(extra) if n == 0 else [])
+        if not probs:
+            break
+        print(f"  Rifinitura {n + 1}: " + " | ".join(p[:90] for p in probs[:6]))
+        sl = post["slides"]
+        prompt = STORY_REPAIR_PROMPT.format(
+            format_rules=STORY_RULES, kind_rules=STORY_KIND_RULES[kind], title=post.get("title", ""),
+            h1=sl[0]["heading"], b1=sl[0]["body"], h2=sl[1]["heading"], b2=sl[1]["body"], h3=sl[2]["heading"],
+            b3=sl[2]["body"], takeaway=post.get("takeaway", ""), hook=post.get("hook", ""),
+            caption=post.get("caption", ""), problems="\n".join(f"- {p}" for p in probs),
+            source=relevant_excerpt(material, post, 30000) if material else "(not available)")
+        try:
+            out = gemini_json([{"text": prompt}], STORY_REPAIR_SCHEMA, 0.3, task="rifinitura")
+        except Exception as e:
+            print(f"  Rifinitura non disponibile ({str(e)[:120]})")
+            break
+        for f in ("title", "takeaway", "hook", "caption"):
+            if (out.get(f) or "").strip():
+                post[f] = " ".join(out[f].split()) if f != "caption" else out[f].strip()
+        for s, new in zip(sl, out.get("slides") or []):
+            for f in ("heading", "body"):
+                if (new.get(f) or "").strip():
+                    s[f] = " ".join(new[f].split())
+            s["highlight"] = exact_phrase(new.get("highlight") or s.get("highlight"), s["body"])
+        post["title_highlight"] = exact_phrase(out.get("title_highlight") or post.get("title_highlight"), post["title"], 4)
+        post["takeaway_highlight"] = exact_phrase(out.get("takeaway_highlight") or post.get("takeaway_highlight"),
+                                                  post["takeaway"], 5)
+    left = story_problems(post, kind, material)
+    post["title"] = _no_cut(post["title"], STORY_LIMITS["title"])
+    post["takeaway"] = _no_cut(post["takeaway"], STORY_LIMITS["takeaway"])
+    for s, lim in zip(post["slides"], STORY_BODY_LIMITS):
+        s["heading"], s["body"] = _no_cut(s["heading"], STORY_LIMITS["heading"]), _no_cut(s["body"], lim)
+    if left:
+        print(f"  ::warning title=Rifinitura incompleta::«{post['title'][:60]}»: " + "; ".join(p[:80] for p in left[:4]))
+    post["lay_left"] = left
+    post["caption"] = with_hook(post.get("hook"), post.get("caption", ""), 1200)
+    return post
