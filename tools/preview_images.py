@@ -114,7 +114,7 @@ def reel(kind, post):
     hook = " ".join(script["hook"].split())
     slides = [
         {"type": "cover", "kicker": kicker, "title": hook, "highlight": content.exact_phrase(script.get("highlight"), hook, 5),
-         "mark": "#FFD84D", "source_line": source_line},
+         "source_line": source_line},
         {"type": "scene", "kicker": "THE PAPER", "title": script["scene"], "cover_image": str(COVER[kind][0])},
         {"type": "point", "number": "01", "title": script["method"]["title"], "body": script["method"]["line"]},
         {"type": "point", "number": "02", "title": script["data"]["title"], "body": script["data"]["line"]},

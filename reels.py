@@ -188,6 +188,12 @@ def _photo(query):
     return _PHOTOS[query]
 
 
+def _ink_on(color):
+    """Colore del testo sopra l'evidenziatura: scuro sui colori chiari, bianco sui colori scuri."""
+    r, g, b = (int(color.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    return "#0A0A0A" if (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.55 else "#FFFFFF"
+
+
 def story_frame(slide, cfg, index, total, accent, cubes=True):
     """Slide 1080×1920 per i reel di annuncio: copertina chiara, punti numerati scuri, chiusura con il logo."""
     cards.EDITORIAL = bool(cfg.get("design_v3"))
@@ -296,7 +302,7 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
         fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 112, 70, W - 2 * M, 620, 1.12)
         y = cards.draw_rich(d, " ".join(lines), slide.get("highlight", ""), fnt, size, M, y, W - 2 * M, inkc,
                             1.12, slide.get("mark") or accent,
-                            **({"mark_text": "#0A0A0A", "half": False} if slide.get("mark") and not light else {"half": True}))
+                            **({"mark_text": _ink_on(slide.get("mark") or accent), "half": False} if not light else {"half": True}))
         if slide.get("body"):
             fb = cards.font("Regular", 44)
             y += 50
