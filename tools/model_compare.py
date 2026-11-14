@@ -212,7 +212,15 @@ def merge_and_upload(model):
     with open(out, "wb") as fh:
         w.write(fh)
     fid = FILES.get(f"{model}|ALL")
-    ok = bool(fid and drive_preview.upload(out, None, "application/pdf", bot.CONFIG, file_id=fid))
+    ok = False
+    for attempt in range(4):                       # connessione caduta (Broken pipe): si riprova
+        try:
+            ok = bool(fid and drive_preview.upload(out, None, "application/pdf", bot.CONFIG, file_id=fid))
+        except Exception as e:
+            print(f"  caricamento su Drive, tentativo {attempt + 1}: {str(e)[:120]}")
+        if ok:
+            break
+        time.sleep(5 * (attempt + 1))
     return f"PDF unico ({len(pdfs)} post) " + ("✓ Drive" if ok else f"locale {out.name}")
 
 
