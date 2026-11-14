@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Find your trial · Clinical Research Chaos</title>
+<meta name="description" content="Looking for a clinical trial to take part in? Search the official public registries of ongoing studies and learn what to ask before you contact a study team.">
+<link rel="canonical" href="https://clinicalresearchchaos.com/trials">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Clinical Research Chaos">
+<meta property="og:title" content="Find your trial · Clinical Research Chaos">
+<meta property="og:description" content="Search the official public registries of ongoing clinical trials and learn what to ask before you contact a study team.">
+<meta property="og:url" content="https://clinicalresearchchaos.com/trials">
+<meta property="og:image" content="https://clinicalresearchchaos.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicon-96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #0A0A0A; --card: #161616; --text: #FFFFFF; --muted: #8A8A8A; --soft: #CFCFCF; --accent: #F2698E; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.5; }
+  .bar { height: 6px; background: var(--accent); }
+  main { max-width: 680px; margin: 0 auto; padding: 28px 16px 48px; }
+  .switch { display: inline-block; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
+            border: 1px solid var(--muted); border-radius: 999px; padding: 7px 14px; margin: 0 6px 18px 0; }
+  .switch:hover { border-color: var(--soft); }
+  .badge { display: inline-block; background: var(--accent); color: #0A0A0A; font-weight: 800; font-size: 13px;
+           letter-spacing: .06em; padding: 6px 14px; border-radius: 999px; }
+  h1 { font-size: clamp(26px, 6vw, 32px); font-weight: 800; margin: 14px 0 8px; line-height: 1.15; text-wrap: balance; }
+  h2 { font-size: 20px; font-weight: 800; margin: 34px 0 12px; line-height: 1.25; }
+  .intro { color: var(--soft); margin: 0 0 22px; font-size: 16px; max-width: 62ch; }
+  .card { background: var(--card); border-radius: 18px; padding: 20px; }
+  form { display: grid; gap: 14px; }
+  label { display: grid; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+          color: var(--muted); }
+  label small { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--soft); font-size: 13px; }
+  input[type=text], select { font: 500 16px Inter, system-ui, sans-serif; color: var(--text); background: var(--bg);
+                             border: 1px solid var(--muted); border-radius: 10px; padding: 11px 12px; width: 100%; }
+  input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 520px) { .row2 { grid-template-columns: 1fr; } }
+  .check { display: flex; align-items: flex-start; gap: 10px; text-transform: none; letter-spacing: 0; font-size: 15px;
+           font-weight: 500; color: var(--soft); }
+  .check input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--accent); flex: none; }
+  .go { background: var(--accent); color: #0A0A0A; border: 0; border-radius: 999px; padding: 13px 20px;
+        font: 800 16px Inter, system-ui, sans-serif; cursor: pointer; justify-self: start; }
+  .results { margin-top: 18px; display: grid; gap: 10px; }
+  .results[hidden] { display: none; }
+  .results p { margin: 0; color: var(--soft); font-size: 14px; }
+  .res { display: flex; justify-content: space-between; align-items: center; gap: 12px; text-decoration: none;
+         color: var(--text); border: 1px solid var(--accent); border-radius: 12px; padding: 12px 14px; font-weight: 700; }
+  .res span { color: var(--soft); font-weight: 500; font-size: 13px; }
+  .res:hover { background: rgba(242, 105, 142, .12); }
+  .regs { display: grid; gap: 12px; }
+  .reg { background: var(--card); border-radius: 14px; padding: 16px 18px; border-left: 4px solid var(--accent); }
+  .reg h3 { margin: 0 0 4px; font-size: 16px; }
+  .reg h3 a { color: var(--text); }
+  .reg p { margin: 0; color: var(--soft); font-size: 14px; }
+  .reg .id { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 12px; }
+  ol.steps li { counter-increment: s; position: relative; padding-left: 42px; color: var(--soft); font-size: 15px; }
+  ol.steps li::before { content: counter(s); position: absolute; left: 0; top: -1px; width: 28px; height: 28px;
+                        border-radius: 50%; background: var(--accent); color: #0A0A0A; font-weight: 800; font-size: 14px;
+                        display: grid; place-items: center; }
+  ol.steps b { color: var(--text); }
+  dl.words { margin: 0; display: grid; gap: 10px; }
+  dl.words div { background: var(--card); border-radius: 12px; padding: 12px 16px; }
+  dl.words dt { font-weight: 800; font-size: 15px; }
+  dl.words dd { margin: 2px 0 0; color: var(--soft); font-size: 14px; }
+  .note { border: 1px solid var(--muted); border-radius: 14px; padding: 14px 16px; color: var(--soft); font-size: 14px;
+          margin-top: 30px; }
+  .note b { color: var(--text); }
+  footer { color: var(--muted); font-size: 13px; margin-top: 30px; }
+  footer a { color: var(--accent); }
+</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style id="crc-editorial">
+  /* stile editoriale dei post (design_v3): titoli serif, testata da rivista, schede con filetto, etichette piene */
+  h1, h2, h3, .t, .big .name, .num {font-family: "Source Serif 4", Georgia, serif !important; letter-spacing: -.01em;}
+  h1 {font-weight: 800; font-size: clamp(30px, 6vw, 40px); line-height: 1.1;}
+  .bar {height: 10px !important;}
+  main::before {content: attr(data-brand); display: block;}
+  .badge {border-radius: 999px; letter-spacing: .08em;}
+  section > h2, .tools h2 {border-bottom: 1px solid #2E2E2E; padding-bottom: 6px;}
+  article.method, .job, .call, form.filters, .nomatch, .tools .tool {background: #0F0F0F !important; border: 1px solid #2E2E2E !important;
+      border-radius: 14px !important; box-shadow: none !important;}
+  article.method, .job, .call {border-left-color: var(--accent) !important;}
+    .take, .intro {font-family: "Source Serif 4", Georgia, serif; font-size: 17px !important; line-height: 1.5;}
+  details summary, .k {letter-spacing: .04em;}
+  .refs {border-top-color: #2E2E2E !important;}
+  footer {border-top: 1px solid #2E2E2E; padding-top: 14px;}
+  footer, .date {font-family: "Source Serif 4", Georgia, serif; font-style: italic;}
+  mark, .hl {background: var(--accent); color: #0A0A0A; padding: 0 .15em;}
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<main>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><a class="switch" href="rss.html">RSS &rarr;</a><br>
+  <span class="badge">FIND YOUR TRIAL</span>
+  <h1>Find a clinical trial that is looking for volunteers</h1>
+  <p class="intro">Clinical trials test new treatments, devices and rehabilitation programmes, and many of them are
+  looking for patients and healthy volunteers. Search the official public registries of ongoing studies, then talk
+  about what you find with your doctor.</p>
+
+  <section class="card" aria-labelledby="search-title">
+    <form id="tf" action="https://clinicaltrials.gov/search" method="get" target="_blank" rel="noopener">
+      <label id="search-title">Condition or disease
+        <input type="text" name="cond" required maxlength="120" autocomplete="off"
+               placeholder="e.g. stroke, multiple sclerosis, knee osteoarthritis">
+      </label>
+      <div class="row2">
+        <label>Country <small>(where you could take part)</small>
+          <select name="country"><option value="">Any country</option><option value="Italy">Italy</option><option value="France">France</option><option value="Germany">Germany</option><option value="Spain">Spain</option><option value="Switzerland">Switzerland</option><option value="United Kingdom">United Kingdom</option><option value="Austria">Austria</option><option value="Belgium">Belgium</option><option value="Netherlands">Netherlands</option><option value="Portugal">Portugal</option><option value="Greece">Greece</option><option value="Poland">Poland</option><option value="Sweden">Sweden</option><option value="Denmark">Denmark</option><option value="Ireland">Ireland</option><option value="United States">United States</option><option value="Canada">Canada</option><option value="Australia">Australia</option></select>
+        </label>
+        <label>Keyword <small>(optional: a treatment, e.g. rehabilitation)</small>
+          <input type="text" name="term" maxlength="120" autocomplete="off">
+        </label>
+      </div>
+      <label class="check"><input type="checkbox" name="soon" checked>
+        Show only studies that are recruiting or will start recruiting soon</label>
+      <input type="hidden" name="aggFilters" value="status:not rec">
+      <button class="go" type="submit">Search ongoing trials</button>
+    </form>
+    <div class="results" id="results" hidden aria-live="polite">
+      <p>Open your search in each registry (new tab). The same study can appear in more than one.</p>
+      <a class="res" id="r-ctg" target="_blank" rel="noopener" href="https://clinicaltrials.gov/">ClinicalTrials.gov <span>worldwide &rarr;</span></a>
+      <a class="res" id="r-ctis" target="_blank" rel="noopener" href="https://euclinicaltrials.eu/ctis-public/search">EU Clinical Trials (CTIS) <span>medicines, EU/EEA &rarr;</span></a>
+      <a class="res" id="r-isrctn" target="_blank" rel="noopener" href="https://www.isrctn.com/">ISRCTN <span>all study types &rarr;</span></a>
+      <a class="res" target="_blank" rel="noopener" href="https://trialsearch.who.int/">WHO trial search <span>type your condition there &rarr;</span></a>
+    </div>
+  </section>
+
+  <h2>Where the studies are listed</h2>
+  <div class="regs">
+    <div class="reg"><h3><a href="https://clinicaltrials.gov/" target="_blank" rel="noopener">ClinicalTrials.gov</a></h3>
+      <p>The largest public registry, run by the US National Library of Medicine. It lists studies from many countries,
+      not only the United States, including trials of medicines, devices, surgery and rehabilitation.</p>
+      <p class="id">Study code looks like: NCT01234567</p></div>
+    <div class="reg"><h3><a href="https://euclinicaltrials.eu/ctis-public/search" target="_blank" rel="noopener">EU Clinical Trials Information System (CTIS)</a></h3>
+      <p>The official European Union register, run by the European Medicines Agency. It covers clinical trials of
+      medicines in the EU and EEA. Studies of devices, surgery or rehabilitation are usually not here.</p>
+      <p class="id">Study code looks like: 2024-512345-12-00</p></div>
+    <div class="reg"><h3><a href="https://www.isrctn.com/" target="_blank" rel="noopener">ISRCTN registry</a></h3>
+      <p>A primary registry recognised by the World Health Organization, based in the United Kingdom. It accepts
+      studies of any type from any country.</p>
+      <p class="id">Study code looks like: ISRCTN12345678</p></div>
+    <div class="reg"><h3><a href="https://trialsearch.who.int/" target="_blank" rel="noopener">WHO International Clinical Trials Registry Platform</a></h3>
+      <p>One search across many national registries at once, including registries in countries not covered above.
+      Useful to double-check that you have not missed a study.</p></div>
+  </div>
+
+  <h2>Before you contact a study</h2>
+  <ol class="steps">
+    <li><b>Talk to your doctor first.</b> Bring the study code: your doctor can tell you whether the study fits your
+      situation and your current treatment.</li>
+    <li><b>Read who can take part.</b> Each study lists its eligibility criteria: who can join (inclusion) and who
+      cannot (exclusion), such as age, diagnosis or other treatments.</li>
+    <li><b>Check where and how often.</b> Look at the study sites and how many visits are needed, and whether travel
+      costs are covered.</li>
+    <li><b>Ask the study team.</b> What is being tested and compared? What would you have to do? What are the possible
+      risks and benefits? What happens when the study ends?</li>
+    <li><b>Take your time with the consent.</b> Before joining you receive written information and sign an informed
+      consent form. You can ask questions and talk with your family before you decide.</li>
+    <li><b>You can always stop.</b> Taking part is voluntary: you can withdraw at any time without giving a reason,
+      and without losing your usual care.</li>
+  </ol>
+
+  <h2>Words you will meet</h2>
+  <dl class="words">
+    <div><dt>Recruiting</dt><dd>The study is looking for participants now.</dd></div>
+    <div><dt>Not yet recruiting</dt><dd>The study is approved but has not started enrolling yet.</dd></div>
+    <div><dt>Randomised</dt><dd>Participants are assigned by chance to one of the groups being compared, so the groups
+      are similar and the comparison is fair.</dd></div>
+    <div><dt>Placebo</dt><dd>A treatment that looks like the real one but has no active effect. Not every trial uses one:
+      the information sheet tells you.</dd></div>
+    <div><dt>Phase 1, 2, 3, 4</dt><dd>Trials of medicines go through phases: first safety in a few people, then
+      effect and dose, then comparison with the usual treatment in many patients, then follow-up after approval.</dd></div>
+    <div><dt>Informed consent</dt><dd>Your written agreement to take part, after you have received and understood all
+      the information about the study.</dd></div>
+  </dl>
+
+  <p class="note"><b>Please note.</b> Clinical Research Chaos does not run, recommend or select clinical trials and does not give
+  medical advice. This page only opens searches on public registries: nothing you type is sent to us. Registry
+  listings are written by the study teams; always confirm details with the study contact and your doctor. Be wary of
+  any study that asks you to pay to take part.</p>
+
+  <footer>Updated 14 Nov 2026 · <a href="feedback.html">Something wrong on this page? Write to us</a></footer>
+</main>
+<script>
+(function () {
+  var f = document.getElementById("tf"), box = document.getElementById("results");
+  if (!f) return;
+  function enc(v) { return encodeURIComponent(v); }
+  f.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var cond = f.cond.value.trim(), term = f.term.value.trim(), country = f.country.value, soon = f.soon.checked;
+    if (!cond) { f.cond.focus(); return; }
+    var q = "cond=" + enc(cond) + (term ? "&term=" + enc(term) : "") + (country ? "&country=" + enc(country) : "")
+            + (soon ? "&aggFilters=" + enc("status:not rec") : "");
+    document.getElementById("r-ctg").href = "https://clinicaltrials.gov/search?" + q;
+    var crit = { containAll: (cond + " " + term).trim() };
+    if (soon) crit.status = [2, 3, 4, 6, 7];          /* studi in corso */
+    document.getElementById("r-ctis").href = "https://euclinicaltrials.eu/ctis-public/search#searchCriteria="
+                                            + enc(JSON.stringify(crit));
+    document.getElementById("r-isrctn").href = "https://www.isrctn.com/search?q=" + enc((cond + " " + term).trim());
+    box.hidden = false;
+    box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+})();
+</script>
+
+<div id="crc-rain" class="crc-side" aria-hidden="true"></div>
+<div id="crc-rain-r" class="crc-side" aria-hidden="true"></div>
+<style>
+  .crc-side { position: fixed; top: 0; bottom: 0; width: calc((100vw - 660px) / 2); pointer-events: none; z-index: 0; display: none; }
+  #crc-rain { left: 0; }
+  #crc-rain-r { right: 0; }
+  .crc-side canvas { display: block; width: 100%; height: 100%; }
+  @media (min-width: 1180px) { .crc-side { display: block; } }
+  main, header, footer, .bar { position: relative; z-index: 1; }
+  .crc-side.over { z-index: 2; }
+</style>
+<script>
+(function () {
+  var wide = window.matchMedia("(min-width: 1180px)");
+  var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var started = false;
+  function start() {
+    if (started || !wide.matches) return;
+    started = true;
+    var COLORS = ["#F2698E", "#F2698E", "#893E52", "#4F2631"];
+    var GREYS = ["#0A0A0A", "#2E2E2E", "#5A5A5A", "#8A8A8A"];
+    var SIZES = [4, 6, 8, 10, 12], SHAPES = [[], [], [[1, 0]], [[0, 1]], [[1, 0], [0, 1]], [[1, 0], [1, 1]]];
+    function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+    /* zone chiare della pagina (intestazione bianca): lì cubetti e pulviscolo cadono in nero e grigi,
+       poi entrando nella parte scura prendono colore */
+    var light = [];
+    function lum(c) { var m = c.match(/\d+(\.\d+)?/g); if (!m || (m.length > 3 && +m[3] === 0)) return -1;
+      return (0.2126 * m[0] + 0.7152 * m[1] + 0.0722 * m[2]) / 255; }
+    function zones() {
+      light = [];
+      document.querySelectorAll("body > header, body > .top, body > section, body > div:not(.crc-side), [data-light]").forEach(function (e) {
+        var bg = getComputedStyle(e).backgroundColor;
+        if (lum(bg) > 0.6) { var r = e.getBoundingClientRect(); if (r.bottom > 0 && r.height > 0) light.push([r.top, r.bottom]); }
+      });
+    }
+    function mixIn(y) {       /* 0 = su chiaro (grigi), 1 = su scuro (colori); passaggio graduale di 40 px */
+      for (var i = 0; i < light.length; i++) {
+        var z = light[i];
+        if (y >= z[0] - 4 && y < z[1]) return 0;
+        if (y >= z[1] && y < z[1] + 40) return (y - z[1]) / 40;
+      }
+      return 1;
+    }
+    function side(id) {
+      var el = document.getElementById(id), c = document.createElement("canvas"), ctx = c.getContext("2d");
+      el.classList.add("over");
+      el.appendChild(c);
+      var L = { ctx: ctx, drops: [], dust: [], R: null };
+      function drop(y) {
+        return { x: Math.random() * L.R.width, y: (y === undefined ? -40 : y), s: pick(SIZES), v: 7 + Math.random() * 20,
+                 c: pick(COLORS), g: pick(GREYS), a: 0.12 + Math.random() * 0.5, shape: pick(SHAPES) };
+      }
+      function mote(y) {
+        var glow = Math.random() < 0.16;
+        return { x: Math.random() * L.R.width, y: (y === undefined ? -20 : y), r: glow ? 5 + Math.random() * 10 : 0.6 + Math.random() * 1.4,
+                 v: 4 + Math.random() * 10, w: Math.random() * 6.28, glow: glow, c: pick(COLORS), g: pick(GREYS.slice(1)),
+                 a: glow ? 0.06 + Math.random() * 0.12 : 0.25 + Math.random() * 0.55 };
+      }
+      L.fit = function () {
+        var r = el.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+        c.width = r.width * d; c.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); L.R = r;
+        L.drops = []; var n = Math.round(r.width * r.height / 7500);
+        for (var i = 0; i < n; i++) L.drops.push(drop(Math.random() * r.height));
+        L.dust = []; var m = Math.round(r.width * r.height / 2600);
+        for (var j = 0; j < m; j++) L.dust.push(mote(Math.random() * r.height));
+      };
+      function paint(col, alpha, x, y, s) { if (alpha <= 0.003) return; ctx.globalAlpha = alpha; ctx.fillStyle = col; ctx.fillRect(x, y, s, s); }
+      L.step = function (dt, t) {
+        ctx.clearRect(0, 0, L.R.width, L.R.height);
+        L.dust.forEach(function (p) {
+          p.y += p.v * dt; p.x += Math.sin(t / 1800 + p.w) * 4 * dt;
+          if (p.y > L.R.height + 20) { var n = mote(); for (var k in n) p[k] = n[k]; }
+          var k2 = mixIn(p.y);
+          [[p.g, (1 - k2) * 0.7], [p.c, k2]].forEach(function (v) {
+            if (v[1] <= 0.003) return;
+            ctx.globalAlpha = p.a * v[1];
+            if (p.glow) {
+              var gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+              gr.addColorStop(0, v[0]); gr.addColorStop(1, "rgba(0,0,0,0)");
+              ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832); ctx.fill();
+            } else { ctx.fillStyle = v[0]; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832); ctx.fill(); }
+          });
+        });
+        L.drops.forEach(function (d) {
+          d.y += d.v * dt;
+          if (d.y > L.R.height + 40) { var n = drop(); for (var k in n) d[k] = n[k]; }
+          [[0, 0]].concat(d.shape).forEach(function (o) {
+            var x = d.x + o[0] * (d.s + 2), y = d.y + o[1] * (d.s + 2), k3 = mixIn(y + d.s / 2);
+            paint(d.g, d.a * (1 - k3) * 1.25, x, y, d.s);
+            paint(d.c, d.a * k3, x, y, d.s);
+          });
+        });
+      };
+      L.fit();
+      return L;
+    }
+    zones();
+    var sides = [side("crc-rain"), side("crc-rain-r")];
+    var last = performance.now();
+    function frame(t) {
+      var dt = Math.min(0.05, (t - last) / 1000); last = t;
+      sides.forEach(function (L) { L.step(dt, t); });
+      if (!still) requestAnimationFrame(frame);
+    }
+    window.addEventListener("scroll", zones, { passive: true });
+    window.addEventListener("resize", function () { zones(); sides.forEach(function (L) { L.fit(); }); if (still) frame(performance.now()); });
+    requestAnimationFrame(frame);
+  }
+  start();
+  if (wide.addEventListener) wide.addEventListener("change", start);
+})();
+</script>
+</body>
+</html>

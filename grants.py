@@ -1189,7 +1189,7 @@ PAGE = """<!doctype html>
 <div class="bar"></div>
 <main>
   {lockup}
-  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><br>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="trials.html">Find your trial &rarr;</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><a class="switch" href="rss.html">RSS &rarr;</a><br>
   <span class="badge">FUNDING CALLS</span>
   <h1>Research funding calls</h1>
   <p class="intro">All open calls for clinical research, clinical and biomedical engineering and rehabilitation found by our monitoring, from funders worldwide, including calls reserved for applicants in a single country: use the filters.
@@ -1447,7 +1447,7 @@ CALL_PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
-  <a class="switch" href="../calls.html#{anchor}">&larr; All funding calls</a><a class="switch" href="../positions.html">Academic positions &rarr;</a><a class="switch" href="../methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="../science.html">Latest Science &rarr;</a><br>
+  <a class="switch" href="../calls.html">&larr; All funding calls</a><a class="switch" href="../index.html">Home</a><a class="switch" href="../positions.html">Academic positions &rarr;</a><a class="switch" href="../trials.html">Find your trial &rarr;</a><a class="switch" href="../methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="../science.html">Latest Science &rarr;</a><a class="switch" href="../rss.html">RSS &rarr;</a><br>
   <span class="badge">Funding call</span>{italy_badge}
   <h1>{title}</h1>
   <p class="inst">{funder}</p>
@@ -1637,6 +1637,10 @@ HOME = """<!doctype html>
   .pills .cocreate {{ margin-top: 3px; background: transparent; color: var(--c); border: 1.5px solid var(--c); border-radius: 999px;
                      padding: 7px 15px; font: 600 13px/1 Inter, system-ui, sans-serif; cursor: pointer; }}
   .pills .cocreate:hover, .pills .cocreate:focus-visible {{ background: var(--c); color: var(--on); }}
+  .cta {{ text-align: center; margin: 0 0 4px; }}
+  .cta .cocreate {{ background: transparent; color: var(--teal); border: 1.5px solid var(--teal); border-radius: 999px;
+                   padding: 11px 20px; font: 700 14px/1.2 Inter, system-ui, sans-serif; cursor: pointer; max-width: 100%; }}
+  .cta .cocreate:hover, .cta .cocreate:focus-visible {{ background: var(--teal); color: #0A0A0A; }}
   dialog.cc {{ background: #10181F; color: var(--text); border: 1px solid var(--muted); border-radius: 16px;
               width: min(460px, calc(100vw - 32px)); padding: 22px 20px 18px; }}
   dialog.cc::backdrop {{ background: rgba(0, 0, 0, .65); }}
@@ -1675,6 +1679,7 @@ HOME = """<!doctype html>
   <p>Pieces of clinical research. In one place.</p>
 </header>
 <main>
+  {cta}
   <div class="social">
 {social}
   </div>
@@ -1971,6 +1976,8 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0, n_sc
                        updated=_fmt_date(today),
                        logo_block=header_logo(cfg), pills=section_pills(cfg, metrics, home=True),
                        cocreate=cocreate_dialog(cfg),
+                       cta=('<div class="cta"><button type="button" class="cocreate" data-topic="Co-create">'
+                            'Co-create the clinical research ecosystem with us</button></div>' if cocreate_dialog(cfg) else ""),
                        og=og_tags(cfg, cfg["brand_name"], "Open research funding calls and academic positions in clinical "
                                   "engineering and rehabilitation, checked on the official texts.", "") + org_jsonld(cfg))
 
@@ -1978,7 +1985,7 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0, n_sc
 COCREATE = """<dialog class="cc" id="cc" aria-labelledby="cc-title">
   <form method="dialog"><button class="x" aria-label="Close">&times;</button></form>
   <h2 id="cc-title">Co-create the clinical research ecosystem</h2>
-  <p class="lead">We are building this with the people who use it. Tell us what you would need, or how you would like to take part.</p>
+  <p class="lead">We are building this with the people who use it. Tell us what you would need, or how you would like to take part: as a researcher, a research group, a society or an institution.</p>
   <form id="cc-form" action="https://api.web3forms.com/submit" method="POST">
     <input type="hidden" name="access_key" value="{key}">
     <input type="hidden" name="subject" value="Co-create: Clinical Research Chaos">
@@ -2571,12 +2578,10 @@ PARTNERSHIP = ("Partnership", "Research groups, societies and institutions: buil
 
 def section_pills(cfg, metrics=None, current=None, home=False):
     """Le quattro rubriche in colonna: pillola nel colore della rubrica e, sotto, la sua metrica.
-    In home (config «site_coming_soon»): le rubriche ancora in costruzione hanno a destra «Coming soon» e sotto
-    un pulsante che apre il modulo per scriverci; in fondo la pillola Partnership con «Get in touch» a fianco.
+    In home (config «site_coming_soon»): le rubriche ancora in costruzione hanno a destra «Coming soon»; in fondo la pillola Partnership, anch'essa «Coming soon». Il pulsante «Co-create» è a parte (sotto lo slogan).
     Le pillole restano sempre centrate: ciò che sta a fianco è fuori dal flusso."""
     from html import escape as esc
     soon = set(cfg.get("site_coming_soon") or []) if home else set()
-    last_soon = next((k for k, _, _ in reversed(SECTIONS) if k in soon), None)
     out = []
     for kind, href, label in SECTIONS:
         col = site_accent(cfg, kind)
@@ -2587,10 +2592,6 @@ def section_pills(cfg, metrics=None, current=None, home=False):
                        f'<div class="row"><a href="{href}"{here}><span class="tag">{label.upper()}</span></a>'
                        f'<span class="soon">Coming soon</span></div>'
                        + (f'<span class="met">{esc(met)}</span>' if met else "") + '</div>')
-            if kind == last_soon:                  # un solo pulsante, in fondo alle rubriche in arrivo
-                out.append(f'<div class="sec" style="--c:{SITE_GREEN};--on:{on_color(SITE_GREEN)}">'
-                           f'<button type="button" class="cocreate" data-topic="Co-create">'
-                           f'Co-create the clinical research ecosystem with us</button></div>')
             continue
         out.append(f'<a href="{href}" style="--c:{col};--on:{on_color(col)}"{here}>'
                    f'<span class="tag">{label.upper()}</span>'
@@ -2599,7 +2600,7 @@ def section_pills(cfg, metrics=None, current=None, home=False):
         col = SITE_GREEN
         out.append(f'<div class="sec" style="--c:{col};--on:{on_color(col)}">'
                    f'<div class="row"><span class="tag">{PARTNERSHIP[0].upper()}</span>'
-                   f'<button type="button" class="cocreate side" data-topic="Partnership">Get in touch</button></div>'
+                   f'<span class="soon">Coming soon</span></div>'
                    f'<span class="met">{esc(PARTNERSHIP[1])}</span></div>')
     return "\n".join(out)
 

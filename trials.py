@@ -95,7 +95,7 @@ PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
-  <a class="switch" href="index.html">&larr; Home</a><br>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><a class="switch" href="rss.html">RSS &rarr;</a><br>
   <span class="badge">FIND YOUR TRIAL</span>
   <h1>Find a clinical trial that is looking for volunteers</h1>
   <p class="intro">Clinical trials test new treatments, devices and rehabilitation programmes, and many of them are

@@ -38,6 +38,47 @@
   .pills .met { color: var(--soft); font-size: 14px; line-height: 1.35; }
   .pills a:hover .tag, .pills a:focus-visible .tag { filter: brightness(1.08); }
   .pills a:hover .met { color: var(--text); }
+  .pills .sec { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .pills .row { position: relative; display: inline-flex; align-items: center; }
+  .pills .row > .soon, .pills .row > .side { position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); }
+  .pills .cocreate.side { margin: 0; white-space: nowrap; padding: 7px 13px; }
+  @media (max-width: 760px) {
+    /* niente spazio a fianco: «Coming soon» diventa un bollino sull'angolo, «Get in touch» va sotto */
+    .pills .sec:has(.soon) { padding-top: 12px; }
+    .pills .row > .soon { left: auto; right: -6px; top: -17px; transform: none; background: var(--bg); padding: 3px 7px;
+                          font-size: 8.5px; border-style: solid; border-color: var(--soft); }
+    .pills .row { flex-direction: column; gap: 9px; }
+    .pills .row > .side { position: static; transform: none; }
+  }
+  .pills .soon { color: var(--soft); border: 1px dashed var(--muted); border-radius: 999px; padding: 6px 10px;
+                 font: 700 10.5px/1 Inter, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+  .pills .cocreate { margin-top: 3px; background: transparent; color: var(--c); border: 1.5px solid var(--c); border-radius: 999px;
+                     padding: 7px 15px; font: 600 13px/1 Inter, system-ui, sans-serif; cursor: pointer; }
+  .pills .cocreate:hover, .pills .cocreate:focus-visible { background: var(--c); color: var(--on); }
+  .cta { text-align: center; margin: 0 0 4px; }
+  .cta .cocreate { background: transparent; color: var(--teal); border: 1.5px solid var(--teal); border-radius: 999px;
+                   padding: 11px 20px; font: 700 14px/1.2 Inter, system-ui, sans-serif; cursor: pointer; max-width: 100%; }
+  .cta .cocreate:hover, .cta .cocreate:focus-visible { background: var(--teal); color: #0A0A0A; }
+  dialog.cc { background: #10181F; color: var(--text); border: 1px solid var(--muted); border-radius: 16px;
+              width: min(460px, calc(100vw - 32px)); padding: 22px 20px 18px; }
+  dialog.cc::backdrop { background: rgba(0, 0, 0, .65); }
+  dialog.cc h2 { margin: 0 32px 6px 0; font: 800 20px/1.25 Inter, system-ui, sans-serif; }
+  dialog.cc .lead { color: var(--soft); font-size: 14px; margin: 0 0 14px; }
+  dialog.cc label { display: block; font-size: 13px; font-weight: 600; color: var(--soft); margin-bottom: 12px; }
+  dialog.cc label small { font-weight: 400; }
+  dialog.cc input, dialog.cc textarea { width: 100%; background: #0B1116; color: var(--text); border: 1px solid var(--muted);
+              border-radius: 10px; padding: 10px 12px; font: 400 15px/1.4 Inter, system-ui, sans-serif; display: block; margin-top: 6px; }
+  dialog.cc textarea { min-height: 130px; resize: vertical; }
+  dialog.cc input:focus, dialog.cc textarea:focus { outline: 2px solid var(--teal); outline-offset: 1px; border-color: transparent; }
+  dialog.cc .hp { position: absolute; left: -9999px; }
+  dialog.cc .send { background: var(--teal); color: #0A0A0A; border: 0; border-radius: 999px; padding: 11px 22px;
+              font: 800 14px/1 Inter, system-ui, sans-serif; cursor: pointer; }
+  dialog.cc .send:disabled { opacity: .6; cursor: default; }
+  dialog.cc .x { position: absolute; top: 12px; right: 12px; background: none; border: 0; color: var(--soft);
+              font-size: 24px; line-height: 1; cursor: pointer; padding: 4px 8px; }
+  dialog.cc .note { color: var(--muted); font-size: 12px; margin: 4px 0 14px; }
+  dialog.cc .status { font-size: 14px; margin: 10px 0 0; min-height: 1.2em; }
+  dialog.cc .status.ok { color: var(--teal); } dialog.cc .status.err { color: #FF8A80; }
   main { max-width: 520px; margin: 0 auto; padding: 0 16px 40px; display: grid; gap: 16px; }
   .social { display: flex; justify-content: center; gap: 10px; margin-top: 0; flex-wrap: wrap; }
   .noig a { color: var(--teal); font-weight: 600; }
@@ -170,13 +211,16 @@
   window.addEventListener("blur", function () { target = 0; wake(); });
 })();
 </script>
-  <nav class="pills" aria-label="Sections"><a href="methodology.html" style="--c:#88B0F8;--on:#0A0A0A"><span class="tag">DESIGN, REPORTING &AMP; APPRAISAL</span><span class="met">Practical topics with key points and references</span></a>
-<a href="science.html" style="--c:#FFFFFF;--on:#0A0A0A"><span class="tag">LATEST SCIENCE</span><span class="met">One clinical paper, one lesson for practice: every Saturday</span></a>
-<a href="calls.html" style="--c:#F8B048;--on:#0A0A0A"><span class="tag">FUNDING CALLS</span><span class="met">155 open calls worldwide · 79 open to Italian institutions</span></a>
-<a href="positions.html" style="--c:#8858F0;--on:#FFFFFF"><span class="tag">ACADEMIC POSITIONS</span><span class="met">82 open PhD, post-doc and faculty positions</span></a></nav>
+  <nav class="pills" aria-label="Sections"><a href="calls.html" style="--c:#F8B048;--on:#0A0A0A"><span class="tag">FUNDING CALLS</span><span class="met">155 open calls worldwide · 79 open to Italian institutions</span></a>
+<a href="positions.html" style="--c:#8858F0;--on:#FFFFFF"><span class="tag">ACADEMIC POSITIONS</span><span class="met">82 open PhD, post-doc and faculty positions</span></a>
+<a href="trials.html" style="--c:#F2698E;--on:#FFFFFF"><span class="tag">FIND YOUR TRIAL</span><span class="met">For patients: search ongoing studies that are looking for volunteers</span></a>
+<div class="sec" style="--c:#88B0F8;--on:#0A0A0A"><div class="row"><a href="methodology.html"><span class="tag">DESIGN, REPORTING &AMP; APPRAISAL</span></a><span class="soon">Coming soon</span></div><span class="met">Practical topics with key points and references</span></div>
+<div class="sec" style="--c:#FFFFFF;--on:#0A0A0A"><div class="row"><a href="science.html"><span class="tag">LATEST SCIENCE</span></a><span class="soon">Coming soon</span></div><span class="met">One clinical paper, one lesson for practice: every Saturday</span></div>
+<div class="sec" style="--c:#3CC9B0;--on:#0A0A0A"><div class="row"><span class="tag">PARTNERSHIP</span><span class="soon">Coming soon</span></div><span class="met">Research groups, societies and institutions: build it with us</span></div></nav>
   <p>Pieces of clinical research. In one place.</p>
 </header>
 <main>
+  <div class="cta"><button type="button" class="cocreate" data-topic="Co-create">Co-create the clinical research ecosystem with us</button></div>
   <div class="social">
     <a href="https://www.instagram.com/clinicalresearchchaos/" rel="me"><svg fill="currentColor" aria-hidden="true" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg><span>Instagram</span></a>
     <a href="https://www.facebook.com/clinicalresearchchaos" rel="me"><svg fill="currentColor" aria-hidden="true" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg><span>Facebook</span></a>
@@ -189,7 +233,63 @@
   Bookmark it or add it to your home screen, and share any card with the Share button.</p>
   <p class="noig"><a href="feedback.html">Feedback, a call to suggest or an error to report? Write to us</a></p>
 </main>
-<footer>Educational content for researchers and health professionals; not medical advice. Always check eligibility and deadlines in the official call or advertisement. Updated 13 Nov 2026.</footer>
+<footer>Educational content for researchers and health professionals; not medical advice. Always check eligibility and deadlines in the official call or advertisement. Updated 14 Nov 2026.</footer>
+<dialog class="cc" id="cc" aria-labelledby="cc-title">
+  <form method="dialog"><button class="x" aria-label="Close">&times;</button></form>
+  <h2 id="cc-title">Co-create the clinical research ecosystem</h2>
+  <p class="lead">We are building this with the people who use it. Tell us what you would need, or how you would like to take part: as a researcher, a research group, a society or an institution.</p>
+  <form id="cc-form" action="https://api.web3forms.com/submit" method="POST">
+    <input type="hidden" name="access_key" value="b7ca6d7a-44b3-40db-8576-dbfdb05298e2">
+    <input type="hidden" name="subject" value="Co-create: Clinical Research Chaos">
+    <input type="hidden" name="from_name" value="Clinical Research Chaos website">
+    <input type="hidden" name="topic" value="">
+    <label>Your message
+      <textarea name="message" required maxlength="3000" placeholder="Ideas, needs, a proposal to work together"></textarea>
+    </label>
+    <label>Name <small>(optional)</small>
+      <input type="text" name="name" autocomplete="name" maxlength="200">
+    </label>
+    <label>Email <small>(so we can reply)</small>
+      <input type="email" name="email" autocomplete="email" maxlength="200" required>
+    </label>
+    <div class="hp" aria-hidden="true"><label>Leave this empty<input type="checkbox" name="botcheck" tabindex="-1"></label></div>
+    <p class="note">Your message reaches us by email through Web3Forms. We never publish it and never share your email.</p>
+    <button type="submit" class="send">Send</button>
+    <p class="status" role="status" aria-live="polite"></p>
+  </form>
+</dialog>
+<script>
+(function () {
+  var d = document.getElementById("cc"), f = document.getElementById("cc-form");
+  if (!d || !f) return;
+  var st = f.querySelector(".status"), btn = f.querySelector(".send"), title = document.getElementById("cc-title");
+  Array.prototype.forEach.call(document.querySelectorAll(".cocreate"), function (b) {
+    b.addEventListener("click", function () {
+      var t = b.dataset.topic || "";
+      f.topic.value = t;
+      f.subject.value = (t === "Partnership" ? "Partnership" : "Co-create") + " (Clinical Research Chaos)";
+      title.textContent = t === "Partnership" ? "Get in touch about partnerships" : "Co-create the clinical research ecosystem";
+      st.className = "status"; st.textContent = "";
+      if (d.showModal) d.showModal(); else location.href = "feedback.html";
+    });
+  });
+  d.addEventListener("click", function (e) { if (e.target === d) d.close(); });
+  if (!window.fetch || !window.FormData) return;
+  f.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    if (btn.disabled) return;
+    btn.disabled = true; st.className = "status"; st.textContent = "Sending…";
+    fetch(f.action, { method: "POST", body: new FormData(f), headers: { "Accept": "application/json" } })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return r.ok && j.success !== false; }); })
+      .then(function (ok) {
+        if (ok) { var t = f.topic.value; f.reset(); f.topic.value = t; st.className = "status ok"; st.textContent = "Thank you! Your message has been sent."; }
+        else { st.className = "status err"; st.textContent = "Sorry, it did not work. Please try again in a few minutes."; }
+        btn.disabled = false;
+      })
+      .catch(function () { st.className = "status err"; st.textContent = "No connection. Please try again."; btn.disabled = false; });
+  });
+})();
+</script>
 
 <div id="crc-rain" class="crc-side" aria-hidden="true"></div>
 <div id="crc-rain-r" class="crc-side" aria-hidden="true"></div>

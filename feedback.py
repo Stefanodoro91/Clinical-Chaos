@@ -54,7 +54,7 @@ PAGE = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
-  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Positions &rarr;</a><br>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="trials.html">Find your trial &rarr;</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><a class="switch" href="rss.html">RSS &rarr;</a><br>
   <span class="badge">FEEDBACK</span>
   <h1>Help us improve the page</h1>
   <p class="intro">Something missing, wrong or hard to use? Know a call or a position we should add? Write to us: we read every message.</p>
@@ -173,7 +173,7 @@ FEEDS = """<!doctype html>
 <body>
 <div class="bar"></div>
 <main>
-  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Positions &rarr;</a><br>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="trials.html">Find your trial &rarr;</a><a class="switch" href="methodology.html">Design, Reporting &amp; Appraisal &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><br>
   <span class="badge">RSS</span>
   <h1>New calls and positions in your reader</h1>
   <p class="intro">RSS sends every new verified call or position to the app you already use for news, with no account and no email.</p>

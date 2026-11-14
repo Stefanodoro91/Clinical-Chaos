@@ -128,7 +128,7 @@ PAGE = """<!doctype html>
 <div class="bar"></div>
 <main>
   {lockup}
-  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><br>
+  <a class="switch" href="index.html">&larr; Home</a><a class="switch" href="calls.html">Funding calls &rarr;</a><a class="switch" href="positions.html">Academic positions &rarr;</a><a class="switch" href="trials.html">Find your trial &rarr;</a><a class="switch" href="science.html">Latest Science &rarr;</a><a class="switch" href="rss.html">RSS &rarr;</a><br>
   <span class="badge">DESIGN, REPORTING &amp; APPRAISAL</span>
   <h1>Clinical research methodology, made practical</h1>
   <p class="intro">Every methodology carousel we have published: swipe through the slides here, no Instagram account needed.
