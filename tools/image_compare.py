@@ -47,9 +47,9 @@ def chat(prompt):
     return j["choices"][0]["message"]["content"].strip(), (j.get("usage") or {}).get("cost", 0) or 0
 
 
-def image(model, prompt):
+def image(model, prompt, ratios=("4:5", "3:4", "2:3", "1:1")):
     last = None
-    for ratio in ("4:5", "3:4", "2:3", "1:1"):
+    for ratio in ratios:
         for attempt in range(2):
             try:
                 r = requests.post("https://openrouter.ai/api/v1/images", headers=H, timeout=600,

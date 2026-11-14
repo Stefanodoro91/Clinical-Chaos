@@ -240,7 +240,7 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
                 img.paste(pic, (M, y), mask)
                 if cards.EDITORIAL:
                     d.rounded_rectangle((M, y, W - M, y + ph), radius=32, outline=accent, width=4)
-    elif kind == "cover" and slide.get("cover_image"):
+    elif kind in ("cover", "scene") and slide.get("cover_image"):
         # copertina con immagine a tutta larghezza: sfuma nel nero e il titolo sta sotto, come le copertine foto dei caroselli
         pic = ImageOps.fit(Image.open(slide["cover_image"]).convert("RGB"), (W, 1250), Image.LANCZOS, centering=(0.5, 0.42))
         img.paste(pic, (0, 14))
@@ -248,9 +248,10 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
         mask = Image.new("L", (W, fade_h))
         mask.putdata([int(255 * (y / (fade_h - 1)) ** 1.4) for y in range(fade_h) for _ in range(W)])
         img.paste(Image.new("RGB", (W, fade_h), bg), (0, 14 + 1250 - fade_h), mask)
-        d.rounded_rectangle((M - 30, 90, M + 650, 260), radius=28, fill="#0A0A0A")
-        sz = cards.paste_logo(img, "logo-symbol-light", M - 14, 106, height=138)
-        cards.paste_logo(img, "logo-wordmark-light", M - 14 + sz[0] + 24, 124, height=102)
+        if kind == "cover":
+            d.rounded_rectangle((M - 30, 90, M + 650, 260), radius=28, fill="#0A0A0A")
+            sz = cards.paste_logo(img, "logo-symbol-light", M - 14, 106, height=138)
+            cards.paste_logo(img, "logo-wordmark-light", M - 14 + sz[0] + 24, 124, height=102)
         y = 1100
         kick = slide.get("kicker", "")
         if kick:
@@ -294,7 +295,8 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
             y += 130
         fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 112, 70, W - 2 * M, 620, 1.12)
         y = cards.draw_rich(d, " ".join(lines), slide.get("highlight", ""), fnt, size, M, y, W - 2 * M, inkc,
-                            1.12, slide.get("mark") or accent, half=True)
+                            1.12, slide.get("mark") or accent,
+                            **({"mark_text": "#0A0A0A", "half": False} if slide.get("mark") and not light else {"half": True}))
         if slide.get("body"):
             fb = cards.font("Regular", 44)
             y += 50
@@ -407,6 +409,13 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
                 ImageDraw.Draw(mask).rounded_rectangle((0, 0, pic.width - 1, pic.height - 1), radius=32, fill=255)
                 img.paste(pic, (M, y), mask)
                 d.rounded_rectangle((M, y, W - M, y + ph), radius=32, outline=accent, width=4)
+    if kind == "cover" and slide.get("source_line"):       # fonte in piccolo (titolo/DOI) sulla prima schermata
+        fs = cards.font("Regular", 30)
+        sl_lines = cards.wrap(d, slide["source_line"], fs, W - 2 * M)
+        yy = H - 190 - 40 - 40 * len(sl_lines[:3])
+        for ln in sl_lines[:3]:
+            d.text((M, yy), ln, font=fs, fill="#9A9A9A" if mono and not light else "#5B5B5B")
+            yy += 40
     # avanzamento in basso, nel colore del tipo
     yb = H - 190
     seg = (W - 2 * M - (total - 1) * 12) / total
@@ -430,6 +439,8 @@ def frame_seconds(slide):
     if slide.get("type") in ("cover", "closing"):
         return 3.0 if slide.get("type") == "cover" else 3.5
     if slide.get("type") == "image":
+        return 4.5
+    if slide.get("type") == "scene":
         return 4.5
     if slide.get("type") == "stat":
         return 4.5

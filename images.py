@@ -161,6 +161,7 @@ def pixabay_photos(query, n=2, width=1024, height=640):
     return out
 
 
+SLIDE_CACHE = {}      # id del post → immagine fissa per la seconda pagina (formato a 7 pagine)
 COVER_CACHE = {}       # id del post → foto scelta per la copertina (riusata da carosello, Facebook e Bluesky)
 
 

@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
 os.environ["COMPARE_MODE"] = "run"
+os.environ["LAY_STORY"] = "1"
 os.environ.setdefault("FORCED_TASKS", "nuovi post da Drive,takeaway clinico,revisione slide,verifica fatti,arbitro,rifinitura,copione reel")
 
 import model_compare as mc          # noqa: E402
@@ -26,32 +27,41 @@ OUT = ROOT / "compare_out"
 OUT.mkdir(exist_ok=True)
 COVER = {}                     # kind → (percorso PNG, prompt, verdetto)
 
-LAY_REEL_PROMPT = """Turn this short Instagram carousel into the script of a ~20-second reel for clinical researchers.
+STORY_REEL_PROMPT = """Turn this educational carousel into the on-screen script of a 35-second reel for clinical researchers.
 Use ONLY the content below: no new facts, numbers, studies or claims; never mention any study other than the paper itself.
-- hook: max 9 words, built on the title (a question or a crisp claim), a complete sentence.
-- beats: exactly 2. Each has a title (max 5 words) and a line (max 16 words): complete, precise sentences that name
-  their subject (no "this", "it") and keep the carousel's qualifiers. Beat 1: the question or problem the paper addresses
-  and what the paper is. Beat 2: what the paper found or argues, without overstating it.
-- takeaway: the message, max 16 words, specific and faithful to the carousel's takeaway; not a repetition of the beats.
-Never end any text with "..." or an unfinished phrase. No hashtags, no emojis.
+The reel has no voice-over: every text is read on screen, so each must be a complete, plain sentence.
+- hook: max 12 words, built on the carousel title (a question or a crisp claim that makes people stop).
+- highlight: 2-5 words copied EXACTLY from the hook (they will be marked in yellow).
+- scene: max 18 words: what the paper is and what its authors set out to do.
+- method: title (max 5 words) + line (max 24 words): how the work was done and how solid it is (type of work, who or
+  what, how many only if the carousel says, comparison group), with the main limit of the design.
+- data: title (max 5 words) + line (max 24 words): the real finding versus the headline, or the limit the authors declare.
+- takeaway: max 22 words: what it means in practice; specific; not a repetition of the other texts.
+Keep every qualifier of the carousel. Never use "..." or leave a sentence unfinished. Tone: an expert colleague, never
+aggressive ("a useful first step, but..."). No hashtags, no emojis.
 
 Title: {title}
-Carousel page 2: {heading}. {body}
-Takeaway: {takeaway}"""
-LAY_REEL_SCHEMA = {"type": "OBJECT", "properties": {
-    "hook": {"type": "STRING"}, "takeaway": {"type": "STRING"},
-    "beats": {"type": "ARRAY", "items": {"type": "OBJECT", "properties": {
-        "title": {"type": "STRING"}, "line": {"type": "STRING"}}, "required": ["title", "line"]}}},
-    "required": ["hook", "beats", "takeaway"]}
+Page 2 (context): {h1}. {b1}
+Page 3 (lens): {h2}. {b2}
+Page 4 (data): {h3}. {b3}
+Page 5 (meaning): {takeaway}"""
+STORY_REEL_SCHEMA = {"type": "OBJECT", "properties": {
+    "hook": {"type": "STRING"}, "highlight": {"type": "STRING"}, "scene": {"type": "STRING"},
+    "method": {"type": "OBJECT", "properties": {"title": {"type": "STRING"}, "line": {"type": "STRING"}},
+               "required": ["title", "line"]},
+    "data": {"type": "OBJECT", "properties": {"title": {"type": "STRING"}, "line": {"type": "STRING"}},
+             "required": ["title", "line"]},
+    "takeaway": {"type": "STRING"}}, "required": ["hook", "highlight", "scene", "method", "data", "takeaway"]}
 
 
 def make_pre_render(kind):
     def pre(post, text):
-        brief = ic.METHOD_BRIEF if kind == "ME" else ic.BRIEF
+        brief = (ic.METHOD_BRIEF if kind == "ME" else ic.BRIEF).replace(
+            "portrait 4:5; the lower third calm and dark for a title overlay", "wide landscape 16:9; subject centred, calm dark margins")
         prompt, _ = ic.chat(brief + text[:14000])
         best = None
         for attempt in range(3):
-            data, ratio, cost = ic.image(ic.MODELS[0], prompt)
+            data, ratio, cost = ic.image(ic.MODELS[0], prompt, ("16:9", "3:2", "4:3", "1:1"))
             try:
                 verdict = ic.check(data, text)
             except Exception as e:
@@ -65,7 +75,7 @@ def make_pre_render(kind):
         data, prompt, verdict, ratio, cost = best
         path = OUT / f"cover-{kind}.png"
         path.write_bytes(data)
-        images.COVER_CACHE[post["id"]] = Image.open(io.BytesIO(data)).convert("RGB")
+        images.SLIDE_CACHE[post["id"]] = Image.open(io.BytesIO(data)).convert("RGB")
         COVER[kind] = (path, prompt, verdict)
     return pre
 
@@ -87,19 +97,30 @@ def upload(path, key, mime):
 
 
 def reel(kind, post):
+    import re
+    import sources
     cfg = bot.CONFIG
-    page2 = (post.get("slides") or [{}])[0]
-    script = content.gemini_json([{"text": LAY_REEL_PROMPT.format(
-        title=post["title"], heading=page2.get("heading", ""), body=page2.get("body", ""),
-        takeaway=post.get("takeaway", ""))}], LAY_REEL_SCHEMA, 0.3, task="copione reel")
+    sl = post["slides"]
+    script = content.gemini_json([{"text": STORY_REEL_PROMPT.format(
+        title=post["title"], h1=sl[0]["heading"], b1=sl[0]["body"], h2=sl[1]["heading"], b2=sl[1]["body"],
+        h3=sl[2]["heading"], b3=sl[2]["body"], takeaway=post.get("takeaway", ""))}], STORY_REEL_SCHEMA, 0.3,
+        task="copione reel")
     print("Copione reel:", json.dumps(script, ensure_ascii=False))
     entry = {"kind": None, "category": post.get("category"), "rubric": "Clinical Insights" if kind == "LS" else None}
     kicker, accent = reels.rubric_tag(entry, cfg, "LATEST SCIENCE" if kind == "LS" else "METHODOLOGY", cfg["colors"]["accent"])
-    beats = script["beats"][:2]
-    slides = [{"type": "cover", "kicker": kicker, "title": script["hook"], "cover_image": str(COVER[kind][0])}]
-    slides += [{"type": "point", "number": f"{i:02d}", "title": b["title"], "body": b["line"]} for i, b in enumerate(beats, 1)]
-    slides.append({"type": "point", "number": "→", "title": "Remember", "body": script["takeaway"]})
-    slides.append({"type": "closing", "title": "Full carousel with references on our profile", "body": "Save it for later"})
+    ref = sources.lay_reference(post) or {}
+    doi = re.search(r"10\.\d{4,9}/\S+", " ".join(post.get("references") or []))
+    source_line = ("Source: " + (ref.get("title") or "") + (f" · doi.org/{doi.group(0).rstrip('.')}" if doi else "")).strip()
+    hook = " ".join(script["hook"].split())
+    slides = [
+        {"type": "cover", "kicker": kicker, "title": hook, "highlight": content.exact_phrase(script.get("highlight"), hook, 5),
+         "mark": "#FFD84D", "source_line": source_line},
+        {"type": "scene", "kicker": "THE PAPER", "title": script["scene"], "cover_image": str(COVER[kind][0])},
+        {"type": "point", "number": "01", "title": script["method"]["title"], "body": script["method"]["line"]},
+        {"type": "point", "number": "02", "title": script["data"]["title"], "body": script["data"]["line"]},
+        {"type": "point", "number": "→", "title": "What it means", "body": script["takeaway"]},
+        {"type": "closing", "title": "Funding and positions in rigorous labs", "body": "Link in bio"},
+    ]
     spec = {"accent": accent, "mood": "Classica", "slides": slides}
     rcfg = {**cfg, "colors": {**cfg["colors"], "accent": accent}}
     video = OUT / f"reel-{kind}.mp4"
