@@ -1669,7 +1669,6 @@ HOME = """<!doctype html>
 </header>
 <main>
   <div class="extras">
-    <a class="trial" href="trials.html"><b>Find your trial</b><span>For patients: search ongoing studies that are looking for volunteers</span></a>
     {cta}
   </div>
   <div class="social">
@@ -2569,10 +2568,13 @@ TRIALS_LINK = ("trials.html", "Find your trial")   # contorno: pagina per i pazi
 
 def section_pills(cfg, metrics=None, current=None, home=False):
     """Le quattro rubriche in colonna: pillola nel colore della rubrica e, sotto, la sua metrica.
-    «Find your trial» e il pulsante «Co-create» sono contorno: stanno a parte, sotto le rubriche."""
+    In home, tra le rubriche, anche «Find your trial» (pagina per i pazienti); il pulsante «Co-create» sta a parte."""
     from html import escape as esc
     out = []
-    for kind, href, label in SECTIONS:
+    items = list(SECTIONS)
+    if home:                                   # in home Find your trial sta tra le posizioni e la metodologia
+        items.insert(2, ("trials", TRIALS_LINK[0], TRIALS_LINK[1]))
+    for kind, href, label in items:
         col = site_accent(cfg, kind)
         here = ' aria-current="page"' if kind == current else ""
         met = (metrics or {}).get(kind, "")
