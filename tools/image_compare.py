@@ -9,7 +9,7 @@ import bot, content, drive_preview                      # noqa: E402
 import requests                                          # noqa: E402
 from PIL import Image, ImageDraw                         # noqa: E402
 
-KEY = os.environ["OPENROUTER_API_KEY"]
+KEY = os.environ.get("OPENROUTER_API_KEY", "")
 H = {"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"}
 MODELS = [m for m in os.environ.get("IMAGE_MODELS", "openai/gpt-image-2").split(",") if m]
 WRITER = os.environ.get("PROMPT_MODEL", "anthropic/claude-sonnet-5.5")
@@ -17,7 +17,7 @@ SOURCE = os.environ.get("SOURCE", "Smart exoskeleton")
 SKIP = [x.strip().lower() for x in os.environ.get("SKIP", "").split("|") if x.strip()]
 COUNT = int(os.environ.get("COUNT", "1"))
 KIND = os.environ.get("KIND", "LS")
-PDF_ID = os.environ["PDF_ID"]
+PDF_ID = os.environ.get("PDF_ID", "")
 OUT = ROOT / "compare_out"
 OUT.mkdir(exist_ok=True)
 
@@ -189,4 +189,5 @@ def main():
     print("PDF su Drive" if ok else "PDF solo locale")
 
 
-main()
+if __name__ == "__main__":
+    main()

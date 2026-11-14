@@ -64,6 +64,7 @@ FORCED = {t.strip() for t in (os.environ.get("FORCED_TASKS") or
 SECONDARY = os.environ.get("SECONDARY") or ""
 FULL_TEXT_CHARS = 200_000          # ai modelli a pagamento (contesto ampio) l'articolo intero, non solo l'abstract
 CURRENT = {"model": None}
+PRE_RENDER = None      # funzione(post, material_text) chiamata prima del carosello (es. immagine di copertina)
 
 _orig_route = content.route_for
 _orig_call = content.call_model
@@ -178,6 +179,8 @@ def one(model, kind, idx, f, drive):
         os.environ["PREVIEW_DATE"] = "2026-11-17"       # martedì: metodologia
     bot.save(bot.SOURCES_FILE, [{"drive_id": f["id"], "name": f["name"], "posts": 1}])
     os.environ["POST_TYPE"] = "research"
+    if PRE_RENDER:
+        PRE_RENDER(posts[0], content.material_text(part))
     try:
         bot.main()
     except SystemExit as e:

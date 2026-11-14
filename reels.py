@@ -240,6 +240,30 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
                 img.paste(pic, (M, y), mask)
                 if cards.EDITORIAL:
                     d.rounded_rectangle((M, y, W - M, y + ph), radius=32, outline=accent, width=4)
+    elif kind == "cover" and slide.get("cover_image"):
+        # copertina con immagine a tutta larghezza: sfuma nel nero e il titolo sta sotto, come le copertine foto dei caroselli
+        pic = ImageOps.fit(Image.open(slide["cover_image"]).convert("RGB"), (W, 1250), Image.LANCZOS, centering=(0.5, 0.42))
+        img.paste(pic, (0, 14))
+        fade_h = 520
+        mask = Image.new("L", (W, fade_h))
+        mask.putdata([int(255 * (y / (fade_h - 1)) ** 1.4) for y in range(fade_h) for _ in range(W)])
+        img.paste(Image.new("RGB", (W, fade_h), bg), (0, 14 + 1250 - fade_h), mask)
+        d.rounded_rectangle((M - 30, 90, M + 650, 260), radius=28, fill="#0A0A0A")
+        sz = cards.paste_logo(img, "logo-symbol-light", M - 14, 106, height=138)
+        cards.paste_logo(img, "logo-wordmark-light", M - 14 + sz[0] + 24, 124, height=102)
+        y = 1100
+        kick = slide.get("kicker", "")
+        if kick:
+            f = cards.font("Bold", 34)
+            tw = d.textlength(kick, font=f)
+            a_rgb = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+            a_ink = "#0A0A0A" if (0.299 * a_rgb[0] + 0.587 * a_rgb[1] + 0.114 * a_rgb[2]) / 255 > 0.55 else "#FFFFFF"
+            d.rounded_rectangle([M, y, M + tw + 48, y + 66], radius=33, fill=accent)
+            d.text((M + 24, y + 13), kick, font=f, fill=a_ink)
+            y += 112
+        fnt, lines, size = cards.fit(d, slide["title"], cards.H_("ExtraBold"), 96, 58, W - 2 * M, 1920 - 190 - 110 - y, 1.12)
+        cards.draw_rich(d, " ".join(lines), slide.get("highlight", ""), fnt, size, M, y, W - 2 * M, "#FFFFFF",
+                        1.12, slide.get("mark") or accent, half=True)
     elif kind == "cover":
         inkc = ("#FFFFFF" if not light else "#0A0A0A") if mono else DARK_TEXT
         if cards.EDITORIAL:                          # logo v3 nel colore del tipo
@@ -394,7 +418,7 @@ def story_frame(slide, cfg, index, total, accent, cubes=True):
     if kind != "closing":
         f_h = cards.font("SemiBold", 32)
         d.text((M, yb + 40), cfg.get("handle", ""), font=f_h, fill="#5B7186" if light else c["muted_text"])
-    if cubes and cards.EDITORIAL and kind != "image":    # cubetti negli spazi liberi (i pixel già disegnati si evitano da soli)
+    if cubes and cards.EDITORIAL and kind != "image" and not slide.get("cover_image"):    # cubetti negli spazi liberi (i pixel già disegnati si evitano da soli)
         _cubes(img, f"{kind}-{index}-{slide.get('title', '')[:24]}", accent, not light, cfg,
                keep_out=[(0, yb - 30, W, H), (0, 0, W, 30)], density=0.8 if kind in ("cover", "closing") else 0.55)
     return img
@@ -465,7 +489,7 @@ def _back_out(x):
 def _slide_layers(slide, cfg, index, total, accent):
     """Fondo (cornice, logo), righe di testo animabili e strato dei cubetti di una schermata."""
     import numpy as np
-    blank = {k: v for k, v in slide.items() if k in ("type", "accent", "bg", "images", "frame", "photo_query")}
+    blank = {k: v for k, v in slide.items() if k in ("type", "accent", "bg", "images", "frame", "photo_query", "cover_image")}
     blank.update(title="", body="", kicker="", number="")
     base = story_frame(blank, cfg, index, total, accent, cubes=False)
     text = story_frame(slide, cfg, index, total, accent, cubes=False)
