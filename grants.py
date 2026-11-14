@@ -1607,7 +1607,7 @@ HOME = """<!doctype html>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {{ --bg: {bg}; --paper: #F3F6F9; --card: #15304A; --text: #FFFFFF; --soft: {soft}; --muted: {muted};
-           --teal: {teal}; --amber: {amber}; --lilac: {lilac}; --sci: {sci}; --meth: {meth}; }}
+           --teal: {teal}; --amber: {amber}; --lilac: {lilac}; --sci: {sci}; --meth: {meth}; --trial: {trial}; }}
   * {{ box-sizing: border-box; }}
   body {{ margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; line-height: 1.45; }}
   .top {{ background: var(--bg); padding: 34px 16px 36px; text-align: center; border-top: 4px solid var(--teal); }}
@@ -1620,23 +1620,13 @@ HOME = """<!doctype html>
   .pills .met {{ color: var(--soft); font-size: 14px; line-height: 1.35; }}
   .pills a:hover .tag, .pills a:focus-visible .tag {{ filter: brightness(1.08); }}
   .pills a:hover .met {{ color: var(--text); }}
-  .pills .sec {{ display: flex; flex-direction: column; align-items: center; gap: 8px; }}
-  .pills .row {{ position: relative; display: inline-flex; align-items: center; }}
-  .pills .row > .soon, .pills .row > .side {{ position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); }}
-  .pills .cocreate.side {{ margin: 0; white-space: nowrap; padding: 7px 13px; }}
-  @media (max-width: 760px) {{
-    /* niente spazio a fianco: «Coming soon» va sotto la pillola, nel flusso, così le rubriche restano ordinate */
-    .pills {{ gap: 24px; }}
-    .pills .row {{ flex-direction: column; gap: 8px; }}
-    .pills .row > .soon {{ position: static; transform: none; padding: 5px 9px; font-size: 9.5px; }}
-    .cta .cocreate {{ width: 100%; max-width: 340px; }}
-  }}
-  .pills .soon {{ color: var(--soft); border: 1px dashed var(--muted); border-radius: 999px; padding: 6px 10px;
-                 font: 700 10.5px/1 Inter, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }}
-  .pills .cocreate {{ margin-top: 3px; background: transparent; color: var(--c); border: 1.5px solid var(--c); border-radius: 999px;
-                     padding: 7px 15px; font: 600 13px/1 Inter, system-ui, sans-serif; cursor: pointer; }}
-  .pills .cocreate:hover, .pills .cocreate:focus-visible {{ background: var(--c); color: var(--on); }}
-  .cta {{ text-align: center; margin: 0 0 4px; }}
+  .extras {{ display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 0 0 6px; }}
+  .extras .trial {{ display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; text-align: center;
+                   border: 1.5px solid var(--trial); border-radius: 16px; padding: 12px 18px; max-width: 340px; width: 100%; }}
+  .extras .trial b {{ color: var(--trial); font: 800 14px/1.2 Inter, system-ui, sans-serif; }}
+  .extras .trial span {{ color: var(--soft); font-size: 13px; line-height: 1.35; }}
+  .extras .trial:hover, .extras .trial:focus-visible {{ background: #151015; }}
+  .cta {{ text-align: center; margin: 0; }}
   .cta .cocreate {{ background: transparent; color: var(--teal); border: 1.5px solid var(--teal); border-radius: 999px;
                    padding: 11px 20px; font: 700 14px/1.2 Inter, system-ui, sans-serif; cursor: pointer; max-width: 100%; }}
   .cta .cocreate:hover, .cta .cocreate:focus-visible {{ background: var(--teal); color: #0A0A0A; }}
@@ -1678,7 +1668,10 @@ HOME = """<!doctype html>
   <p>Pieces of clinical research. In one place.</p>
 </header>
 <main>
-  {cta}
+  <div class="extras">
+    <a class="trial" href="trials.html"><b>Find your trial</b><span>For patients: search ongoing studies that are looking for volunteers</span></a>
+    {cta}
+  </div>
   <div class="social">
 {social}
   </div>
@@ -1971,7 +1964,7 @@ def build_home(n_calls, n_italy, n_positions, cfg, today=None, n_methods=0, n_sc
         "trials": "For patients: search ongoing studies that are looking for volunteers"}
     return HOME.format(brand=escape(cfg["brand_name"]), ig=cfg["handle"].lstrip("@"), bg=c["background"], social=social_links(cfg),
                        soft=c["muted_text"], muted=c["muted"], teal=c["accent"],
-                       amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"), sci=site_accent(cfg, "science"), meth=site_accent(cfg, "methods"),
+                       amber=site_accent(cfg, "grant"), lilac=site_accent(cfg, "positions"), sci=site_accent(cfg, "science"), meth=site_accent(cfg, "methods"), trial=site_accent(cfg, "trials"),
                        updated=_fmt_date(today),
                        logo_block=header_logo(cfg), pills=section_pills(cfg, metrics, home=True),
                        cocreate=cocreate_dialog(cfg),
@@ -2043,7 +2036,7 @@ def cocreate_dialog(cfg):
     """Modulo «Co-create the service / Get in touch» della home: stesso canale del feedback (Web3Forms)."""
     from html import escape
     key = (cfg.get("feedback_key") or "").strip()
-    if not key or not cfg.get("site_coming_soon"):
+    if not key:
         return ""
     return COCREATE.format(key=escape(key, quote=True))
 
@@ -2560,7 +2553,6 @@ def _quad4(cx, cy):
 
 SECTIONS = [("grant", "calls.html", "Funding calls"),
             ("positions", "positions.html", "Academic positions"),
-            ("trials", "trials.html", "Find your trial"),
             ("methods", "methodology.html", "Design, Reporting &amp; Appraisal"),
             ("science", "science.html", "Latest Science")]
 
@@ -2572,35 +2564,21 @@ def on_color(hexa):
     return "#0A0A0A" if lum > 0.55 else "#FFFFFF"
 
 
-PARTNERSHIP = ("Partnership", "Research groups, societies and institutions: build it with us")
+TRIALS_LINK = ("trials.html", "Find your trial")   # contorno: pagina per i pazienti, fuori dalle quattro rubriche
 
 
 def section_pills(cfg, metrics=None, current=None, home=False):
     """Le quattro rubriche in colonna: pillola nel colore della rubrica e, sotto, la sua metrica.
-    In home (config «site_coming_soon»): le rubriche ancora in costruzione hanno a destra «Coming soon»; in fondo la pillola Partnership, anch'essa «Coming soon». Il pulsante «Co-create» è a parte (sotto lo slogan).
-    Le pillole restano sempre centrate: ciò che sta a fianco è fuori dal flusso."""
+    «Find your trial» e il pulsante «Co-create» sono contorno: stanno a parte, sotto le rubriche."""
     from html import escape as esc
-    soon = set(cfg.get("site_coming_soon") or []) if home else set()
     out = []
     for kind, href, label in SECTIONS:
         col = site_accent(cfg, kind)
         here = ' aria-current="page"' if kind == current else ""
         met = (metrics or {}).get(kind, "")
-        if kind in soon:
-            out.append(f'<div class="sec" style="--c:{col};--on:{on_color(col)}">'
-                       f'<div class="row"><a href="{href}"{here}><span class="tag">{label.upper()}</span></a>'
-                       f'<span class="soon">Coming soon</span></div>'
-                       + (f'<span class="met">{esc(met)}</span>' if met else "") + '</div>')
-            continue
         out.append(f'<a href="{href}" style="--c:{col};--on:{on_color(col)}"{here}>'
                    f'<span class="tag">{label.upper()}</span>'
                    + (f'<span class="met">{esc(met)}</span>' if met else "") + "</a>")
-    if "partnership" in soon:
-        col = SITE_GREEN
-        out.append(f'<div class="sec" style="--c:{col};--on:{on_color(col)}">'
-                   f'<div class="row"><span class="tag">{PARTNERSHIP[0].upper()}</span>'
-                   f'<span class="soon">Coming soon</span></div>'
-                   f'<span class="met">{esc(PARTNERSHIP[1])}</span></div>')
     return "\n".join(out)
 
 
@@ -2689,11 +2667,8 @@ def fit_decor(html):
 SWITCHBAR_CSS = """<style id="crc-switchbar">
   /* menu tra le schede del sito: griglia ordinata, celle uguali, stessa distanza */
   nav.switchbar {display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 0 0 22px;}
-  nav.switchbar .switch, nav.switchbar .switch.soon {display: flex; align-items: center; justify-content: center; text-align: center;
+  nav.switchbar .switch {display: flex; align-items: center; justify-content: center; text-align: center;
       min-height: 42px; margin: 0 !important; padding: 8px 12px; line-height: 1.25; box-sizing: border-box;}
-  nav.switchbar .switch.soon {color: var(--muted, #8A8A8A); border: 1px dashed var(--muted, #8A8A8A); border-radius: 999px;
-      font-size: 13px; font-weight: 600; cursor: default; flex-direction: column; gap: 2px;}
-  nav.switchbar .switch.soon small {display: block; font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase; margin: 0;}
   @media (max-width: 520px) {nav.switchbar {grid-template-columns: repeat(2, 1fr);}
       nav.switchbar > :last-child:nth-child(odd) {grid-column: 1 / -1;}}
 </style>
@@ -2701,8 +2676,7 @@ SWITCHBAR_CSS = """<style id="crc-switchbar">
 
 
 def tidy_switchbar(html):
-    """Raccoglie i pulsanti di passaggio tra le schede in una griglia ordinata e aggiunge Partnership (Coming soon)
-    prima di RSS, così in ogni pagina il menu ha le stesse voci."""
+    """Raccoglie i pulsanti di passaggio tra le schede in una griglia ordinata in ogni pagina."""
     import re as _re
     if 'class="switch"' not in html or "crc-switchbar" in html:
         return html
@@ -2711,9 +2685,6 @@ def tidy_switchbar(html):
     if not m:
         return html
     links = _re.findall(r'<a class="switch"[^>]*>.*?</a>', m.group(0), _re.S)
-    soon = '<span class="switch soon">Partnership<small>Coming soon</small></span>'
-    at = next((i for i, l in enumerate(links) if l.endswith('>RSS &rarr;</a>')), len(links))
-    links.insert(at, soon)
     nav = '<nav class="switchbar" aria-label="Sections">' + "".join(links) + "</nav>"
     html = html[:m.start()] + nav + html[m.end():]
     return html.replace("</head>", SWITCHBAR_CSS + "</head>", 1)
