@@ -383,6 +383,498 @@ def _tools_v2(cfg):
             f'<div class="row tc">{_tool_cards()}</div>{table}{_cosmin_html()}{TOOLS_V2_CSS}{TOOLS_V2_JS}</section>')
 
 
+# ---------------------------------------------------------------- percorso guidato: PICOT, fasi, TRL (interattivi)
+BRAND5 = ["#88B0F8", "#8858F0", "#F8B048", "#3CC9B0", "#FFFFFF"]     # i colori del sito, uno per elemento
+
+PICOT = [   # (lettera, nome, spiegazione, esempio, pezzo della domanda d'esempio)
+    ("P", "Population", "Who exactly? Age range, diagnosis, setting and the key eligibility criteria.",
+     "Adults with chronic low back pain (&gt;12 weeks), living in the community, no red flags.",
+     "adults with chronic low back pain"),
+    ("I", "Intervention", "What exposure, treatment, device or test is being evaluated? Include dose, frequency and duration.",
+     "A 6-week robot-assisted gait-training programme, 3 sessions a week.",
+     "a 6-week robot-assisted gait-training programme"),
+    ("C", "Comparator", "Compared with what: placebo or sham, usual care, another active option, or nothing at all?",
+     "Usual-care physiotherapy, matched for frequency and duration.",
+     "usual-care physiotherapy"),
+    ("O", "Outcome", "What is measured, and with which instrument? One primary outcome first, then the key secondary ones.",
+     "Change in walking speed, measured with the 10-metre walk test.",
+     "walking speed (10-metre walk test)"),
+    ("T", "Time", "When is each outcome measured: baseline, end of treatment, longer-term follow-up?",
+     "Baseline, 6 weeks (end of treatment) and 6-month follow-up.",
+     "6 weeks and 6 months"),
+]
+PICOT_GLUE = ["In ", ", does ", ", compared with ", ", improve ", " at ", "?"]   # testo tra i pezzi della domanda
+
+PICOT_DESIGN_NOTES = [   # come si riempiono C e T orienta verso il disegno di studio
+    ("There is a comparator, and the team decides who gets it", "Randomised controlled trial"),
+    ("There is a comparator, but allocation cannot be randomised", "Non-randomised trial or cohort study"),
+    ("No comparator: one group followed over time", "Single-arm study or case series"),
+    ("You start from the outcome and look back at exposures", "Case-control study"),
+    ("One single point in time, no follow-up", "Cross-sectional study"),
+]
+
+# icone semplici (24x24, stroke=currentColor), una per fase: provetta, scudo, bersaglio, persone, globo
+PHASE_ICONS = [
+    '<path d="M9 2h6M10 2v6l-5 10a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-10V2" stroke-linecap="round" stroke-linejoin="round"/>',
+    '<path d="M12 3l7 3v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z" stroke-linejoin="round"/>',
+    '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/>',
+    '<circle cx="8" cy="9" r="2.6"/><circle cx="16" cy="9" r="2.6"/><path d="M3.5 19c.5-3 2.3-5 4.5-5s4 2 4.5 5M11.5 19c.5-3 '
+    '2.3-5 4.5-5s4 2 4.5 5" stroke-linecap="round"/>',
+    '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" stroke-linecap="round"/>',
+]
+
+PHASES = [   # (numero, nome, scopo, colore, partecipanti, durata, descrizione, equivalente per i dispositivi)
+    ("0", "Phase 0", "Exploratory", "#3CC9B0", "About 10&ndash;15 people", "Days",
+     "Very small, sub-therapeutic doses show whether a drug reaches its target and behaves in the body as expected, "
+     "before committing to a full programme. Optional, and not designed to show benefit.",
+     "No real equivalent: devices go from bench and animal testing to a first-in-human study."),
+    ("1", "Phase I", "Safety and dose", "#88B0F8", "20&ndash;100, often healthy volunteers", "Several months",
+     "First-in-human testing of safety, tolerability and pharmacokinetics, usually with dose-escalation designs such as 3+3.",
+     "Early feasibility (first-in-human) study in a handful of patients."),
+    ("2", "Phase II", "Proof of concept", "#8858F0", "Up to a few hundred patients", "Months to about 2 years",
+     "First test in the target population: is there a signal of efficacy, which dose or regimen works best, "
+     "and what are the short-term adverse effects?",
+     "Traditional feasibility (pilot) study with a near-final device."),
+    ("3", "Phase III", "Confirmation", "#F8B048", "Several hundred to several thousand", "1&ndash;4 years",
+     "Large, usually randomised trials that confirm efficacy against standard care or placebo and monitor adverse "
+     "effects. The basis for marketing approval.",
+     "Pivotal study supporting CE marking or FDA clearance/approval."),
+    ("4", "Phase IV", "Real-world use", "#FFFFFF", "Thousands, in routine care", "Ongoing after approval",
+     "After approval: long-term safety, rare adverse events and effectiveness in everyday practice and in groups "
+     "the earlier trials left out.",
+     "Post-market surveillance and clinical follow-up (PMCF)."),
+]
+
+TRL_LADDER = [   # i 9 livelli (scala UE/NASA), dal basso
+    "Basic principles observed", "Technology concept formulated", "Experimental proof of concept",
+    "Technology validated in the lab", "Technology validated in a relevant environment",
+    "Technology demonstrated in a relevant environment", "System prototype demonstrated in an operational environment",
+    "System complete and qualified", "Actual system proven in an operational environment",
+]
+
+TRL_STAGE = [   # per ogni TRL: (tappa clinica, cosa succede): mappa delle linee guida biomediche del DoD statunitense
+    ("Basic research", "The underlying science is studied and reported; there is no device or candidate drug yet."),
+    ("Concept", "A design concept or candidate is defined on paper: hypotheses, theoretical models, first algorithms."),
+    ("Proof of concept", "Bench prototypes and in-vitro or small-animal experiments show the idea can work. No exposure in people."),
+    ("Preclinical: laboratory validation", "An integrated prototype or candidate is tested in the laboratory and in animal "
+     "models for safety and performance."),
+    ("Preclinical to clinical transition", "Formal safety studies and a refined prototype; regulatory and ethics "
+     "clearance is obtained for the first study in people."),
+    ("Phase I / early feasibility", "First-in-human study in a small group: safety, tolerability and whether the device "
+     "works as intended."),
+    ("Phase II&ndash;III / pivotal", "Larger, usually multi-site trials of a near-final product in its intended "
+     "setting, up to the pivotal evidence for approval."),
+    ("Regulatory approval", "The evidence is submitted and the product obtains marketing authorisation, CE marking "
+     "or FDA clearance."),
+    ("Phase IV / post-market", "Routine clinical use, with post-market surveillance and real-world evidence."),
+]
+TRL_SOURCE = "https://cdmrp.health.mil/jwmrp/pdfs/Biomedical%20Product%20Guidelines.pdf"
+
+
+def _mix(c1, c2, t):
+    a = [int(c1[i:i + 2], 16) for i in (1, 3, 5)]
+    b = [int(c2[i:i + 2], 16) for i in (1, 3, 5)]
+    return "#%02X%02X%02X" % tuple(round(x + (y - x) * t) for x, y in zip(a, b))
+
+
+def _trl_color(i):
+    """Colore del livello i (0-8): dal verde del sito al bianco, passando per azzurro e viola."""
+    stops = [(0, "#3CC9B0"), (.38, "#88B0F8"), (.72, "#8858F0"), (1, "#FFFFFF")]
+    t = i / 8
+    for (t0, c0), (t1, c1) in zip(stops, stops[1:]):
+        if t <= t1:
+            return _mix(c0, c1, (t - t0) / (t1 - t0))
+    return stops[-1][1]
+
+
+CHAPTERS = [   # (id della sezione, numero, titolo breve, titolo, cosa contiene)
+    ("picot", "01", "Question", "Frame the question", "PICOT"),
+    ("evidence-pyramid", "02", "Design", "Choose the design", "The evidence pyramid"),
+    ("path", "03", "Stage", "Place it on the path", "Clinical phases and TRL"),
+    ("tools", "04", "Tools", "Plan, report, appraise", "Official tools by design"),
+    ("carousels", "05", "Library", "Go deeper", "The methodology carousels"),
+]
+
+
+def _chap(i):
+    _, n, _, title, _ = CHAPTERS[i]
+    return f'<p class="jx-chap"><b>{n}</b><span>{title}</span></p>'
+
+
+def hero_block(cfg):
+    """Apertura della pagina: il percorso in cinque passi, ognuno porta alla sua sezione."""
+    steps = "".join(f'<a class="jx-step jx-glow" href="#{sid}"><b>{n}</b><span class="jx-st">{title}</span>'
+                    f'<span class="jx-sd">{what}</span></a>' for sid, n, _, title, what in CHAPTERS)
+    return ('<div class="jx-hero"><p class="jx-lead">From a clinical question to evidence you can trust, in five steps: '
+            'frame the question, choose the design, see where the study sits on the path from idea to practice, '
+            'pick the right tools, then go deeper with the carousels.</p>'
+            f'<nav class="jx-steps" aria-label="On this page">{steps}</nav>'
+            '<p class="jx-cue" aria-hidden="true"><i></i>Scroll to explore</p></div>')
+
+
+def picot_block(cfg):
+    """PICOT interattivo: la domanda d'esempio si colora pezzo per pezzo; ogni lettera apre la sua scheda."""
+    if not cfg.get("frameworks"):
+        return ""
+    q = PICOT_GLUE[0]
+    for i, (_, _, _, _, chunk) in enumerate(PICOT):
+        q += (f'<span role="button" tabindex="0" class="jx-ch" data-i="{i}" style="--pc:{BRAND5[i]}">{chunk}</span>'
+              + PICOT_GLUE[i + 1])
+    tiles = "".join(f'<button type="button" class="jx-tile" data-i="{i}" style="--pc:{BRAND5[i]}">'
+                    f'<b>{letter}</b><span>{escape(name)}</span></button>'
+                    for i, (letter, name, _, _, _) in enumerate(PICOT))
+    items = "".join(f'<div class="jx-it" data-i="{i}" style="--pc:{BRAND5[i]}"><p class="jx-in"><b>{letter}</b>{escape(name)}</p>'
+                    f'<p class="jx-id">{desc}</p><p class="jx-ie"><span>Example</span>{ex}</p></div>'
+                    for i, (letter, name, desc, ex, _) in enumerate(PICOT))
+    notes = "".join(f'<li><a href="#evidence-pyramid"><span>{a}</span><b>&rarr; {b}</b></a></li>' for a, b in PICOT_DESIGN_NOTES)
+    return ('<section class="jx-sec" id="picot">' + _chap(0) +
+            '<h2>PICOT: frame your question</h2>'
+            '<p class="jx-sub">A clear question names five things. Tap a letter, or a coloured part of the example, '
+            'to see what belongs there.</p>'
+            f'<div class="jx-box jx-picot"><p class="jx-q">{q}</p>'
+            f'<div class="jx-tiles">{tiles}</div><div class="jx-items">{items}</div></div>'
+            '<h3>From the question to the design</h3>'
+            '<p class="jx-sub">How you fill in the comparator and the time points often tells you which design you need. '
+            'Each line takes you to the pyramid in the next step.</p>'
+            f'<ul class="jx-notes">{notes}</ul></section>')
+
+
+def path_block(cfg):
+    """Fasi cliniche 0-IV (passi cliccabili) e termometro TRL interattivo, incrociato con le fasi."""
+    if not cfg.get("frameworks"):
+        return ""
+    nodes = "".join(f'<button type="button" class="jx-node" data-i="{i}" style="--pc:{color}" aria-label="{escape(name)}">'
+                    f'<b>{tag}</b><span>{escape(name)}</span></button>'
+                    for i, (tag, name, _, color, _, _, _, _) in enumerate(PHASES))
+    ph_items = "".join(
+        f'<div class="jx-it" data-i="{i}" style="--pc:{color}"><div class="jx-ph-h"><span class="jx-ico">'
+        f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">{icon}</svg></span>'
+        f'<p class="jx-in"><b>{escape(name)}</b>{goal}</p></div><p class="jx-id">{desc}</p>'
+        f'<dl class="jx-facts"><div><dt>Participants</dt><dd>{n}</dd></div><div><dt>Duration</dt><dd>{dur}</dd></div>'
+        f'<div><dt>For devices</dt><dd>{dev}</dd></div></dl></div>'
+        for i, ((tag, name, goal, color, n, dur, desc, dev), icon) in enumerate(zip(PHASES, PHASE_ICONS)))
+    bands = "".join(f'<button type="button" class="jx-band" data-i="{i}" style="--pc:{_trl_color(i)};--ink:{grants.on_color(_trl_color(i))}" '
+                    f'aria-label="TRL {i + 1}: {TRL_LADDER[i]}">TRL {i + 1}</button>' for i in range(9))
+    trl_items = "".join(f'<div class="jx-it" data-i="{i}" style="--pc:{_trl_color(i)}"><p class="jx-in"><b>TRL {i + 1}</b>{TRL_LADDER[i]}</p>'
+                        f'<p class="jx-stage">{TRL_STAGE[i][0]}</p><p class="jx-id">{TRL_STAGE[i][1]}</p></div>' for i in range(9))
+    return ('<section class="jx-sec" id="path">' + _chap(2) +
+            '<h2>Phases of clinical research</h2>'
+            '<p class="jx-sub">A new treatment moves through numbered phases, each answering a different question with '
+            'more people. Select a phase to see what it is for.</p>'
+            f'<div class="jx-box jx-phases"><div class="jx-track"><i class="jx-line"><i></i></i>{nodes}</div>'
+            f'<div class="jx-items">{ph_items}</div>'
+            '<div class="jx-pn"><button type="button" class="jx-prev" aria-label="Previous phase">&larr;</button>'
+            '<button type="button" class="jx-next" aria-label="Next phase">&rarr;</button></div></div>'
+            '<h3 id="trl">TRL: how ready is a technology?</h3>'
+            '<p class="jx-sub">For devices and rehabilitation technology, the Technology Readiness Level (1&ndash;9) tracks '
+            'maturity from first principles to routine use. Raise the level to see the matching clinical stage.</p>'
+            f'<div class="jx-box jx-trl"><div class="jx-thermo"><div class="jx-tube">{bands}</div><span class="jx-bulb"></span></div>'
+            f'<div class="jx-trl-r"><div class="jx-items">{trl_items}</div>'
+            '<label class="jx-range"><span>Readiness level</span><input type="range" min="1" max="9" step="1" value="1" '
+            'aria-label="Technology readiness level"></label></div></div>'
+            '<p class="jx-src">Level names follow the EU scale. The match with clinical stages is approximate and follows the '
+            f'<a href="{TRL_SOURCE}" rel="noopener" target="_blank">US Department of Defense biomedical TRL guidance</a>; '
+            'other schemes shift it by a level.</p></section>')
+
+
+def dock_block():
+    """Barra di avanzamento in alto e indice fisso in basso: mostra il passo in cui ci si trova e porta agli altri."""
+    links = "".join(f'<a href="#{sid}"><b>{n}</b><span>{short}</span></a>' for sid, n, short, _, _ in CHAPTERS)
+    return (f'<div class="jx-prog" aria-hidden="true"><i></i></div><nav class="jx-dock" aria-label="Steps of this page">{links}</nav>'
+            + JX_CSS + JX_JS)
+
+
+JX_CSS = """<style id="jx-css">
+  html { scroll-behavior: smooth; }
+  .jx-sec, #evidence-pyramid, #tools, #carousels, #trl { scroll-margin-top: 28px; }
+  .jx-sec { margin: 8px 0 4px; }
+  .jx-sec > h2 { font-size: 26px; font-weight: 800; margin: 6px 0 8px; color: var(--accent); line-height: 1.15; }
+  #evidence-pyramid > h2, #tools > h2, h2.lib { font-size: 26px !important; margin-top: 6px !important; }
+  .jx-sec > h3 { font-size: 20px; font-weight: 800; margin: 34px 0 6px; color: var(--text); }
+  .jx-sub { color: var(--soft); font-size: 15px; margin: 0 0 16px; max-width: 62ch; }
+  .jx-src { color: var(--muted); font-size: 12.5px; margin: 10px 0 0; max-width: 70ch; }
+  .jx-src a { color: var(--soft); }
+  .jx-chap { display: flex; align-items: center; gap: 12px; margin: 64px 0 0; font: 800 11.5px/1 Inter, system-ui, sans-serif;
+             letter-spacing: .12em; text-transform: uppercase; color: var(--soft); }
+  .jx-chap b { color: var(--accent); font: 800 13px/1 Inter, system-ui, sans-serif; letter-spacing: .04em; }
+  .jx-chap::after { content: ""; flex: 1; height: 1px; background: #2E2E2E; }
+  .jx-box { position: relative; background: #0F0F0F; border: 1px solid #2E2E2E; border-radius: 20px; padding: 22px; }
+
+  /* apertura */
+  .jx-hero { margin: 4px 0 0; }
+  .jx-lead { color: var(--soft); font-size: 17px; line-height: 1.5; margin: 0 0 22px; max-width: 60ch; }
+  .jx-steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+  .jx-step { position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 132px; padding: 14px;
+             background: #0F0F0F; border: 1px solid #2E2E2E; border-radius: 16px; text-decoration: none; color: var(--text);
+             overflow: hidden; transition: transform .35s cubic-bezier(.2,.7,.2,1), border-color .25s; }
+  .jx-step b { font: 800 12px/1 Inter, system-ui, sans-serif; color: var(--accent); letter-spacing: .06em; }
+  .jx-st { font: 800 15.5px/1.2 Inter, system-ui, sans-serif; margin-top: auto; }
+  .jx-sd { font-size: 12.5px; color: var(--soft); line-height: 1.3; }
+  .jx-step:hover, .jx-step:focus-visible { transform: translateY(-4px); border-color: var(--accent); }
+  .jx-cue { display: flex; align-items: center; gap: 10px; margin: 22px 0 0; color: var(--muted);
+            font: 700 11px/1 Inter, system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+  .jx-cue i { width: 1px; height: 28px; background: linear-gradient(var(--accent), transparent); animation: jx-cue 1.8s ease-in-out infinite; transform-origin: top; }
+  @keyframes jx-cue { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+  @media (max-width: 760px) {
+    .jx-steps { grid-template-columns: 1fr; gap: 8px; }
+    .jx-step { min-height: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 14px; padding: 13px 14px; align-items: center; }
+    .jx-step b { grid-row: 1 / span 2; font-size: 13px; }
+    .jx-st { margin: 0; }
+  }
+
+  /* luce che segue il puntatore sulle schede */
+  .jx-glow::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0;
+       background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), rgba(136, 176, 248, .16), transparent 70%);
+       transition: opacity .3s; }
+  .jx-glow:hover::before { opacity: 1; }
+
+  /* schede a scelta (PICOT, fasi, TRL): senza script si vedono tutte, con lo script una alla volta */
+  .jx-items { display: grid; gap: 12px; }
+  .jx-it { border-left: 3px solid var(--pc); padding: 2px 0 2px 14px; }
+  .jx-on .jx-items { display: block; }
+  .jx-on .jx-it { display: none; }
+  .jx-on .jx-it.on { display: block; animation: jx-in .45s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes jx-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .jx-in { margin: 0 0 6px; font-size: 14px; color: var(--soft); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .jx-in b { color: var(--pc); font: 800 19px/1.1 Inter, system-ui, sans-serif; }
+  .jx-id { margin: 0 0 8px; font-size: 15.5px; line-height: 1.45; color: var(--text); max-width: 62ch; }
+  .jx-ie { margin: 0; font-size: 14px; color: var(--soft); font-style: italic; }
+  .jx-ie span { display: block; font: 800 10.5px/1.6 Inter, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase;
+                color: var(--muted); font-style: normal; }
+
+  /* PICOT */
+  .jx-q { font-size: clamp(19px, 3.1vw, 27px); line-height: 1.5; font-weight: 600; margin: 0 0 20px; color: var(--text); }
+  .jx-ch { color: var(--text); padding: .05em .15em; cursor: pointer;
+           border-radius: 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone; box-shadow: inset 0 -3px 0 var(--pc); transition: background .25s, color .25s, box-shadow .25s; }
+  .jx-ch:focus-visible { outline: 2px solid var(--pc); outline-offset: 2px; }
+  .jx-ch:hover { box-shadow: inset 0 -8px 0 var(--pc); }
+  .jx-ch.on { background: var(--pc); color: #0A0A0A; box-shadow: none; }
+  .jx-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 0 0 18px; }
+  .jx-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 76px; padding: 10px 4px;
+             background: transparent; color: var(--pc); border: 1.5px solid var(--pc); border-radius: 14px; cursor: pointer;
+             transition: background .25s, color .25s, transform .3s cubic-bezier(.2,.7,.2,1); }
+  .jx-tile b { font: 800 26px/1 Inter, system-ui, sans-serif; }
+  .jx-tile span { font: 800 10px/1 Inter, system-ui, sans-serif; letter-spacing: .05em; text-transform: uppercase; }
+  .jx-tile:hover { transform: translateY(-3px); }
+  .jx-tile.on { background: var(--pc); color: #0A0A0A; }
+  @media (max-width: 560px) { .jx-tiles { gap: 6px; } .jx-tile { min-height: 58px; } .jx-tile span { display: none; } .jx-box { padding: 16px; } }
+  .jx-notes { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .jx-notes a { display: flex; justify-content: space-between; align-items: center; gap: 6px 16px; flex-wrap: wrap; padding: 12px 14px;
+                background: #121212; border: 1px solid #2E2E2E; border-radius: 12px; text-decoration: none; font-size: 14.5px;
+                transition: border-color .25s, transform .3s cubic-bezier(.2,.7,.2,1); }
+  .jx-notes a span { color: var(--soft); } .jx-notes a b { color: var(--accent); font-weight: 700; }
+  .jx-notes a:hover, .jx-notes a:focus-visible { border-color: var(--accent); transform: translateX(4px); }
+
+  /* fasi */
+  .jx-track { position: relative; display: flex; justify-content: space-between; margin: 0 0 22px; }
+  .jx-line { position: absolute; left: 22px; right: 22px; top: 21px; height: 2px; background: #2E2E2E; }
+  .jx-line i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #3CC9B0, #88B0F8, #8858F0, #F8B048, #FFFFFF);
+               background-size: calc(100% / var(--f, 1)) 100%; transition: width .6s cubic-bezier(.2,.7,.2,1); }
+  .jx-node { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; background: none; border: 0; padding: 0;
+             cursor: pointer; color: var(--soft); width: 44px; }
+  .jx-node b { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: #0A0A0A;
+               border: 2px solid #3A3A3A; color: var(--soft); font: 800 18px/1 Inter, system-ui, sans-serif;
+               transition: border-color .3s, color .3s, background .3s, transform .3s cubic-bezier(.2,.7,.2,1); }
+  .jx-node span { font: 800 10.5px/1 Inter, system-ui, sans-serif; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+  .jx-node.done b { border-color: var(--pc); color: var(--pc); }
+  .jx-node.on b { background: var(--pc); border-color: var(--pc); color: #0A0A0A; transform: scale(1.12); }
+  .jx-node.on span { color: var(--text); }
+  .jx-node:hover b { border-color: var(--pc); }
+  .jx-ph-h { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .jx-ph-h .jx-in { margin: 0; flex-direction: column; gap: 2px; align-items: flex-start; }
+  .jx-ico { width: 44px; height: 44px; flex: none; border-radius: 50%; border: 2px solid var(--pc); color: var(--pc); display: grid; place-items: center; }
+  .jx-ico svg { width: 22px; height: 22px; }
+  .jx-facts { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 10px; margin: 12px 0 0; }
+  .jx-facts div { background: #161616; border-radius: 12px; padding: 10px 12px; }
+  .jx-facts dt { font: 800 10.5px/1.5 Inter, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .jx-facts dd { margin: 2px 0 0; font-size: 14px; color: var(--text); line-height: 1.35; }
+  @media (max-width: 640px) { .jx-facts { grid-template-columns: 1fr; } .jx-node span { font-size: 9px; } }
+  .jx-pn { display: none; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+  .jx-on .jx-pn { display: flex; }
+  .jx-pn button { width: 42px; height: 42px; border-radius: 50%; background: transparent; color: var(--text); border: 1px solid #3A3A3A;
+                  font-size: 17px; cursor: pointer; transition: border-color .25s, background .25s; }
+  .jx-pn button:hover:not(:disabled) { border-color: var(--accent); background: #161616; }
+  .jx-pn button:disabled { opacity: .35; cursor: default; }
+
+  /* termometro TRL */
+  .jx-trl { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 26px; align-items: center; }
+  .jx-thermo { display: flex; flex-direction: column; align-items: center; }
+  .jx-tube { display: flex; flex-direction: column-reverse; width: 72px; border-radius: 36px 36px 0 0; overflow: hidden; background: #161616;
+             border: 2px solid #2E2E2E; border-bottom: 0; }
+  .jx-band { height: 38px; border: 0; border-top: 1px solid #0A0A0A; background: #161616; color: var(--muted); cursor: pointer;
+             font: 800 12.5px/1 Inter, system-ui, sans-serif; transition: background .35s, color .35s; }
+  .jx-band:last-child { height: 46px; padding-top: 8px; }
+  .jx-band:first-child { height: 54px; padding-bottom: 16px; }
+  .jx-band.fill { background: var(--pc); color: var(--ink); }
+  .jx-band.on { box-shadow: inset 0 0 0 2px #0A0A0A, inset 0 0 0 4px var(--pc); }
+  .jx-band:hover:not(.fill) { background: #222; color: var(--text); }
+  .jx-bulb { width: 104px; height: 104px; border-radius: 50%; background: #3CC9B0; margin-top: -18px; border: 2px solid #2E2E2E;
+             box-shadow: 0 0 40px rgba(60, 201, 176, .25); }
+  .jx-trl .jx-in { flex-direction: column; gap: 4px; align-items: flex-start; font-size: 16px; color: var(--text); font-weight: 600; }
+  .jx-trl .jx-in b { font-size: 34px; }
+  .jx-stage { display: inline-block; margin: 6px 0 10px; padding: 6px 12px; border-radius: 999px; background: var(--pc); color: #0A0A0A;
+              font: 800 11.5px/1.2 Inter, system-ui, sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+  .jx-trl .jx-it { border-left: 0; padding-left: 0; }
+  .jx-on.jx-trl .jx-items { min-height: 215px; }
+  .jx-range { display: none; margin-top: 12px; }
+  .jx-on .jx-range { display: block; }
+  .jx-range span { display: block; font: 800 10.5px/1.6 Inter, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .jx-range input { width: 100%; max-width: 360px; accent-color: var(--accent); }
+  @media (max-width: 560px) { .jx-trl { grid-template-columns: 64px minmax(0, 1fr); gap: 16px; align-items: start; }
+       .jx-tube { width: 56px; } .jx-band { font-size: 10.5px; height: 34px; } .jx-band:first-child { height: 46px; padding-bottom: 12px; } .jx-bulb { width: 76px; height: 76px; margin-top: -12px; }
+       .jx-trl .jx-in b { font-size: 28px; } .jx-on.jx-trl .jx-items { min-height: 290px; } }
+
+  /* comparsa allo scorrimento */
+  .jx-rv { opacity: 0; transform: translateY(26px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+  .jx-rv.in { opacity: 1; transform: none; }
+
+  /* avanzamento e indice fisso */
+  .jx-prog { position: fixed; left: 0; right: 0; top: 0; height: 3px; z-index: 60; pointer-events: none; }
+  .jx-prog i { display: block; height: 100%; background: linear-gradient(90deg, #3CC9B0, #88B0F8, #8858F0, #F8B048); transform: scaleX(0); transform-origin: left; }
+  .jx-dock { position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); z-index: 55; display: flex; gap: 4px; padding: 5px;
+             background: rgba(18, 18, 18, .82); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border: 1px solid #2E2E2E;
+             border-radius: 999px; transform: translate(-50%, 140%); opacity: 0; transition: transform .5s cubic-bezier(.2,.7,.2,1), opacity .4s;
+             box-shadow: 0 10px 40px rgba(0, 0, 0, .5); max-width: calc(100vw - 20px); }
+  .jx-dock.show { transform: translate(-50%, 0); opacity: 1; }
+  .jx-dock a { display: flex; align-items: center; gap: 0; height: 38px; min-width: 38px; padding: 0 12px; border-radius: 999px; text-decoration: none;
+               color: var(--soft); font: 800 12px/1 Inter, system-ui, sans-serif; justify-content: center;
+               transition: background .3s, color .3s, padding .3s; }
+  .jx-dock a b { font-weight: 800; letter-spacing: .04em; }
+  .jx-dock a span { max-width: 0; overflow: hidden; white-space: nowrap; opacity: 0; transition: max-width .45s cubic-bezier(.2,.7,.2,1), opacity .3s, margin .3s; }
+  .jx-dock a:hover { color: var(--text); background: #1F1F1F; }
+  .jx-dock a.on { background: var(--accent); color: #0A0A0A; padding: 0 15px; }
+  .jx-dock a.on span { max-width: 90px; opacity: 1; margin-left: 8px; }
+  body.jx-has-dock footer { padding-bottom: 70px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .jx-rv { opacity: 1; transform: none; transition: none; }
+    .jx-cue i, .jx-on .jx-it.on { animation: none; }
+    .jx-step, .jx-tile, .jx-notes a, .jx-node b, .jx-line i, .jx-band, .jx-dock, .jx-dock a span { transition: none; }
+  }
+</style>"""
+
+JX_JS = """<script>
+(function () {
+  var doc = document.documentElement, still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+
+  /* avanzamento e indice fisso */
+  var bar = document.querySelector(".jx-prog i"), dock = document.querySelector(".jx-dock");
+  if (bar && dock) {
+    document.body.classList.add("jx-has-dock");
+    var links = all("a", dock), secs = links.map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); });
+    var tick = false;
+    function onScroll() {
+      tick = false;
+      var h = doc.scrollHeight - window.innerHeight, y = window.pageYOffset, cur = -1;
+      bar.style.transform = "scaleX(" + (h > 0 ? Math.min(1, y / h) : 0) + ")";
+      for (var i = 0; i < secs.length; i++) if (secs[i] && secs[i].getBoundingClientRect().top < window.innerHeight * 0.45) cur = i;
+      if (h > 0 && y >= h - 4) cur = secs.length - 1;
+      links.forEach(function (a, i) { a.classList.toggle("on", i === cur); if (i === cur) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); });
+      dock.classList.toggle("show", y > 260);
+    }
+    window.addEventListener("scroll", function () { if (!tick) { tick = true; window.requestAnimationFrame(onScroll); } }, { passive: true });
+    window.addEventListener("resize", onScroll);
+    onScroll();
+  }
+
+  /* luce che segue il puntatore */
+  document.addEventListener("pointermove", function (e) {
+    var c = e.target.closest && e.target.closest(".jx-glow");
+    if (!c) return;
+    var r = c.getBoundingClientRect();
+    c.style.setProperty("--mx", (e.clientX - r.left) + "px");
+    c.style.setProperty("--my", (e.clientY - r.top) + "px");
+  }, { passive: true });
+
+  /* schede a scelta: una alla volta */
+  function chooser(box, triggers, onPick) {
+    if (!box) return null;
+    var items = all(".jx-it", box), cur = -1, touched = false;
+    box.classList.add("jx-on");
+    function pick(i, byUser) {
+      if (byUser) touched = true;
+      i = Math.max(0, Math.min(items.length - 1, i));
+      if (i === cur) return;
+      cur = i;
+      items.forEach(function (el, k) { el.classList.toggle("on", k === i); });
+      triggers.forEach(function (group) { group.forEach(function (el) {
+        var on = +el.getAttribute("data-i") === i; el.classList.toggle("on", on); el.setAttribute("aria-pressed", on ? "true" : "false"); }); });
+      if (onPick) onPick(i);
+    }
+    triggers.forEach(function (group) { group.forEach(function (el) {
+      el.addEventListener("click", function () { pick(+el.getAttribute("data-i"), true); });
+      if (el.tagName !== "BUTTON") el.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(+el.getAttribute("data-i"), true); } }); }); });
+    return { pick: pick, cur: function () { return cur; }, n: items.length, touched: function () { return touched; } };
+  }
+  /* la prima volta che il riquadro entra nello schermo, scorre da solo le voci */
+  function tour(box, ch, order, pause) {
+    if (!box || !ch || still || !("IntersectionObserver" in window)) return;
+    var io = new IntersectionObserver(function (es) {
+      if (!es[0].isIntersecting) return;
+      io.disconnect();
+      var k = 0;
+      (function step() { if (ch.touched() || k >= order.length) return; ch.pick(order[k++], false); setTimeout(step, pause); })();
+    }, { threshold: 0.5 });
+    io.observe(box);
+  }
+
+  var pBox = document.querySelector(".jx-picot");
+  var picot = chooser(pBox, pBox ? [all(".jx-tile", pBox), all(".jx-ch", pBox)] : []);
+  if (picot) { picot.pick(0, false); tour(pBox, picot, [0, 1, 2, 3, 4, 0], 1500); }
+
+  var phBox = document.querySelector(".jx-phases");
+  if (phBox) {
+    var nodes = all(".jx-node", phBox), line = phBox.querySelector(".jx-line i"), prev = phBox.querySelector(".jx-prev"), next = phBox.querySelector(".jx-next");
+    var phases = chooser(phBox, [nodes], function (i) {
+      var f = i / (nodes.length - 1);
+      line.style.setProperty("--f", f || 1); line.style.width = (f * 100) + "%";
+      nodes.forEach(function (n, k) { n.classList.toggle("done", k < i); });
+      prev.disabled = i === 0; next.disabled = i === nodes.length - 1;
+    });
+    prev.addEventListener("click", function () { phases.pick(phases.cur() - 1, true); });
+    next.addEventListener("click", function () { phases.pick(phases.cur() + 1, true); });
+    phBox.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight") phases.pick(phases.cur() + 1, true); else if (e.key === "ArrowLeft") phases.pick(phases.cur() - 1, true);
+    });
+    phases.pick(0, false); tour(phBox, phases, [0, 1, 2, 3, 4, 0], 1100);
+  }
+
+  var tBox = document.querySelector(".jx-trl");
+  if (tBox) {
+    var bands = all(".jx-band", tBox), range = tBox.querySelector("input[type=range]");
+    var trl = chooser(tBox, [bands], function (i) {
+      bands.forEach(function (b, k) { b.classList.toggle("fill", k <= i); });
+      range.value = i + 1;
+    });
+    range.addEventListener("input", function () { trl.pick(+range.value - 1, true); });
+    trl.pick(0, false); tour(tBox, trl, [0, 1, 2, 3, 4, 5], 420);
+  }
+
+  /* comparsa allo scorrimento */
+  if (!still && "IntersectionObserver" in window) {
+    var groups = [".jx-chap", ".jx-sec > h2", ".jx-sec > h3", ".jx-sub", ".jx-box", ".jx-notes li", ".jx-step", "#evidence-pyramid > h2",
+                  "#evidence-pyramid .panel", "#tools > h2", "#tools .tool", "#tools .dt", "h2.lib", "article.method"];
+    var seen = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); seen.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+    groups.forEach(function (sel) {
+      all(sel).forEach(function (el) {
+        var sib = el.parentNode ? Array.prototype.indexOf.call(el.parentNode.children, el) : 0;
+        el.classList.add("jx-rv");
+        if (/li|jx-step|tool/.test(sel)) el.style.transitionDelay = Math.min(sib, 5) * 70 + "ms";
+        seen.observe(el);
+      });
+    });
+    /* i filtri della libreria nascondono e mostrano le schede: quelle rese visibili dopo non devono restare trasparenti */
+    setTimeout(function () { all(".jx-rv").forEach(function (el) { if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add("in"); }); }, 60);
+  }
+})();
+</script>"""
+
+
 def build_page(data, cfg, today=None):
     today = today or date.today()
     THUMBS.mkdir(parents=True, exist_ok=True)
@@ -433,9 +925,14 @@ def build_page(data, cfg, today=None):
         sections.append("\n".join(parts))
     c = grants.site_palette(cfg)
     cat_opts = "".join(f'<option value="{_slug(k)}">{escape(k)}</option>' for k in sorted(cats))
-    top = pyramid_block(cfg)                       # piramide accesa: in cima alla pagina, poi gli strumenti, poi i caroselli
+    top = pyramid_block(cfg)                       # percorso: domanda (PICOT), disegno (piramide), fasi e TRL, strumenti, caroselli
     if top:
-        top += "\n" + tools_block(cfg)
+        guided = bool(cfg.get("frameworks"))
+        if guided:
+            top = (hero_block(cfg) + "\n" + picot_block(cfg) + "\n" + _chap(1)
+                   + top + "\n" + path_block(cfg) + "\n" + _chap(3) + tools_block(cfg) + "\n" + _chap(4))
+        else:
+            top += "\n" + tools_block(cfg)
     html = PAGE.format(brand=escape(cfg["brand_name"]), handle=escape(cfg["handle"]), ig=cfg["handle"].lstrip("@"),
                        bg=c["background"], muted=c["muted"], soft=c["muted_text"], teal=grants.site_accent(cfg, "methods") if cfg.get("site_v4") else c["accent"], cat_opts=cat_opts,
                        n=len(data), topics_word="topic" if len(data) == 1 else "topics", tools="" if top else tools_block(cfg), sections="\n".join(sections), updated=grants._fmt_date(today),
@@ -445,4 +942,10 @@ def build_page(data, cfg, today=None):
     if top:
         i, j = html.index('  <p class="intro">'), html.index('  <form class="filters"')
         html = (html[:i] + top + '\n  <h2 class="lib" id="carousels">Methodology carousels</h2>\n' + html[i:j] + html[j:])
+        if cfg.get("frameworks"):
+            html = html.replace("</body>", dock_block() + "\n</body>", 1)
+            if not data:                             # libreria ancora vuota: niente filtri a vuoto, una riga che lo dice
+                i, j = html.index('  <p class="intro">'), html.index("</form>", html.index('  <form class="filters"')) + 7
+                html = (html[:i] + '  <p class="nomatch">The methodology carousels will be collected here as they are '
+                        'published, each with its key points and references.</p>' + html[j:])
     return html

@@ -36,6 +36,9 @@
   .pills .tag { background: var(--c); color: var(--on); border-radius: 999px; padding: 9px 17px; letter-spacing: .045em;
                 font: 800 12.5px/1 Inter, system-ui, sans-serif; }
   .pills .met { color: var(--soft); font-size: 14px; line-height: 1.35; }
+  /* telefono: ogni metrica occupa due righe, così le pillole restano alla stessa distanza */
+  @media (max-width: 520px) { .pills { gap: 20px; } .pills .met { min-height: 2.7em; text-align: center; text-wrap: balance; }
+                              .cta .cocreate { width: 100%; max-width: 400px; } }
   .pills a:hover .tag, .pills a:focus-visible .tag { filter: brightness(1.08); }
   .pills a:hover .met { color: var(--text); }
   .extras { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 0 0 6px; }
@@ -69,11 +72,12 @@
   dialog.cc .status { font-size: 14px; margin: 10px 0 0; min-height: 1.2em; }
   dialog.cc .status.ok { color: var(--teal); } dialog.cc .status.err { color: #FF8A80; }
   main { max-width: 520px; margin: 0 auto; padding: 0 16px 40px; display: grid; gap: 16px; }
-  .social { display: flex; justify-content: center; gap: 10px; margin-top: 0; flex-wrap: wrap; }
+  .social { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 auto; width: 100%; max-width: 400px; }
   .noig a { color: var(--teal); font-weight: 600; }
   .noig { color: var(--soft); font-size: 14px; text-align: center; max-width: 440px; margin: 16px auto 0; line-height: 1.5; }
   .social a { color: var(--soft); text-decoration: none; font-weight: 600; font-size: 14px; border: 1px solid var(--muted);
-              border-radius: 999px; padding: 8px 14px; display: inline-flex; align-items: center; gap: 8px; }
+              border-radius: 999px; padding: 9px 6px; display: flex; align-items: center; justify-content: center; gap: 7px; min-width: 0; white-space: nowrap; }
+  @media (max-width: 400px) { .social a { font-size: 13px; gap: 6px; } .social a svg { width: 16px; height: 16px; } }
   .social a svg { width: 18px; height: 18px; flex: none; }
   .social a:hover { color: #FFFFFF; border-color: var(--soft); }
   footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 16px 30px; max-width: 520px; margin: 0 auto; }

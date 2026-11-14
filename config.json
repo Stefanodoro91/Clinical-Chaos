@@ -81,6 +81,7 @@
   "visual_plan": true,
   "evidence_pyramid": true,
   "tools_table_v2": true,
+  "frameworks": true,
   "social_live_reels": [
     "grant",
     "positions"

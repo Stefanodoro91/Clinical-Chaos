@@ -90,10 +90,13 @@
 </style>
 <style id="crc-switchbar">
   /* menu tra le schede del sito: griglia ordinata, celle uguali, stessa distanza */
-  nav.switchbar {display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 0 0 22px;}
+  nav.switchbar {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 22px;}
+  nav.switchbar > :last-child:nth-child(3n+1) {grid-column: 1 / -1;}
   nav.switchbar .switch {display: flex; align-items: center; justify-content: center; text-align: center;
       min-height: 42px; margin: 0 !important; padding: 8px 12px; line-height: 1.25; box-sizing: border-box;}
-  @media (max-width: 520px) {nav.switchbar {grid-template-columns: repeat(2, 1fr);}
+  @media (max-width: 520px) {nav.switchbar {grid-template-columns: repeat(2, minmax(0, 1fr));}
+      nav.switchbar .switch {font-size: 13px !important; padding: 8px 6px; white-space: nowrap;}
+      nav.switchbar > :last-child:nth-child(3n+1) {grid-column: auto;}
       nav.switchbar > :last-child:nth-child(odd) {grid-column: 1 / -1;}}
 </style>
 </head>
