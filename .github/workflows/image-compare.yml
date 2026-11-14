@@ -17,6 +17,9 @@ on:
       skip:
         description: "parti di nome da saltare, separate da |"
         default: "Smart exoskeleton"
+      kind:
+        description: "LS = Latest Science, ME = Methodology"
+        default: "LS"
       pdf_id:
         description: "id del file Drive che riceve il PDF"
         default: "1L1_5nYzFYq5Hv6jDDnaiQtfXIsD49gYH"
@@ -44,6 +47,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           SOURCE: ${{ inputs.source }}
           IMAGE_MODELS: ${{ inputs.models }}
+          KIND: ${{ inputs.kind }}
           COUNT: ${{ inputs.count }}
           SKIP: ${{ inputs.skip }}
           PDF_ID: ${{ inputs.pdf_id }}

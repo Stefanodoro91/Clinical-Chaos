@@ -16,6 +16,7 @@ WRITER = os.environ.get("PROMPT_MODEL", "anthropic/claude-sonnet-5.5")
 SOURCE = os.environ.get("SOURCE", "Smart exoskeleton")
 SKIP = [x.strip().lower() for x in os.environ.get("SKIP", "").split("|") if x.strip()]
 COUNT = int(os.environ.get("COUNT", "1"))
+KIND = os.environ.get("KIND", "LS")
 PDF_ID = os.environ["PDF_ID"]
 OUT = ROOT / "compare_out"
 OUT.mkdir(exist_ok=True)
@@ -113,9 +114,28 @@ def check(png, text):
     return r.json()["choices"][0]["message"]["content"].strip()
 
 
+METHOD_BRIEF = """Read the methods paper below and write ONE prompt for an image generator. The image is the cover of an Instagram
+carousel about this paper, for a clinical-research methodology account.
+Step 1: identify the paper's single main methodological concept (for example blinding, allocation concealment, sample
+size, a reporting guideline, a bias) in one phrase.
+Step 2: depict THAT concept with ONE concrete, realistic, photographable scene or object that a trial methodologist would
+recognise as exactly that concept (for example: identical coded treatment vials and sealed opaque envelopes for
+allocation concealment; a lab bench with indistinguishable pill containers for blinding). Not a generic clinic, not a
+generic laptop or stethoscope. Do not invent content the paper does not cover.
+Style: realistic editorial photograph, natural but moody lighting, deep black or very dark background with one accent
+colour; portrait 4:5; the lower third calm and dark for a title overlay.
+Forbidden: any text, letters, numbers, logos or watermarks (including on labels, envelopes and screens: keep them blank);
+diagrams, charts, infographics, flowcharts; visible faces; implausible objects.
+Answer with the prompt only (max 100 words), in English.
+
+ARTICLE:
+"""
+
+
 def one(drive, f):
     text = content.material_text(content.material_part(drive, f))[:14000]
-    prompt, _ = chat(BRIEF + text)
+    BRIEF_ = METHOD_BRIEF if KIND == "ME" else BRIEF
+    prompt, _ = chat(BRIEF_ + text)
     out = []
     for attempt in range(2):
         data, ratio, cost = image(MODELS[0], prompt)
@@ -127,7 +147,7 @@ def one(drive, f):
         out.append((prompt, data, ratio, cost, verdict))
         if "VERDICT: OK" in verdict or "VERDICT" not in verdict:
             break
-        prompt, _ = chat(BRIEF + text + "\n\nPREVIOUS PROMPT:\n" + prompt + "\nA reviewer rejected the image: " + verdict
+        prompt, _ = chat(BRIEF_ + text + "\n\nPREVIOUS PROMPT:\n" + prompt + "\nA reviewer rejected the image: " + verdict
                          + "\nWrite an improved prompt that fixes this.")
     return out
 
@@ -135,7 +155,12 @@ def one(drive, f):
 def main():
     drive = bot.drive_service()
     inbox = os.environ["GDRIVE_FOLDER_ID"]
-    files = [f for f in bot.list_inbox(drive, inbox) if f.get("parent") != inbox and content.is_supported(f)]
+    allf = bot.list_inbox(drive, inbox)
+    if KIND == "ME":
+        files = [f for f in allf if f.get("parent") == inbox and content.is_supported(f)]
+        files += [f for f in bot.list_files(drive, os.environ["GDRIVE_DONE_FOLDER_ID"]) if content.is_supported(f)]
+    else:
+        files = [f for f in allf if f.get("parent") != inbox and content.is_supported(f)]
     if COUNT == 1:
         chosen = [next((x for x in files if SOURCE.lower() in x["name"].lower()), files[0])]
     else:
