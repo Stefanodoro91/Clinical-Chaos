@@ -130,7 +130,29 @@
     .facts { grid-template-columns: 1fr; }
     .facts dd { border-top: 0; padding-top: 0; }
   }
-</style>
+
+  /* Newsletter CTA */
+  .newsletter-cta {
+    background: #111;
+    border-top: 1px solid #2E2E2E;
+    border-bottom: 1px solid #2E2E2E;
+    padding: 48px 20px;
+    text-align: center;
+    margin: 40px 0 0;
+  }
+  .newsletter-inner { max-width: 540px; margin: 0 auto; }
+  .newsletter-label {
+    font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: #3DD9C1; font-weight: 600; margin: 0 0 12px;
+  }
+  .newsletter-title {
+    font-size: clamp(22px, 4vw, 30px); font-weight: 700;
+    color: #fff; margin: 0 0 10px; line-height: 1.25;
+  }
+  .newsletter-sub {
+    font-size: 15px; color: #D3DEE8; margin: 0 0 24px; line-height: 1.6;
+  }
+  </style>
 <style id="crc-switchbar">
   /* menu tra le schede del sito: griglia ordinata, celle uguali, stessa distanza */
   nav.switchbar {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 22px;}
@@ -1719,6 +1741,19 @@
     </div>
     </div>
   </section>
+  
+<!-- Newsletter CTA -->
+<section class="newsletter-cta">
+  <div class="newsletter-inner">
+    <p class="newsletter-label">Newsletter</p>
+    <h2 class="newsletter-title">Stay ahead in clinical research</h2>
+    <p class="newsletter-sub">Weekly digest of open funding calls and academic positions, verified on official sources. Free, no spam.</p>
+    <div id="beehiiv-embed-cta"></div>
+    <script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="1762e9e8-1e5c-4344-bfd0-cc4eb7defc22"></script>
+  </div>
+</section>
+<!-- End Newsletter CTA -->
+
   <footer>
     Calls collected by our monitoring and checked automatically against the official text: always verify eligibility,
     amounts and dates in the official call before applying.<br>
@@ -2024,8 +2059,5 @@
   form.addEventListener("reset", function () { setTimeout(function () { apply(true); }, 0); });
   apply(false);
 })();
-</script>
-<!-- Beehiiv subscribe form -->
-<script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="1762e9e8-1e5c-4344-bfd0-cc4eb7defc22"></script>
-</body>
+</script></body>
 </html>

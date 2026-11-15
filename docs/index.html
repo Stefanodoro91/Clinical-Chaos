@@ -90,7 +90,29 @@
   .social a svg { width: 18px; height: 18px; flex: none; }
   .social a:hover { color: #FFFFFF; border-color: var(--soft); }
   footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 16px 30px; max-width: 520px; margin: 0 auto; }
-</style>
+
+  /* Newsletter CTA */
+  .newsletter-cta {
+    background: #111;
+    border-top: 1px solid #2E2E2E;
+    border-bottom: 1px solid #2E2E2E;
+    padding: 48px 20px;
+    text-align: center;
+    margin: 40px 0 0;
+  }
+  .newsletter-inner { max-width: 540px; margin: 0 auto; }
+  .newsletter-label {
+    font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: #3DD9C1; font-weight: 600; margin: 0 0 12px;
+  }
+  .newsletter-title {
+    font-size: clamp(22px, 4vw, 30px); font-weight: 700;
+    color: #fff; margin: 0 0 10px; line-height: 1.25;
+  }
+  .newsletter-sub {
+    font-size: 15px; color: #D3DEE8; margin: 0 0 24px; line-height: 1.6;
+  }
+  </style>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style id="crc-editorial">
@@ -236,7 +258,20 @@
   Bookmark it or add it to your home screen, and share any card with the Share button.</p>
   <p class="noig"><a href="feedback.html">Feedback, a call to suggest or an error to report? Write to us</a></p>
 </main>
-<footer>Educational content for researchers and health professionals; not medical advice. Always check eligibility and deadlines in the official call or advertisement. Updated 15 Nov 2026.</footer>
+
+<!-- Newsletter CTA -->
+<section class="newsletter-cta">
+  <div class="newsletter-inner">
+    <p class="newsletter-label">Newsletter</p>
+    <h2 class="newsletter-title">Stay ahead in clinical research</h2>
+    <p class="newsletter-sub">Weekly digest of open funding calls and academic positions, verified on official sources. Free, no spam.</p>
+    <div id="beehiiv-embed-cta"></div>
+    <script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="1762e9e8-1e5c-4344-bfd0-cc4eb7defc22"></script>
+  </div>
+</section>
+<!-- End Newsletter CTA -->
+
+  <footer>Educational content for researchers and health professionals; not medical advice. Always check eligibility and deadlines in the official call or advertisement. Updated 15 Nov 2026.</footer>
 <dialog class="cc" id="cc" aria-labelledby="cc-title">
   <form method="dialog"><button class="x" aria-label="Close">&times;</button></form>
   <h2 id="cc-title">Co-create the clinical research ecosystem</h2>
@@ -405,8 +440,5 @@
   start();
   if (wide.addEventListener) wide.addEventListener("change", start);
 })();
-</script>
-<!-- Beehiiv subscribe form -->
-<script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="1762e9e8-1e5c-4344-bfd0-cc4eb7defc22"></script>
-</body>
+</script></body>
 </html>

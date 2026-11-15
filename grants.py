@@ -2727,7 +2727,42 @@ def add_decor(html):
         html = page_cubes(html)
     if 'class="filters"' in html and "form.filters\")" not in html:
         html = html.replace("</body>", FILTER_SCRIPT + "</body>", 1)
-    if "beehiiv-form" not in html:
-        BEEHIIV = '\n<!-- Beehiiv subscribe form -->\n<script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="1762e9e8-1e5c-4344-bfd0-cc4eb7defc22"></script>\n'
-        html = html.replace("</body>", BEEHIIV + "</body>", 1)
+    if "newsletter-cta" not in html:
+        NEWSLETTER_CSS = """
+  .newsletter-cta {
+    background: #111;
+    border-top: 1px solid #2E2E2E;
+    border-bottom: 1px solid #2E2E2E;
+    padding: 48px 20px;
+    text-align: center;
+    margin: 40px 0 0;
+  }
+  .newsletter-inner { max-width: 540px; margin: 0 auto; }
+  .newsletter-label {
+    font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: #3DD9C1; font-weight: 600; margin: 0 0 12px;
+  }
+  .newsletter-title {
+    font-size: clamp(22px, 4vw, 30px); font-weight: 700;
+    color: #fff; margin: 0 0 10px; line-height: 1.25;
+  }
+  .newsletter-sub {
+    font-size: 15px; color: #D3DEE8; margin: 0 0 24px; line-height: 1.6;
+  }
+"""
+        NEWSLETTER_HTML = """
+<section class="newsletter-cta">
+  <div class="newsletter-inner">
+    <p class="newsletter-label">Newsletter</p>
+    <h2 class="newsletter-title">Stay ahead in clinical research</h2>
+    <p class="newsletter-sub">Weekly digest of open funding calls and academic positions, verified on official sources. Free, no spam.</p>
+    <script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="1762e9e8-1e5c-4344-bfd0-cc4eb7defc22"></script>
+  </div>
+</section>
+"""
+        html = html.replace("</style>", NEWSLETTER_CSS + "  </style>", 1)
+        if "<footer" in html:
+            html = html.replace("<footer", NEWSLETTER_HTML + "\n<footer", 1)
+        else:
+            html = html.replace("</body>", NEWSLETTER_HTML + "\n</body>", 1)
     return html
