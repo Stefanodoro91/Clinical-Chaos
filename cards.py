@@ -34,7 +34,7 @@ BRAND_V4 = _brand_v4_flag()   # logo definitivo (indipendente dalla linea) ed et
 V4_ACCENT = {"methods": "#88B0F8", "science": "#FFFFFF", "grant": "#F8B048", "positions": "#8858F0"}   # colori del logo v3 per rubrica (Latest Science bianco)
 GRANT_KICKER = "FUNDING FOR CLINICAL RESEARCH"     # etichetta della copertina dei bandi (9/11)
 V4_RUBRIC = {"methods": ("DESIGN, REPORTING & APPRAISAL", 0), "science": ("LATEST SCIENCE", 3),
-             "grant": ("FUNDING CALLS", 1), "positions": ("ACADEMIC POSITIONS", 2)}
+             "grant": ("FUNDING FOR CLINICAL RESEARCH", 1), "positions": ("ACADEMIC POSITIONS FOR CLINICAL RESEARCHERS", 2)}
 
 
 AZURES = ["#6EC1FF", "#7AB8FF", "#5FD0F2", "#8AB4FF", "#66C7E8"]     # azzurrini: uno per post, stabile
@@ -1276,7 +1276,7 @@ def positions_cover(post, cfg, total):
     img, d = light_canvas(cfg, 1, total)
     logo_lockup(img, d, MARGIN - 10, 80, cfg)
     badge_f = font("ExtraBold", 34)
-    label = "ACADEMIC POSITIONS"
+    label = "ACADEMIC POSITIONS FOR CLINICAL RESEARCHERS"
     bw = d.textlength(label, font=badge_f) + 60
     d.rounded_rectangle((MARGIN, 300, MARGIN + bw, 366), radius=33, fill=c["accent"])
     d.text((MARGIN + 30, 312), label, font=badge_f, fill=navy)

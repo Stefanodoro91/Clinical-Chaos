@@ -59,7 +59,7 @@ def linkedin_doc(drafts_dir, cfg=None, keep=20):
     for f in files:
         date, rest = f.stem[:10], f.stem[11:]          # nome: AAAA-MM-GG-<tipo>-<id>.txt
         kind = rest.split("-", 1)[0]
-        label = {"grant": "Funding calls", "positions": "Academic positions", "research": "Design, Reporting & Appraisal / Latest Science"}.get(kind, kind)
+        label = {"grant": "Funding for clinical research", "positions": "Academic positions for clinical researchers", "research": "Design, Reporting & Appraisal / Latest Science"}.get(kind, kind)
         live = kind in (cfg.get("social_live_kinds") or []) or not cfg.get("social_paused")
         parts.append("\n" + "═" * 40 + f"\n{date} · {label}" + ("" if live else " (prova)") + "\n" + "═" * 40)
         parts.append(f.read_text(encoding="utf-8").strip())

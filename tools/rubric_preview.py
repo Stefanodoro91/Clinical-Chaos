@@ -16,7 +16,7 @@ os.environ["SKIP_INGEST"] = "1"
 os.environ.pop("GITHUB_EVENT_NAME", None)
 os.environ["COMPARE_MODE"] = "run"
 os.environ.setdefault("FORCED_TASKS", "post bando,revisione slide,verifica fatti,arbitro,rifinitura")
-WRITER = os.environ.get("WRITER", "")          # es. paid:anthropic/claude-sonnet-5.5: scrive e rivede i bandi
+WRITER = os.environ.get("WRITER") or "paid:anthropic/claude-sonnet-5.5"          # es. paid:anthropic/claude-sonnet-5.5: scrive e rivede i bandi
 
 import model_compare as mc          # noqa: E402,F401  (instrada le attività forzate sul modello scelto)
 import bot, drive_preview            # noqa: E402
@@ -52,11 +52,13 @@ def main():
         PREVIEW.mkdir()
         os.environ["POST_TYPE"] = kind
         os.environ.pop("REEL_SOURCE", None)
-        try:
-            bot.main()
-        except SystemExit as e:
-            report.append(f"{kind}: saltato ({e})")
-            continue
+        for attempt in (1, 2, 3):                 # se la revisione scarta tutto si riprova (altri candidati, stesso scrittore)
+            try:
+                bot.main()
+            except SystemExit as e:
+                report.append(f"{kind}: tentativo {attempt} saltato ({e})")
+            if (PREVIEW / "post.json").exists():
+                break
         pj = PREVIEW / "post.json"
         if not pj.exists():
             report.append(f"{kind}: nessun contenuto")

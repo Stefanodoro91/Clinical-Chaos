@@ -781,7 +781,7 @@ def grant_spec(p, v, cfg, today=None):
     if not deadline or (deadline - today).days < 7:
         return None
     days = (deadline - today).days
-    kicker, accent = rubric_tag({"kind": "grant"}, cfg, "FUNDING CALL", cfg.get("grant_accent", "#FFB547"))
+    kicker, accent = rubric_tag({"kind": "grant"}, cfg, "FUNDING FOR CLINICAL RESEARCH", cfg.get("grant_accent", "#FFB547"))
     slides = [{"type": "cover", "kicker": kicker, "title": p["title"],
                "body": _clip_words(v.get("programme") or p.get("funder", ""), 14)},
               {"type": "point", "number": "01", "title": "Deadline",
@@ -810,7 +810,7 @@ def positions_spec(p, archive, cfg, today=None, max_jobs=4):
             jobs.append((v, d))
     if len(jobs) < 2:
         return None
-    kicker, accent = rubric_tag({"kind": "positions"}, cfg, "ACADEMIC POSITIONS", cfg["colors"]["accent"])
+    kicker, accent = rubric_tag({"kind": "positions"}, cfg, "ACADEMIC POSITIONS FOR CLINICAL RESEARCHERS", cfg["colors"]["accent"])
     slides = [{"type": "cover", "kicker": kicker, "title": "Academic positions for clinical researchers",
                "body": f"{len(jobs)} open positions this week"}]
     for i, (v, d) in enumerate(jobs[:max_jobs], 1):
