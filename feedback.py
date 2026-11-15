@@ -12,14 +12,15 @@ import grants
 PAGE = """<!doctype html>
 <html lang="en">
 <head>
-<!-- Google Tag Manager -->
-<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-KQDRTBD5"></script>
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6ZCXVHNT2"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
+  gtag('config', 'G-6ZCXVHNT2');
 </script>
-<!-- End Google Tag Manager -->
+<!-- End Google Analytics 4 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Feedback · {brand}</title>
