@@ -2727,4 +2727,7 @@ def add_decor(html):
         html = page_cubes(html)
     if 'class="filters"' in html and "form.filters\")" not in html:
         html = html.replace("</body>", FILTER_SCRIPT + "</body>", 1)
+    if "beehiiv-form" not in html:
+        BEEHIIV = '\n<!-- Beehiiv subscribe form -->\n<script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="1762e9e8-1e5c-4344-bfd0-cc4eb7defc22"></script>\n'
+        html = html.replace("</body>", BEEHIIV + "</body>", 1)
     return html
