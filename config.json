@@ -58,12 +58,14 @@
   "mono": true,
   "brand_v4": true,
   "preview_file_id": "1JSrccM2tkwrNUUS6y4sCtFYtJXaiB3um",
-  "social_paused": true,
+  "social_paused": false,
   "social_live_kinds": [
     "grant",
     "positions",
     "reel",
-    "stories"
+    "stories",
+    "research",
+    "science"
   ],
   "preview_files": {
     "research": "1VucwbxCWM6-Tr9fVbPKCHYWaN286MMGg",
@@ -75,8 +77,8 @@
   "site_v4": true,
   "ai_paid": {
     "enabled": true,
-    "daily_budget_usd": 0.3,
-    "writing": ["deepseek/deepseek-v4-pro", "deepseek/deepseek-v4.1-flash"],
+    "daily_budget_usd": 1.0,
+    "writing": ["anthropic/claude-sonnet-5.5", "deepseek/deepseek-v4-pro"],
     "review": ["deepseek/deepseek-v4.1-flash"],
     "volume": []
   },
@@ -91,7 +93,9 @@
   "frameworks": true,
   "social_live_reels": [
     "grant",
-    "positions"
+    "positions",
+    "research",
+    "science"
   ],
   "linkedin_kinds": [
     "grant",

@@ -1094,6 +1094,14 @@ def next_grant_post(posted, cfg, grants_list=None, verified=None):
 PAGE = """<!doctype html>
 <html lang="en">
 <head>
+<!-- Google Tag Manager -->
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-KQDRTBD5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<!-- End Google Tag Manager -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Open funding calls for clinical research &amp; rehabilitation · {brand}</title>
