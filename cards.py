@@ -944,10 +944,15 @@ def poster_positions_cover(post, cfg, total):
     img, d, dark, ink, acc = poster_base(post, cfg, total)
     lh = poster_logo(img, d, cfg, dark)
     y = 80 + lh + 50
-    pw = poster_pill(d, f"WEEK OF {post.get('week', '')}".upper(), MARGIN, y, *pill_colors(c, dark))
-    extra_pills(d, post, MARGIN + pw + 16, y, c["background"] if dark else "#FFFFFF", ink)
     n = len(post.get("jobs", []))
-    d.text((MARGIN, y + 86), f"{n} open position{'s' if n != 1 else ''} this week", font=font("SemiBold", 36),
+    if BRAND_V4:                                  # v4: la pill è il nome della rubrica; la settimana passa nella riga sotto
+        main_pill(d, post, "ACADEMIC POSITIONS FOR CLINICAL RESEARCHERS", MARGIN, y, *pill_colors(c, dark))
+        sub = f"Week of {post.get('week', '')} · {n} open position{'s' if n != 1 else ''}"
+    else:
+        pw = poster_pill(d, f"WEEK OF {post.get('week', '')}".upper(), MARGIN, y, *pill_colors(c, dark))
+        extra_pills(d, post, MARGIN + pw + 16, y, c["background"] if dark else "#FFFFFF", ink)
+        sub = f"{n} open position{'s' if n != 1 else ''} this week"
+    d.text((MARGIN, y + 86), sub, font=font("SemiBold", 36),
            fill=c["muted_text"] if dark else INK_MUTED)
     t_top = y + 160
     end = poster_title(d, post["title"], post.get("title_highlight"), MARGIN, t_top, W - 2 * MARGIN, 470, ink, acc)
