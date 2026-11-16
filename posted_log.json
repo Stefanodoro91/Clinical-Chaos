@@ -767,5 +767,25 @@
     "seconds": 16.6,
     "facebook_id": "1127133646694593",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2ej7nkgrn25"
+  },
+  {
+    "date": "2026-11-16",
+    "time": "2026-11-16T13:26:04+00:00",
+    "id": "grant-EU-HORIZON-HLTH-2027-02-DISEASE-14-two-stage",
+    "title": "Advancing neurodegenerative care? Trials for combined interventions",
+    "source": "GrantFinder",
+    "media_id": "18107754578002526",
+    "facebook_id": "1277022912171972_122119284171432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2gmuir4zc2a",
+    "threads_id": "17875293870636958",
+    "kind": "grant",
+    "grant_id": "EU-HORIZON-HLTH-2027-02-DISEASE-14-two-stage",
+    "url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-02-DISEASE-14-two-stage",
+    "deadline": "2027-02-17",
+    "funder": "Horizon Europe",
+    "summary": "This Horizon Europe call aims to support early-stage clinical trials evaluating the safety and efficacy of innovative, multi-disciplinary therapeutic interventions combined with complementary approaches for neurodegenerative diseases. Funded projects should improve patient quality of life, utilise health data according to FAIR principles, engage relevant stakeholders including patients, and leverage research infrastructures. Eligible applicants include international consortia composed of legal entities such as universities, clinical centres, and SMEs established in EU Member States or Associated Countries.",
+    "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+    "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-02-DISEASE-14-two-stage",
+    "grant_title": "Clinical trials for advancing innovative interventions for neurodegenerative diseases"
   }
 ]
