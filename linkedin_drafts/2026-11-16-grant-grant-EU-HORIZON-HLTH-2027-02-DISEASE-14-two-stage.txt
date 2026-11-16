@@ -1,0 +1,22 @@
+Advancing neurodegenerative care? Trials for combined interventions
+
+Developing combined therapies for neurodegenerative diseases? This call supports your early-stage clinical trials.
+
+This opportunity targets safer, more effective interventions combining an active substance with multidisciplinary approaches such as cognitive training or rehabilitation. Note that rare neurodegenerative diseases are excluded from this topic. Consortia must integrate social sciences and humanities expertise and engage all relevant stakeholders (especially patients, caregivers, clinicians, regulators). Are you preparing an early-stage clinical trial for neurodegenerative disorders, or do you know a team that is?
+
+Programme: Horizon Europe
+Eligible countries: EU Member States and associated countries (official call: “EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.”)
+Stage 1 deadline: 17 Feb 2027 (two-stage call)
+Official call: https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-02-DISEASE-14-two-stage
+Looking for consortium partners? EU partner search: https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/partner-search (topic ID: HORIZON-HLTH-2027-02-DISEASE-14-two-stage)
+All open calls, grouped by programme: https://clinicalresearchchaos.com/calls#c-EU-HORIZON-HLTH-2027-02-DISEASE-14-two-stage.
+
+Details are compiled automatically from the official call: always check eligibility, amounts and dates before applying.
+
+#ResearchFunding #ClinicalResearch #NeurodegenerativeDiseases','#ClinicalTrials','#BrainHealth'],'coverage':''}```Wait,intheJSONarrayhashtagsandcoverage,Imustusedoublequotes!LetmeensurestrictdoublequotesforallJSONpropertiesandvalues.Re-emittingproperlyformattedJSON.```json{
+
+Key points:
+1. What it funds: This call funds early-stage clinical trials of innovative therapies for neurodegenerative diseases, excluding rare neurodegenerative diseases. Studies must combine an active substance with multidisciplinary approaches like cognitive training or rehabilitation.
+2. Who it is for: Scientific and clinical research teams require the effective contribution of social sciences and humanities disciplines and experts. Projects should engage patients, caregivers, and regulators to design interventions, with start-ups and SMEs encouraged to participate.
+
+#ResearchFunding #ClinicalResearch #NeurodegenerativeDiseases #ClinicalTrials #BrainHealth
