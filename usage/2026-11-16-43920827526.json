@@ -9,7 +9,40 @@
    "ragionamento": 0,
    "respinte": 0,
    "versione": "gemini-3.5-flash-lite"
+  },
+  "conferma bandi|gemini-3.8-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 3
+  },
+  "conferma bandi|gemini-3.6-flash": {
+   "richieste": 2,
+   "ingresso": 25536,
+   "uscita": 939,
+   "ragionamento": 3451,
+   "respinte": 1,
+   "versione": "gemini-3.6-flash"
+  },
+  "conferma bandi|gemini-3-flash-preview": {
+   "richieste": 2,
+   "ingresso": 25576,
+   "uscita": 860,
+   "ragionamento": 64948,
+   "respinte": 3,
+   "versione": "gemini-3-flash-preview"
+  },
+  "conferma bandi|gemini-3.5-flash": {
+   "richieste": 2,
+   "ingresso": 25503,
+   "uscita": 901,
+   "ragionamento": 4066,
+   "respinte": 1,
+   "versione": "gemini-3.6-flash"
   }
  },
- "esauriti": []
+ "esauriti": [
+  "gemini-3.8-flash"
+ ]
 }
