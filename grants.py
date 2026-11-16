@@ -103,6 +103,11 @@ STRICT ACCURACY RULES:
 - Keep every qualifier of the official text about who can apply and what is funded (career stage and how it is
   defined, mandatory partners, type of organisation, excluded activities): never make the call sound open to more
   people or projects than it is.
+- Use the EXACT terminology of the official text for scope and eligibility. If the call says "knowledge
+  intermediaries", do NOT write "innovation intermediaries". If it says "emerging or re-emerging", write both.
+  If it states priorities with "priority should be given to", do NOT present them as eligibility criteria.
+  When scope includes multiple activity types (e.g. in-vitro, in-vivo, GMP, regulatory), do not reduce them
+  to a subset — name the range or use "including" to signal breadth.
 - Each sentence must make sense on its own, as a screenshot: name what is funded and for whom (never "it", "this
   programme", "the applicants" without saying who).
 
@@ -114,7 +119,7 @@ Write IN ENGLISH:
   recent titles: {recent}.
 - title_highlight: 1-4 words copied EXACTLY from the title.
 - slides: exactly 2 slides. Slide 1 heading "What it funds": aim and kind of projects funded.
-  Slide 2 heading "Who it is for": applicants and teams it targets. Each body max 220 characters.
+  Slide 2 heading "Who it is for": applicants and teams it targets. Each body max 270 characters.
   Each slide also has image_prompt: 15-35 words describing ONE simple illustration of the slide's idea
   (concrete scene with 2-4 recognizable elements; no text, letters, numbers, logos or real people),
   photo_query: 2-4 English keywords to search a real stock photo of the research area or of the team it
@@ -982,7 +987,7 @@ def build_post(g, v, cfg, recent_titles=()):
     slides = []
     for sl in out.get("slides", []):
         if sl.get("heading") and sl.get("body"):
-            body = clip(sl["body"], 320)
+            body = clip(sl["body"], 370)
             slides.append({"heading": clip(sl["heading"], 70), "body": body,
                            "image_prompt": clip(sl.get("image_prompt", ""), 300),
                            "photo_query": clip(sl.get("photo_query", ""), 60),
