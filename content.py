@@ -1233,18 +1233,18 @@ Never return an empty list: write exactly ONE post. Set clinical_focus to the cl
 
 {format_rules}
 
-WHAT GOES ON EACH PAGE (Latest Science):
+WHAT GOES ON EACH PAGE (Latest Science) — keep every slide SHORT and ESSENTIAL:
 - PAGE 1 title: the clinical question behind the paper, as a hook that makes a clinician curious. Do not reveal
-  the conclusion. No numbers.
-- PAGE 2 slide: heading = the clinical question or gap in a short phrase. Body = what the source is (type of paper,
-  population or condition, what it set out to answer), so the reader knows exactly which paper we are talking
-  about. Stay inside the abstract and introduction. Page 2 states NO finding and NO conclusion: those belong only
-  to page 3, otherwise page 3 repeats page 2.
-- PAGE 3 takeaway: the authors' own CONCLUSION for practice or for future care, close to their wording, with their
-  qualifiers. Never a secondary or exploratory finding presented as the message. No concept that pages 1-2 did not
-  prepare.
+  the conclusion. No numbers. MAX 10 words.
+- PAGE 2 slide: heading = the clinical question or gap in a short phrase (max 8 words). Body = ONE sentence only:
+  what the source is (type of paper, population or condition, what it set out to answer). Page 2 states NO finding
+  and NO conclusion: those belong only to page 3, otherwise page 3 repeats page 2. MAX 25 words total.
+- PAGE 3 takeaway: the authors' own CONCLUSION for practice, in ONE sentence, close to their wording, with their
+  qualifiers. Never a secondary or exploratory finding. MAX 25 words.
 - LATEST SCIENCE ONLY: no numerical results at all (no percentages, p-values, ratios, confidence intervals, sample
   sizes, scores, numbers of studies) and no names of trial arms, centres, devices' brands or people.
+- RULE: each slide must be readable in 5 seconds. If you need more than one sentence to express the concept,
+  cut until one sentence remains. Simple words, active voice, no jargon unless strictly necessary.
 
 OTHER FIELDS:
 - title_highlight: 1-4 words copied EXACTLY from the title. takeaway_highlight: 2-5 words copied EXACTLY from the
@@ -1279,16 +1279,18 @@ source truly has fewer distinct messages).
 
 {format_rules}
 
-WHAT GOES ON EACH PAGE (Methodology):
-- PAGE 1 title: the methodological problem, mistake or question, as a sharp hook (sentence case).
-- PAGE 2 slide: heading = the core concept or problem in a short phrase. Body = why it matters in practice, as the
-  source explains it. Page 2 gives the PROBLEM, never the solution: the method or decision that solves it appears
-  only on page 3, otherwise page 3 repeats page 2. If the source is a published paper, say what it is ("A methods review of stroke trials…",
-  "The CONSORT extension for pilot trials…"); if it is teaching material, do not invent a paper.
-- PAGE 3 takeaway: the lesson a researcher can act on: name the method, check, threshold or decision. Never "X is
-  important", never a vague exhortation.
+WHAT GOES ON EACH PAGE (Methodology) — keep every slide SHORT and ESSENTIAL:
+- PAGE 1 title: the methodological problem, mistake or question, as a sharp hook (sentence case). MAX 10 words.
+- PAGE 2 slide: heading = the core concept or problem in a short phrase (max 8 words). Body = ONE sentence only:
+  why this problem matters in practice. Page 2 gives the PROBLEM, never the solution. If the source is a published
+  paper, name it in one clause ("A CONSORT extension for pilot trials…"); if teaching material, do not invent a
+  paper. MAX 25 words total.
+- PAGE 3 takeaway: ONE actionable sentence: name the method, check, threshold or decision the researcher can apply
+  tomorrow. Never "X is important", never a vague exhortation. MAX 25 words.
 - Numbers only if they are in the source, with their unit and what they compare. Keep exact methodological
   language: risk vs odds, association vs causation, efficacy vs effectiveness.
+- RULE: each slide must be readable in 5 seconds. One concept per slide. Cut every word that does not carry
+  meaning. Simple words, active voice.
 
 OTHER FIELDS:
 - title_highlight: 1-4 words copied EXACTLY from the title. takeaway_highlight: 2-5 words copied EXACTLY from the
