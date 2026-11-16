@@ -1933,20 +1933,21 @@
   },
   "GG-PAR-25-026": {
     "status": "ok",
-    "checked": "2026-10-23",
+    "checked": "2026-11-16",
     "official_source": "NIH Guide PAR-25-026",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-026.html",
     "is_open_call": "yes",
     "title": "NHLBI Early Phase Clinical Trials for Therapeutics and/or Diagnostics for HLBS Disorders (R61/R33 Clinical Trial Required)",
-    "programme": "National Heart, Lung, and Blood Institute (NHLBI)",
+    "programme": "National Heart, Lung, and Blood Institute",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity supports investigator-initiated, Phase I clinical trials and final stage preclinical activities for diagnostic and therapeutic interventions targeting heart, lung, blood, and sleep disorders. Funded projects will utilize a bi-phasic, milestone-driven R61/R33 mechanism to support both start-up and execution phases. Eligible applicants include higher education institutions, non-profits, for-profit organizations, and government entities based in the United States and its territories.",
+    "summary": "This funding opportunity supports investigator-initiated Phase I clinical trials and final-stage preclinical activities for diagnostic and therapeutic interventions targeting heart, lung, blood, and sleep (HLBS) disorders in adults and children. Utilizing a bi-phasic R61/R33 mechanism, it funds trial preparation, regulatory approvals, and clinical execution upon meeting peer-reviewed milestones. Eligible applicant organizations include U.S.-based higher education institutions, non-profit organizations, for-profit entities, small businesses, and government agencies.",
     "coming_soon": false,
     "eligible_countries": "United States only (foreign organisations not eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
     "italy": "no",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
     "version": 3,
+    "model": "gemini-3.6-flash",
     "due_dates": [
       "2025-06-04",
       "2025-10-02",
@@ -1971,26 +1972,33 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as PD/PI is invited to work with their organization.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2027-02-03 | February 03, 2027 ."
+    "deadline_raw": "2027-02-03 | February 03, 2027 . February 03, 2027 . Not Applicable . July 2027 . October 2027 . December 2027 .",
+    "confirmed": {
+      "model": "gemini-3.6-flash",
+      "date": "2026-11-16",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-PAR-25-025": {
     "status": "ok",
-    "checked": "2026-10-23",
+    "checked": "2026-11-16",
     "official_source": "NIH Guide PAR-25-025",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-025.html",
     "is_open_call": "yes",
     "title": "NHLBI Early Phase Clinical Trials for Therapeutics and/or Diagnostics for HLBS Disorders (R33 CT Required)",
-    "programme": "NIH – US National Institutes of Health",
+    "programme": "National Heart, Lung, and Blood Institute",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This Notice of Funding Opportunity supports investigator-initiated Phase 1 clinical trials for diagnostic and therapeutic interventions for heart, lung, blood, and sleep (HLBS) disorders in adults and children. Funding provides up to $1,515,000 in direct costs per year for up to three years via the R33 mechanism. Eligible applicants include domestic higher education institutions, nonprofits, for-profit entities, and local governments. Non-U.S. organizations are not eligible to apply.",
+    "summary": "The National Heart, Lung, and Blood Institute (NHLBI) supports investigator-initiated Phase I clinical trials for diagnostic and therapeutic interventions addressing heart, lung, blood, and sleep (HLBS) disorders in adults and children. Projects must be ready to start the trial within the first quarter of the award. Higher education institutions, nonprofits, for-profit organizations, and government agencies based in the United States are eligible to apply; foreign organizations cannot apply directly.",
     "coming_soon": false,
     "eligible_countries": "United States only (foreign organisations not eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
     "italy": "no",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
     "version": 3,
+    "model": "gemini-3.8-flash",
     "due_dates": [
       "2025-06-04",
       "2025-10-02",
@@ -2017,7 +2025,13 @@
     "deadline_source": "nih_key_dates",
     "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director/Principal Investigator.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2027-02-03 | February 03, 2027 . February 03, 2027 . Not Applicable . July 2027 . October 2027 . December 2027 ."
+    "deadline_raw": "2027-02-03 | February 03, 2027 . February 03, 2027 . Not Applicable . July 2027 . October 2027 . December 2027 .",
+    "confirmed": {
+      "model": "gemini-3.8-flash",
+      "date": "2026-11-16",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-RFA-DK-28-116": {
     "status": "ok",
@@ -4665,20 +4679,21 @@
   },
   "GG-PAR-24-273": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-16",
     "official_source": "NIH Guide PAR-24-273",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-24-273.html",
     "is_open_call": "yes",
-    "title": "Advancing Healthcare for Older Adults from Populations that Experience Health Disparities",
-    "programme": "NIH – US National Institutes of Health",
+    "title": "Advancing Healthcare for Older Adults from Populations that Experience Health Disparities (R01 - Clinical Trial Optional)",
+    "programme": "NIH Research Project Grant",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This funding opportunity aims to advance innovative multi-level healthcare research for older adults from populations experiencing health disparities. It supports research to improve screening and clinical care guidelines, enhance shared decision-making between clinicians, patients, and caregivers, and identify effective care coordination strategies. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, local and state governments, and tribal governments based in the United States.",
+    "summary": "This initiative supports research to advance multi-level healthcare interventions for older adults from health disparity populations in the United States. Funded projects focus on understanding screening and care guidelines, exploring shared decision-making between patients and care teams, and identifying effective care coordination strategies. U.S. higher education institutions, non-profits, for-profit businesses, and government entities are eligible to apply, but foreign organizations are excluded.",
     "coming_soon": false,
     "eligible_countries": "United States only (foreign organisations not eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
     "italy": "no",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
     "version": 3,
+    "model": "gemini-3.6-flash",
     "due_dates": [
       "2025-03-31",
       "2025-06-05",
@@ -4707,9 +4722,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research is invited to work with their organization.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2025-02-05 | February 05, 2025 * March 05, 2025 * May 07, 2025 *"
+    "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3.6-flash",
+      "date": "2026-11-16",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-PAR-25-383": {
     "status": "ok",
@@ -4759,20 +4780,21 @@
   },
   "GG-PA-25-168": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-16",
     "official_source": "NIH Guide PA-25-168",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PA-25-168.html",
     "is_open_call": "yes",
     "title": "Ruth L. Kirschstein National Research Service Award (NRSA) Institutional Research Training Grant (Parent T32)",
-    "programme": "NIH – US National Institutes of Health",
+    "programme": "Ruth L. Kirschstein National Research Service Award (NRSA)",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "The National Institutes of Health awards Institutional Research Training Grants (T32) to eligible domestic institutions to develop or enhance predoctoral and postdoctoral research training. The goal is to ensure a highly trained biomedical, behavioral, and clinical research workforce. Programs must incorporate engaging didactic, research, and career development elements. Only domestic U.S. institutions may apply, and foreign entities or foreign components are explicitly excluded from participating as applicants.",
+    "summary": "This program provides grants to domestic US institutions to develop or enhance predoctoral and postdoctoral research training programs. The goal is to ensure a highly trained workforce for biomedical, behavioral, and clinical research. Funded programs must incorporate didactic, research, and career development elements. Eligible applicants include US higher education institutions, nonprofits, and government agencies. Trainees must be US citizens, noncitizen nationals, or permanent residents.",
     "coming_soon": false,
     "eligible_countries": "United States only (foreign organisations not eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Institutions) are not eligible to apply.",
     "italy": "no",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Institutions) are not eligible to apply.",
     "version": 3,
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2025-05-13",
       "2025-05-25",
@@ -4801,9 +4823,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research training program as the Training Program Director/PI.",
-    "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research training program as the Training Program Director/Principal Investigator (Training PD/PI) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2026-01-25 | January 25, 2026 * January 25, 2026 * May 07, 2026 * July 2026 October 2026 December 2026"
+    "lead": "Established investigator in the scientific area capable of providing administrative and scientific leadership to the proposed program.",
+    "lead_evidence": "The PD/PI should be an established investigator in the scientific area in which the application is targeted and capable of providing both administrative and scientific leadership to the development and implementation of the proposed program.",
+    "deadline_raw": "2027-01-25 | January 25, 2027 * January 25, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-16",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-PAR-25-450": {
     "status": "ok",
@@ -8988,21 +9016,21 @@
   },
   "GG-PAR-24-311": {
     "status": "ok",
-    "checked": "2026-10-27",
+    "checked": "2026-11-16",
     "official_source": "NIH Guide PAR-24-311",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-24-311.html",
     "is_open_call": "yes",
     "title": "Molecular Imaging of Inflammation in Cancer (R01 Clinical Trial Not Allowed)",
-    "programme": "NIH – US National Institutes of Health",
+    "programme": "National Cancer Institute (NCI)",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "The National Cancer Institute invites research grant applications for the development and application of current and emerging molecular imaging methods to gain fundamental insights into cancer inflammation in vivo. The call aims to foster interdisciplinary collaborations between cancer basic science researchers and imaging scientists acting as multiple principal investigators. Eligible applicant organizations include higher education institutions, nonprofits, for-profit organizations, and local or state governments based in the United States.",
+    "summary": "This National Cancer Institute initiative supports R01 research projects developing and applying molecular imaging methods to study cancer-associated inflammation in vivo. The call aims to foster interdisciplinary collaborations between imaging scientists and cancer biologists to gain mechanistic insights into tumor-host interactions and therapeutic responses. Eligible applicants include various U.S.-based organizations, such as higher education institutions and nonprofits. Projects must involve multiple principal investigators from both imaging and cancer biology disciplines.",
     "coming_soon": false,
     "eligible_countries": "United States only (foreign organisations not eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
     "italy": "no",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
     "version": 3,
-    "model": "gemini-3.5-flash-lite",
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2025-02-05",
       "2025-06-05",
@@ -9031,9 +9059,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as Multiple Principal Investigators (MPIs) in imaging a",
-    "lead_evidence": "Under this NOFA, applications require multiple Principal Investigators in cancer basic science (e.g., cancer biology, cancer physiology, immunology, inflammation or other closely related disciplines) and imaging science as project lead partners.",
-    "deadline_raw": "2025-02-05 | February 05, 2025 * March 05, 2025 * Not Applicable July 2025 October 2025 December 2025 ."
+    "lead": "Multiple Principal Investigators in imaging and cancer biology are required.",
+    "lead_evidence": "Because of the multidisciplinary nature of the NOFO, applicants must be led by Multiple Principal Investigators in imaging and cancer biology who will contribute unique expertise and scientific insights toward the successful completion of the proposed research.",
+    "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-16",
+      "changed": [],
+      "screening_model": "gemini-3.5-flash-lite"
+    }
   },
   "WEB-2a4c8ce1c9d1": {
     "status": "ok",
@@ -9068,21 +9102,21 @@
   },
   "GG-PAR-25-043": {
     "status": "ok",
-    "checked": "2026-10-27",
+    "checked": "2026-11-16",
     "official_source": "NIH Guide PAR-25-043",
     "official_url": "https://grants.nih.gov/grants/guide/pa-files/PAR-25-043.html",
     "is_open_call": "yes",
-    "title": "Mechanisms that Impact Cancer Risk after Bariatric Surgery",
-    "programme": "NIH – US National Institutes of Health",
+    "title": "Mechanisms that Impact Cancer Risk after Bariatric Surgery (R01 Clinical Trial Optional)",
+    "programme": "NIH Research Project Grant (R01)",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This National Cancer Institute funding opportunity invites investigator-initiated research applications to investigate the biological mechanisms by which bariatric surgery impacts cancer risk. Supported activities include animal model studies and human investigations aimed at linking surgery-specific procedures and metabolic changes to cancer endpoints rather than short-term outcomes like weight loss. Eligible applicants include higher education institutions, nonprofits, for-profit organizations, and local or tribal governments based in the United States.",
+    "summary": "The National Cancer Institute (NCI) invites applications for investigator-initiated research addressing the biological mechanisms through which bariatric surgery influences cancer risk. The goal is to investigate surgery-specific effects on cancer outcomes using animal models, human cohort studies, or both. Eligible applicants include U.S.-based higher education institutions, non-profit and for-profit organizations, and government entities. Clinical trials are optional.",
     "coming_soon": false,
     "eligible_countries": "United States only (foreign organisations not eligible)",
     "countries_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
     "italy": "no",
     "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are not eligible to apply.",
     "version": 3,
-    "model": "gemini-3.5-flash-lite",
+    "model": "gemini-3.6-flash",
     "due_dates": [
       "2025-02-05",
       "2025-06-05",
@@ -9111,9 +9145,15 @@
     "deadline_evidence": "NIH Guide, Key Dates: application due dates for new applications",
     "deadline_type": "several",
     "deadline_source": "nih_key_dates",
-    "lead": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s).",
+    "lead": "Any individual with the skills, knowledge, and resources necessary to carry out the proposed research as Program Director/Principal Investigator.",
     "lead_evidence": "Any individual(s) with the skills, knowledge, and resources necessary to carry out the proposed research as the Program Director(s)/Principal Investigator(s) (PD(s)/PI(s)) is invited to work with their organization to develop an application for support.",
-    "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 ."
+    "deadline_raw": "2027-02-05 | February 05, 2027 * March 05, 2027 * Not Applicable July 2027 October 2027 December 2027 .",
+    "confirmed": {
+      "model": "gemini-3.6-flash",
+      "date": "2026-11-16",
+      "changed": [],
+      "screening_model": "gemini-3.5-flash-lite"
+    }
   },
   "WEB-0bbff9b3c6b4": {
     "status": "ok",
