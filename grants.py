@@ -119,7 +119,9 @@ Write IN ENGLISH:
   recent titles: {recent}.
 - title_highlight: 1-4 words copied EXACTLY from the title.
 - slides: exactly 2 slides. Slide 1 heading "What it funds": aim and kind of projects funded.
-  Slide 2 heading "Who it is for": applicants and teams it targets. Each body max 270 characters.
+  Slide 2 heading "Who it is for": applicants and teams it targets. Each body MAX 160 characters —
+  be concise: one or two tight sentences, no filler. Short and precise beats long and vague.
+  Use the call's exact terms (copy key words verbatim when precision matters).
   Each slide also has image_prompt: 15-35 words describing ONE simple illustration of the slide's idea
   (concrete scene with 2-4 recognizable elements; no text, letters, numbers, logos or real people),
   photo_query: 2-4 English keywords to search a real stock photo of the research area or of the team it
@@ -987,7 +989,7 @@ def build_post(g, v, cfg, recent_titles=()):
     slides = []
     for sl in out.get("slides", []):
         if sl.get("heading") and sl.get("body"):
-            body = clip(sl["body"], 370)
+            body = clip(sl["body"], 200)
             slides.append({"heading": clip(sl["heading"], 70), "body": body,
                            "image_prompt": clip(sl.get("image_prompt", ""), 300),
                            "photo_query": clip(sl.get("photo_query", ""), 60),
