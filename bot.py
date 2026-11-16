@@ -1371,8 +1371,27 @@ def main():
         print(f"::warning title=Pagina bandi non aggiornata::{e}")
 
     if len(queue) <= int(CONFIG.get("low_queue_warning", 5)) and files_waiting == 0:
+        print(f"::warning title=Articoli in esaurimento::Restano {len(queue)} articoli in coda Drive. "
+              f"Aggiungi nuovo materiale nella cartella «Clinica…».")
         notify("Post in esaurimento",
                f"Restano {len(queue)} post in coda. Aggiungi nuovo materiale nella cartella Drive.")
+
+    # Alert budget OpenRouter
+    try:
+        from content import paid_spent_today, PAID
+        if PAID.get("enabled"):
+            spent = paid_spent_today()
+            budget = PAID.get("daily_budget_usd", 0)
+            if budget > 0:
+                pct = spent / budget
+                if pct >= 0.8:
+                    print(f"::warning title=Budget OpenRouter::Spesi {spent:.3f}$ su {budget:.2f}$ giornalieri "
+                          f"({pct*100:.0f}%). Considera di aumentare AI_PAID_BUDGET o ridurre i modelli a pagamento.")
+                    notify("Budget OpenRouter quasi esaurito",
+                           f"Spesi {spent:.3f}$ su {budget:.2f}$ ({pct*100:.0f}%). "
+                           f"Aumenta AI_PAID_BUDGET o riduci l'uso dei modelli a pagamento.")
+    except Exception as e:
+        print(f"::warning title=Controllo budget OpenRouter::impossibile leggere la spesa: {e}")
 
 
 def check_token():
