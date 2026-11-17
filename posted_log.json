@@ -806,5 +806,25 @@
       "POS-47591152184b",
       "POS-30acb5d54f77"
     ]
+  },
+  {
+    "date": "2026-11-17",
+    "time": "2026-11-17T12:16:43+00:00",
+    "id": "grant-GG-PAR-25-265",
+    "title": "Focusing on screenable disorders? Support for newborn research",
+    "source": "GrantFinder",
+    "media_id": "18133183588839401",
+    "facebook_id": "1277022912171972_122119719153432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2izhkz67h2s",
+    "threads_id": "18653242132015494",
+    "kind": "grant",
+    "grant_id": "GG-PAR-25-265",
+    "url": "https://www.grants.gov/search-results-detail/357485",
+    "deadline": "2027-02-05",
+    "funder": "Hunter Kelly Newborn Screening Research Program",
+    "summary": "This funding opportunity supports research on novel screening approaches and therapeutic interventions for conditions included in newborn screening panels, or potentially fatal or disabling conditions that could benefit from early detection. It funds R01 research project grants, with optional clinical trials, for up to five years. Higher education institutions, non-profits, for-profit entities, and foreign organizations are eligible to apply as lead applicants.",
+    "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+    "official_source": "NIH Guide PAR-25-265",
+    "grant_title": "Innovative Screening Approaches and Therapies for Screenable Disorders in Newborns (R01 - Clinical Trial Optional)"
   }
 ]
