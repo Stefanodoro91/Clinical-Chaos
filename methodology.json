@@ -1,1 +1,32 @@
-{}
+{
+  "844b30ba": {
+    "id": "844b30ba",
+    "date": "2026-11-17",
+    "title": "Why proxy assessors bias disability ratings",
+    "category": "Bias & confounding",
+    "takeaway": "Proxies rate patients as more disabled than other measures do, so use the same respondent type at every follow-up.",
+    "points": [
+      {
+        "heading": "Who answers the questionnaire?",
+        "body": "Assessments may be performed by rehabilitation providers, patients, or proxies, and their ratings can differ.",
+        "source": ""
+      },
+      {
+        "heading": "Proxies overestimate disability",
+        "body": "Proxy assessors tend to rate patients as more disabled than other functional measures suggest, and the gap grows with more impaired patients.",
+        "source": "Duncan et al., 2002; Williams et al., 2006"
+      },
+      {
+        "heading": "The frame of reference trap",
+        "body": "Healthcare professionals tend to rate patients higher than patients rate themselves due to a difference in the frame of reference used.",
+        "source": "Sneeuw et al., 2002"
+      }
+    ],
+    "references": [
+      "Duncan, P. W., Lai, S. M., Tyler, D., Perera, S., Reker, D. M., & Studenski, S. (2002). Evaluation of Proxy Responses to the Stroke Impact Scale. Stroke, 33(11), 2593–2599. https://doi.org/10.1161/01.str.0000034395.06874.3e",
+      "Sneeuw, K. C., Sprangers, M. A., & Aaronson, N. K. (2002). The role of health care providers and significant others in evaluating the quality of life of patients with chronic disease. Journal of Clinical Epidemiology, 55(11), 1130–1143. https://doi.org/10.1016/s0895-4356(02)00479-1",
+      "Williams, L. S., Bakas, T., Brizendine, E., Plue, L., Tu, W., Hendrie, H., & Kroenke, K. (2006). How Valid Are Family Proxy Assessments of Stroke Patients’ Health-Related Quality of Life?. Stroke, 37(8), 2081–2085. https://doi.org/10.1161/01.str.0000230583.10311.9f"
+    ],
+    "cover": "published_images/2026-11-17-844b30ba/slide-1.jpg"
+  }
+}

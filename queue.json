@@ -1,31 +1,31 @@
 [
   {
-    "title": "Why Opaque Reporting Sabotages Research",
-    "title_highlight": "Opaque Reporting Sabotages",
+    "title": "Why Opaque Reporting Is a Problem for Research",
+    "title_highlight": "",
     "category": "Reporting & publication",
     "slides": [
       {
-        "heading": "The Danger of Opaque Reporting",
-        "body": "Opaque reporting is directly associated with biased conclusions and errors in biomedical publishing.",
+        "heading": "Opaque Reporting and Biased Conclusions",
+        "body": "Opaque reporting is directly associated with biased conclusions and, less directly, with errors in biomedical publishing and inefficient use of scarce resources.",
         "image_prompt": "a stack of heavy medical journals covered by a dark cloth with a question mark printed on top",
-        "highlight": "directly associated with biased conclusions",
+        "highlight": "",
         "source": ""
       },
       {
         "heading": "Judging Reliability Becomes Impossible",
-        "body": "Without a clear understanding of how a study was done, readers are unable to judge whether the findings are reliable.",
+        "body": "Without knowing study methods, readers cannot determine if results are trustworthy.",
         "image_prompt": "a person holding two puzzle pieces that do not fit together over an open research paper",
         "highlight": "",
         "source": "Moher et al., 2014"
       }
     ],
-    "takeaway": "Without clear methodological details, readers cannot judge if study findings are reliable.",
-    "takeaway_highlight": "readers cannot judge",
+    "takeaway": "Opaque reporting is linked to biased conclusions, and without clear methods readers cannot judge whether findings are reliable.",
+    "takeaway_highlight": "",
     "references": [
       "Moher, D., Altman, D. G., Schulz, K. F., Simera, I., & Wager, E. (2014). Guidelines for reporting health research: A user’s manual.",
       "Buccheri, R. K., & Sharifi, C. (2017). Critical Appraisal Tools and Reporting Guidelines for Evidence‐Based Practice. Worldviews on Evidence-Based Nursing, 14(6), 463–472. https://doi.org/10.1111/wvn.12258"
     ],
-    "caption": "Poor reporting wastes scarce resources and leads to flawed clinical decisions. Transparency in methodology is non-negotiable. Have you ever encountered a published paper missing critical procedural details?",
+    "caption": "Opaque reporting is directly associated with biased conclusions and, less directly, with errors in biomedical publishing and inefficient use of scarce resources. Clear reporting lets readers judge whether findings are reliable. Have you read a paper missing key methodological details?",
     "hashtags": [
       "#ResearchTransparency",
       "#ClinicalTrials",
@@ -38,56 +38,26 @@
     ],
     "source_hint": "Rationale for Using Reporting Guidelines in Publishing",
     "id": "7bc8e19b",
-    "source": "Critical appraisal"
-  },
-  {
-    "title": "Why Proxy Assessors Bias Quality of Life Data",
-    "title_highlight": "Proxy Assessors Bias",
-    "category": "Bias & confounding",
-    "slides": [
-      {
-        "heading": "Who Answers the Questionnaire?",
-        "body": "Assessments may be performed by rehabilitation providers, patients, or proxies, and their ratings can differ.",
-        "image_prompt": "three simple figures representing a doctor, a patient, and a relative holding different rating documents and pointing in separate directions",
-        "highlight": "their ratings can differ",
-        "source": ""
+    "source": "Critical appraisal",
+    "review": {
+      "passed": false,
+      "scores": {
+        "accuracy": 5,
+        "context": 4,
+        "coherence": 5,
+        "takeaway": 2
       },
-      {
-        "heading": "Proxies Overestimate Disability",
-        "body": "Proxy assessors tend to rate patients as more disabled than other functional measures suggest, and the gap grows with more impaired patients.",
-        "image_prompt": "a relative looking at a patient through a magnifying glass and writing down a much larger disability score on a pad",
-        "highlight": "rate patients as more disabled",
-        "source": "Duncan et al., 2002; Williams et al., 2006"
-      },
-      {
-        "heading": "The Frame of Reference Trap",
-        "body": "Healthcare professionals tend to rate patients higher than patients rate themselves due to a difference in the frame of reference used.",
-        "image_prompt": "a doctor and a patient looking at a staircase through two completely different colored glasses",
-        "highlight": "",
-        "source": "Sneeuw et al., 2002"
-      }
-    ],
-    "takeaway": "Proxy and provider ratings can differ from patients' own, so use the same respondent type at every follow-up.",
-    "takeaway_highlight": "use the same respondent",
-    "references": [
-      "Duncan, P. W., Lai, S. M., Tyler, D., Perera, S., Reker, D. M., & Studenski, S. (2002). Evaluation of Proxy Responses to the Stroke Impact Scale. Stroke, 33(11), 2593–2599. https://doi.org/10.1161/01.str.0000034395.06874.3e",
-      "Sneeuw, K. C., Sprangers, M. A., & Aaronson, N. K. (2002). The role of health care providers and significant others in evaluating the quality of life of patients with chronic disease. Journal of Clinical Epidemiology, 55(11), 1130–1143. https://doi.org/10.1016/s0895-4356(02)00479-1",
-      "Williams, L. S., Bakas, T., Brizendine, E., Plue, L., Tu, W., Hendrie, H., & Kroenke, K. (2006). How Valid Are Family Proxy Assessments of Stroke Patients’ Health-Related Quality of Life?. Stroke, 37(8), 2081–2085. https://doi.org/10.1161/01.str.0000230583.10311.9f"
-    ],
-    "caption": "When patients cannot self-report because of cognitive or communication problems, researchers turn to proxies or clinicians. Proxies tend to rate patients as more disabled, while clinicians may use a more disabled reference group. The practical rule: keep the same respondent type at every follow-up. How do you handle respondent discrepancies in your studies?",
-    "hashtags": [
-      "#ClinicalResearch",
-      "#ResearchMethods",
-      "#OutcomeMeasures",
-      "#BiasAndConfounding",
-      "#ClinicalTrials",
-      "#HealthOutcomes",
-      "#PatientReported",
-      "#ResearchEthics"
-    ],
-    "source_hint": "page 2",
-    "id": "844b30ba",
-    "source": "Stroke Outcomes"
+      "critic": "openrouter-nemotron-3-ultra-550b-a55b:free",
+      "arbiter": "paid-claude-sonnet-5.5",
+      "fixed": 3,
+      "removed": 0,
+      "notes": [
+        "title [imprecise]: \"Sabotages\" overstates the source, which says opaque reporting is \"directly associated with biased conclusions and, less directly, with errors in biomedical publishing and the inefficient use of scarc",
+        "slide 1 [imprecise]: The source states opaque reporting is \"directly associated with biased conclusions\" and \"less directly, with errors in biomedical publishing\"; \"skewed results\" and \"mistakes\" are imprecise and the dir",
+        "caption [unsupported]: The source links opaque reporting to \"inefficient use of scarce resources\" only less directly, and does not mention \"flawed clinical decisions.\"",
+        "residuo slide 2 [imprecise]: Drops the source's attribution to Moher et al. (2014) and presents the quote as a universal fact."
+      ]
+    }
   },
   {
     "title": "Why Even One Outlier Destroys the Mean",
