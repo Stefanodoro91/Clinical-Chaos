@@ -105,21 +105,21 @@
   },
   "EU-HORIZON-HLTH-2027-01-STAYHLTH-01": {
     "status": "ok",
-    "checked": "2026-11-02",
+    "checked": "2026-11-17",
     "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-STAYHLTH-01",
     "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-STAYHLTH-01",
     "is_open_call": "yes",
     "title": "Addressing disabilities through the life course to support independent living and inclusion",
     "programme": "Horizon Europe",
     "programme_family": "Horizon Europe",
-    "summary": "This Horizon Europe call aims to support research and innovation actions that promote independent living and inclusion for persons with long-term disabilities. Funded projects will address health-related research, habilitation and rehabilitation, prevention of disabilities across the life course, community transition conditions, and innovative care services. Eligible applicants include legal entities forming a consortium from EU Member States and associated countries.",
+    "summary": "This topic supports research and innovation to promote independent living and community inclusion for persons with long-term disabilities across the life-course. Projects should address health-related causes and treatments, assistive technologies, prevention, transition from institutions to community living, and person-centred care models. Research must integrate social sciences and humanities and actively involve persons with disabilities, their families, and representative organisations.",
     "coming_soon": false,
     "eligible_countries": "EU Member States and associated countries",
     "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "italy": "yes",
     "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "version": 3,
-    "model": "gemini-3.5-flash-lite",
+    "model": "gemini-3.8-flash",
     "due_dates": [
       "2027-02-17"
     ],
@@ -132,24 +132,31 @@
     "deadline_source": "eu_portal",
     "lead": "",
     "lead_evidence": "",
-    "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17."
+    "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17.",
+    "confirmed": {
+      "model": "gemini-3.8-flash",
+      "date": "2026-11-17",
+      "changed": [],
+      "screening_model": "gemini-3.5-flash-lite"
+    }
   },
   "EU-HORIZON-HLTH-2027-02-DISEASE-01-two-stage": {
     "status": "ok",
-    "checked": "2026-10-22",
+    "checked": "2026-11-17",
     "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-02-DISEASE-01-two-stage",
     "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-02-DISEASE-01-two-stage",
     "is_open_call": "yes",
     "title": "Innovative healthcare interventions for non-communicable diseases",
     "programme": "Horizon Europe – Cluster 1: Health",
     "programme_family": "Horizon Europe",
-    "summary": "This call aims to reduce the burden of specific non-communicable diseases such as cardiovascular diseases, diabetes, chronic respiratory diseases, or chronic kidney diseases. It supports rigorous early-stage clinical trials to validate novel or refined healthcare interventions, supported by completed proof-of-concept of clinical safety and efficacy. International consortia including universities, research institutions, hospitals, and SMEs can apply, incorporating digital technologies and social sciences and humanities.",
+    "summary": "This call funds early-stage clinical trials to validate novel or refined healthcare interventions for specific non-communicable diseases, including cardiovascular diseases, diabetes, chronic respiratory diseases, or chronic kidney diseases. Projects should leverage completed proof-of-concept evidence, integrate digital technologies, conduct health-economic assessments, and engage patients and regulatory authorities. Participation is encouraged for start-ups, small and medium-sized enterprises, and social sciences and humanities experts.",
     "coming_soon": false,
     "eligible_countries": "EU Member States and associated countries",
     "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "italy": "yes",
     "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
-    "version": 2,
+    "version": 3,
+    "model": "gemini-3.6-flash",
     "due_dates": [
       "2027-02-17"
     ],
@@ -161,24 +168,32 @@
     "deadline_type": "two_stage",
     "deadline_source": "eu_portal",
     "lead": "",
-    "lead_evidence": ""
+    "lead_evidence": "",
+    "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17, 2027-09-16.",
+    "confirmed": {
+      "model": "gemini-3.6-flash",
+      "date": "2026-11-17",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "EU-HORIZON-HLTH-2027-01-DISEASE-10": {
     "status": "ok",
-    "checked": "2026-10-22",
+    "checked": "2026-11-17",
     "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-DISEASE-10",
     "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-DISEASE-10",
     "is_open_call": "yes",
     "title": "Prevention and management of chronic non-communicable diseases in children and young people (GACD)",
     "programme": "Horizon Europe – Cluster 1: Health",
     "programme_family": "Horizon Europe",
-    "summary": "This funding call supports implementation research exploring strategies and interventions for the prevention, diagnosis, screening, and management of chronic non-communicable diseases in individuals aged 1 to 24 living in low- and middle-income countries and/or underserved populations in high-income countries. It aims to fund multidisciplinary consortia including researchers, healthcare practitioners, and policymakers to deliver equitable, sustainable health interventions and build implementation research capacity.",
+    "summary": "This call funds implementation research to improve the prevention, diagnosis, and management of chronic non-communicable diseases (NCDs) in children and young people (ages 1-24). It targets populations in low- and middle-income countries (LMICs) or underserved communities in high-income countries (HICs). Applicants must propose evidence-based interventions and involve multidisciplinary teams, including early career researchers, to ensure equitable health outcomes and long-term sustainability.",
     "coming_soon": false,
     "eligible_countries": "EU Member States and associated countries",
     "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "italy": "yes",
     "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
-    "version": 2,
+    "version": 3,
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2027-02-17"
     ],
@@ -189,8 +204,15 @@
     "deadline_evidence": "EU Funding & Tenders Portal: single-stage, deadline 2027-02-17",
     "deadline_type": "single",
     "deadline_source": "eu_portal",
-    "lead": "",
-    "lead_evidence": ""
+    "lead": "Expert multidisciplinary research team including at least one early career member as a co-investigator.",
+    "lead_evidence": "Ensure meaningful involvement of early career team members, including at least one early career member as a co-investigator.",
+    "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17.",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-17",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "WEB-6768384ca0cb": {
     "status": "ok",
@@ -2260,20 +2282,21 @@
   },
   "EU-HORIZON-HLTH-2027-01-ENVHLTH-02": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-17",
     "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-ENVHLTH-02",
     "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-ENVHLTH-02",
     "is_open_call": "yes",
     "title": "Integrating climate-related exposures into the human exposome and characterising its changes in response to climate change",
     "programme": "Horizon Europe – Cluster 1: Health",
     "programme_family": "Horizon Europe",
-    "summary": "This call supports research strengthening the use of the exposome approach to study global exposures and generate evidence on their health implications, focusing on integrating climate-related factors into exposome research. Funded activities include incorporating multiple climate exposures into exposomics studies, monitoring exposome changes resulting from climate pressures, advanced data analytics, and identifying exposome biomarkers. Collaborative multiscale and multidisciplinary projects involving social sciences and humanities can apply.",
+    "summary": "This call aims to integrate climate-related factors into human exposome research to understand their impact on health and disease burden. Projects should use multidisciplinary approaches, including AI and machine learning, to analyze environmental, social, and lifestyle factors. Funding supports the identification of biological pathways, biomarkers, and interventions for vulnerable populations. Eligible applicants include research organizations and healthcare practitioners working in consortia to provide evidence for policymakers and the public.",
     "coming_soon": false,
     "eligible_countries": "EU Member States and associated countries",
     "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "italy": "yes",
     "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "version": 3,
+    "model": "gemini-3-flash-preview",
     "due_dates": [
       "2027-02-17"
     ],
@@ -2286,7 +2309,13 @@
     "deadline_source": "eu_portal",
     "lead": "",
     "lead_evidence": "",
-    "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17."
+    "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17.",
+    "confirmed": {
+      "model": "gemini-3-flash-preview",
+      "date": "2026-11-17",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "EU-HORIZON-HLTH-2027-01-CARE-02": {
     "status": "ok",
@@ -2327,20 +2356,21 @@
   },
   "EU-HORIZON-HLTH-2027-02-TOOL-01-two-stage": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-17",
     "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-02-TOOL-01-two-stage",
     "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-02-TOOL-01-two-stage",
     "is_open_call": "yes",
-    "title": "Development of predictive biomarkers of disease progression and treatment response by using AI methodologies for chronic non-communicable…",
+    "title": "Development of predictive biomarkers of disease progression and treatment response by using AI methodologies",
     "programme": "Horizon Europe",
     "programme_family": "Horizon Europe",
-    "summary": "This call supports collaborative research and innovation projects aiming to develop and clinically validate multimodal predictive biomarkers for chronic non-communicable diseases, excluding cancer. Projects must leverage established artificial intelligence methodologies to integrate clinical data, candidate biomarkers, and real-world data, ensuring trustworthy AI and GDPR compliance. Eligible applicants include multidisciplinary consortia of research organizations, universities, and SMEs, with the goal of advancing personalized medicine and improving healthcare outcomes.",
+    "summary": "This Horizon Europe topic supports multidisciplinary collaborative projects focused on developing and clinically validating multimodal predictive biomarkers for chronic non-communicable diseases (excluding cancer). Projects should adapt established AI methodologies to integrate candidate biomarkers, clinical longitudinal data, and real-world data to guide personalized treatment and disease progression tracking. Applicants must establish validation platforms and user-friendly decision-support tools. Participation of SMEs is encouraged.",
     "coming_soon": false,
     "eligible_countries": "EU Member States and associated countries",
     "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "italy": "yes",
     "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "version": 3,
+    "model": "gemini-3.6-flash",
     "due_dates": [
       "2027-02-17"
     ],
@@ -2351,9 +2381,15 @@
     "deadline_evidence": "EU Funding & Tenders Portal: two-stage, deadline 2027-02-17, 2027-09-16",
     "deadline_type": "two_stage",
     "deadline_source": "eu_portal",
-    "lead": "Entities in the EU/EFTA and/or Associated Countries leading prospective clinical studies.",
+    "lead": "Prospective clinical studies are expected to be led by entities in the EU/EFTA and/or Associated Countries.",
     "lead_evidence": "Prospective clinical studies are expected to be led by entities in the EU/EFTA and/or Associated Countries.",
-    "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17, 2027-09-16."
+    "deadline_raw": "2027-02-17 | Deadline dates: 2027-02-17, 2027-09-16.",
+    "confirmed": {
+      "model": "gemini-3.6-flash",
+      "date": "2026-11-17",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "EU-HORIZON-HLTH-2027-01-DISEASE-05": {
     "status": "ok",
@@ -11609,21 +11645,21 @@
   },
   "EU-HORIZON-EIC-2027-PATHFINDEROPEN-two-stage": {
     "status": "ok",
-    "checked": "2026-11-16",
+    "checked": "2026-11-17",
     "official_source": "EU Funding & Tenders Portal, topic HORIZON-EIC-2027-PATHFINDEROPEN-two-stage",
     "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-EIC-2027-PATHFINDEROPEN-two-stage",
     "is_open_call": "yes",
-    "title": "HORIZON-EIC-2027-PATHFINDEROPEN-two-stage",
+    "title": "EIC Pathfinder Open",
     "programme": "Horizon Europe – European Innovation Council",
     "programme_family": "Horizon Europe",
-    "summary": "The EIC Pathfinder Open call supports early-stage, high-risk interdisciplinary research and development for radically new, future or emerging deep-tech technologies. It funds projects aiming to achieve an experimental proof of concept or laboratory validation of a technology addressing global challenges or creating new markets. Consortia of researchers, scientists, engineers, and entrepreneurs can apply, provided they present a visionary scientific breakthrough and a robust plan for intellectual property and exploitation.",
+    "summary": "EIC Pathfinder Open supports early-stage interdisciplinary research and development to explore and validate novel deep-tech concepts. The call funds high-risk/high-gain research aiming for radical technological breakthroughs to address global societal or environmental challenges or create new markets. Expected outputs include an experimental proof of concept or laboratory validation. Interdisciplinary teams of researchers, engineers, and innovators can apply.",
     "coming_soon": false,
     "eligible_countries": "EU Member States and associated countries",
     "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "italy": "yes",
     "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "version": 3,
-    "model": "gemini-3.5-flash-lite",
+    "model": "gemini-3.6-flash",
     "due_dates": [
       "2027-02-25"
     ],
@@ -11636,7 +11672,13 @@
     "deadline_source": "eu_portal",
     "lead": "",
     "lead_evidence": "",
-    "deadline_raw": "2027-02-25 | Deadline dates: 2027-02-25, 2027-09-16."
+    "deadline_raw": "2027-02-25 | Deadline dates: 2027-02-25, 2027-09-16.",
+    "confirmed": {
+      "model": "gemini-3.6-flash",
+      "date": "2026-11-17",
+      "changed": [],
+      "screening_model": "gemini-3.5-flash-lite"
+    }
   },
   "EU-ERC-2027-POC": {
     "status": "failed",
@@ -11779,10 +11821,10 @@
     "official_source": "official call page",
     "official_url": "https://www.rheumresearch.org/file/awards/2026/career-development-research-awards/LRARRF-Empowering--Lupus-Research-Partnership-NOSI_FY-2028.pdf",
     "is_open_call": "unclear",
-    "title": "Empowering Lupus Research Partnership NOSI FY 2028",
+    "title": "LRARRF Empowering Lupus Research Partnership NOSI FY 2028",
     "programme": "LRARRF Empowering Lupus Research Partnership NOSI FY 2028",
     "programme_family": "Rheumatology Research Foundation – Awards",
-    "summary": "This funding initiative, resulting from a collaboration between the Lupus Research Alliance and the Rheumatology Research Foundation, supports translational and clinical research focused on systemic lupus erythematosus and related autoimmune conditions. It aims to develop innovative diagnostic and therapeutic strategies by leveraging clinical data and patient stratification. Two funding pathways are available: the Scientist Development Award for early-career researchers and the Investigator Award. Grants provide up to 225,000 USD for a maximum duration of three years.",
+    "summary": "This Notice of Special Interest (NOSI), a collaboration between the Rheumatology Research Foundation and the Lupus Research Alliance, supports translational and clinical research into systemic lupus erythematosus and related autoimmune diseases. The call aims to drive innovative diagnostic and therapeutic strategies by integrating phenotypic data and patient stratification. Two funding pathways are offered: the Scientist Development Award for early-career researchers and the Investigator Award. Grants provide up to 225,000 USD for up to three years.",
     "coming_soon": false,
     "eligible_countries": "Not stated in the official text: check the call",
     "countries_evidence": "",
@@ -11801,7 +11843,7 @@
     "lead": "",
     "lead_evidence": "",
     "deadline_raw": " | ",
-    "dl_tries": 1
+    "dl_tries": 2
   },
   "EU-HORIZON-MISS-2027-02-CANCER-01": {
     "status": "ok",
