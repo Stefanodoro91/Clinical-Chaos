@@ -835,6 +835,8 @@
     "source": "Stroke Outcomes",
     "media_id": "18176286934459194",
     "facebook_id": "1277022912171972_122119822203432698",
-    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2jp3qkmdt2r"
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2jp3qkmdt2r",
+    "threads_id": "17982752976131626",
+    "backfill": "2026-11-17"
   }
 ]
