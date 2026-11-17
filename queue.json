@@ -1691,5 +1691,175 @@
     "source_hint": "pages 1-6, sections 1 to 2.4 and Table 2",
     "id": "3a4c072c",
     "source": "Co-Creation in Health 4.0.pdf"
+  },
+  {
+    "title": "Why AB designs fail to prove clinical efficacy",
+    "title_highlight": "AB designs fail",
+    "category": "Study design",
+    "slides": [
+      {
+        "heading": "The AB design limitation",
+        "body": "This review explains the AB design does not sufficiently control threats to internal validity. It shows only correlation, not causation.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "does not sufficiently control",
+        "source": ""
+      }
+    ],
+    "takeaway": "Researchers should avoid using AB designs to claim causal efficacy because they lack the replication needed to confirm internal validity.",
+    "takeaway_highlight": "avoid using AB designs",
+    "references": [
+      "Byiers, B. J., Reichle, J., & Symons, F. J. (2012). Single-Subject Experimental Design for Evidence-Based Practice. American Journal of Speech-Language Pathology, 21(4), 397–414. https://doi.org/10.1044/1058-0360(2012/11-0036)"
+    ],
+    "caption": "Can you prove an intervention works using only an AB design?\n\nThe AB design is a foundational building block for experimental research. However, it lacks the replication required to rule out external factors as the cause of behavior change. Without replication, you cannot confirm if the observed effect is truly due to your intervention. How do you ensure your study design provides enough evidence for clinical practice?",
+    "hook": "Can you prove an intervention works using only an AB design?",
+    "hashtags": [
+      "#ResearchMethods",
+      "#ClinicalResearch",
+      "#StudyDesign"
+    ],
+    "source_hint": "Page 6, Pre-Experimental (AB) Design",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "bb9b1d85",
+    "source": "Single-Subject.pdf"
+  },
+  {
+    "title": "Why baseline stability is mandatory for SSEDs",
+    "title_highlight": "baseline stability",
+    "category": "Statistics",
+    "slides": [
+      {
+        "heading": "Baseline data requirements",
+        "body": "This review of single-subject experimental designs describes ideal baseline data as stable with limited variability and no clear improvement trend.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "stable with limited variability",
+        "source": ""
+      }
+    ],
+    "takeaway": "Collect at least three baseline data points to establish stability before introducing an intervention to ensure a valid benchmark for comparison.",
+    "takeaway_highlight": "three baseline data points",
+    "references": [
+      "Byiers, B. J., Reichle, J., & Symons, F. J. (2012). Single-Subject Experimental Design for Evidence-Based Practice. American Journal of Speech-Language Pathology, 21(4), 397–414. https://doi.org/10.1044/1058-0360(2012/11-0036)"
+    ],
+    "caption": "Is your baseline data stable enough to support your research findings?\n\nBaseline data provides the benchmark for evaluating your intervention. If baseline data are unstable or show a trend, determining a treatment effect becomes compromised. Researchers must prioritize establishing stability to ensure valid inferences. How many data points do you typically collect before starting an intervention?",
+    "hook": "Is your baseline data stable enough to support your research findings?",
+    "hashtags": [
+      "#DataAnalysis",
+      "#ResearchMethods",
+      "#SSED"
+    ],
+    "source_hint": "Page 3, Desirable Qualities of Baseline Data",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "ddbb2499",
+    "source": "Single-Subject.pdf"
+  },
+  {
+    "title": "The danger of autocorrelation in SSED analysis",
+    "title_highlight": "danger of autocorrelation",
+    "category": "Statistics",
+    "slides": [
+      {
+        "heading": "The autocorrelation problem",
+        "body": "Autocorrelation occurs when data points are dependent on preceding ones. This violates core assumptions of statistical analysis and inflates p values.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "violates core assumptions",
+        "source": ""
+      }
+    ],
+    "takeaway": "Avoid applying standard parametric inferential statistics to single-subject data because autocorrelation artificially inflates Type 1 error rates.",
+    "takeaway_highlight": "Avoid applying standard parametric",
+    "references": [
+      "Byiers, B. J., Reichle, J., & Symons, F. J. (2012). Single-Subject Experimental Design for Evidence-Based Practice. American Journal of Speech-Language Pathology, 21(4), 397–414. https://doi.org/10.1044/1058-0360(2012/11-0036)"
+    ],
+    "caption": "Why standard statistical tests often fail in single-subject research?\n\nSingle-subject data points are often dependent on the ones that came before them. This serial dependency, or autocorrelation, makes standard parametric tests unreliable. Relying on these tests can lead to false conclusions about your intervention. What methods do you use to analyze your single-subject data?",
+    "hook": "Why standard statistical tests often fail in single-subject research?",
+    "hashtags": [
+      "#Statistics",
+      "#SSED",
+      "#ResearchMethods"
+    ],
+    "source_hint": "Page 17, Statistical Analysis and SSED",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "48685ada",
+    "source": "Single-Subject.pdf"
+  },
+  {
+    "title": "When to choose a multiple-baseline design",
+    "title_highlight": "multiple-baseline design",
+    "category": "Study design",
+    "slides": [
+      {
+        "heading": "Avoiding intervention withdrawal",
+        "body": "This review shows multiple-baseline designs suit non-withdrawable interventions. They replicate effects across participants or settings.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "",
+        "source": ""
+      }
+    ],
+    "takeaway": "Use a multiple-baseline design when the target behavior is nonreversible or when withdrawing an effective intervention is ethically problematic.",
+    "takeaway_highlight": "target behavior is nonreversible",
+    "references": [
+      "Byiers, B. J., Reichle, J., & Symons, F. J. (2012). Single-Subject Experimental Design for Evidence-Based Practice. American Journal of Speech-Language Pathology, 21(4), 397–414. https://doi.org/10.1044/1058-0360(2012/11-0036)"
+    ],
+    "caption": "What if you cannot withdraw your intervention to prove it works?\n\nSometimes, you cannot or should not withdraw an intervention. Multiple-baseline designs offer a robust alternative by staggering the introduction of the intervention across different conditions. This provides the necessary replication to demonstrate experimental control. Have you ever used a multiple-baseline design in your own work?",
+    "hook": "What if you cannot withdraw your intervention to prove it works?",
+    "hashtags": [
+      "#StudyDesign",
+      "#ResearchMethods",
+      "#EvidenceBasedPractice"
+    ],
+    "source_hint": "Page 10, Advantages and disadvantages of multiple-baseline/multiple-probe designs",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "e3c982e4",
+    "source": "Single-Subject.pdf"
+  },
+  {
+    "title": "Rapid alternation designs need safeguards against interference.",
+    "title_highlight": "",
+    "category": "Study design",
+    "slides": [
+      {
+        "heading": "Risk of order effects when alternating interventions",
+        "body": "This review of single-subject designs explains that rapid alternation exposes participants to many interventions, risking one condition influencing the next.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "",
+        "source": ""
+      }
+    ],
+    "takeaway": "Add a final phase with the best treatment alone to confirm its effect, as alternating treatments designs cannot separate each condition's effects.",
+    "takeaway_highlight": "",
+    "references": [
+      "Byiers, B. J., Reichle, J., & Symons, F. J. (2012). Single-Subject Experimental Design for Evidence-Based Practice. American Journal of Speech-Language Pathology, 21(4), 397–414. https://doi.org/10.1044/1058-0360(2012/11-0036)"
+    ],
+    "caption": "Can rapid alternation designs avoid carryover between conditions? This review shows that rapid alternation of interventions risks carryover effects. Researchers should add a final phase with the best treatment alone to verify its independent effect.",
+    "hook": "Can rapid alternation designs avoid carryover between conditions?",
+    "hashtags": [
+      "#StudyDesign",
+      "#ResearchMethods",
+      "#ClinicalResearch"
+    ],
+    "source_hint": "Page 14, Alternating Treatments and Adapted Alternating Treatments Designs",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "799e68bd",
+    "source": "Single-Subject.pdf"
   }
 ]
