@@ -862,9 +862,28 @@ showCard(0, false);
 </script></section>
 <p class="jx-chap"><b>05</b><span>Go deeper</span></p>
   <h2 class="lib" id="carousels">Methodology carousels</h2>
-  <p class="nomatch">The methodology carousels will be collected here as they are published, each with its key points and references.</p>
+  <p class="intro">Every methodology carousel we have published: swipe through the slides here, no Instagram account needed.
+  Key points and references under each one. New topics every day.</p>
+  <form class="filters" role="search" aria-label="Filter topics" data-noun="topics" onsubmit="return false">
+    <label>Search<input type="search" name="q" placeholder="Keyword (e.g. blinding, p-value, regression)" autocomplete="off"></label>
+    <label>Topic<select name="area"><option value="">All topics</option><option value="bias-confounding">Bias &amp; confounding</option></select></label>
+    <div class="status"><span class="count" aria-live="polite">1 topic</span><button type="reset" hidden>Clear filters</button></div>
+  </form>
 
-
+  <section id="bias-confounding">
+    <h2>Bias &amp; confounding</h2>
+    <div class="grp">
+    <article class="method" id="m-844b30ba" data-area="bias-confounding" data-text="why proxy assessors bias disability ratings proxies rate patients as more disabled than other measures do, so use the same respondent type at every follow-up. bias &amp; confounding who answers the questionnaire? assessments may be performed by rehabilitation providers, patients, or proxies, and their ratings can differ. proxies overestimate disability proxy assessors tend to rate patients as more disabled than other functional measures suggest, and the gap grows with more impaired patients. the frame of reference trap healthcare professionals tend to rate patients higher than patients rate themselves due to a difference in the frame of reference used.">
+      <div class="slides"><div class="strip"><img src="methodology/844b30ba/1.jpg" alt="Why proxy assessors bias disability ratings – slide 1 of 5" width="720" height="900"><img src="methodology/844b30ba/2.jpg" alt="Why proxy assessors bias disability ratings – slide 2 of 5" width="720" height="900" loading="lazy"><img src="methodology/844b30ba/3.jpg" alt="Why proxy assessors bias disability ratings – slide 3 of 5" width="720" height="900" loading="lazy"><img src="methodology/844b30ba/4.jpg" alt="Why proxy assessors bias disability ratings – slide 4 of 5" width="720" height="900" loading="lazy"><img src="methodology/844b30ba/5.jpg" alt="Why proxy assessors bias disability ratings – slide 5 of 5" width="720" height="900" loading="lazy"></div><div class="nav"><button class="prev" type="button" aria-label="Previous slide">&lsaquo;</button><span class="pos">5 slides · swipe</span><button class="next" type="button" aria-label="Next slide">&rsaquo;</button></div></div>
+      <div>
+        <div class="date">17 Nov 2026</div>
+        <h3>Why proxy assessors bias disability ratings</h3>
+        <p class="take">Proxies rate patients as more disabled than other measures do, so use the same respondent type at every follow-up.</p>
+        <details><summary>Key points and references</summary><h4>Who answers the questionnaire?</h4><p>Assessments may be performed by rehabilitation providers, patients, or proxies, and their ratings can differ.</p><h4>Proxies overestimate disability</h4><p>Proxy assessors tend to rate patients as more disabled than other functional measures suggest, and the gap grows with more impaired patients.</p><h4>The frame of reference trap</h4><p>Healthcare professionals tend to rate patients higher than patients rate themselves due to a difference in the frame of reference used.</p><div class="refs"><b>References</b><p>Duncan, P. W., Lai, S. M., Tyler, D., Perera, S., Reker, D. M., &amp; Studenski, S. (2002). Evaluation of Proxy Responses to the Stroke Impact Scale. Stroke, 33(11), 2593–2599. https://doi.org/10.1161/01.str.0000034395.06874.3e</p><p>Sneeuw, K. C., Sprangers, M. A., &amp; Aaronson, N. K. (2002). The role of health care providers and significant others in evaluating the quality of life of patients with chronic disease. Journal of Clinical Epidemiology, 55(11), 1130–1143. https://doi.org/10.1016/s0895-4356(02)00479-1</p><p>Williams, L. S., Bakas, T., Brizendine, E., Plue, L., Tu, W., Hendrie, H., &amp; Kroenke, K. (2006). How Valid Are Family Proxy Assessments of Stroke Patients’ Health-Related Quality of Life?. Stroke, 37(8), 2081–2085. https://doi.org/10.1161/01.str.0000230583.10311.9f</p></div></details>
+      </div>
+    </article>
+    </div>
+  </section>
   
 <section class="newsletter-cta">
   <div class="newsletter-inner">
@@ -1294,6 +1313,73 @@ showCard(0, false);
   }
   start();
   if (wide.addEventListener) wide.addEventListener("change", start);
+})();
+</script>
+
+<script>
+(function () {
+  var form = document.querySelector("form.filters");
+  if (!form) return;
+  var cards = Array.prototype.slice.call(document.querySelectorAll("article.call, article.job, article.method"));
+  var noun = form.dataset.noun || "open calls";
+  var count = form.querySelector(".count"), reset = form.querySelector("button[type=reset]"), total = cards.length;
+  var DAY = 86400000, today = new Date(); today.setHours(0, 0, 0, 0);
+  function norm(t) { return (t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+  cards.forEach(function (c) { c._text = norm(c.dataset.text); });
+  function inRegion(c, where) {
+    if (!where) return true;
+    if (where === "italy") return c.dataset.italy === "yes";
+    return c.dataset.region === where || (where !== "International & intercontinental" && c.dataset.region === "International & intercontinental");
+  }
+  function inArea(c, area) { return !area || (" " + c.dataset.area + " ").indexOf(" " + area + " ") !== -1; }
+  ["where", "area"].forEach(function (n) {
+    if (!form[n]) return;
+    Array.prototype.forEach.call(form[n].options, function (o) {
+      if (!o.value) return;
+      var k = cards.filter(function (c) { return n === "where" ? inRegion(c, o.value) : inArea(c, o.value); }).length;
+      o.textContent += " (" + k + ")";
+      if (!k) o.disabled = true;
+    });
+  });
+  function apply(save) {
+    var val = function (n) { return form[n] ? form[n].value : ""; };
+    var q = norm(form.q.value).trim(), where = val("where"), time = val("time"), area = val("area"),
+        words = q ? q.split(/\s+/) : [], shown = 0;
+    cards.forEach(function (c) {
+      var ok = words.every(function (w) { return c._text.indexOf(w) !== -1; });
+      if (ok) ok = inRegion(c, where) && inArea(c, area);
+      if (ok && time) {
+        var d = c.dataset.deadline ? (new Date(c.dataset.deadline + "T00:00:00") - today) / DAY : null;
+        ok = d !== null && (time === "lt30" ? d < 30 : d >= parseInt(time.slice(2), 10));
+      }
+      c.hidden = !ok; if (ok) shown++;
+    });
+    document.querySelectorAll(".grp").forEach(function (g) { g.hidden = !g.querySelector("article:not([hidden])"); });
+    document.querySelectorAll(".reg").forEach(function (g) { g.hidden = !g.querySelector("article:not([hidden])"); });
+    document.querySelectorAll("section").forEach(function (s) {
+      var none = s.querySelector("article") && !s.querySelector("article:not([hidden])"), msg = s.querySelector(".nomatch");
+      if (none && !msg) { msg = document.createElement("p"); msg.className = "nomatch"; msg.textContent = "Nothing in this section matches your filters."; s.appendChild(msg); }
+      if (msg) msg.hidden = !none;
+    });
+    var active = !!(q || where || time || area);
+    count.textContent = active ? "Showing " + shown + " of " + total + " " + noun : total + " " + noun;
+    reset.hidden = !active;
+    if (save) {
+      var p = new URLSearchParams();
+      if (form.q.value.trim()) p.set("q", form.q.value.trim()); if (where) p.set("where", where); if (time) p.set("time", time);
+      if (area) p.set("area", area);
+      var qs = p.toString();
+      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
+    }
+  }
+  var p = new URLSearchParams(location.search);
+  if (p.get("q")) form.q.value = p.get("q");
+  ["where", "time", "area"].forEach(function (n) { if (p.get(n) && form[n]) form[n].value = p.get(n); });
+  var timer;
+  form.q.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { apply(true); }, 150); });
+  ["where", "time", "area"].forEach(function (n) { if (form[n]) form[n].addEventListener("change", function () { apply(true); }); });
+  form.addEventListener("reset", function () { setTimeout(function () { apply(true); }, 0); });
+  apply(false);
 })();
 </script>
 </body>

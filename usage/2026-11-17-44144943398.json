@@ -84,6 +84,14 @@
    "ragionamento": 0,
    "respinte": 0,
    "versione": "gemini-3.5-flash-lite"
+  },
+  "conferma bandi|paid-claude-sonnet-5.5": {
+   "richieste": 1,
+   "ingresso": 5363,
+   "uscita": 421,
+   "ragionamento": 0,
+   "respinte": 0,
+   "costo_usd": 0.014936
   }
  },
  "esauriti": [

@@ -2619,20 +2619,21 @@
   },
   "EU-HORIZON-CL4-2027-04-DIGITAL-EMERGING-04": {
     "status": "ok",
-    "checked": "2026-10-24",
+    "checked": "2026-11-17",
     "official_source": "EU Funding & Tenders Portal, topic HORIZON-CL4-2027-04-DIGITAL-EMERGING-04",
     "official_url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-CL4-2027-04-DIGITAL-EMERGING-04",
     "is_open_call": "yes",
-    "title": "Challenge-Driven AI Innovation Booster in Apply AI prioritised sectors",
-    "programme": "Horizon Europe",
+    "title": "Apply AI: Challenge-Driven AI Innovation Booster in Apply AI prioritised sectors (RIA)",
+    "programme": "Horizon Europe – Cluster 4 (Digital, Industry and Space) – Partnership on AI, Data and Robotics (ADRA)",
     "programme_family": "Horizon Europe",
-    "summary": "This funding call aims to drive technological progress and AI adoption in key EU strategic sectors including healthcare, advanced manufacturing, and autonomous driving. Consortia of industrial players and research organizations can apply to organize multi-staged challenge competitions, providing financial support to third-party SMEs and developers creating innovative AI solutions. Projects must start at TRL 2 and reach TRL 5, fostering a strong European AI ecosystem and addressing key goals of the Apply AI Strategy.",
+    "summary": "The call funds consortia that organise a three-stage, challenge-based competition to boost advanced AI adoption in one of three sectors: healthcare, advanced manufacturing or in-vehicle autonomous driving. Projects pass financial support to third parties (SMEs or SME-led teams) of EUR 300,000 in stage 2 and EUR 2,250,000 in stage 3. User-industry companies must be core consortium partners. Activities run from TRL 2 to TRL 5.",
     "coming_soon": false,
     "eligible_countries": "EU Member States and associated countries",
     "countries_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "italy": "yes",
     "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "version": 3,
+    "model": "paid-claude-sonnet-5.5",
     "due_dates": [
       "2027-03-18"
     ],
@@ -2645,7 +2646,13 @@
     "deadline_source": "eu_portal",
     "lead": "",
     "lead_evidence": "",
-    "deadline_raw": "2027-03-18 | Deadline dates: 2027-03-18."
+    "deadline_raw": "2027-03-18 | Deadline model: single-stage. Deadline dates: 2027-03-18.",
+    "confirmed": {
+      "model": "paid-claude-sonnet-5.5",
+      "date": "2026-11-17",
+      "changed": [],
+      "screening_model": ""
+    }
   },
   "GG-RFA-DP-27-030": {
     "status": "ok",
