@@ -838,5 +838,18 @@
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2jp3qkmdt2r",
     "threads_id": "17982752976131626",
     "backfill": "2026-11-17"
+  },
+  {
+    "date": "2026-11-18",
+    "time": "2026-11-18T11:43:03+00:00",
+    "id": "reel-844b30ba",
+    "title": "Why proxy assessors bias disability ratings",
+    "source": "Stroke Outcomes",
+    "kind": "reel",
+    "reel_of": "844b30ba",
+    "media_id": "18083718593547483",
+    "seconds": 27.7,
+    "facebook_id": "1693275075730684",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2li6cmron2x"
   }
 ]
