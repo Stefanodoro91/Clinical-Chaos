@@ -23,7 +23,7 @@ concurrency:
 jobs:
   positions:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
@@ -32,6 +32,11 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       # Chromium headless per i portali universitari che mostrano gli annunci solo con JavaScript (fonti «browser»)
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
       - run: pip install playwright && python -m playwright install --with-deps chromium
       - name: Configura git
         run: |
