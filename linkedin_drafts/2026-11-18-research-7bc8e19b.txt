@@ -1,0 +1,17 @@
+Why opaque reporting is a problem for research
+
+Opaque reporting is directly associated with biased conclusions and, less directly, with errors in biomedical publishing and inefficient use of scarce resources. Clear reporting lets readers judge whether findings are reliable. Have you read a paper missing key methodological details?
+
+Key points:
+1. Opaque reporting and biased conclusions: Opaque reporting is directly associated with biased conclusions and, less directly, with errors in biomedical publishing and inefficient use of scarce resources.
+2. Judging reliability becomes impossible: Without knowing study methods, readers cannot determine if results are trustworthy.
+
+Takeaway: Opaque reporting is linked to biased conclusions, and without clear methods readers cannot judge whether findings are reliable.
+
+References:
+- Buccheri, R. K., & Sharifi, C. (2017). Critical Appraisal Tools and Reporting Guidelines for Evidence‐Based Practice. Worldviews on Evidence-Based Nursing, 14(6), 463–472. https://doi.org/10.1111/wvn.12258
+- Moher, D., Altman, D. G., Schulz, K. F., Simera, I., & Wager, E. (2014). Guidelines for reporting health research: A user’s manual.
+
+Full details: https://clinicalresearchchaos.com/methodology#m-7bc8e19b
+
+#ClinicalResearch #ResearchMethodology #ResearchTransparency #ClinicalTrials #ResearchEthics
