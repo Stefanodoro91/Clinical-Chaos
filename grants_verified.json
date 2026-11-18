@@ -10381,14 +10381,14 @@
   },
   "GG-PAR-28-022": {
     "status": "ok",
-    "checked": "2026-11-11",
+    "checked": "2026-11-18",
     "official_source": "Grants.gov opportunity 360541",
     "official_url": "https://www.grants.gov/search-results-detail/360541",
     "is_open_call": "yes",
     "title": "Specialized Programs of Research Excellence (SPOREs) in Human Cancers",
-    "programme": "NIH – US National Institutes of Health",
+    "programme": "National Cancer Institute",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "The National Cancer Institute invites applications for P50 Research Center Grants for Specialized Programs of Research Excellence to support state-of-the-art translational research contributing to improved prevention, early detection, diagnosis, and treatment of human cancers. The program funds investigator-initiated projects based on human biology that reach a translational human endpoint within the project grant period. Eligible applicants include US-based educational institutions, nonprofits, governmental entities, and businesses.",
+    "summary": "The National Cancer Institute invites applications for P50 Research Center Grants to support state-of-the-art investigator-initiated translational research. The program aims to improve the prevention, early detection, diagnosis, and treatment of organ-specific cancers or related groups of cancers. Projects must be based on human biology and reach a translational human endpoint. Eligible applicants include domestic public and private higher education institutions, governments, and non-profit or for-profit organizations based in the United States.",
     "coming_soon": true,
     "eligible_countries": "Coming soon: published with the full call",
     "countries_evidence": "",
@@ -10404,10 +10404,10 @@
     "deadline_evidence": "",
     "deadline_type": "single",
     "deadline_source": "none",
-    "lead": "",
-    "lead_evidence": "",
+    "lead": "Refer to Section III. Eligibility Information in the NOFO for additional information on eligibility.",
+    "lead_evidence": "Refer to Section III. Eligibility Information in the NOFO for additional information on eligibility.",
     "deadline_raw": "2029-09-25 | Grants.gov closing date for applications: Sep 25, 2029 12:00:00 AM EDT.",
-    "dl_tries": 3
+    "dl_tries": 4
   },
   "GG-PAR-28-014": {
     "status": "ok",
