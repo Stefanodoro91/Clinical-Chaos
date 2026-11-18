@@ -23,6 +23,37 @@
    "ragionamento": 62911,
    "respinte": 0,
    "versione": "gemini-3-flash-preview"
+  },
+  "controllo doppioni|groq-gpt-oss-120b": {
+   "richieste": 1,
+   "ingresso": 1825,
+   "uscita": 568,
+   "ragionamento": 0,
+   "respinte": 0
+  },
+  "riscrittura anti-copia|gemini-3.5-flash-lite": {
+   "richieste": 1,
+   "ingresso": 251,
+   "uscita": 119,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
+  },
+  "critica|openrouter-nemotron-3-ultra-550b-a55b:free": {
+   "richieste": 1,
+   "ingresso": 4855,
+   "uscita": 3119,
+   "ragionamento": 0,
+   "respinte": 0,
+   "costo_usd": 0.0
+  },
+  "schemi slide|gemini-3.5-flash-lite": {
+   "richieste": 1,
+   "ingresso": 875,
+   "uscita": 88,
+   "ragionamento": 0,
+   "respinte": 0,
+   "versione": "gemini-3.5-flash-lite"
   }
  },
  "esauriti": [
