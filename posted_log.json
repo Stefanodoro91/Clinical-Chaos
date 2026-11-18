@@ -851,5 +851,16 @@
     "seconds": 27.7,
     "facebook_id": "1693275075730684",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2li6cmron2x"
+  },
+  {
+    "date": "2026-11-18",
+    "time": "2026-11-18T19:25:06+00:00",
+    "id": "7bc8e19b",
+    "title": "Why opaque reporting is a problem for research",
+    "source": "Critical appraisal",
+    "media_id": "18274978654305869",
+    "facebook_id": "1277022912171972_122120148333432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2mbu7km3k2l",
+    "threads_id": "18237371143324066"
   }
 ]

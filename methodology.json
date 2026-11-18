@@ -28,5 +28,29 @@
       "Williams, L. S., Bakas, T., Brizendine, E., Plue, L., Tu, W., Hendrie, H., & Kroenke, K. (2006). How Valid Are Family Proxy Assessments of Stroke Patients’ Health-Related Quality of Life?. Stroke, 37(8), 2081–2085. https://doi.org/10.1161/01.str.0000230583.10311.9f"
     ],
     "cover": "published_images/2026-11-17-844b30ba/slide-1.jpg"
+  },
+  "7bc8e19b": {
+    "id": "7bc8e19b",
+    "date": "2026-11-18",
+    "title": "Why opaque reporting is a problem for research",
+    "category": "Reporting & publication",
+    "takeaway": "Opaque reporting is linked to biased conclusions, and without clear methods readers cannot judge whether findings are reliable.",
+    "points": [
+      {
+        "heading": "Opaque reporting and biased conclusions",
+        "body": "Opaque reporting is directly associated with biased conclusions and, less directly, with errors in biomedical publishing and inefficient use of scarce resources.",
+        "source": ""
+      },
+      {
+        "heading": "Judging reliability becomes impossible",
+        "body": "Without knowing study methods, readers cannot determine if results are trustworthy.",
+        "source": "Moher et al., 2014"
+      }
+    ],
+    "references": [
+      "Buccheri, R. K., & Sharifi, C. (2017). Critical Appraisal Tools and Reporting Guidelines for Evidence‐Based Practice. Worldviews on Evidence-Based Nursing, 14(6), 463–472. https://doi.org/10.1111/wvn.12258",
+      "Moher, D., Altman, D. G., Schulz, K. F., Simera, I., & Wager, E. (2014). Guidelines for reporting health research: A user’s manual."
+    ],
+    "cover": "published_images/2026-11-18-7bc8e19b/slide-1.jpg"
   }
 }
