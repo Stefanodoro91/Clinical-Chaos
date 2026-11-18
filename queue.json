@@ -1831,5 +1831,175 @@
     "lay_left": [],
     "id": "799e68bd",
     "source": "Single-Subject.pdf"
+  },
+  {
+    "title": "Are you confusing co-production with co-creation?",
+    "title_highlight": "",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Ambiguous participation terminology",
+        "body": "This review of healthcare literature identifies overlapping terms that hinder the synthesis of evidence.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "overlapping terms",
+        "source": ""
+      }
+    ],
+    "takeaway": "Define co-production as participation in service delivery and co-creation as the value generated through that interaction.",
+    "takeaway_highlight": "value generated through that interaction",
+    "references": [
+      "Fusco, F., Marsilio, M., & Guglielmetti, C. (2023). Co-creation in healthcare: framing the outcomes and their determinants. Journal of Service Management, 34(6), 1–26. https://doi.org/10.1108/josm-06-2021-0212"
+    ],
+    "caption": "Do you know the difference between co-production and co-creation in health research?\n\nThis review clarifies the distinction between co-production and co-creation. Understanding these concepts is essential for designing effective health services. How do you define patient involvement in your own research projects?",
+    "hook": "Do you know the difference between co-production and co-creation in health research?",
+    "hashtags": [
+      "#cocreation",
+      "#healthcare",
+      "#researchmethods"
+    ],
+    "source_hint": "Section 2.1",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "2b483753",
+    "source": "Co-creation in healthcare.pdf"
+  },
+  {
+    "title": "Can patient participation actually destroy value?",
+    "title_highlight": "actually destroy value",
+    "category": "Endpoints & outcomes",
+    "slides": [
+      {
+        "heading": "The dark side of interactions",
+        "body": "This systematic review explains that interactions are not inherently beneficial. Poorly managed encounters can lead to negative outcomes.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "not inherently beneficial",
+        "source": ""
+      }
+    ],
+    "takeaway": "Monitor for value co-destruction by assessing unintended consequences like patient anxiety, staff burnout, or resource misintegration.",
+    "takeaway_highlight": "Monitor for value co-destruction",
+    "references": [
+      "Fusco, F., Marsilio, M., & Guglielmetti, C. (2023). Co-creation in healthcare: framing the outcomes and their determinants. Journal of Service Management, 34(6), 1–26. https://doi.org/10.1108/josm-06-2021-0212"
+    ],
+    "caption": "Not all patient-provider interactions result in positive value for the healthcare system.\n\nThe review highlights the risk of value co-destruction in healthcare encounters. Not every interaction improves the service experience or health status. Have you ever observed a participation process that backfired?",
+    "hook": "Not all patient-provider interactions result in positive value for the healthcare system.",
+    "hashtags": [
+      "#cocreation",
+      "#healthcare",
+      "#researchmethods"
+    ],
+    "source_hint": "Section 4.1",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "6c1443b9",
+    "source": "Co-creation in healthcare.pdf"
+  },
+  {
+    "title": "Why focus only on the patient-provider dyad?",
+    "title_highlight": "patient-provider dyad",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Narrow research scopes",
+        "body": "This literature review highlights that most studies focus on the patient in a vacuum. Ignoring the broader network misses critical determinants.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "focus on the patient",
+        "source": ""
+      }
+    ],
+    "takeaway": "Adopt a systemic perspective by measuring outcomes for caregivers, health professionals, and the community alongside patient-centered metrics.",
+    "takeaway_highlight": "Adopt a systemic perspective",
+    "references": [
+      "Fusco, F., Marsilio, M., & Guglielmetti, C. (2023). Co-creation in healthcare: framing the outcomes and their determinants. Journal of Service Management, 34(6), 1-26."
+    ],
+    "caption": "Research often ignores the impact of caregivers and the community on co-creation success.\n\nThis literature review argues that a narrow focus on the patient-provider dyad limits our understanding of service value. Caregivers and the community are often overlooked actors. How do you include the broader social network in your outcome assessments?",
+    "hook": "Research often ignores the impact of caregivers and the community on co-creation success.",
+    "hashtags": [
+      "#cocreation",
+      "#healthcare",
+      "#researchmethods"
+    ],
+    "source_hint": "Section 5.1.1",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "30115d03",
+    "source": "Co-creation in healthcare.pdf"
+  },
+  {
+    "title": "Does lack of structure hinder co-creation?",
+    "title_highlight": "lack of structure",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Barriers to participant commitment",
+        "body": "This review suggests that informal participation processes create uncertainty. Unclear roles can discourage long-term commitment from participants.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "informal participation processes",
+        "source": ""
+      }
+    ],
+    "takeaway": "Implement formalized structures and clear rules for the allocation of responsibility to facilitate stable co-creation.",
+    "takeaway_highlight": "Implement formalized structures",
+    "references": [
+      "Fusco, F., Marsilio, M., & Guglielmetti, C. (2023). Co-creation in healthcare: framing the outcomes and their determinants. Journal of Service Management, 34(6), 1–26. https://doi.org/10.1108/josm-06-2021-0212"
+    ],
+    "caption": "Without clear rules, patient participation in service delivery can lead to role confusion.\n\nThe authors suggest that formal rules and structures are necessary to sustain patient engagement. Uncertainty about roles often leads to frustration and withdrawal. What strategies do you use to clarify responsibilities in co-creative studies?",
+    "hook": "Without clear rules, patient participation in service delivery can lead to role confusion.",
+    "hashtags": [
+      "#cocreation",
+      "#healthcare",
+      "#researchmethods"
+    ],
+    "source_hint": "Section 4.2.3.2",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "e7926d6c",
+    "source": "Co-creation in healthcare.pdf"
+  },
+  {
+    "title": "Is your patient population ready to co-create?",
+    "title_highlight": "ready to co-create",
+    "category": "Study design",
+    "slides": [
+      {
+        "heading": "Barriers to equitable participation",
+        "body": "This systematic review identifies user-related factors, such as health literacy, that act as antecedents. Ignoring user traits leads to unequal access.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "Ignoring user traits",
+        "source": ""
+      }
+    ],
+    "takeaway": "Screen for antecedents like health literacy and digital skills to tailor co-creation and prevent the exclusion of vulnerable groups.",
+    "takeaway_highlight": "Screen for antecedents",
+    "references": [
+      "Fusco, F., Marsilio, M., & Guglielmetti, C. (2023). Co-creation in healthcare: framing the outcomes and their determinants. Journal of Service Management, 34(6), 1–26. https://doi.org/10.1108/josm-06-2021-0212"
+    ],
+    "caption": "Specific patient traits like health literacy determine the success of co-creation efforts.\n\nThis review identifies health literacy and readiness as key antecedents to successful participation. Without tailoring activities to these traits, we risk excluding the most vulnerable populations. How do you assess participant readiness before starting a study?",
+    "hook": "Specific patient traits like health literacy determine the success of co-creation efforts.",
+    "hashtags": [
+      "#cocreation",
+      "#healthcare",
+      "#researchmethods"
+    ],
+    "source_hint": "Section 4.2.2.1",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "51378d9c",
+    "source": "Co-creation in healthcare.pdf"
   }
 ]

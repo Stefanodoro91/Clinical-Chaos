@@ -1,0 +1,31 @@
+{
+ "workflow": "Post giornaliero ricerca clinica",
+ "quota_day": "2026-11-18",
+ "consumo": {
+  "nuovi post da Drive|gemini-3.8-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 2
+  },
+  "nuovi post da Drive|gemini-3.6-flash": {
+   "richieste": 0,
+   "ingresso": 0,
+   "uscita": 0,
+   "ragionamento": 0,
+   "respinte": 3
+  },
+  "nuovi post da Drive|gemini-3-flash-preview": {
+   "richieste": 1,
+   "ingresso": 16431,
+   "uscita": 1921,
+   "ragionamento": 62911,
+   "respinte": 0,
+   "versione": "gemini-3-flash-preview"
+  }
+ },
+ "esauriti": [
+  "gemini-3.6-flash"
+ ]
+}
