@@ -52,5 +52,33 @@
       "Moher, D., Altman, D. G., Schulz, K. F., Simera, I., & Wager, E. (2014). Guidelines for reporting health research: A user’s manual."
     ],
     "cover": "published_images/2026-11-18-7bc8e19b/slide-1.jpg"
+  },
+  "checklist-consort-outcomes": {
+    "id": "checklist-consort-outcomes",
+    "date": "2026-11-19",
+    "title": "Primary outcome: defined before, not after",
+    "category": "Endpoints & outcomes",
+    "takeaway": "An outcome is prespecified only if variable, metric, aggregation and time point are written first.",
+    "points": [
+      {
+        "heading": "What the item asks",
+        "body": "Report every prespecified primary and secondary outcome: measurement variable, analysis metric, method of aggregation and time point.",
+        "source": "Hopewell et al., 2025"
+      },
+      {
+        "heading": "Why it matters",
+        "body": "Vague outcomes invite switching after the data are in, one of the best-documented sources of reporting bias.",
+        "source": "Hopewell et al., 2025"
+      },
+      {
+        "heading": "How to comply",
+        "body": "Example: pain on a 0–10 numeric scale (variable), change from baseline (metric), mean (aggregation), at 12 weeks (time point).",
+        "source": "Hopewell et al., 2025"
+      }
+    ],
+    "references": [
+      "Hopewell, S., Chan, A.-W., Collins, G. S., Hróbjartsson, A., Moher, D., Schulz, K. F., et al. (2025). CONSORT 2025 statement: Updated guideline for reporting randomised trials. BMJ, 389, e081123. https://doi.org/10.1136/bmj-2024-081123"
+    ],
+    "cover": "published_images/2026-11-19-checklist-consort-outcomes/slide-1.jpg"
   }
 }
