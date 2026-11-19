@@ -1941,5 +1941,175 @@
     "lay_left": [],
     "id": "51378d9c",
     "source": "Co-creation in healthcare.pdf"
+  },
+  {
+    "title": "Can standard accuracy hide poor prediction in imbalanced cohorts?",
+    "title_highlight": "imbalanced cohorts",
+    "category": "Statistics",
+    "slides": [
+      {
+        "heading": "Skewed distributions distort overall metrics",
+        "body": "A scoping review found that most algorithms trained on disproportionate patient outcomes relied on unadjusted performance curves.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "disproportionate patient outcomes",
+        "source": ""
+      }
+    ],
+    "takeaway": "Evaluate classification performance using balanced accuracy and F1 scores rather than standard receiver operating curves.",
+    "takeaway_highlight": "balanced accuracy and F1 scores",
+    "references": [
+      "Wójcik, Z., Dimitrova, V., Warrington, L., Velikova, G., & Absolom, K. (2025). Using artificial intelligence to predict patient outcomes from patient-reported outcome measures: a scoping review. Health and Quality of Life Outcomes, 23(1). https://doi.org/10.1186/s12955-025-02365-z"
+    ],
+    "caption": "Evaluating clinical classification algorithms on uneven data requires metrics beyond simple area under the curve.\n\nStandard area under the curve can look deceptively optimistic when the outcome event is rare.\nOverall metrics frequently mask a failure to identify high-risk individuals.\nSelecting balanced metrics reveals true model utility across minority patient groups.\nWhich performance metrics do you require before trusting a predictive algorithm?",
+    "hook": "Evaluating clinical classification algorithms on uneven data requires metrics beyond simple area under the curve.",
+    "hashtags": [
+      "#MachineLearning",
+      "#Biostatistics",
+      "#ClinicalPrediction"
+    ],
+    "source_hint": "Section Data pre-processing, Model evaluation, and Discussion",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "8f18947c",
+    "source": "AI outcome prediction.pdf"
+  },
+  {
+    "title": "Does resampling before the split invalidate model evaluation?",
+    "title_highlight": "resampling before the split",
+    "category": "Study design",
+    "slides": [
+      {
+        "heading": "Premature balancing biases test datasets",
+        "body": "A scoping review found that researchers frequently modified outcome ratios prior to partitioning training and testing cohorts.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "modified outcome ratios",
+        "source": ""
+      }
+    ],
+    "takeaway": "Apply data resampling techniques strictly within the training set to preserve real clinical prevalence during testing.",
+    "takeaway_highlight": "Apply data resampling techniques",
+    "references": [
+      "Wójcik, Z., Dimitrova, V., Warrington, L., Velikova, G., & Absolom, K. (2025). Using artificial intelligence to predict patient outcomes from patient-reported outcome measures: a scoping review. Health and Quality of Life Outcomes, 23(1). https://doi.org/10.1186/s12955-025-02365-z"
+    ],
+    "caption": "Data resampling performed prior to partitioning creates artificial testing data and invalidates clinical validation.\n\nAltering class distributions across an entire dataset before splitting distorts the evaluation process.\nReal patient populations feature natural outcome imbalances.\nTesting algorithms on artificially balanced cohorts produces inflated diagnostic estimates.\nHow does your team safeguard validation data against pre-split leakage?",
+    "hook": "Data resampling performed prior to partitioning creates artificial testing data and invalidates clinical validation.",
+    "hashtags": [
+      "#DataLeakage",
+      "#ClinicalAI",
+      "#ResearchMethods"
+    ],
+    "source_hint": "Section Data pre-processing, Handling class imbalance, and Discussion",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "7f7e6dc3",
+    "source": "AI outcome prediction.pdf"
+  },
+  {
+    "title": "How should you handle missing questionnaire outcome data?",
+    "title_highlight": "missing questionnaire outcome data",
+    "category": "Data management",
+    "slides": [
+      {
+        "heading": "Naive data imputation creates bias",
+        "body": "This scoping review revealed that predictive models frequently discarded incomplete records or replaced absent scores with means without justification.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "discarded incomplete records",
+        "source": ""
+      }
+    ],
+    "takeaway": "Document the precise missingness mechanisms and justify imputation algorithms to prevent distorting patient-reported variables.",
+    "takeaway_highlight": "justify imputation algorithms",
+    "references": [
+      "Wójcik, Z., Dimitrova, V., Warrington, L., Velikova, G., & Absolom, K. (2025). Using artificial intelligence to predict patient outcomes from patient-reported outcome measures: a scoping review. Health and Quality of Life Outcomes, 23(1). https://doi.org/10.1186/s12955-025-02365-z"
+    ],
+    "caption": "Handling missing survey responses requires methodological justification rather than default participant exclusion.\n\nDiscarding participants with incomplete questionnaires reduces statistical power and introduces systematic attrition bias.\nSimilarly, simple mean substitution compresses variance and distorts relationships between clinical features.\nTransparent reporting of missingness patterns is essential for reproducible research.\nWhat criteria guide your choice of imputation method in longitudinal survey data?",
+    "hook": "Handling missing survey responses requires methodological justification rather than default participant exclusion.",
+    "hashtags": [
+      "#MissingData",
+      "#PROMs",
+      "#DataManagement"
+    ],
+    "source_hint": "Section Data pre-processing, Missingness reporting and imputation, and Discussion",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "667e8d5c",
+    "source": "AI outcome prediction.pdf"
+  },
+  {
+    "title": "Why do predictive machine learning studies fail reproducibility?",
+    "title_highlight": "fail reproducibility",
+    "category": "Reporting & publication",
+    "slides": [
+      {
+        "heading": "Omitted tuning parameters undermine replication",
+        "body": "This scoping review revealed that two thirds of studies optimizing algorithm parameters failed to document their final configured values.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "optimizing algorithm parameters",
+        "source": ""
+      }
+    ],
+    "takeaway": "Publish all final hyperparameter settings and search spaces in supplementary files to ensure external verification.",
+    "takeaway_highlight": "Publish all final hyperparameter settings",
+    "references": [
+      "Wójcik, Z., Dimitrova, V., Warrington, L., Velikova, G., & Absolom, K. (2025). Using artificial intelligence to predict patient outcomes from patient-reported outcome measures: a scoping review. Health and Quality of Life Outcomes, 23(1), 37."
+    ],
+    "caption": "Rigorous machine learning reporting demands full disclosure of tuned hyperparameters and search procedures.\n\nPredictive algorithms depend heavily on the exact parameter configurations selected during optimization.\nOmitting final hyperparameter settings prevents independent investigators from replicating or verifying published models.\nComplete algorithmic documentation should be treated as a standard scientific obligation.\nDo you routinely publish tuning boundaries and final parameters in study appendices?",
+    "hook": "Rigorous machine learning reporting demands full disclosure of tuned hyperparameters and search procedures.",
+    "hashtags": [
+      "#Reproducibility",
+      "#ResearchReporting",
+      "#HealthData"
+    ],
+    "source_hint": "Section Model development, hyperparameter tuning, and Discussion",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "83f26b5b",
+    "source": "AI outcome prediction.pdf"
+  },
+  {
+    "title": "Are you ignoring time dependencies in longitudinal outcomes?",
+    "title_highlight": "ignoring time dependencies",
+    "category": "Research methods",
+    "slides": [
+      {
+        "heading": "Static algorithms miss dynamic symptom changes",
+        "body": "A scoping review showed that multi-timepoint studies routinely compressed repeated questionnaire measures into single static baseline inputs.",
+        "image_prompt": "",
+        "photo_query": "",
+        "highlight": "compressed repeated questionnaire measures",
+        "source": ""
+      }
+    ],
+    "takeaway": "Process repeated patient assessments using recurrent network architectures or explicit trajectory features rather than static snapshots.",
+    "takeaway_highlight": "recurrent network architectures",
+    "references": [
+      "Wójcik, Z., Dimitrova, V., Warrington, L., Velikova, G., & Absolom, K. (2025). Using artificial intelligence to predict patient outcomes from patient-reported outcome measures: a scoping review. Health and Quality of Life Outcomes, 23(1). https://doi.org/10.1186/s12955-025-02365-z"
+    ],
+    "caption": "Longitudinal patient-reported measures lose predictive value when collapsed into static single-timepoint features.\n\nPatient recovery trajectories are dynamic and shift across clinical phases.\nCollapsing multiple follow-up assessments into a single summary score discards valuable temporal trends.\nAccounting for time dependencies captures crucial trajectories of functional improvement or deterioration.\nHow do you analyze repeated clinical measurements without discarding temporal structure?",
+    "hook": "Longitudinal patient-reported measures lose predictive value when collapsed into static single-timepoint features.",
+    "hashtags": [
+      "#LongitudinalData",
+      "#TimeDistributed",
+      "#ClinicalOutcomes"
+    ],
+    "source_hint": "Section Model development, Table 3, and Discussion",
+    "lay_abstract": true,
+    "no_images": true,
+    "takeaway_label": "",
+    "lay_left": [],
+    "id": "7ad02779",
+    "source": "AI outcome prediction.pdf"
   }
 ]
