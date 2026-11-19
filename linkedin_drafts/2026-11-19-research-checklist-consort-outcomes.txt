@@ -1,0 +1,21 @@
+Primary outcome: defined before, not after
+
+CONSORT 2025 item 14: a prespecified outcome names variable, metric, aggregation and time point.
+
+One reporting-checklist item at a time, every Thursday: what it asks, why it matters, and how to comply in practice.
+This week: CONSORT, Item 14 – Outcomes.
+Which checklist item do you see ignored most often?
+
+Key points:
+1. What the item asks: Report every prespecified primary and secondary outcome: measurement variable, analysis metric, method of aggregation and time point.
+2. Why it matters: Vague outcomes invite switching after the data are in, one of the best-documented sources of reporting bias.
+3. How to comply: Example: pain on a 0–10 numeric scale (variable), change from baseline (metric), mean (aggregation), at 12 weeks (time point).
+
+Takeaway: An outcome is prespecified only if variable, metric, aggregation and time point are written first.
+
+References:
+- Hopewell, S., Chan, A.-W., Collins, G. S., Hróbjartsson, A., Moher, D., Schulz, K. F., et al. (2025). CONSORT 2025 statement: Updated guideline for reporting randomised trials. BMJ, 389, e081123. https://doi.org/10.1136/bmj-2024-081123
+
+Full details: https://clinicalresearchchaos.com/methodology#m-checklist-consort-outcomes
+
+#ClinicalResearch #ResearchMethodology #CONSORT #ClinicalTrials #Endpoints
