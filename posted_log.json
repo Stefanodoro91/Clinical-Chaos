@@ -862,5 +862,25 @@
     "facebook_id": "1277022912171972_122120148333432698",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2mbu7km3k2l",
     "threads_id": "18237371143324066"
+  },
+  {
+    "date": "2026-11-19",
+    "time": "2026-11-19T12:20:13+00:00",
+    "id": "grant-EU-HORIZON-HLTH-2027-01-STAYHLTH-01",
+    "title": "Disability researchers: call for solutions for independent living",
+    "source": "GrantFinder",
+    "media_id": "18080099981442952",
+    "facebook_id": "1277022912171972_122120324241432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2o2lizyfu2o",
+    "threads_id": "18447149515132576",
+    "kind": "grant",
+    "grant_id": "EU-HORIZON-HLTH-2027-01-STAYHLTH-01",
+    "url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-STAYHLTH-01",
+    "deadline": "2027-02-17",
+    "funder": "Horizon Europe",
+    "summary": "This topic supports research and innovation to promote independent living and community inclusion for persons with long-term disabilities across the life-course. Projects should address health-related causes and treatments, assistive technologies, prevention, transition from institutions to community living, and person-centred care models. Research must integrate social sciences and humanities and actively involve persons with disabilities, their families, and representative organisations.",
+    "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+    "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-STAYHLTH-01",
+    "grant_title": "Addressing disabilities through the life course to support independent living and inclusion"
   }
 ]
