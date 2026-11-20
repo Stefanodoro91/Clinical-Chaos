@@ -893,5 +893,25 @@
     "facebook_id": "1277022912171972_122120404929432698",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2oojtzmbx2x",
     "threads_id": "18137081605590789"
+  },
+  {
+    "date": "2026-11-20",
+    "time": "2026-11-20T12:16:35+00:00",
+    "id": "grant-GG-PAR-25-136",
+    "title": "Digital mental health researchers: funds for platform-based trials",
+    "source": "GrantFinder",
+    "media_id": "18109289705202307",
+    "facebook_id": "1277022912171972_122120594721432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2qktwz5zq2j",
+    "threads_id": "18383018461240992",
+    "kind": "grant",
+    "grant_id": "GG-PAR-25-136",
+    "url": "https://www.grants.gov/search-results-detail/357034",
+    "deadline": "2027-02-05",
+    "funder": "NIH R01 Research Project Grant",
+    "summary": "This funding opportunity supports innovative research projects to test and optimize digital mental health interventions using established digital health platforms. Grants fund pragmatic clinical research statistically powered to determine intervention effectiveness, with an emphasis on improving reach, efficiency, quality, and service delivery, particularly in health disparity populations. Higher education institutions, non-profits, for-profit companies, and non-U.S. organizations are eligible to apply.",
+    "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+    "official_source": "NIH Guide PAR-25-136",
+    "grant_title": "Laboratories to Optimize Digital Health (R01 Clinical Trial Required)"
   }
 ]
