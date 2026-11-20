@@ -1,0 +1,24 @@
+Digital mental health researchers: funds for platform-based trials
+
+Testing digital mental health interventions on established platforms? Learn what this R01 call supports 🧠
+
+This initiative supports research projects to refine and evaluate existing evidence-based digital mental health interventions using rapid digital test beds.
+
+Proposed studies must focus particularly on populations experiencing health disparities or vulnerable groups.
+
+Are you planning to apply for this call, or do you know of similar digital health funding opportunities?
+
+Programme: NIH R01 Research Project Grant
+Eligible countries: Any country (non-US organisations eligible) (official call: “Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.”)
+Who can lead: Any individual with the skills, knowledge, and resources necessary to carry out the proposed research may work with their organization to apply.
+Next deadline: 5 Feb 2027 (new applications); later deadlines: 5 Jun 2027, 5 Oct 2027
+Official call: https://www.grants.gov/search-results-detail/357034
+All open calls, grouped by programme: https://clinicalresearchchaos.com/calls#c-GG-PAR-25-136.
+
+Details are compiled automatically from the official call: always check eligibility, amounts and dates before applying.
+
+Key points:
+1. What it funds: Supports development of digital health test beds to rapidly refine existing evidence-based interventions and conduct statistically powered clinical trials.
+2. Who it is for: Requires partnerships between academic researchers and software developers leveraging well-established platforms with evidence-based interventions and ≥1,000 active users.
+
+#ResearchFunding #ClinicalResearch #DigitalMentalHealth #MentalHealthResearch #DigitalHealth
