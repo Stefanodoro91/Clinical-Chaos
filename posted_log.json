@@ -926,5 +926,16 @@
     "seconds": 28.0,
     "facebook_id": "1163787752708714",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2qt5xjhnc2a"
+  },
+  {
+    "date": "2026-11-21",
+    "time": "2026-11-21T16:30:33+00:00",
+    "id": "58ac95ee",
+    "title": "How can we improve motor outcomes after a stroke?",
+    "source": "Motor recovery.pdf",
+    "media_id": "17917766208496966",
+    "facebook_id": "1277022912171972_122120964729432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2tjj2wgsh2b",
+    "threads_id": "18117865109605966"
   }
 ]

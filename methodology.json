@@ -80,5 +80,23 @@
       "Hopewell, S., Chan, A.-W., Collins, G. S., Hróbjartsson, A., Moher, D., Schulz, K. F., et al. (2025). CONSORT 2025 statement: Updated guideline for reporting randomised trials. BMJ, 389, e081123. https://doi.org/10.1136/bmj-2024-081123"
     ],
     "cover": "published_images/2026-11-19-checklist-consort-outcomes/slide-1.jpg"
+  },
+  "58ac95ee": {
+    "id": "58ac95ee",
+    "date": "2026-11-21",
+    "title": "How can we improve motor outcomes after a stroke?",
+    "category": "Clinical insight",
+    "takeaway": "Evidence-informed motor training is the foundation of stroke rehabilitation; delivery modes and adjuvants may enhance outcomes.",
+    "points": [
+      {
+        "heading": "What remains unknown in stroke motor recovery?",
+        "body": "This narrative review identifies key themes for upper and lower limb recovery after stroke. The authors establish a framework for future progress.",
+        "source": ""
+      }
+    ],
+    "references": [
+      "Dalton, E. J., Fini, N. A., Kwakkel, G., Lang, C. E., Lannin, N. A., & Hayward, K. S. (2026). Recent highlights in motor recovery and rehabilitation research after stroke. Journal of Physiotherapy, 72(3), 179–189. https://doi.org/10.1016/j.jphys.2026.06.005"
+    ],
+    "cover": "published_images/2026-11-21-58ac95ee/slide-1.jpg"
   }
 }
