@@ -1,0 +1,17 @@
+How can we improve motor outcomes after a stroke?
+
+Optimizing stroke rehabilitation requires more than simple task repetition.
+
+This narrative review outlines a framework for motor recovery based on evidence-informed training parameters. The authors recommend always pairing adjuvants with evidence-informed motor training and considering delivery modes (e.g., robotics) to support higher training doses. How do you integrate these parameters into your clinical practice?
+
+Key points:
+1. What remains unknown in stroke motor recovery? This narrative review identifies key themes for upper and lower limb recovery after stroke. The authors establish a framework for future progress.
+
+Takeaway: Evidence-informed motor training is the foundation of stroke rehabilitation; delivery modes and adjuvants may enhance outcomes.
+
+References:
+- Dalton, E. J., Fini, N. A., Kwakkel, G., Lang, C. E., Lannin, N. A., & Hayward, K. S. (2026). Recent highlights in motor recovery and rehabilitation research after stroke. Journal of Physiotherapy, 72(3), 179–189. https://doi.org/10.1016/j.jphys.2026.06.005
+
+Full details: https://clinicalresearchchaos.com/science#s-58ac95ee
+
+#ClinicalResearch #StrokeRehabilitation #PhysicalTherapy #MotorRecovery
