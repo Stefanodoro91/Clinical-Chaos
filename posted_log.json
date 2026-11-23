@@ -970,5 +970,24 @@
     "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
     "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-DISEASE-10",
     "grant_title": "Prevention and management of chronic non-communicable diseases in children and young people (GACD)"
+  },
+  {
+    "date": "2026-11-23",
+    "time": "2026-11-23T17:44:07+00:00",
+    "id": "positions-2026-11-23",
+    "title": "Academic positions for clinical researchers",
+    "source": "Academic positions",
+    "media_id": "17900375358410906",
+    "facebook_id": "1277022912171972_122121692973432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2yok22efr22",
+    "threads_id": "18115838173885310",
+    "kind": "positions",
+    "position_ids": [
+      "POS-ae436bf1dd5f",
+      "POS-7b92d533432f",
+      "POS-49e9e0b3b673",
+      "POS-35b130bc0c19",
+      "POS-d4d049eece22"
+    ]
   }
 ]
