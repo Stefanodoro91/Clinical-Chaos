@@ -950,5 +950,25 @@
     "seconds": 17.2,
     "facebook_id": "2431095081025736",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2w4hh7ocj24"
+  },
+  {
+    "date": "2026-11-23",
+    "time": "2026-11-23T12:14:01+00:00",
+    "id": "grant-EU-HORIZON-HLTH-2027-01-DISEASE-10",
+    "title": "Targeting child and youth NCDs? Support for implementation research",
+    "source": "GrantFinder",
+    "media_id": "18115427027336967",
+    "facebook_id": "1277022912171972_122121609693432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n2y44bjczi2j",
+    "threads_id": "17971091376206342",
+    "kind": "grant",
+    "grant_id": "EU-HORIZON-HLTH-2027-01-DISEASE-10",
+    "url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-01-DISEASE-10",
+    "deadline": "2027-02-17",
+    "funder": "Horizon Europe – Cluster 1: Health",
+    "summary": "This call funds implementation research to improve the prevention, diagnosis, and management of chronic non-communicable diseases (NCDs) in children and young people (ages 1-24). It targets populations in low- and middle-income countries (LMICs) or underserved communities in high-income countries (HICs). Applicants must propose evidence-based interventions and involve multidisciplinary teams, including early career researchers, to ensure equitable health outcomes and long-term sustainability.",
+    "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+    "official_source": "EU Funding & Tenders Portal, topic HORIZON-HLTH-2027-01-DISEASE-10",
+    "grant_title": "Prevention and management of chronic non-communicable diseases in children and young people (GACD)"
   }
 ]
