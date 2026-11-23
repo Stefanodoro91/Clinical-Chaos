@@ -12051,10 +12051,10 @@
     "official_source": "official call page",
     "official_url": "https://fondation-maladiesrares.org/wp-content/uploads/2026/11/Call-text-Translational-Research-8-2026-1.pdf",
     "is_open_call": "yes",
-    "title": "Translational Research 8 2026",
-    "programme": "Fondation Maladies Rares",
+    "title": "Call text Translational Research 8 2026 1",
+    "programme": "Fondation Maladies Rares – Appels",
     "programme_family": "Fondation Maladies Rares – Appels",
-    "summary": "This call for translational research projects focuses on rare diseases, aiming to fund innovative research that bridges the gap between basic science and clinical application to improve diagnosis, management, or treatment. Eligible applicants include researchers affiliated with academic or clinical institutions in France. Projects should address unmet medical needs in the field of rare diseases and demonstrate high scientific and translational impact.",
+    "summary": "This call for translational research projects aims to fund innovative scientific studies focused on rare diseases, supporting research teams in advancing clinical and biological discoveries towards medical applications. Eligible applicants include research groups and academic institutions established in France. The funding covers operational costs, equipment, and personnel associated with the proposed translational research project.",
     "coming_soon": false,
     "eligible_countries": "Not stated in the official text: check the call",
     "countries_evidence": "",
@@ -12072,8 +12072,8 @@
     "deadline_source": "none",
     "lead": "",
     "lead_evidence": "",
-    "deadline_raw": "2026-06-30 | ",
-    "dl_tries": 1
+    "deadline_raw": "2026-06-15 | Deadline for submission is 2026-06-15.",
+    "dl_tries": 2
   },
   "WEB-4e6a85c761a6": {
     "status": "ok",
@@ -12115,14 +12115,14 @@
     "title": "Transdisciplinary research on women’s health (NordForsk)",
     "programme": "Transdisciplinary research on women’s health (NordForsk)",
     "programme_family": "Forte – Swedish Research Council for Health, Working Life and Welfare",
-    "summary": "NordForsk, together with partners including Forte and several Nordic research councils, invites proposals for transdisciplinary research on women’s health. The call funds 3–4‑year projects addressing conditions disproportionately affecting women, sex‑and gender‑related disease differences, or women‑specific conditions across the life course. Consortia must involve research organisations from at least three Nordic countries, or two Nordic countries plus Estonia and/or Lithuania.",
+    "summary": "This call funds high-quality transdisciplinary research projects on women’s health and health equality to strengthen the knowledge base for prevention, diagnosis, treatment, and care. Projects must address women’s health and welfare across three specific thematic areas. Consortia must include research-performing organisations from at least three Nordic countries, or two Nordic countries plus Estonia and/or Lithuania. Funding duration is three to four years.",
     "coming_soon": false,
     "eligible_countries": "Not stated in the official text: check the call",
     "countries_evidence": "",
     "italy": "unclear",
     "italy_evidence": "",
     "version": 3,
-    "model": "groq-gpt-oss-120b",
+    "model": "gemini-3.5-flash-lite",
     "due_dates": [
       "2027-03-02"
     ],
@@ -12130,11 +12130,11 @@
     "expires": "",
     "loi_deadline": "",
     "loi_required": "no",
-    "deadline_evidence": "Deadline: 2 March 2027 at 13:00 CET (Oslo time).",
+    "deadline_evidence": "Closes 2 March 2027, 13.00 CET",
     "deadline_type": "single",
     "deadline_source": "official_text",
     "lead": "",
     "lead_evidence": "",
-    "deadline_raw": "2027-03-02 | Deadline: 2 March 2027 at 13:00 CET (Oslo time)."
+    "deadline_raw": "2027-03-02 | Closes 2 March 2027, 13.00 CET"
   }
 }
