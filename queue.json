@@ -1,52 +1,5 @@
 [
   {
-    "title": "Why Even One Outlier Destroys the Mean",
-    "title_highlight": "Destroys the Mean",
-    "category": "Statistics",
-    "slides": [
-      {
-        "heading": "The Mean Has Zero Breakdown",
-        "body": "The sample mean is defined as the sum of observations divided by n. If any single observation gets arbitrarily large, the mean becomes arbitrarily large. Thus the breakdown point for the mean is 0.",
-        "image_prompt": "a single towering bar chart column towering over smaller columns, pulling a heavy horizontal line upward with a tight rope, while simple figures watch in confusion",
-        "highlight": "",
-        "source": ""
-      },
-      {
-        "heading": "The Median Survives Extremes",
-        "body": "The median is the central value in a distribution where equal numbers of values lie above and below. If a minority of observations go to infinity, the median will not be arbitrarily bad. Its breakdown point is one half.",
-        "image_prompt": "a balance scale with multiple identical figures on one side and one giant figure on the other side, remaining perfectly level with a bright dividing line in the middle",
-        "highlight": "",
-        "source": ""
-      },
-      {
-        "heading": "When Is the Mean Actually Good?",
-        "body": "From the point of robustness and breakdown point, the mean is a good estimator only if the data have zero outliers, no skewness, and unimodality. The median is far more insensitive to these departures from normality.",
-        "image_prompt": "a magnifying glass inspecting a pristine bell shaped curve document, while three distorted bumpy documents are tossed aside into a waste bin",
-        "highlight": "",
-        "source": ""
-      }
-    ],
-    "takeaway": "Even a single outlier makes the sample mean completely arbitrary, giving it a breakdown point of zero.",
-    "takeaway_highlight": "breakdown point of zero",
-    "references": [
-      "Donoho, D., & Huber, P. (Eds.). (1983). The notion of breakdown point."
-    ],
-    "caption": "In biomedical datasets, outliers and skewness are extremely common. Yet we often default to the sample mean without checking if our data meet the strict assumptions of normality. When a single extreme value can drag our entire estimate off course, relying solely on parametric measures becomes a risky gamble. How often do you check for breakdown points before choosing your primary summary statistic?",
-    "hashtags": [
-      "#Biostatistics",
-      "#ClinicalResearch",
-      "#DataAnalysis",
-      "#Statistics",
-      "#ResearchMethods",
-      "#DataScience",
-      "#Methodology",
-      "#Biostat"
-    ],
-    "source_hint": "pages 1-2",
-    "id": "40cb2ae7",
-    "source": "Parametric vs non parametric.pdf"
-  },
-  {
     "title": "Parametric vs Nonparametric: The Cost of Power",
     "title_highlight": "The Cost of Power",
     "category": "Statistics",

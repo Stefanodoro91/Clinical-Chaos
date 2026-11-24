@@ -98,5 +98,34 @@
       "Dalton, E. J., Fini, N. A., Kwakkel, G., Lang, C. E., Lannin, N. A., & Hayward, K. S. (2026). Recent highlights in motor recovery and rehabilitation research after stroke. Journal of Physiotherapy, 72(3), 179–189. https://doi.org/10.1016/j.jphys.2026.06.005"
     ],
     "cover": "published_images/2026-11-21-58ac95ee/slide-1.jpg"
+  },
+  "40cb2ae7": {
+    "id": "40cb2ae7",
+    "date": "2026-11-24",
+    "title": "Why even one outlier makes the mean arbitrary",
+    "category": "Statistics",
+    "takeaway": "Even a single outlier makes the sample mean arbitrary, giving it a breakdown point of zero.",
+    "points": [
+      {
+        "heading": "The mean has zero breakdown",
+        "body": "so the mean's breakdown point equals 0",
+        "source": ""
+      },
+      {
+        "heading": "The median survives extremes",
+        "body": "If up to half the observations become infinite, the median stays bounded",
+        "source": ""
+      },
+      {
+        "heading": "When is the mean actually good?",
+        "body": "From the point of robustness and breakdown point, the mean is a good estimator only if the data have zero outliers, no skewness, and unimodality. The median is far more insensitive to these departures from normality.",
+        "source": ""
+      }
+    ],
+    "references": [
+      "Kitchen, C. M. (2009). Nonparametric vs Parametric Tests of Location in Biomedical Research. American Journal of Ophthalmology, 147(4), 571–572. https://doi.org/10.1016/j.ajo.2008.06.031",
+      "Donoho, D., & Huber, P. (Eds.). (1983). The notion of breakdown point."
+    ],
+    "cover": "published_images/2026-11-24-40cb2ae7/slide-1.jpg"
   }
 }
