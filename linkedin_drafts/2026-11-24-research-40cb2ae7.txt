@@ -1,0 +1,18 @@
+Why even one outlier makes the mean arbitrary
+
+In biomedical datasets, outliers and skewness are often present. Yet we often default to the sample mean without checking if our data meet the assumptions of normality. When a single extreme value can drag the entire estimate off course, relying solely on parametric measures becomes risky. How often do you check for breakdown points before choosing your primary summary statistic?
+
+Key points:
+1. The mean has zero breakdown: so the mean's breakdown point equals 0
+2. The median survives extremes: If up to half the observations become infinite, the median stays bounded
+3. When is the mean actually good? From the point of robustness and breakdown point, the mean is a good estimator only if the data have zero outliers, no skewness, and unimodality. The median is far more insensitive to these departures from normality.
+
+Takeaway: Even a single outlier makes the sample mean arbitrary, giving it a breakdown point of zero.
+
+References:
+- Kitchen, C. M. (2009). Nonparametric vs Parametric Tests of Location in Biomedical Research. American Journal of Ophthalmology, 147(4), 571–572. https://doi.org/10.1016/j.ajo.2008.06.031
+- Donoho, D., & Huber, P. (Eds.). (1983). The notion of breakdown point.
+
+Full details: https://clinicalresearchchaos.com/methodology#m-40cb2ae7
+
+#ClinicalResearch #ResearchMethodology #Biostatistics #DataAnalysis #Statistics
