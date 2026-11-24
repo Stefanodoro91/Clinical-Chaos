@@ -989,5 +989,25 @@
       "POS-35b130bc0c19",
       "POS-d4d049eece22"
     ]
+  },
+  {
+    "date": "2026-11-24",
+    "time": "2026-11-24T11:57:26+00:00",
+    "id": "grant-GG-PAR-25-207",
+    "title": "Post-acute mental health care: funds for definitive clinical trials",
+    "source": "GrantFinder",
+    "media_id": "18122410882767549",
+    "facebook_id": "1277022912171972_122121888237432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n32lnjfria2p",
+    "threads_id": "17946508899400856",
+    "kind": "grant",
+    "grant_id": "GG-PAR-25-207",
+    "url": "https://www.grants.gov/search-results-detail/356924",
+    "deadline": "2027-02-05",
+    "funder": "NIH – US National Institutes of Health",
+    "summary": "This funding opportunity from the National Institute of Mental Health supports research projects evaluating the effectiveness of therapeutic and service delivery interventions for the post-acute management of mental health conditions in youth, adults, and older adults. Supported projects must conduct statistically powered clinical trials testing effectiveness and mechanisms of action. Eligible applicants include higher education institutions, non-profits, for-profit organizations, government entities, and non-domestic (foreign) entities.",
+    "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+    "official_source": "NIH Guide PAR-25-207",
+    "grant_title": "Effectiveness Trials for Post-Acute Interventions and Services to Optimize Longer-term Outcomes"
   }
 ]
