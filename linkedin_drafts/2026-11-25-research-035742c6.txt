@@ -1,0 +1,26 @@
+Linear or logistic regression? Look at your outcome
+
+Before running any regression, the first question is never about your predictors—it is about your outcome.
+
+Choosing linear regression means your dependent variable is continuous. Choosing logistic regression means it is strictly binary.
+
+Mismatched models lead to uninterpretable coefficients and invalid statistical conclusions.
+
+When reviewing manuscripts, how often do you see authors force a continuous model onto dichotomous clinical outcomes?
+
+Key points:
+1. The outcome dictates the model: Regression helps analyze how various factors connect to health results. Deciding between linear and logistic models depends completely on how you measure your dependent variable.
+2. Linear models require continuous data: In linear regression, the dependent variable must be continuous, such as intraocular pressure or visual acuity. Independent variables may be continuous, binary, or categorical.
+3. Logistic models need binary outcomes: Logistic regression specifically requires a binary dependent variable, meaning the outcome only has two possible categories, such as yes or no.
+4. Comparing the effect metrics: Linear regression reports coefficients showing unit changes in the outcome. Logistic regression expresses predictor effects using an odds ratio to compare relative odds of the event.
+
+Takeaway: Linear regression requires a continuous outcome, whereas logistic regression demands a binary dependent variable.
+
+References:
+- Bzovsky, S., Phillips, M. R., Guymer, R. H., Wykoff, C. C., Thabane, L., Bhandari, M., Chaudhary, V., on behalf of the R.E.T.I.N.A. study group, Sivaprasad, S., Kaiser, P., Sarraf, D., Bakri, S. J., Garg, S. J., Singh, R. P., Holz, F. G., & Wong, T. Y. (2022). The clinician’s guide to interpreting a regression analysis. Eye, 36(9), 1715–1717. https://doi.org/10.1038/s41433-022-01949-z
+- Schneider, A., Hommel, G., & Blettner, M. (2010). Linear Regression. Anal Dtsch Ärztebl Int, 107, 776–782.
+- Bender, R. (2009). Introduction to the Use of Regression Models in Epidemiology. Methods in Molecular Biology, 179–195. https://doi.org/10.1007/978-1-59745-416-2_9
+
+Full details: https://clinicalresearchchaos.com/methodology#m-035742c6
+
+#ClinicalResearch #ResearchMethodology #Biostatistics #ResearchMethods #LinearRegression
