@@ -1020,5 +1020,18 @@
     "facebook_id": "1277022912171972_122121974991432698",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n33b655tuj24",
     "threads_id": "18060568754805870"
+  },
+  {
+    "date": "2026-11-25",
+    "time": "2026-11-25T11:44:13+00:00",
+    "id": "reel-40cb2ae7",
+    "title": "Why even one outlier makes the mean arbitrary",
+    "source": "Parametric vs non parametric.pdf",
+    "kind": "reel",
+    "reel_of": "40cb2ae7",
+    "media_id": "18089339813705181",
+    "seconds": 26.2,
+    "facebook_id": "1706693417823226",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n353irm2bf2z"
   }
 ]
