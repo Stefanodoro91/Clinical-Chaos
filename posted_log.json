@@ -1033,5 +1033,16 @@
     "seconds": 26.2,
     "facebook_id": "1706693417823226",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n353irm2bf2z"
+  },
+  {
+    "date": "2026-11-25",
+    "time": "2026-11-25T18:14:33+00:00",
+    "id": "035742c6",
+    "title": "Linear or logistic regression? Look at your outcome",
+    "source": "Regression.pdf",
+    "media_id": "17925314589537035",
+    "facebook_id": "1277022912171972_122122247859432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n35r6cjtu62r",
+    "threads_id": "17972791194210475"
   }
 ]

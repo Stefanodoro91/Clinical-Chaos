@@ -48,63 +48,6 @@
     "source": "Parametric vs non parametric.pdf"
   },
   {
-    "title": "Linear or Logistic Regression? Look at Your Outcome",
-    "title_highlight": "Look at Your Outcome",
-    "category": "Statistics",
-    "slides": [
-      {
-        "heading": "The outcome dictates the model",
-        "body": "Regression is used to determine the relationship between several factors and disease outcomes. The choice between linear and logistic regression hinges directly on how your dependent variable is measured.",
-        "image_prompt": "a researcher standing at a fork in a stone path, looking at two diverging roads leading toward two different symbolic gates",
-        "highlight": "dependent variable is measured",
-        "source": "Schneider et al., 2010"
-      },
-      {
-        "heading": "Linear models require continuous data",
-        "body": "In linear regression, the dependent variable must be continuous, such as intraocular pressure or visual acuity. Independent variables may be continuous, binary, or categorical.",
-        "image_prompt": "a researcher measuring the height of a smoothly growing green plant against an upright wooden ruler with evenly spaced notches",
-        "highlight": "dependent variable must be continuous",
-        "source": "Schneider et al., 2010"
-      },
-      {
-        "heading": "Logistic models need binary outcomes",
-        "body": "The distinguishing feature in logistic regression is that the dependent variable must be binary, meaning that the variable can only take two values, such as yes versus no.",
-        "image_prompt": "a hand placing spherical tokens into two distinct wooden boxes, one painted black and one painted white",
-        "highlight": "dependent variable must be binary",
-        "source": "Schober & Vetter, 2021"
-      },
-      {
-        "heading": "Comparing the effect metrics",
-        "body": "Linear regression reports coefficients showing unit changes in the outcome. Logistic regression expresses predictor effects using an odds ratio to compare relative odds of the event.",
-        "image_prompt": "a pair of mechanical balance scales comparing two distinct wooden blocks of different sizes suspended by thin metal chains",
-        "highlight": "using an odds ratio",
-        "source": "Bender, 2009"
-      }
-    ],
-    "takeaway": "Linear regression requires a continuous outcome, whereas logistic regression demands a binary dependent variable.",
-    "takeaway_highlight": "continuous outcome, whereas logistic regression",
-    "references": [
-      "Schneider, A., Hommel, G., & Blettner, M. (2010). Linear Regression. Anal Dtsch Ärztebl Int, 107, 776–782.",
-      "Bender, R. (2009). Introduction to the Use of Regression Models in Epidemiology. Methods in Molecular Biology, 179–195. https://doi.org/10.1007/978-1-59745-416-2_9",
-      "Schober, P., & Vetter, T. R. (2021). Logistic Regression in Medical Research. Anesthesia &amp; Analgesia, 132(2), 365–366. https://doi.org/10.1213/ane.0000000000005247"
-    ],
-    "caption": "Before running any regression, the first question is never about your predictors—it is about your outcome.\n\nChoosing linear regression means your dependent variable is continuous. Choosing logistic regression means it is strictly binary.\n\nMismatched models lead to uninterpretable coefficients and invalid statistical conclusions.\n\nWhen reviewing manuscripts, how often do you see authors force a continuous model onto dichotomous clinical outcomes?",
-    "hashtags": [
-      "#Biostatistics",
-      "#ClinicalResearch",
-      "#ResearchMethods",
-      "#LinearRegression",
-      "#LogisticRegression",
-      "#Epidemiology",
-      "#DataAnalysis",
-      "#MedicalStatistics",
-      "#EvidenceBasedMedicine"
-    ],
-    "source_hint": "page 1",
-    "id": "035742c6",
-    "source": "Regression.pdf"
-  },
-  {
     "title": "How to Interpret a Linear Regression Coefficient",
     "title_highlight": "Linear Regression Coefficient",
     "category": "Statistics",
