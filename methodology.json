@@ -163,5 +163,33 @@
       "Schober, P., & Vetter, T. R. (2021). Logistic Regression in Medical Research. Anesthesia & Analgesia, 132(2), 365–366. https://doi.org/10.1213/ane.0000000000005247"
     ],
     "cover": "published_images/2026-11-25-035742c6/slide-1.jpg"
+  },
+  "checklist-prisma-search": {
+    "id": "checklist-prisma-search",
+    "date": "2026-11-26",
+    "title": "Could a colleague rerun your literature search?",
+    "category": "Reporting & publication",
+    "takeaway": "Report every search string, database, filter and date: reproducible or it is not systematic.",
+    "points": [
+      {
+        "heading": "What the item asks",
+        "body": "Present the full search strategy for every database and register, including filters and limits, exactly as run.",
+        "source": "Page et al., 2021"
+      },
+      {
+        "heading": "Why it matters",
+        "body": "The search defines the evidence base. If it cannot be repeated, the review cannot be checked or updated.",
+        "source": "Page et al., 2021"
+      },
+      {
+        "heading": "How to comply",
+        "body": "Export each database's full query string into an appendix, with the date of the search and any language or date limits.",
+        "source": "Page et al., 2021"
+      }
+    ],
+    "references": [
+      "Page, M. J., McKenzie, J. E., Bossuyt, P. M., Boutron, I., Hoffmann, T. C., Mulrow, C. D., et al. (2021). The PRISMA 2020 statement: An updated guideline for reporting systematic reviews. BMJ, 372, n71. https://doi.org/10.1136/bmj.n71"
+    ],
+    "cover": "published_images/2026-11-26-checklist-prisma-search/slide-1.jpg"
   }
 }
