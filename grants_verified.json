@@ -675,14 +675,14 @@
   },
   "GG-RFA-DA-28-011": {
     "status": "ok",
-    "checked": "2026-11-19",
+    "checked": "2026-11-26",
     "official_source": "Grants.gov opportunity 360048",
     "official_url": "https://www.grants.gov/search-results-detail/360048",
     "is_open_call": "yes",
-    "title": "HEAL Initiative: Integrative Management of Chronic Pain and OUD for Whole Recovery (IMPOWR): Research Centers",
-    "programme": "NIH HEAL Initiative",
+    "title": "IMPOWR: Research Centers (RM1 Clinical Trial Required)",
+    "programme": "HEAL Initiative",
     "programme_family": "NIH – US National Institutes of Health",
-    "summary": "This National Institutes of Health funding call supports the renewal of the Integrative Management of Chronic Pain and OUD for Whole Recovery (IMPOWR) research network. It funds individual research projects coordinated through a central center to test new and improved approaches for individuals experiencing both chronic pain and opioid use disorder. Eligible applicants include diverse domestic and foreign organizations, such as institutions of higher education, nonprofits, businesses, and governmental agencies.",
+    "summary": "This National Institutes of Health funding call supports the renewal of the Integrative Management of Chronic Pain and OUD for Whole Recovery research network. It aims to test new approaches for individuals with both chronic pain and opioid use disorder to improve health system care delivery. The initiative funds multiple individual research projects coordinated by a central hub. Eligible applicants include domestic and foreign non-profits, higher education institutions, small businesses, and government agencies.",
     "coming_soon": true,
     "eligible_countries": "Coming soon: published with the full call",
     "countries_evidence": "",
@@ -701,7 +701,7 @@
     "lead": "",
     "lead_evidence": "",
     "deadline_raw": "2027-01-26 | Grants.gov closing date for applications: Jan 26, 2027 12:00:00 AM EST.",
-    "dl_tries": 4
+    "dl_tries": 5
   },
   "GG-PAR-25-124": {
     "status": "ok",
