@@ -1,0 +1,14 @@
+{
+ "workflow": "Post giornaliero ricerca clinica",
+ "quota_day": "2026-11-26",
+ "consumo": {
+  "controllo doppioni|groq-gpt-oss-120b": {
+   "richieste": 1,
+   "ingresso": 1937,
+   "uscita": 236,
+   "ragionamento": 0,
+   "respinte": 0
+  }
+ },
+ "esauriti": []
+}
