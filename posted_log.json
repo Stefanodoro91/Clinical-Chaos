@@ -1044,5 +1044,25 @@
     "facebook_id": "1277022912171972_122122247859432698",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n35r6cjtu62r",
     "threads_id": "17972791194210475"
+  },
+  {
+    "date": "2026-11-26",
+    "time": "2026-11-26T13:04:13+00:00",
+    "id": "grant-EU-HORIZON-BRIDGING-2027-06-02",
+    "title": "Knowledge intermediaries: validate and valorise Horizon research",
+    "source": "GrantFinder",
+    "media_id": "17917592313517636",
+    "facebook_id": "1277022912171972_122122455729432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n37qcokwav2r",
+    "threads_id": "18191046751416949",
+    "kind": "grant",
+    "grant_id": "EU-HORIZON-BRIDGING-2027-06-02",
+    "url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-BRIDGING-2027-06-02",
+    "deadline": "2027-02-16",
+    "funder": "Horizon Europe",
+    "summary": "This call aims to bridge the gap between Horizon research outcomes and market deployment. Consortia of knowledge intermediaries—such as technology transfer offices, incubators, and innovation platforms—will scout Horizon 2020 and Horizon Europe results and provide mentorship, training, and guidance. Projects must provide financial support to third parties through competitive calls for prototyping, testing, demonstrating, and market replication in thematic areas including health, bioeconomy, agriculture, energy, and materials.",
+    "italy_evidence": "EU programme rules: legal entities established in EU Member States (including Italy) and associated countries are eligible.",
+    "official_source": "EU Funding & Tenders Portal, topic HORIZON-BRIDGING-2027-06-02",
+    "grant_title": "Valorising Horizon project results via innovation ecosystems"
   }
 ]
