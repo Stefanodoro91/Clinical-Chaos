@@ -1,0 +1,21 @@
+Could a colleague rerun your literature search?
+
+PRISMA item 7: a systematic review search must be reported so fully that anyone can repeat it.
+
+One reporting-checklist item at a time, every Thursday: what it asks, why it matters, and how to comply in practice.
+This week: PRISMA, Item 7 – Search strategy.
+Which checklist item do you see ignored most often?
+
+Key points:
+1. What the item asks: Present the full search strategy for every database and register, including filters and limits, exactly as run.
+2. Why it matters: The search defines the evidence base. If it cannot be repeated, the review cannot be checked or updated.
+3. How to comply: Export each database's full query string into an appendix, with the date of the search and any language or date limits.
+
+Takeaway: Report every search string, database, filter and date: reproducible or it is not systematic.
+
+References:
+- Page, M. J., McKenzie, J. E., Bossuyt, P. M., Boutron, I., Hoffmann, T. C., Mulrow, C. D., et al. (2021). The PRISMA 2020 statement: An updated guideline for reporting systematic reviews. BMJ, 372, n71. https://doi.org/10.1136/bmj.n71
+
+Full details: https://clinicalresearchchaos.com/methodology#m-checklist-prisma-search
+
+#ClinicalResearch #ResearchMethodology #PRISMA #SystematicReview #EvidenceSynthesis
