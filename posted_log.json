@@ -1075,5 +1075,25 @@
     "facebook_id": "1277022912171972_122122524597432698",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n3ac5j6dqa2a",
     "threads_id": "18119441075034511"
+  },
+  {
+    "date": "2026-11-27",
+    "time": "2026-11-27T12:23:29+00:00",
+    "id": "grant-GG-PAR-25-291",
+    "title": "Invasive neural recordings in humans? Funds for mental health studies",
+    "source": "GrantFinder",
+    "media_id": "18644233072048392",
+    "facebook_id": "1277022912171972_122122730187432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n3c6idngwg2z",
+    "threads_id": "18447945001182308",
+    "kind": "grant",
+    "grant_id": "GG-PAR-25-291",
+    "url": "https://www.grants.gov/search-results-detail/357345",
+    "deadline": "2027-02-16",
+    "funder": "National Institute of Mental Health (NIMH)",
+    "summary": "This call supports research using invasive neural recording and stimulation in humans to understand the neural circuitry of mental health disorders. It focuses on high-resolution exploration of moods, emotions, and behaviors to inform future brain stimulation therapies. Multidisciplinary teams from academic, nonprofit, or for-profit organizations worldwide can apply. The R21 mechanism funds exploratory, high-risk projects for up to two years, emphasizing conceptual innovation and translational potential over preliminary data.",
+    "italy_evidence": "Non-domestic (non-U.S.) Entities (Foreign Organizations) are eligible to apply.",
+    "official_source": "NIH Guide PAR-25-291",
+    "grant_title": "Utilizing Invasive Recording and Stimulating Opportunities in Humans to Advance Neural Circuitry Understanding of Mental Health Disorders…"
   }
 ]
