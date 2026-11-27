@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://clinicalresearchchaos.com/</loc><lastmod>2026-11-26</lastmod></url>
-  <url><loc>https://clinicalresearchchaos.com/calls</loc><lastmod>2026-11-26</lastmod></url>
+  <url><loc>https://clinicalresearchchaos.com/</loc><lastmod>2026-11-27</lastmod></url>
+  <url><loc>https://clinicalresearchchaos.com/calls</loc><lastmod>2026-11-27</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/positions</loc><lastmod>2026-11-26</lastmod></url>
-  <url><loc>https://clinicalresearchchaos.com/methodology</loc><lastmod>2026-11-26</lastmod></url>
-  <url><loc>https://clinicalresearchchaos.com/science</loc><lastmod>2026-11-26</lastmod></url>
-  <url><loc>https://clinicalresearchchaos.com/trials</loc><lastmod>2026-11-26</lastmod></url>
-  <url><loc>https://clinicalresearchchaos.com/feedback</loc><lastmod>2026-11-26</lastmod></url>
+  <url><loc>https://clinicalresearchchaos.com/methodology</loc><lastmod>2026-11-27</lastmod></url>
+  <url><loc>https://clinicalresearchchaos.com/science</loc><lastmod>2026-11-27</lastmod></url>
+  <url><loc>https://clinicalresearchchaos.com/trials</loc><lastmod>2026-11-27</lastmod></url>
+  <url><loc>https://clinicalresearchchaos.com/feedback</loc><lastmod>2026-11-27</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/rss</loc><lastmod>2026-11-15</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/jobs/academic-leadership-positions-in-school-of-clinical-medicine-0681ff1a</loc><lastmod>2026-11-24</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/jobs/academic-leadership-positions-under-lks-faculty-of-medicine-9cff7bb9</loc><lastmod>2026-11-25</lastmod></url>
@@ -178,6 +178,8 @@
   <url><loc>https://clinicalresearchchaos.com/call/genomic-and-biologic-therapies-for-adrd-u01-clinical-trial-o-4f1053</loc><lastmod>2026-11-24</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/call/grants-for-early-medical-surgical-specialists-transition-to-ea7ff4</loc><lastmod>2026-11-15</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/call/hand-in-hand-research-grant-2026-2027-ab0618</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://clinicalresearchchaos.com/call/hiv-aids-clinical-trials-network-clinical-trials-units-um1-c-37dacc</loc><lastmod>2026-11-27</lastmod></url>
+  <url><loc>https://clinicalresearchchaos.com/call/hiv-aids-clinical-trials-network-leadership-and-operations-c-e3e9b1</loc><lastmod>2026-11-27</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/call/immune-tolerance-network-um1-clinical-trial-required-6b9f0d</loc><lastmod>2026-11-23</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/call/implementation-science-to-advance-hiv-prevention-treatment-a-138828</loc><lastmod>2026-11-21</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/call/impowr-research-centers-rm1-clinical-trial-required-9622c3</loc><lastmod>2026-11-26</lastmod></url>
@@ -205,6 +207,7 @@
   <url><loc>https://clinicalresearchchaos.com/call/msca-doctoral-networks-2027-76b352</loc><lastmod>2026-11-15</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/call/msca-postdoctoral-fellowships-2027-1d7f6f</loc><lastmod>2026-11-15</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/call/msca-staff-exchanges-2027-9521e2</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://clinicalresearchchaos.com/call/multimodal-ai-to-accelerate-precision-medicine-for-type-1-di-5a9f33</loc><lastmod>2026-11-27</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/call/national-annexes-compiled-call-1-4a1071</loc><lastmod>2026-11-16</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/call/natural-history-of-disorders-screenable-in-the-newborn-perio-44e4b4</loc><lastmod>2026-11-15</lastmod></url>
   <url><loc>https://clinicalresearchchaos.com/call/navigator-emergency-department-diversion-models-for-non-urge-60e2b2</loc><lastmod>2026-11-17</lastmod></url>
