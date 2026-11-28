@@ -191,5 +191,23 @@
       "Page, M. J., McKenzie, J. E., Bossuyt, P. M., Boutron, I., Hoffmann, T. C., Mulrow, C. D., et al. (2021). The PRISMA 2020 statement: An updated guideline for reporting systematic reviews. BMJ, 372, n71. https://doi.org/10.1136/bmj.n71"
     ],
     "cover": "published_images/2026-11-26-checklist-prisma-search/slide-1.jpg"
+  },
+  "280f81e7": {
+    "id": "280f81e7",
+    "date": "2026-11-28",
+    "title": "Can inexpensive technologies expand neurorehabilitation access?",
+    "category": "Clinical insight",
+    "takeaway": "Low-cost devices appear to be at least as effective as standard clinical practices for improving extremity function.",
+    "points": [
+      {
+        "heading": "Design approaches for medical tools.",
+        "body": "This review of 37 stroke rehabilitation systems examines engineering designs and evidence for affordable technology.",
+        "source": ""
+      }
+    ],
+    "references": [
+      "Augenstein, T. E., & Krishnan, C. (2026). Low-cost Devices for Stroke Rehabilitation: A Review of Approaches, Designs, and Evidence. Restorative Neurology and Neuroscience, 44(2), 198–218. https://doi.org/10.1177/09226028261423567"
+    ],
+    "cover": "published_images/2026-11-28-280f81e7/slide-1.jpg"
   }
 }

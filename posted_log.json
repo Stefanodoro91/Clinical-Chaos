@@ -1108,5 +1108,16 @@
     "seconds": 28.0,
     "facebook_id": "884394004756570",
     "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n3cggjem2e25"
+  },
+  {
+    "date": "2026-11-28",
+    "time": "2026-11-28T16:21:03+00:00",
+    "id": "280f81e7",
+    "title": "Can inexpensive technologies expand neurorehabilitation access?",
+    "source": "Low cost devices.pdf",
+    "media_id": "18653685211061084",
+    "facebook_id": "1277022912171972_122123072733432698",
+    "bluesky_uri": "at://did:plc:m2rnjbivsmbgzhaq24bmthqx/app.bsky.feed.post/3n3f4amc2hd23",
+    "threads_id": "18176368879456921"
   }
 ]
