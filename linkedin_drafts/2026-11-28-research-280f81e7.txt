@@ -1,0 +1,15 @@
+Can inexpensive technologies expand neurorehabilitation access?
+
+High equipment costs often restrict intensive therapy. Commercial robots are often highly motorized, expensive, and bulky, making them unsuitable for most clinical or home environments. This review synthesizes engineering strategies used to develop low-cost devices.
+
+Key points:
+1. Design approaches for medical tools. This review of 37 stroke rehabilitation systems examines engineering designs and evidence for affordable technology.
+
+Takeaway: Low-cost devices appear to be at least as effective as standard clinical practices for improving extremity function.
+
+References:
+- Augenstein, T. E., & Krishnan, C. (2026). Low-cost Devices for Stroke Rehabilitation: A Review of Approaches, Designs, and Evidence. Restorative Neurology and Neuroscience, 44(2), 198–218. https://doi.org/10.1177/09226028261423567
+
+Full details: https://clinicalresearchchaos.com/science#s-280f81e7
+
+#ClinicalResearch #StrokeRehabilitation #NeuroRehab #PhysicalTherapy
